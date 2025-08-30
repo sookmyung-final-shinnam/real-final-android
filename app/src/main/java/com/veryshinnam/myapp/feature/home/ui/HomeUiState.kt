@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import com.veryshinnam.myapplication.feature.home.data.dto.CharacterShortResult
+import com.veryshinnam.myapp.feature.home.data.dto.CharacterShortResult
 
 data class HomeUiState(
     val isLoading: Boolean = false,

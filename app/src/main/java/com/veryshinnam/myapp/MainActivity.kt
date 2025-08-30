@@ -10,7 +10,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import com.veryshinnam.myapplication.feature.home.ui.HomeScreen
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
+import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
+import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
+import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -18,8 +23,47 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
+
         setContent {
-            HomeScreen()
+            val mainNavController = rememberNavController()
+
+            NavHost(
+                navController = mainNavController,
+                startDestination = "home"
+            ) {
+                // 홈 화면
+                composable("home") {
+                    HomeScreen(
+                        onSettingsClick = {
+                            // 환경 설정
+                            mainNavController.navigate("settings")
+                        },
+                        onCreationClick = {
+                            // 캐릭터 생성
+                            mainNavController.navigate(SelectRoutes.ROOT)
+                        },
+                        onStorageClick = {
+                            // 보관함
+//                            mainNavController.navigate(StorageRoutes.ROOT)
+                        }
+                    )
+                }
+
+                // 설정 화면
+                composable("settings") {
+//                    SettingsScreen(
+//                        onBack = { navController.popBackStack() },
+//                        onClickLogout = { /* 로그아웃 로직 */ },
+//                        onClickDelete = { /* 회원탈퇴 로직 */ }
+//                    )
+                }
+
+                // 생성 플로우
+                selectNavGraph(mainNavController)
+
+                // 보관함
+//                storageNavGraph(navController)
+            }
         }
     }
 }

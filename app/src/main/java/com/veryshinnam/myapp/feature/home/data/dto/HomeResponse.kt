@@ -1,4 +1,4 @@
-package com.veryshinnam.myapplication.feature.home.data.dto
+package com.veryshinnam.myapp.feature.home.data.dto
 
 // 홈 화면 응답 구조
 data class HomeResponse(

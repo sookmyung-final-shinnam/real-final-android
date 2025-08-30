@@ -1,8 +1,8 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import com.veryshinnam.myapplication.feature.home.data.dto.CharacterShortResult
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.feature.home.data.dto.CharacterShortResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -34,7 +34,10 @@ class HomeViewModel @Inject constructor(
                 storyCnt = 10,
                 characters = listOf(
                     CharacterShortResult(id = 1, firstImage = "https://ifh.cc/g/QP5O4d.png"),
-                    CharacterShortResult(id = 2, firstImage = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"),
+                    CharacterShortResult(
+                        id = 2,
+                        firstImage = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"
+                    ),
                     CharacterShortResult(id = 3, firstImage = "https://ifh.cc/g/XTGSPy.png")
                 )
             )

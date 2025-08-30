@@ -1,4 +1,4 @@
-package com.veryshinnam.myapplication.feature.home.ui
+package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
@@ -18,8 +18,8 @@ import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import coil.compose.AsyncImage
+import com.veryshinnam.myapp.feature.home.data.dto.CharacterShortResult
 import com.veryshinnam.myapp.feature.home.ui.HomeViewModel
-import com.veryshinnam.myapplication.feature.home.data.dto.CharacterShortResult
 
 @Composable
 fun HomeScreen(
@@ -28,6 +28,7 @@ fun HomeScreen(
     onStorageClick: () -> Unit = {},
     vm: HomeViewModel =  hiltViewModel()
 ) {
+    // 홈화면 상태 관리
     val uiState by vm.homeUiState.collectAsState()
 
     if (uiState.isLoading) {
