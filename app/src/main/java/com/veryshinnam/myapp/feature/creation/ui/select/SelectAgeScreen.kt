@@ -96,8 +96,7 @@ private fun AgePickerContainer(
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.elevatedCardColors(
             containerColor = colorResource(R.color.yellow_80)
-        ),
-        shape = MaterialTheme.shapes.extraLarge
+        )
     ) {
         Column(
             Modifier.fillMaxSize(),
