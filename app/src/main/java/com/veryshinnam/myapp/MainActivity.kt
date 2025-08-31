@@ -7,6 +7,7 @@ import androidx.activity.enableEdgeToEdge
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
 import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
 import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
@@ -40,6 +41,9 @@ class MainActivity : ComponentActivity() {
                         onStorageClick = {
                             // 보관함
 //                            mainNavController.navigate(StorageRoutes.ROOT)
+                        },
+                        onCharacterClick = { charId ->
+                            mainNavController.navigate("character/$charId")
                         }
                     )
                 }
@@ -58,6 +62,15 @@ class MainActivity : ComponentActivity() {
 
                 // 보관함
 //                storageNavGraph(navController)
+
+                // 캐릭터 상세 화면
+                composable("character/{id}") { backStackEntry ->
+                    val id = backStackEntry.arguments?.getString("id")?.toLongOrNull() ?: return@composable
+                    CharacterScreen(
+                        id = id,
+                        onBack = { mainNavController.popBackStack() }
+                    )
+                }
             }
         }
     }

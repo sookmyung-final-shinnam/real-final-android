@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -26,6 +27,7 @@ fun HomeScreen(
     onSettingsClick: () -> Unit = {},
     onCreationClick: () -> Unit = {},
     onStorageClick: () -> Unit = {},
+    onCharacterClick: (Long) -> Unit = {},
     vm: HomeViewModel =  hiltViewModel()
 ) {
     // 홈화면 상태 관리
@@ -64,7 +66,8 @@ fun HomeScreen(
                     characters = uiState.characters,
                     modifier = Modifier
                         .fillMaxWidth()
-                        .weight(1f) // 남은 높이 모두 차지
+                        .weight(1f), // 남은 높이 모두 차지
+                    onCharacterClick = onCharacterClick
                 )
             }
 
@@ -112,7 +115,8 @@ fun HomeUserInfo(
 @Composable
 fun HomeFavoriteCharacter(
     characters: List<CharacterShortResult>,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onCharacterClick: (Long) -> Unit = {}
 ) {
     Box(
         modifier = modifier
@@ -136,6 +140,7 @@ fun HomeFavoriteCharacter(
                         modifier = Modifier
                             .size(120.dp)
                             .clip(RoundedCornerShape(16.dp))
+                            .clickable { onCharacterClick(character.id)}
                     )
                 }
             }
