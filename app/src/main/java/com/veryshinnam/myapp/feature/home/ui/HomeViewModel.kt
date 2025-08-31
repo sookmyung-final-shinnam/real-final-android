@@ -33,12 +33,9 @@ class HomeViewModel @Inject constructor(
                 characterCnt = 5,
                 storyCnt = 10,
                 characters = listOf(
-                    CharacterShortResult(id = 1, firstImage = "https://ifh.cc/g/QP5O4d.png"),
-                    CharacterShortResult(
-                        id = 2,
-                        firstImage = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"
-                    ),
-                    CharacterShortResult(id = 3, firstImage = "https://ifh.cc/g/XTGSPy.png")
+                    CharacterShortResult(id = 11, firstImage = "https://ifh.cc/g/QP5O4d.png"),
+                    CharacterShortResult(id = 12, firstImage = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"),
+                    CharacterShortResult(id = 13, firstImage = "https://ifh.cc/g/XTGSPy.png")
                 )
             )
         }
