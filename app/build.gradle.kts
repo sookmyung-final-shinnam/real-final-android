@@ -5,6 +5,7 @@ plugins {
 
     id("com.google.dagger.hilt.android")  // hilt 플러그인
     id("kotlin-kapt")                     // KAPT
+    id("kotlin-parcelize")                // parcelize
 }
 
 android {

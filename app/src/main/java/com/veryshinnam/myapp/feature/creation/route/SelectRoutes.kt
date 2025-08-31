@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.route
 
+import android.content.Intent
 import androidx.compose.runtime.remember
 import androidx.compose.ui.platform.LocalContext
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -7,6 +8,8 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
+import com.veryshinnam.myapp.ConversationActivity
+import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectAgeScreen
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectBackgroundScreen
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectFaceScreen
@@ -14,6 +17,7 @@ import com.veryshinnam.myapp.feature.creation.ui.select.SelectGenderScreen
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectNameScreen
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectThemeScreen
 import com.veryshinnam.myapp.feature.creation.ui.select.SelectViewModel
+import kotlin.jvm.java
 
 
 // SelectNavigation에 필요한 라우트 상수
@@ -114,22 +118,30 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
 
             SelectFaceScreen(
                 onNext = {
-                    // TODO: request 맞추기
                     val uiState = vm.selectUiState.value
-//                    val req = GenerateStoryRequest(
-//                        themes      = uiState.themes.joinToString(","),
-//                        backgrounds = uiState.background,
-//                        name        = uiState.name,
-//                        gender      = uiState.gender,
-//                        age         = uiState.age,
-//                        hairColor   = uiState.hairColor,
-//                        eyeColor    = uiState.eyeColor,
-//                        hairStyle   = uiState.hairStyle
-//                    )
-//                    // AI 대화 액티비티 시작 (원하면 DialogActivity로 변경)
-//                    context.startActivity(
-//                        Intent(context, ChatActivity::class.java).putExtra("request", req)
-//                    )
+                    val req = StartConversationRequest(
+                        themeNames      = uiState.selectedThemes,
+                        backgroundName = uiState.selectedBackground,
+                        characterName        = uiState.name,
+                        gender      = uiState.gender,
+                        characterAge         = uiState.age,
+                        hairColor   = uiState.hairColor,
+                        eyeColor    = uiState.eyeColor,
+                        hairStyle   = uiState.hairStyle
+                    )
+
+                    // 생성 플로우 스택 모두 삭제 > 홈으로 이동
+                    navController.navigate("home") {
+                        popUpTo(SelectRoutes.ROOT) { inclusive = true }
+                        launchSingleTop = true
+                    }
+
+                    // ConversationActivity로 전달
+                    context.startActivity(
+                        Intent(context, ConversationActivity::class.java).apply {
+                            putExtra("request", req)
+                        }
+                    )
                 },
                 onBack = { navController.popBackStack() },
                 vm = vm
