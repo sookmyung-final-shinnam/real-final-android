@@ -10,6 +10,7 @@ import androidx.navigation.compose.rememberNavController
 import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
 import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
+import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import dagger.hilt.android.AndroidEntryPoint
 
 @AndroidEntryPoint
@@ -45,11 +46,11 @@ class MainActivity : ComponentActivity() {
 
                 // 설정 화면
                 composable("settings") {
-//                    SettingsScreen(
-//                        onBack = { navController.popBackStack() },
-//                        onClickLogout = { /* 로그아웃 로직 */ },
-//                        onClickDelete = { /* 회원탈퇴 로직 */ }
-//                    )
+                    SettingsScreen(
+                        onBack = { mainNavController.popBackStack() },
+                        onClickLogout = { /* 로그아웃 로직 */ },
+                        onClickDelete = { /* 회원탈퇴 로직 */ }
+                    )
                 }
 
                 // 생성 플로우

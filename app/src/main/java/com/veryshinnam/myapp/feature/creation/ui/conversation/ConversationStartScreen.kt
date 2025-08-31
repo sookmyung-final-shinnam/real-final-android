@@ -23,6 +23,7 @@ import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 @Composable
 fun ConversationStartScreen(
     onBack: () -> Unit,
+    onNext: (Long, String) -> Unit,
     req: StartConversationRequest?,
     vm: ConversationViewModel = hiltViewModel()
 ) {
@@ -87,9 +88,11 @@ fun ConversationStartScreen(
         Button(
             onClick = {
                 vm.stopTts()
-//                next()
+                val sid  = uiState.sessionId ?: return@Button 
+                val step = uiState.currentStep ?: "START"
+                onNext(sid, step)
             },
-            enabled = !uiState.isLoading
+            enabled = !uiState.isLoading && uiState.sessionId != null && uiState.currentStep != null
         ) {
             Text("다음 버튼")
         }
