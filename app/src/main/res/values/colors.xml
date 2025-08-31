@@ -8,6 +8,8 @@
     <color name="palette_purple">#9C27B0</color>
 
     <!-- 앱컬러 -->
+    <color name="brand_orange">#F04400</color>
     <color name="main_orange">#ff8804</color>
     <color name="yellow_80">#ccfeefae</color>
+    <color name="background_yellow">#FFF5CE</color>
 </resources>

@@ -1,13 +1,17 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import com.veryshinnam.myapp.feature.home.data.dto.CharacterShortResult
+import com.veryshinnam.myapp.feature.home.data.dto.FavoriteCharacter
 
-data class HomeUiState(
-    val isLoading: Boolean = false,
-    val errorMessage: String? = null,
-    val nickname: String = "닉네임 없음",
-    val points: Int = 0,
-    val characterCnt: Int = 0,
-    val storyCnt: Int = 0,
-    val characters: List<CharacterShortResult> = emptyList()
-)
+sealed interface HomeUiState {
+    data object Loading : HomeUiState
+    data class Success(val data: HomeData) : HomeUiState
+    data class Error(val message: String) : HomeUiState
+
+    data class HomeData(
+        val username: String,
+        val points: Int,
+        val myCharacters: Int,
+        val favoriteCharacters: List<FavoriteCharacter>
+    )
+}
+
