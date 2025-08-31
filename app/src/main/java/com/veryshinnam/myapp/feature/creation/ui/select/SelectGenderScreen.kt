@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.creation.ui.select
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -45,37 +46,44 @@ fun SelectGenderScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 1. 상단 뒤로
         TextButton(onClick = onBack) { Text("뒤로") }
         Spacer(Modifier.height(8.dp))
 
-        Column(Modifier
-            .fillMaxWidth(0.6f)
-            .weight(1f)
-            .padding(horizontal = 20.dp)
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(.8f),
+            contentAlignment = Alignment.TopCenter
         ) {
-            // 2-1. 성별 남자 버튼
-            GenderButton(
-                label = "남자",
-                isSelected = isMaleSelected,
-                onClick = { vm.selectGender("MALE") },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
-            Spacer(Modifier.height(16.dp))
+            Column(
+                Modifier
+                    .fillMaxWidth(0.6f)
+                    .padding(horizontal = 20.dp),
+            ) {
+                // 2-1. 성별 남자 버튼
+                GenderButton(
+                    label = "남자",
+                    isSelected = isMaleSelected,
+                    onClick = { vm.selectGender("MALE") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+                Spacer(Modifier.height(16.dp))
 
-            // 2-2. 성별 여자 버튼
-            GenderButton(
-                label = "여자",
-                isSelected = isFemaleSelected,
-                onClick = { vm.selectGender("FEMALE") },
-                modifier = Modifier
-                    .fillMaxWidth()
-            )
+                // 2-2. 성별 여자 버튼
+                GenderButton(
+                    label = "여자",
+                    isSelected = isFemaleSelected,
+                    onClick = { vm.selectGender("FEMALE") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                )
+            }
         }
 
+        Spacer(Modifier.weight(0.1f))
         // 공통 바텀 버튼
         BottomButton(
             text = "다음 단계로",

@@ -3,8 +3,10 @@ package com.veryshinnam.myapp.feature.creation.ui.select
 import android.widget.NumberPicker
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -21,10 +23,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.veryshinnam.myapp.R
 
 @Composable
 fun SelectAgeScreen(
@@ -44,21 +49,26 @@ fun SelectAgeScreen(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
     ) {
-        Column(Modifier.fillMaxWidth()) {
+        // 1. 상단 뒤로
+        TextButton(onClick = onBack) { Text("뒤로") }
+        Spacer(Modifier.height(8.dp))
 
-            // 1. 상단 뒤로
-            TextButton(onClick = onBack) { Text("뒤로") }
-            Spacer(Modifier.height(8.dp))
-
-            // 2. 나이 선택 컨테이너
+        // 2. 나이 선택 컨테이너
+        Box(
+            modifier = Modifier
+                .weight(0.8f)
+                .fillMaxWidth(),
+            contentAlignment = Alignment.Center
+        ) {
             AgePickerContainer(
                 age = age,
-                onAgeChange = { age = it }
+                onAgeChange = { age = it },
+                modifier = Modifier.fillMaxWidth(0.7f)
             )
         }
 
+        Spacer(Modifier.weight(0.1f))
         // 하단 공통 버튼: 누를 때만 VM 업데이트
         BottomButton(
             text = "다음 단계로",
@@ -78,22 +88,27 @@ fun SelectAgeScreen(
 @Composable
 private fun AgePickerContainer(
     age: Int,
-    onAgeChange: (Int) -> Unit
+    onAgeChange: (Int) -> Unit,
+    modifier: Modifier = Modifier
 ) {
     ElevatedCard(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth(),
         elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.elevatedCardColors(containerColor = MaterialTheme.colorScheme.secondaryContainer),
+        colors = CardDefaults.elevatedCardColors(
+            containerColor = colorResource(R.color.yellow_80)
+        ),
         shape = MaterialTheme.shapes.extraLarge
     ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Text(text = "나이", style = MaterialTheme.typography.titleMedium)
+        Column(
+            Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
             Spacer(Modifier.height(8.dp))
 
             AndroidView(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .height(180.dp),
+                    .fillMaxWidth(0.8f)
+                    .weight(1f),
                 factory = { context ->
                     NumberPicker(context).apply {
                         minValue = 1

@@ -132,7 +132,8 @@ fun GridBackgroundGroup(
     val rows = backs.chunked(2) // 2열로 잘라 행 수
 
     Column(
-        modifier = modifier.fillMaxWidth()
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(10.dp)
     ) {
         rows.forEach { rowItems ->
             Row(

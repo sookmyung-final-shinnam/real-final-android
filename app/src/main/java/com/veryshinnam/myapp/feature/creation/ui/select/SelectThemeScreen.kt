@@ -97,8 +97,8 @@ fun SelectThemeScreen(
 
     Column(
     modifier = Modifier
-    .fillMaxSize()
-    .padding(16.dp),
+        .fillMaxSize()
+        .padding(16.dp),
     ) {
         // 1. 상단 '뒤로' 버튼
         TextButton(onClick = { isBackDialogShow = true }) {
