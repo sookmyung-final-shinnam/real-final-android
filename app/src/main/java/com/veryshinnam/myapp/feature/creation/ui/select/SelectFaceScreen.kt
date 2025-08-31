@@ -3,12 +3,15 @@ package com.veryshinnam.myapp.feature.creation.ui.select
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.lazy.grid.GridCells
@@ -29,9 +32,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontVariation.weight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
@@ -71,16 +76,20 @@ fun SelectFaceScreen(
     // 유효성 체크 (모두 선택)
     val isValid = selectEyeColor.isNotEmpty() && selectHairColor.isNotEmpty() && selectHairStyle.isNotEmpty()
 
-    BackHandler { onBack() }
-
     Column(
-        modifier = Modifier.fillMaxSize().padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
     ) {
-        Column(Modifier.fillMaxWidth()) {
-            TextButton(onClick = onBack) { Text("뒤로") }
-            Spacer(Modifier.height(8.dp))
 
+        TextButton(onClick = onBack) { Text("뒤로") }
+        Spacer(Modifier.height(8.dp))
+
+        Column(
+            modifier = Modifier
+                .weight(0.8f),
+            verticalArrangement = Arrangement.Center
+        ) {
             // 1-1. 눈색 선택 컨테이너
             PaletteContainer(
                 title = "눈동자 색",
@@ -88,7 +97,7 @@ fun SelectFaceScreen(
                 selectedColorName = selectEyeColor,
                 onSelect = { selectEyeColor = it }
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
 
             // 1-2. 머리색 선택 컨테이너
             PaletteContainer(
@@ -97,7 +106,7 @@ fun SelectFaceScreen(
                 selectedColorName = selectHairColor,
                 onSelect = { selectHairColor = it }
             )
-            Spacer(Modifier.height(16.dp))
+            Spacer(Modifier.weight(1f))
 
             // 2. 머리모양 선택 컨테이너
             HairStyleContainer(
@@ -108,6 +117,8 @@ fun SelectFaceScreen(
             )
         }
 
+
+        Spacer(Modifier.weight(0.1f))
         BottomButton(
             text = "이야기 만들기",
             enabled = isValid,
@@ -116,7 +127,10 @@ fun SelectFaceScreen(
                 vm.setHairColor(selectHairColor)
                 vm.setHairStyle(selectHairStyle)
                 onNext()
-            }
+            },
+            modifier = Modifier
+                .navigationBarsPadding()
+                .weight(.1f)
         )
     }
 }
@@ -134,18 +148,19 @@ private fun PaletteContainer(
         style = MaterialTheme.typography.titleMedium,
         color = colorResource(R.color.main_orange)
     )
-    Spacer(Modifier.height(6.dp))
 
+    Spacer(modifier = Modifier.height(6.dp))
     // 팔레트
     ElevatedCard(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
         colors = CardDefaults.elevatedCardColors(containerColor = colorResource(R.color.yellow_80)),
-        shape = RoundedCornerShape(24.dp)
+        shape = RoundedCornerShape(20.dp)
     ) {
         LazyVerticalGrid(
             columns = GridCells.Fixed(5),
-            modifier = Modifier.fillMaxWidth().padding(vertical = 20.dp, horizontal = 12.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(vertical = 20.dp, horizontal = 12.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             items(colors) { (label, resId) ->
@@ -172,11 +187,11 @@ private fun ColorCircleButton(
         shape = CircleShape,
         border = if (selected) BorderStroke(3.dp, colorResource(R.color.main_orange)) else null,
         colors = ButtonDefaults.buttonColors(containerColor = color),
-        contentPadding = PaddingValues(0.dp),
-        modifier = Modifier.size(56.dp)
+        modifier = Modifier.aspectRatio(1f)
     ) {}
 }
 
+// 머리 모양 컨테이너
 @Composable
 private fun HairStyleContainer(
     title: String,
@@ -188,7 +203,6 @@ private fun HairStyleContainer(
     Text(title,
         style = MaterialTheme.typography.titleMedium,
         color = colorResource(R.color.main_orange))
-    Spacer(Modifier.height(6.dp))
 
     LazyVerticalGrid(
         columns = GridCells.Fixed(4),
