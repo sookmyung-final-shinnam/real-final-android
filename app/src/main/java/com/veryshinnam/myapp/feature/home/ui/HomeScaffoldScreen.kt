@@ -23,7 +23,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.SegmentedButtonDefaults.Icon
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -74,7 +73,7 @@ fun HomeScaffoldScreen (
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.2f)
+                    .fillMaxHeight(0.12f)
                     .padding(12.dp),
                 horizontalArrangement = Arrangement.SpaceEvenly
             ) {
@@ -136,7 +135,7 @@ fun HomeScaffoldScreen (
             ) {
                 // 유저 정보 - 생성한 캐릭터 수, 포인트
                 Row(
-                    modifier = Modifier.weight(0.2f),
+                    modifier = Modifier.weight(0.2f).padding(horizontal = 24.dp),
                     verticalAlignment = Alignment.Bottom
                 ) {
                     // 마스코트 이미지
@@ -161,7 +160,7 @@ fun HomeScaffoldScreen (
 
                     // 포인트 수
                     UserInfoBox(
-                        painter = painterResource(R.drawable.img_home_point),
+                        painter = painterResource(R.drawable.img_point),
                         contentDescription = "모은 포인트 수",
                         value = "${data.points}",
                         iconSize = iconSize,
@@ -176,6 +175,7 @@ fun HomeScaffoldScreen (
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
+                        .padding(horizontal = 24.dp)
                         .background(Color.White, shape = RoundedCornerShape(24.dp))
                         .border(
                             width = 4.dp,
@@ -207,13 +207,9 @@ fun HomeScaffoldScreen (
                 }
 
                 // 즐찾 캐릭터 액자 섹션
-                Box(
-                    modifier = Modifier
-                        .weight(0.8f) // 높이 비율 80%
-                        .background(Color.LightGray) // 테스트용 배경
-                ) {
-                    // TODO: 즐겨찾기 액자 섹션 구현 예정
-                }
+                HomeFavoriteCharaters(
+                    modifier = Modifier.weight(0.8f)
+                )
             }
 
             // 2. 달력(출석체크)
