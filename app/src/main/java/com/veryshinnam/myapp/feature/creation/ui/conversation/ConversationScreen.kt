@@ -57,7 +57,7 @@ fun ConversationScreen(
     }
 
     Column(Modifier.padding(16.dp)) {
-        Text("대화 모드", style = MaterialTheme.typography.titleMedium)
+        Text("대화시작", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(12.dp))
 
         if (uiState.isLoading) {
@@ -66,11 +66,11 @@ fun ConversationScreen(
 
         // 다음 이야기 & 질문
         uiState.nextStory?.takeIf { it.isNotBlank() }?.let {
-            Text("스토리: $it")
+            Text(it)
             Spacer(Modifier.height(8.dp))
         }
         uiState.llmQuestion?.takeIf { it.isNotBlank() }?.let {
-            Text("질문: $it")
+            Text(it)
             Spacer(Modifier.height(12.dp))
         }
 
@@ -89,7 +89,7 @@ fun ConversationScreen(
             // 녹음 시작: 누르면 TTS 끊고 STT 시작 (VM에서 처리)
             Button(
                 onClick = { vm.startStt() },
-                enabled = !uiState.isLoading && sttReady && !sttListening
+                enabled = !uiState.isLoading && !sttListening
             ) {
                 Text(if (sttListening) "듣고 있어요..." else "녹음 시작")
             }
@@ -110,16 +110,6 @@ fun ConversationScreen(
         Spacer(Modifier.height(12.dp))
 
         // 다음 단계로 진행 (STEP_01 → 02 → 03 → END)
-        Button(
-            onClick = {
-                val sid = uiState.sessionId ?: 17L
-                val step = uiState.currentStep ?: "START"
-                vm.processConversation(sessionId = sid, currentStep = step)
-            },
-            enabled = !uiState.isLoading
-        ) {
-            Text(if (uiState.currentStep == "END") "끝" else "다음")
-        }
 
         // 에러 표시
         uiState.errorMessage?.takeIf { it.isNotBlank() }?.let {
