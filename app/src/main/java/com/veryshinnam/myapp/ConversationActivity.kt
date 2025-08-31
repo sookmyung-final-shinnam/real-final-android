@@ -4,7 +4,7 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationScreen
+import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationStartScreen
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
@@ -16,7 +16,7 @@ class ConversationActivity: ComponentActivity(){
         val req = intent.getParcelableExtra<StartConversationRequest>("request")
 
         setContent {
-            ConversationScreen(
+            ConversationStartScreen(
                 onBack = { finish() }, // ← 뒤로 버튼 Activity 종료
                 req = req
             )
