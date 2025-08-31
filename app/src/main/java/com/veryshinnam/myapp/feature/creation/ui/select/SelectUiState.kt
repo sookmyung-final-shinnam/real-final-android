@@ -7,7 +7,7 @@ data class SelectUiState (
     val selectedThemes: List<String> = emptyList(),     // 선택된 테마(최대 3개)
 
     val customBackground: String? = null,   // 직접추가 배경
-    val background: String = "",            // 선택된 배경
+    val selectedBackground: String = "",            // 선택된 배경
     val gender: String = "",
     val age: Int = 10,
     val name: String = "",

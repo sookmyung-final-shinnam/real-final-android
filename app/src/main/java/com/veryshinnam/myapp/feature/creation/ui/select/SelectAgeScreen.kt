@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ElevatedCard
@@ -63,9 +64,12 @@ fun SelectAgeScreen(
             text = "다음 단계로",
             enabled = age in 1..100,
             onClick = {
-                vm.setAge(age)
+                vm.selectAge(age)
                 onNext()
-            }
+            },
+            modifier = Modifier
+                .navigationBarsPadding()
+                .weight(.1f)
         )
     }
 }

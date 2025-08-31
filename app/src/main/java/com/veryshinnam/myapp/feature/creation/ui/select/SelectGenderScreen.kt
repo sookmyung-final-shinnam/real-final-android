@@ -5,10 +5,13 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -17,10 +20,13 @@ import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.veryshinnam.myapp.R
 
 @Composable
 fun SelectGenderScreen(
@@ -35,38 +41,38 @@ fun SelectGenderScreen(
     val isMaleSelected = uiState.gender == "MALE"
     val isFemaleSelected = uiState.gender == "FEMALE"
 
-    BackHandler { onBack() }
-
     Column(
         modifier = Modifier
             .fillMaxSize()
             .padding(16.dp),
-        verticalArrangement = Arrangement.SpaceBetween
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Column(Modifier.fillMaxWidth()) {
-            // 1. 상단 뒤로
-            TextButton(onClick = onBack) { Text("뒤로") }
-            Spacer(Modifier.height(8.dp))
+        // 1. 상단 뒤로
+        TextButton(onClick = onBack) { Text("뒤로") }
+        Spacer(Modifier.height(8.dp))
 
+        Column(Modifier
+            .fillMaxWidth(0.6f)
+            .weight(1f)
+            .padding(horizontal = 20.dp)
+        ) {
             // 2-1. 성별 남자 버튼
             GenderButton(
                 label = "남자",
-                selected = isMaleSelected,
-                onClick = { vm.setGender("MALE") },
+                isSelected = isMaleSelected,
+                onClick = { vm.selectGender("MALE") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
             )
             Spacer(Modifier.height(16.dp))
 
             // 2-2. 성별 여자 버튼
             GenderButton(
                 label = "여자",
-                selected = isFemaleSelected,
-                onClick = { vm.setGender("FEMALE") },
+                isSelected = isFemaleSelected,
+                onClick = { vm.selectGender("FEMALE") },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .aspectRatio(1f)
             )
         }
 
@@ -74,7 +80,10 @@ fun SelectGenderScreen(
         BottomButton(
             text = "다음 단계로",
             enabled = uiState.gender.isNotBlank(),
-            onClick = onNext
+            onClick = onNext,
+            modifier = Modifier
+                .navigationBarsPadding()
+                .weight(.1f)
         )
     }
 }
@@ -83,17 +92,18 @@ fun SelectGenderScreen(
 @Composable
 private fun GenderButton(
     label: String,
-    selected: Boolean,
+    isSelected: Boolean,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Button(
         onClick = onClick,
         colors = ButtonDefaults.buttonColors(
-            containerColor = if (selected) Color(0xFFFF9800) else Color(0xFFFFF176)
+            containerColor = if (isSelected) colorResource(R.color.main_orange) else colorResource(R.color.yellow_80),
+            contentColor = if (isSelected) Color.White else Color.Black
         ),
-        shape = MaterialTheme.shapes.extraLarge, // 둥글게
-        modifier = modifier
+        shape = CircleShape,
+        modifier = modifier.aspectRatio(1f)
     ) {
         Text(text = label, style = MaterialTheme.typography.titleLarge)
     }

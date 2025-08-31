@@ -15,13 +15,15 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     private val _selectUiState = MutableStateFlow(SelectUiState())
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
-    // 테마 선택/해제
+    // 테마 선택 업데이트
     fun selectTheme(theme: String) {
         val current = _selectUiState.value.selectedThemes.toMutableList()
 
         if (current.contains(theme)) {
+            // 이미 있으면 선택 제거
             current.remove(theme)
         } else if (current.size < 3) {
+            // 개수 초과되지 않으면 추가
             current.add(theme)
         }
 
@@ -48,18 +50,46 @@ class SelectViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    // 배경
-    fun setBackground(value: String) {
-        _selectUiState.update { it.copy(background = value) }
+    // 배경 선택/해제
+    fun selectBackground(value: String) {
+        _selectUiState.update { state ->
+            // 선택 해제
+            if (state.selectedBackground == value) {
+                // 직접추가 배경 해제
+                if (state.customBackground == value) {
+                    state.copy(
+                        selectedBackground = "",
+                        customBackground = null
+                    )
+                } else {
+                    // 일반 배경 해제
+                    state.copy(selectedBackground = "")
+                }
+            }
+            // 선택
+            else {
+                state.copy(selectedBackground = value)
+            }
+        }
+    }
+
+    // 직접추가 배경 추가
+    fun addCustomBackground(value: String) {
+        _selectUiState.update {
+            it.copy(
+                customBackground = value,
+                selectedBackground = value 
+            )
+        }
     }
 
     // 성별
-    fun setGender(value: String) {
+    fun selectGender(value: String) {
         _selectUiState.update { it.copy(gender = value) }
     }
 
     // 나이
-    fun setAge(value: Int) {
+    fun selectAge(value: Int) {
         _selectUiState.update { it.copy(age = value.coerceIn(1, 100)) }
     }
 
@@ -78,7 +108,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
         val currentState = _selectUiState.value
         return StartConversationRequest(
             themeNames = currentState.selectedThemes,
-            backgroundName = currentState.background,
+            backgroundName = currentState.selectedBackground,
             characterName = currentState.name,
             characterAge = currentState.age,
             gender = currentState.gender,

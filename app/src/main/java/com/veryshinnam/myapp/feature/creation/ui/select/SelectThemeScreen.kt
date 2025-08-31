@@ -78,7 +78,7 @@ fun SelectThemeScreen(
     var isBackDialogShow by remember { mutableStateOf(false) }
 
     LaunchedEffect(selectedThemes) {
-        Log.d("SelectThemeScreen", "선택된 테마: $selectedThemes")
+        Log.d("Selection", "선택된 테마: $selectedThemes")
     }
 
     // 0. 뒤로가기
@@ -131,7 +131,7 @@ fun SelectThemeScreen(
 
         // 3. 공통 바텀 버튼
         BottomButton(
-            text = "다음으로",
+            text = "다음 단계로",
             enabled = selectedThemes.isNotEmpty(),
             onClick = onNext,
             modifier = Modifier
