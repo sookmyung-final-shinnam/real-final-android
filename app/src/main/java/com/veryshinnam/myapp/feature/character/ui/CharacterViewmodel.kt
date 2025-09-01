@@ -7,6 +7,7 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -23,7 +24,7 @@ class CharacterViewModel @Inject constructor(
         delay(200) // 로딩감
 
         val dummy = when (id) {
-            11L -> CharacterData(
+            11L -> CharacterUiState.CharacterData(
                 characterId = 11,
                 name = "소피",
                 gender = "FEMALE",
@@ -32,9 +33,12 @@ class CharacterViewModel @Inject constructor(
                 personality = "상냥하고 친구들을 잘 챙김",
                 important = false,
                 storyId = 11,
-                storyTitle = "숲속 마을의 친구들"
+                storyTitle = "숲속 마을의 친구들",
+                videoId = null,
+                videoTitle = null,
+                createdAt = "2025-01-01"
             )
-            12L -> CharacterData(
+            12L -> CharacterUiState.CharacterData(
                 characterId = 12,
                 name = "카일",
                 gender = "MALE",
@@ -42,10 +46,13 @@ class CharacterViewModel @Inject constructor(
                 imageUrl = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
                 personality = "활발하고 모험을 좋아함",
                 important = true,
-                storyId = 12,
-                storyTitle = "바람의 언덕"
+                storyId = null,
+                storyTitle = null,
+                videoId = 1,
+                videoTitle = "바람의 언덕",
+                createdAt = "2025-01-01"
             )
-            13L -> CharacterData(
+            13L -> CharacterUiState.CharacterData(
                 characterId = 13,
                 name = "엘라",
                 gender = "FEMALE",
@@ -54,7 +61,10 @@ class CharacterViewModel @Inject constructor(
                 personality = "지혜롭고 용감함",
                 important = false,
                 storyId = 13,
-                storyTitle = "빛과 그림자"
+                storyTitle = "빛과 그림자",
+                videoId = 1,
+                videoTitle = "바람의 언덕",
+                createdAt = "2025-01-01"
             )
             else -> null
         }
