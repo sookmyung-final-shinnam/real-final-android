@@ -1,40 +1,32 @@
 package com.veryshinnam.myapp.feature.character.ui
 
-import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Divider
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import coil.compose.AsyncImage
-import com.veryshinnam.myapp.R
+import androidx.compose.ui.zIndex
 
 @Composable
 fun CharacterSuccessScreen(
     data: CharacterUiState.CharacterData
 ) {
-    Box(
-        modifier = Modifier
-        .fillMaxSize(),
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
     ) {
+        val h = maxHeight
+
         Column(
             modifier = Modifier
                 .fillMaxSize()
@@ -42,20 +34,19 @@ fun CharacterSuccessScreen(
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.SpaceBetween
         ) {
+            // 상단 특성 영역
             CharacterTrait(
                 age = data.age.toString(),
                 name = data.name,
                 personality = data.personality
+                //  (0.9 너비)
             )
 
-            // 4) 연결 리소스
+            // 4) 연결 리소스 (0.9 너비)
             Row(
-                modifier = Modifier
-                    .fillMaxWidth(.9f),
-                horizontalArrangement = Arrangement.SpaceBetween,
+                modifier = Modifier.fillMaxWidth(0.9f),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // 책
                 CharacterLockButton(
                     type = "동화책",
                     title = data.storyTitle ?: "책",
@@ -63,8 +54,6 @@ fun CharacterSuccessScreen(
                     modifier = Modifier.weight(0.2f)
                 )
                 Spacer(Modifier.weight(0.4f))
-
-                // 영상
                 CharacterLockButton(
                     type = "동영상",
                     title = data.videoTitle ?: "영상",
@@ -73,13 +62,22 @@ fun CharacterSuccessScreen(
                 )
             }
 
-            // 이름
-            Text("${data.name}")
-            // 생성일
-            Text("${data.createdAt}")
+            // 하단 정보
+            CharacterInfo(
+                name = data.name,
+                gender = data.gender,
+                isFavorite = data.important,
+                createdAt = data.createdAt
+                //  (0.9 너비)
+            )
         }
 
-        // 캐릭터를 가장 위
-        CharacterImage(data.imageUrl)
+        // 캐릭터 이미지
+        CharacterImage(
+            imageUrl = data.imageUrl,
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = -h * 0.2f)   // 전체 높이의 30% 위
+        )
     }
 }

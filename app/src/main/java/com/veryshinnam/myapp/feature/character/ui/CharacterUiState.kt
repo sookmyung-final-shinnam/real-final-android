@@ -14,7 +14,7 @@ sealed interface CharacterUiState {
         val age: Int,
         val imageUrl: String,
         val personality: String,
-        val important: Boolean,
+        val important: Boolean, // 즐겨찾기
         val storyId: Long?,
         val storyTitle: String?,
         val videoId: Long?,

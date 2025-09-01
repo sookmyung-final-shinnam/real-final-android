@@ -28,17 +28,18 @@ fun CharacterTrait(
         modifier = Modifier.fillMaxWidth(),
         contentAlignment = Alignment.Center
     ) {
+        // 상단 액자 이미지
         Image(
             painter = painterResource(R.drawable.img_character_trait),
-            contentDescription = null,
+            contentDescription = "상단 액자",
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxWidth(0.9f)
                 .aspectRatio(16f / 9f),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.FillBounds
 
         )
 
-        // 텍스트 오버레이
+        // 텍스트
         Text(
             text = "안녕, 내 이름은 $name. \n나이는 ${age}살이고, $personality 성격을 가졌어!",
             color = Color.White,
@@ -47,7 +48,7 @@ fun CharacterTrait(
             textAlign = TextAlign.Center,
             modifier = Modifier
                 .align(Alignment.Center)
-                .padding(16.dp),
+                .padding(top = 16.dp),
 
         )
     }
