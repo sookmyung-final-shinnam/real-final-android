@@ -90,7 +90,7 @@ fun HomeScaffoldScreen (
                                 bounded = false
                             ),
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { onDashboardClick }
+                        ) { onDashboardClick() }
                 )
                 Image(
                     painter = painterResource(R.drawable.img_home_create),
@@ -104,7 +104,7 @@ fun HomeScaffoldScreen (
                                 bounded = false
                             ),
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { onCreationClick }
+                        ) { onCreationClick() }
                 )
                 Image(
                     painter = painterResource(R.drawable.img_home_collection),
@@ -118,7 +118,7 @@ fun HomeScaffoldScreen (
                                 bounded = false
                             ),
                             interactionSource = remember { MutableInteractionSource() }
-                        ) { onStorageClick }
+                        ) { onStorageClick() }
                 )
             }
         }
