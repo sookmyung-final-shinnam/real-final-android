@@ -12,6 +12,10 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
@@ -21,6 +25,9 @@ import androidx.compose.ui.zIndex
 fun CharacterSuccessScreen(
     data: CharacterUiState.CharacterData
 ) {
+    // id가 바뀌면 초기값도 새로 반영되도록 key에 characterId 사용
+    var isFav by rememberSaveable(data.characterId) { mutableStateOf(data.important) }
+
     BoxWithConstraints(
         modifier = Modifier.fillMaxSize(),
         contentAlignment = Alignment.Center
@@ -66,8 +73,9 @@ fun CharacterSuccessScreen(
             CharacterInfo(
                 name = data.name,
                 gender = data.gender,
-                isFavorite = data.important,
-                createdAt = data.createdAt
+                isFavorite = isFav,
+                createdAt = data.createdAt,
+                onFavoriteClick = { isFav = !isFav }
                 //  (0.9 너비)
             )
         }
@@ -77,7 +85,7 @@ fun CharacterSuccessScreen(
             imageUrl = data.imageUrl,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .offset(y = -h * 0.2f)   // 전체 높이의 30% 위
+                .offset(y = -h * 0.16f)   // 전체 높이의 30% 위
         )
     }
 }

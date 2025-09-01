@@ -33,8 +33,9 @@ fun CharacterTrait(
             painter = painterResource(R.drawable.img_character_trait),
             contentDescription = "상단 액자",
             modifier = Modifier
-                .fillMaxWidth(0.9f)
-                .aspectRatio(16f / 9f),
+                .fillMaxWidth(0.8f)
+                .aspectRatio(16f / 9f)
+                .padding(vertical = 16.dp),
             contentScale = ContentScale.FillBounds
 
         )

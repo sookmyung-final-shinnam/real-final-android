@@ -5,9 +5,12 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.veryshinnam.myapp.R
 
 @Composable
 fun HomeScreen(
@@ -25,13 +28,17 @@ fun HomeScreen(
     when (val state = uiState) {
         is HomeUiState.Loading -> {
             Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator()
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.main_orange), // 주황색
+                    trackColor = Color.Gray.copy(alpha = 0.5f),
+                    strokeWidth = 4.dp
+                )
             }
         }
         is HomeUiState.Error -> {
             ErrorView(
                 message = state.message,
-                onRetry = { vm.reload() } // 뷰모델에 로드 함수 하나 두세요
+                onRetry = { vm.reload() }
             )
         }
         is HomeUiState.Success -> {

@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.character.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.runtime.Composable
@@ -55,7 +56,7 @@ fun CharacterImage (
                 .align(Alignment.BottomCenter)
                 .offset(y = -(bottomHeightDp/2 + 50.dp)) // 발판 높이의 절반만큼
                 .zIndex(1f)              // 위로
-                .fillMaxWidth(0.5f),
+                .fillMaxHeight(0.5f),
             contentScale = ContentScale.Fit
         )
     }

@@ -21,7 +21,7 @@ class CharacterViewModel @Inject constructor(
     /** 더미 로딩 (GET만 있다고 했으니 조회만) */
     fun loadDummyCharacter(id: Long) = viewModelScope.launch {
         _charUiState.value = CharacterUiState.Loading
-        delay(200) // 로딩감
+        delay(500) // 로딩감
 
         val dummy = when (id) {
             11L -> CharacterUiState.CharacterData(
@@ -71,15 +71,52 @@ class CharacterViewModel @Inject constructor(
 
         _charUiState.value = dummy?.let { CharacterUiState.Success(it) }
             ?: CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
+
+//        _charUiState.value = CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
     }
 
-    /** 서버 반영 없이 로컬에서만 즐겨찾기 토글 */
+    // 다시 조회
+    fun reload(id: Long) {
+        loadDummyCharacter(id)
+    }
+
+   // 즐겨찾기
     fun toggleImportantLocal() {
-        val s = _charUiState.value
-        if (s is CharacterUiState.Success) {
-            _charUiState.value = s.copy(
-                data = s.data.copy(important = !s.data.important)
-            )
-        }
+       val cur = _charUiState.value
+       if (cur !is CharacterUiState.Success) return
+       if (cur.favoriteInFlight) return // 중복 탭 방지
+
+       val before = cur.data.important
+       val after = !before
+
+       // 1) 낙관적 업데이트
+       _charUiState.value = cur.copy(
+           data = cur.data.copy(important = after),
+           favoriteInFlight = true
+       )
+
+       viewModelScope.launch {
+           val result = runCatching {
+//               repo.setFavorite(id, after) // ← 실제 API 호출
+           }
+           result.onSuccess { resp ->
+               val now = _charUiState.value
+               if (now is CharacterUiState.Success) {
+                   _charUiState.value = now.copy(
+//                       data = now.da?ta.copy(important = resp.),
+                       favoriteInFlight = false
+                   )
+               }
+           }.onFailure {
+               val now = _charUiState.value
+               if (now is CharacterUiState.Success) {
+                   // 실패 → 롤백
+                   _charUiState.value = now.copy(
+                       data = now.data.copy(important = before),
+                       favoriteInFlight = false
+                   )
+               }
+           }
+       }
     }
 }

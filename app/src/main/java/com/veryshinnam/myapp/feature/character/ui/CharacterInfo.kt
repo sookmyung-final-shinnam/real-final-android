@@ -43,7 +43,8 @@ fun CharacterInfo(
     name: String,
     gender: String,
     isFavorite: Boolean,
-    createdAt: String
+    createdAt: String,
+    onFavoriteClick: () -> Unit = {}
 ) {
     val density = LocalDensity.current
     var infoHeightDp by remember { mutableStateOf(0.dp) }
@@ -84,7 +85,7 @@ fun CharacterInfo(
              horizontalArrangement = Arrangement.SpaceEvenly
          ) {
              IconButton(
-                 onClick = { /* TODO: 즐겨찾기 토글 상태 저장 */ }
+                 onClick = onFavoriteClick
              ) {
                  Image(
                      modifier = Modifier.size(infoHeightDp * 0.2f),
@@ -93,7 +94,7 @@ fun CharacterInfo(
                          if (isFavorite) R.drawable.img_star_on
                          else R.drawable.img_star_off
                      ),
-                     contentDescription = "즐겨찾기",
+                     contentDescription = if (isFavorite) "즐겨찾기 해제" else "즐겨찾기",
                      contentScale = ContentScale.Fit
                  )
              }

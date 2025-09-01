@@ -4,7 +4,10 @@ import java.time.LocalDate
 
 sealed interface CharacterUiState {
     data object Loading : CharacterUiState
-    data class Success(val data: CharacterData) : CharacterUiState
+    data class Success(
+        val data: CharacterData,
+        val favoriteInFlight: Boolean = false
+    ) : CharacterUiState
     data class Error(val message: String) : CharacterUiState
 
     data class CharacterData(
