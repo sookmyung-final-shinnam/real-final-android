@@ -3,6 +3,11 @@ package com.veryshinnam.myapp.feature.character.ui
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,62 +27,61 @@ import com.veryshinnam.myapp.R
 
 @Composable
 fun CharacterLockButton(
+    type: String,
     title: String,
-    isExist: Boolean
+    isExist: Boolean,
+    modifier: Modifier = Modifier
 ) {
-    Box(
-        modifier = Modifier
-            .clip(RoundedCornerShape(16.dp)),
-        contentAlignment = Alignment.Center
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // 기본 책 이미지
-        Image(
-            painter = painterResource(id = R.drawable.img_character_book),
-            contentDescription = null,
+        Box(
             modifier = Modifier
-                .matchParentSize()
+                .fillMaxWidth()
+                .aspectRatio(4f/5f) // 책 비율
                 .clip(RoundedCornerShape(16.dp)),
-           contentScale = ContentScale.Crop
-        )
-
-        if (isExist) {
-            // 존재하면 제목 표시
-            Text(
-                text = title,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp,
-                modifier = Modifier
-                    .align(Alignment.Center)
-                    .padding(8.dp)
+            contentAlignment = Alignment.Center
+        ) {
+            // 기본 책 이미지
+            Image(
+                painter = painterResource(id = R.drawable.img_character_book),
+                contentDescription = null,
+                modifier = Modifier.matchParentSize(),
+                contentScale = ContentScale.Crop
             )
-        } else {
-            // 존재하지 않으면 자물쇠 표시
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .clip(RoundedCornerShape(16.dp))
-                    .alpha(0.5f) // 투명도 조절
-                    .align(Alignment.Center)
-                    .padding(0.dp),
-                contentAlignment = Alignment.Center
-            ) {
 
+            if (isExist) {
+                // 존재하면 제목 표시
+                Text(
+                    text = title,
+                    fontWeight = FontWeight.Bold,
+                    fontSize = 16.sp,
+                    modifier = Modifier
+                        .align(Alignment.Center)
+                        .padding(8.dp)
+                )
+            } else {
+                // 존재하지 않으면 자물쇠 표시
                 Box(
-                    // 검은색 반투명 배경
                     modifier = Modifier
                         .matchParentSize()
-                        .clip(RoundedCornerShape(16.dp))
-                        .alpha(0.5f)
-                        .background(Color.Black)
+                        .background(Color.Black.copy(alpha = 0.5f))
                 )
-
                 Image(
-                    // 좌물쇠 이미지
                     painter = painterResource(id = R.drawable.img_lock),
                     contentDescription = "잠금",
-                    modifier = Modifier.size(48.dp)
+                    modifier = Modifier.matchParentSize(),
+                    contentScale = ContentScale.Fit
                 )
             }
         }
+        Spacer(modifier = Modifier.height(16.dp))
+
+        Text(
+            text = "${type} 보러가기",
+            fontWeight = FontWeight.Medium,
+            fontSize = 14.sp
+        )
     }
 }

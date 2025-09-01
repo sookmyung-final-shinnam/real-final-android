@@ -91,7 +91,7 @@ fun SettingsScreen(
 
             // 2. 회원탈퇴 버튼
             Button(
-                onClick = { onClickDelete() },
+                onClick = { showDeleteConfirm = true },
                 modifier = Modifier
                     .fillMaxWidth(),
                 colors = ButtonDefaults.buttonColors(

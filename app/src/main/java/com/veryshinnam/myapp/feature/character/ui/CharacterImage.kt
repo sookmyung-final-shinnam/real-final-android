@@ -26,7 +26,6 @@ import com.veryshinnam.myapp.R
 @Composable
 fun CharacterImage (
     imageUrl: String,
-    overlapDp: Dp = 16.dp // 겹치는 정도
 ) {
     val density = LocalDensity.current
     var bottomHeightDp by remember { mutableStateOf(0.dp) }
