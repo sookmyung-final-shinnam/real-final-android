@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
+import androidx.compose.foundation.layout.size
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -86,11 +87,14 @@ fun CharacterInfo(
                  onClick = { /* TODO: 즐겨찾기 토글 상태 저장 */ }
              ) {
                  Image(
+                     modifier = Modifier.size(infoHeightDp * 0.2f),
+
                      painter = painterResource(
                          if (isFavorite) R.drawable.img_star_on
                          else R.drawable.img_star_off
                      ),
-                     contentDescription = "즐겨찾기"
+                     contentDescription = "즐겨찾기",
+                     contentScale = ContentScale.Fit
                  )
              }
 
