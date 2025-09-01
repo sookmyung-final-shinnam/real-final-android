@@ -73,9 +73,10 @@ fun HomeScaffoldScreen (
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.12f)
-                    .padding(12.dp),
-                horizontalArrangement = Arrangement.SpaceEvenly
+                    .fillMaxHeight(.12f)
+                    .padding(horizontal = 12.dp, vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceEvenly,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Image(
                     painter = painterResource(R.drawable.img_home_dashboard),
@@ -106,7 +107,7 @@ fun HomeScaffoldScreen (
                         ) { onCreationClick }
                 )
                 Image(
-                    painter = painterResource(R.drawable.img_home_check),
+                    painter = painterResource(R.drawable.img_home_collection),
                     contentDescription = "보관함",
                     modifier = Modifier
                         .weight(1f)
@@ -207,14 +208,16 @@ fun HomeScaffoldScreen (
                 }
 
                 // 즐찾 캐릭터 액자 섹션
-                HomeFavoriteCharaters(
-                    modifier = Modifier.weight(0.8f)
+                HomeFavoriteCharacters(
+                    modifier = Modifier.weight(0.8f),
+                    characters = data.favoriteCharacters,
+                    onCharacterClick = onCharacterClick
                 )
             }
 
             // 2. 달력(출석체크)
             Image(
-                painter = painterResource(R.drawable.img_home_calendar),
+                painter = painterResource(R.drawable.img_home_check),
                 contentDescription = "출석체크",
                 modifier = Modifier
                     .size(calendarSize)

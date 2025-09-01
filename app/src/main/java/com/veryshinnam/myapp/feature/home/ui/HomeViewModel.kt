@@ -47,7 +47,7 @@ class HomeViewModel @Inject constructor(
             _homeUiState.value = HomeUiState.Success(data)
 
             // 에러 케이스 테스트 용도
-            // _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
+//             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
         }
     }
 

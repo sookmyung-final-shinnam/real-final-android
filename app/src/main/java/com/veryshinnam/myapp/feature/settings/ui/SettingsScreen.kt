@@ -1,25 +1,21 @@
 package com.veryshinnam.myapp.feature.settings.ui
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material.icons.materialIcon
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
-import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -31,7 +27,11 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -44,26 +44,8 @@ fun SettingsScreen(
     var showDeleteConfirm by remember { mutableStateOf(false) }
 
     Scaffold(
-        topBar = {
-            CenterAlignedTopAppBar(
-                title = {
-                    Row(verticalAlignment = Alignment.CenterVertically) {
-                        Icon(
-                            imageVector = Icons.Default.Settings,
-                            contentDescription = null,          // 장식용이면 null
-                            modifier = Modifier.size(48.dp)
-                        )
-                        Spacer(Modifier.width(8.dp))
-                        Text("설정", style = MaterialTheme.typography.titleLarge)
-                    }
-                },
-                navigationIcon = {
-                    IconButton(onClick = onBack) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "뒤로")
-                    }
-                }
-            )
-        }
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = { AppTopBar() }
     ) { inner ->
         Column(
             modifier = Modifier
@@ -73,17 +55,61 @@ fun SettingsScreen(
             verticalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterVertically),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
+            // 타이틀
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 8.dp),
+                contentAlignment = Alignment.Center
+            ) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center
+                ) {
+                    Icon(
+                        imageVector = Icons.Filled.Settings,
+                        contentDescription = "환경설정",
+                    )
+                    Spacer(Modifier.width(8.dp))
+                    Text(
+                        text = "환경설정",
+                        style = MaterialTheme.typography.titleLarge
+                    )
+                }
+            }
+
             // 1. 로그아웃 버튼
             Button(
                 onClick = { showLogoutConfirm = true },
-                modifier = Modifier.fillMaxWidth()
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.main_orange),
+                    contentColor = Color.White
+                )
             ) { Text("로그아웃") }
 
             // 2. 회원탈퇴 버튼
             Button(
-                onClick = { showDeleteConfirm = true },
-                modifier = Modifier.fillMaxWidth()
+                onClick = { onClickDelete() },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.main_orange),
+                    contentColor = Color.White
+                )
             ) { Text("회원탈퇴") }
+
+            // 3. 뒤로 이동
+            Button(
+                onClick = { onBack() },
+                modifier = Modifier
+                    .fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.main_orange),
+                    contentColor = Color.White
+                )
+            ) { Text("← 뒤로") }
         }
     }
 
