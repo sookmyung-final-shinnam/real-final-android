@@ -23,9 +23,7 @@ class CharacterViewModel @Inject constructor(
         delay(200) // 로딩감
 
         val dummy = when (id) {
-            11L -> CharacterUiModel(
-                isLoading = false,
-                errorMessage = null,
+            11L -> CharacterData(
                 characterId = 11,
                 name = "소피",
                 gender = "FEMALE",
@@ -33,13 +31,10 @@ class CharacterViewModel @Inject constructor(
                 imageUrl = "https://ifh.cc/g/QP5O4d.png",
                 personality = "상냥하고 친구들을 잘 챙김",
                 important = false,
-                createTime = "2025-08-30T13:15:09",
                 storyId = 11,
                 storyTitle = "숲속 마을의 친구들"
             )
-            12L -> CharacterUiModel(
-                isLoading = false,
-                errorMessage = null,
+            12L -> CharacterData(
                 characterId = 12,
                 name = "카일",
                 gender = "MALE",
@@ -47,13 +42,10 @@ class CharacterViewModel @Inject constructor(
                 imageUrl = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
                 personality = "활발하고 모험을 좋아함",
                 important = true,
-                createTime = "2025-08-30T13:15:09",
                 storyId = 12,
                 storyTitle = "바람의 언덕"
             )
-            13L -> CharacterUiModel(
-                isLoading = false,
-                errorMessage = null,
+            13L -> CharacterData(
                 characterId = 13,
                 name = "엘라",
                 gender = "FEMALE",
@@ -61,7 +53,6 @@ class CharacterViewModel @Inject constructor(
                 imageUrl = "https://ifh.cc/g/XTGSPy.png",
                 personality = "지혜롭고 용감함",
                 important = false,
-                createTime = "2025-08-30T13:15:09",
                 storyId = 13,
                 storyTitle = "빛과 그림자"
             )
