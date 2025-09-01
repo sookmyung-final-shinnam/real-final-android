@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.character.ui
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -11,6 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -34,10 +36,8 @@ fun CharacterLockButton(
             contentDescription = null,
             modifier = Modifier
                 .matchParentSize()
-                .clip(RoundedCornerShape(16.dp))
-                // 존재 여부에 따라 어두운 효과
-                .then(if (!isExist) Modifier.alpha(0.5f) else Modifier),
-            contentScale = ContentScale.Crop
+                .clip(RoundedCornerShape(16.dp)),
+           contentScale = ContentScale.Crop
         )
 
         if (isExist) {
@@ -52,11 +52,32 @@ fun CharacterLockButton(
             )
         } else {
             // 존재하지 않으면 자물쇠 표시
-            Image(
-                painter = painterResource(id = R.drawable.img_lock),
-                contentDescription = "잠금",
-                modifier = Modifier.size(48.dp)
-            )
+            Box(
+                modifier = Modifier
+                    .matchParentSize()
+                    .clip(RoundedCornerShape(16.dp))
+                    .alpha(0.5f) // 투명도 조절
+                    .align(Alignment.Center)
+                    .padding(0.dp),
+                contentAlignment = Alignment.Center
+            ) {
+
+                Box(
+                    // 검은색 반투명 배경
+                    modifier = Modifier
+                        .matchParentSize()
+                        .clip(RoundedCornerShape(16.dp))
+                        .alpha(0.5f)
+                        .background(Color.Black)
+                )
+
+                Image(
+                    // 좌물쇠 이미지
+                    painter = painterResource(id = R.drawable.img_lock),
+                    contentDescription = "잠금",
+                    modifier = Modifier.size(48.dp)
+                )
+            }
         }
     }
 }
