@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.home.ui
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -24,6 +25,7 @@ fun HomeScreen(
 ) {
     // 홈화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
+    var lastSelectedId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     when (val state = uiState) {
         is HomeUiState.Loading -> {
@@ -44,12 +46,16 @@ fun HomeScreen(
         is HomeUiState.Success -> {
             HomeScaffoldScreen(
                 data = state.data,
+                lastSelectedId = lastSelectedId,
                 onSettingsClick = onSettingsClick,
                 onCheckInClick = onCheckInClick,
                 onDashboardClick = onDashboardClick,
                 onCreationClick = onCreationClick,
                 onStorageClick = onStorageClick,
-                onCharacterClick = onCharacterClick,
+                onCharacterClick =  { id ->
+                    lastSelectedId = id
+                    onCharacterClick(id)
+                }
             )
         }
     }

@@ -24,6 +24,7 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -48,6 +49,7 @@ import com.veryshinnam.myapp.feature.home.data.dto.FavoriteCharacter
 fun HomeFavoriteCharacters (
     modifier: Modifier = Modifier,
     characters: List<FavoriteCharacter>,
+    initialSelectedId: Long? = null,
     cornerRadius: Dp = 20.dp,
     spaceBetween: Dp = 12.dp,
     onCharacterClick: (Long) -> Unit = {}
@@ -55,6 +57,16 @@ fun HomeFavoriteCharacters (
 
     val n = characters.size
     var center by remember { mutableStateOf(0) }
+
+
+    LaunchedEffect(initialSelectedId, characters) {
+        if (n == 0) return@LaunchedEffect
+        initialSelectedId?.let { selectedId ->
+            // 가져온 캐릭터 리스트에서 마지막 선택된 캐릭터를 센터로 배치
+            val idx = characters.indexOfFirst { it.id == selectedId }
+            if (idx >= 0 && idx != center) center = idx
+        }
+    }
 
     fun next() { if (n > 0) center = (center + 1) % n }
     fun prev() { if (n > 0) center = (center - 1 + n) % n }
