@@ -39,6 +39,7 @@ import com.veryshinnam.myapp.feature.character.ui.CharacterViewModel
 @Composable
 fun StorageScreen(
     onBack: () -> Unit,
+    onItemClick: (Long) -> Unit,
     vm: StorageViewModel = hiltViewModel()
 ) {
     val uiState by vm.storageUiState.collectAsStateWithLifecycle()
@@ -97,7 +98,9 @@ fun StorageScreen(
                         selectedTab = state.selectedTab,
                         selectedFilter = state.selectedFilter,
                         onTabClick = { tab -> vm.changeTab(tab) },
-                        onFilterClick = { filter -> vm.changeFilter(filter)}
+                        onFilterClick = { filter -> vm.changeFilter(filter) },
+                        onItemClick = onItemClick,
+                        onFavoriteClick = { id -> vm.toggleFavorite(id) }
                     )
                 }
             }

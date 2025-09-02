@@ -67,56 +67,30 @@ class StorageViewModel @Inject constructor(
         }
     }
 
-    //    fun onFavoriteClick(itemId: String) {
-//        val currentState = _storageUiState.value
-//        if (currentState is StorageUiState.Success) {
-//            viewModelScope.launch {
-//                // 좋아요 처리 중 표시
-//                _storageUiState.value = currentState.copy(
-//                    favoriteInFlight = currentState.favoriteInFlight + itemId
-//                )
-//
-//                try {
-//                    // 실제 좋아요 API 호출
-//                    // favoriteRepository.toggleFavorite(itemId)
-//
-//                    // 성공 후 데이터 업데이트
-//                    val updatedCharacterData = currentState.characterData.map { item ->
-//                        if (item.id == itemId) item.copy(isFavorite = !item.isFavorite)
-//                        else item
-//                    }
-//                    val updatedStoryData = currentState.storyData.map { item ->
-//                        if (item.id == itemId) item.copy(isFavorite = !item.isFavorite)
-//                        else item
-//                    }
-//
-//                    _storageUiState.value = currentState.copy(
-//                        characterData = updatedCharacterData,
-//                        storyData = updatedStoryData,
-//                        favoriteInFlight = currentState.favoriteInFlight - itemId
-//                    )
-//                } catch (e: Exception) {
-//                    // 실패 시 원상복구
-//                    _storageUiState.value = currentState.copy(
-//                        favoriteInFlight = currentState.favoriteInFlight - itemId
-//                    )
-//                }
-//            }
-//        }
-//    }
+    fun toggleFavorite(itemId: Long) {
+        val currentState = _storageUiState.value
+        if (currentState is StorageUiState.Success) {
+            val updatedData = currentState.data.map { item ->
+                if (item.id == itemId) item.copy(isFavorite = !item.isFavorite)
+                else item
+            }
+            _storageUiState.value = currentState.copy(data = updatedData)
+        }
+    }
+
     private fun generateDummyData(type: Tab): List<StorageUiState.StorageData> {
         return if(type == Tab.CHARACTER){
             listOf(
                 StorageUiState.StorageData(
-                    1,
-                    "용감한 기사",
-                    "https://example.com/char1.jpg",
+                    11,
+                    "소피",
+                    "https://ifh.cc/g/QP5O4d.png",
                     false,
                     true
                 ),
-                StorageUiState.StorageData(1, "공주님", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", true, true),
-                StorageUiState.StorageData(1, "마법사", "https://ifh.cc/g/XTGSPy.png", false, true),
-                StorageUiState.StorageData(1, "요정", "https://ifh.cc/g/XTGSPy.png", true, true),
+                StorageUiState.StorageData(12, "카일", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", true, true),
+                StorageUiState.StorageData(13, "엘라", "https://ifh.cc/g/XTGSPy.png", false, true),
+                StorageUiState.StorageData(123, "용감한 기사", "https://ifh.cc/g/XTGSPy.png", true, true),
                 StorageUiState.StorageData(1, "드래곤", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", false, true),
                 StorageUiState.StorageData(1, "할머니", "https://ifh.cc/g/QP5O4d.png", false, false),
                 StorageUiState.StorageData(1, "해적", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", false, true),

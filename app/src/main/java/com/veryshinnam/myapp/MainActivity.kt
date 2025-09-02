@@ -64,7 +64,8 @@ class MainActivity : ComponentActivity() {
                 // 보관함
                 composable("storage") {
                     StorageScreen(
-                        onBack = { mainNavController.popBackStack() }
+                        onBack = { mainNavController.popBackStack() },
+                        onItemClick = { id -> mainNavController.navigate("character/$id") }
                     )
                 }
 
