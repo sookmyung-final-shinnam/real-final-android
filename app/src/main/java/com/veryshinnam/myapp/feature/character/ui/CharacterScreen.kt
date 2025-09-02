@@ -1,26 +1,39 @@
 package com.veryshinnam.myapp.feature.character.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AssistChip
-import androidx.compose.material3.Card
+import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Icon
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
 fun CharacterScreen(
@@ -35,70 +48,56 @@ fun CharacterScreen(
 
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
 
-    when (uiState) {
-        // 조회 로딩 중
-        is CharacterUiState.Loading -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
-        }
-
-        // 조회 오류
-        is CharacterUiState.Error -> Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            Text((uiState as CharacterUiState.Error).message)
-        }
-
-        // 조회 성공
-        is CharacterUiState.Success -> {
-            val data = (uiState as CharacterUiState.Success).data
-
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp)
-            ) {
-                Text(
-                    modifier = Modifier.fillMaxWidth(),
-                    text = "캐릭터아이디: $id",
-                )
-                // 캐릭터 이미지
-                Card {
-                    AsyncImage(
-                        model = data.imageUrl,
-                        contentDescription = "${data.name} 이미지",
-                        modifier = Modifier
-                            .fillMaxWidth(.3f)
-                    )
-                }
-
-                // 이름 / 기본 정보
-                Text(
-                    text = data.name,
-                )
-                Text("성별: ${data.gender} · 나이: ${data.age}")
-
-                // 즐겨찾기 여부 (로컬 토글)
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = {
+            Column (Modifier.fillMaxWidth()) {
+                AppTopBar() // 기존 바
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                    modifier = Modifier
+                        .clickable(onClick = onBack)
+                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
+                    verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text("즐겨찾기 : ${if (data.important) "예" else "아니오"}")
-                    AssistChip(
-                        onClick = { vm.toggleImportantLocal() },
-                        label = { Text(if (data.important) "해제" else "표시") }
+                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "이전")
+                    Spacer(Modifier.width(4.dp))
+                    Text("이전", fontWeight = FontWeight.Medium)
+                }
+            }
+        },
+        bottomBar = {
+            // 네비게이션 바만큼 여백
+            Spacer(
+                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = uiState) {
+                // 조회 로딩 중
+                is CharacterUiState.Loading -> {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.main_orange), // 주황색
+                        trackColor = Color.Gray.copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
                     )
                 }
-
-                // 성격
-                Text("나는 ${data.personality}한 성격을 가졌어.")
-
-                // 책(스토리) 정보
-                Text("책: ${data.storyTitle} (#${data.storyId})")
+                // 조회 오류
+                is CharacterUiState.Error -> {
+                    LoadErrorView(
+                        message = state.message,
+                        onRetry = { vm.reload(id) }
+                    )
+                }
+                // 조회 성공
+                is CharacterUiState.Success -> {
+                    CharacterSuccessScreen(data = state.data)
+                }
             }
         }
     }
