@@ -94,7 +94,8 @@ class StorageViewModel @Inject constructor(
                 StorageUiState.StorageData(1, "드래곤", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", false, true),
                 StorageUiState.StorageData(1, "할머니", "https://ifh.cc/g/QP5O4d.png", false, false),
                 StorageUiState.StorageData(1, "해적", "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg", false, true),
-                StorageUiState.StorageData(1, "신데렐라", "https://ifh.cc/g/XTGSPy.png", true, true)
+                StorageUiState.StorageData(1, "신데렐라", "https://ifh.cc/g/XTGSPy.png", true, true),
+                StorageUiState.StorageData(18, "민수", "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png", true, true),
             )
         } else {
             return listOf(

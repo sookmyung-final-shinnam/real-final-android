@@ -2,8 +2,11 @@ package com.veryshinnam.myapp.feature.storage.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -20,12 +23,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.constraintlayout.widget.ConstraintLayout
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.storage.enums.CharacterFilter
 import com.veryshinnam.myapp.feature.storage.enums.Filter
 import com.veryshinnam.myapp.feature.storage.enums.StoryFilter
 import com.veryshinnam.myapp.feature.storage.enums.Tab
+//import com.veryshinnam.myapp.feature.storage.ui.component.TabSwitcher
 
 @Composable
 fun StorageSuccessScreen(
@@ -37,7 +42,17 @@ fun StorageSuccessScreen(
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (Long) -> Unit
 ) {
-    Column  {
+    BoxWithConstraints(
+        modifier = Modifier.fillMaxSize()
+            .padding(vertical = 16.dp)
+    ) {
+        val h = maxHeight
+//        Row(modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3*h)){
+//            TabSwitcher()
+//
+//        }
+    }
+    /*Column  {
         // 탭 바
         Row {
             Tab.values().forEach { tab ->
@@ -119,5 +134,5 @@ fun StorageSuccessScreen(
                 }
             }
         }
-    }
+    }*/
 }

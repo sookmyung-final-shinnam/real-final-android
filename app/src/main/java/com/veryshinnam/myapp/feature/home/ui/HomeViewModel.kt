@@ -41,8 +41,9 @@ class HomeViewModel @Inject constructor(
                 favoriteCharacters = listOf(
                     FavoriteCharacter(id = 11, name = "유리", imageUrl = "https://ifh.cc/g/QP5O4d.png"),
                     FavoriteCharacter(id = 12, name = "파워", imageUrl = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"),
-                    FavoriteCharacter(id = 13, name = "파파워", imageUrl = "https://ifh.cc/g/XTGSPy.png")
-                )
+                    FavoriteCharacter(id = 13, name = "파파워", imageUrl = "https://ifh.cc/g/XTGSPy.png"),
+                    FavoriteCharacter(id = 18, name = "민수", imageUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")
+                    )
             )
             _homeUiState.value = HomeUiState.Success(data)
 
