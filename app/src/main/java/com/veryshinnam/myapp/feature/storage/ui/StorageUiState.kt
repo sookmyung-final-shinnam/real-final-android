@@ -13,9 +13,9 @@ sealed interface StorageUiState {
     data class Error(val message: String) : StorageUiState
 
     data class StorageData(
-        val cId: Long,          // 캐릭터 아이디
-        val cName: String,      // 캐릭터 이름
-        val cImageUrl: String,  // 캐릭터 이미지
-        val isFavorite: Boolean // 즐찾
+        val characterId: Long,      // 캐릭터 아이디
+        val characterName: String,  // 캐릭터 이름
+        val characterImage: String, // 캐릭터 이미지
+        val isFavorite: Boolean     // 캐릭터 즐찾 여부
     )
 }

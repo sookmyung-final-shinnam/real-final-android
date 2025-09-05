@@ -70,7 +70,7 @@ fun CharacterLockButton(
                         .background(Color.Black.copy(alpha = 0.5f))
                 )
                 Image(
-                    painter = painterResource(id = R.drawable.img_lock),
+                    painter = painterResource(id = R.drawable.img_locker),
                     contentDescription = "잠금",
                     modifier = Modifier.matchParentSize(),
                     contentScale = ContentScale.Fit

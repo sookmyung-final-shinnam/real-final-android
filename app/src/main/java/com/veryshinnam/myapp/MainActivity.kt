@@ -18,6 +18,7 @@ import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
 import com.veryshinnam.myapp.feature.storage.ui.component.StorageInfo
+import com.veryshinnam.myapp.feature.storage.ui.component.StorageItemCard
 import com.veryshinnam.myapp.feature.story.ui.StoryPrologueScreen
 import com.veryshinnam.myapp.feature.story.ui.components.CharacterFrame
 import com.veryshinnam.myapp.feature.story.ui.components.StoryInfo
@@ -31,8 +32,17 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            StorageInfo(Modifier.fillMaxWidth().fillMaxHeight(0.25f))
-
+//            StorageInfo(Modifier.fillMaxWidth().fillMaxHeight(0.25f))
+            StorageItemCard(
+                1, "미니",
+                "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
+                true,
+                onFavoriteClick = { id ->
+                    // 클릭 시 처리 로직
+                    println("즐찾 클릭: $id")
+                },
+                Modifier.fillMaxWidth(0.3f).fillMaxHeight(0.3f)
+            )
 //            val mainNavController = rememberNavController()
 //
 //            NavHost(

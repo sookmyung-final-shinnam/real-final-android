@@ -52,14 +52,14 @@ class StorageViewModel @Inject constructor(
     }
 
     // 즐겨찾기 업데이트
-    fun updateFavorite(itemId: Long) {
+    fun updateFavorite(cId: Long) {
         val currentState = _storageUiState.value
         if (currentState is StorageUiState.Success) {
-            val updatedData = currentState.data.map { item ->
-                if (item.cId == itemId) item.copy(isFavorite = !item.isFavorite)
+            val updatedList = currentState.data.map { item ->
+                if (item.characterId == cId) item.copy(isFavorite = !item.isFavorite)
                 else item
             }
-            _storageUiState.value = currentState.copy(data = updatedData)
+            _storageUiState.value = currentState.copy(data = updatedList)
         }
     }
 
