@@ -1,5 +1,5 @@
 package com.veryshinnam.myapp.feature.storage.enums
 
-enum class CharacterFilter : Filter {
-    MALE, FEMALE
+enum class Filter {
+    ALL, MALE, FEMALE
 }

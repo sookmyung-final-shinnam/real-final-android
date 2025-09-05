@@ -5,6 +5,8 @@ import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -15,6 +17,8 @@ import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
+import com.veryshinnam.myapp.feature.storage.ui.component.StorageInfo
+import com.veryshinnam.myapp.feature.story.ui.StoryPrologueScreen
 import com.veryshinnam.myapp.feature.story.ui.components.CharacterFrame
 import com.veryshinnam.myapp.feature.story.ui.components.StoryInfo
 import dagger.hilt.android.AndroidEntryPoint
@@ -27,11 +31,7 @@ class MainActivity : ComponentActivity() {
 
         setContent {
 
-            StoryInfo(
-                title = "지윤이의 화끈한 모험",
-                desc = "지윤이는 길을 걷다가 들에 걸려 넘어졌다. 하지만 씩씩하게도 울지 않았다. 역시 강한 여자...",
-                modifier = Modifier.fillMaxHeight(0.5f) // 화면 높이의 70%로 테스트
-            )
+            StorageInfo(Modifier.fillMaxWidth().fillMaxHeight(0.25f))
 
 //            val mainNavController = rememberNavController()
 //

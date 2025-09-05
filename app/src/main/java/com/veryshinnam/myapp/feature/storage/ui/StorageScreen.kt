@@ -95,12 +95,6 @@ fun StorageScreen(
                 is StorageUiState.Success -> {
                     StorageSuccessScreen(
                         data = state.data,
-                        selectedTab = state.selectedTab,
-                        selectedFilter = state.selectedFilter,
-                        onTabClick = { tab -> vm.changeTab(tab) },
-                        onFilterClick = { filter -> vm.changeFilter(filter) },
-                        onItemClick = onItemClick,
-                        onFavoriteClick = { id -> vm.toggleFavorite(id) }
                     )
                 }
             }
