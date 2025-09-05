@@ -15,12 +15,27 @@ class StorageViewModel @Inject constructor(
 
 ) : ViewModel() {
 
+    private val _selectedFilter = MutableStateFlow(Filter.ALL)
+    val selectedFilter = _selectedFilter.asStateFlow()
+
     private val _storageUiState = MutableStateFlow<StorageUiState>(StorageUiState.Loading)
     val storageUiState: StateFlow<StorageUiState> = _storageUiState.asStateFlow()
+
+
 
     // 초기화
     init {
         loadStorageData(Filter.ALL)
+    }
+
+
+    // 필터 선택
+    fun selectFilter(filter: Filter) {
+        val currentState = _storageUiState.value
+        if (currentState is StorageUiState.Success) {
+            _storageUiState.value = currentState.copy(selectedFilter = filter)
+            loadStorageData(filter) // 선택된 필터에 맞게 데이터 다시 불러오기
+        }
     }
 
     // 보관함 데이터 불러오기
@@ -42,14 +57,6 @@ class StorageViewModel @Inject constructor(
         }
     }
 
-    // 필터 선택
-    fun selectFilter(filter: Filter) {
-        val currentState = _storageUiState.value
-        if (currentState is StorageUiState.Success) {
-            _storageUiState.value = currentState.copy(selectedFilter = filter)
-            loadStorageData(filter) // 선택된 필터에 맞게 데이터 다시 불러오기
-        }
-    }
 
     // 즐겨찾기 업데이트
     fun updateFavorite(cId: Long) {

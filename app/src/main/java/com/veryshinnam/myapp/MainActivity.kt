@@ -7,6 +7,10 @@ import androidx.activity.enableEdgeToEdge
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -16,7 +20,9 @@ import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
 import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
+import com.veryshinnam.myapp.feature.storage.enums.Filter
 import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
+import com.veryshinnam.myapp.feature.storage.ui.component.FilterButtons
 import com.veryshinnam.myapp.feature.storage.ui.component.StorageInfo
 import com.veryshinnam.myapp.feature.storage.ui.component.StorageItemCard
 import com.veryshinnam.myapp.feature.story.ui.StoryPrologueScreen
@@ -31,18 +37,12 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
-
-//            StorageInfo(Modifier.fillMaxWidth().fillMaxHeight(0.25f))
-            StorageItemCard(
-                1, "미니",
-                "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
-                true,
-                onFavoriteClick = { id ->
-                    // 클릭 시 처리 로직
-                    println("즐찾 클릭: $id")
-                },
-                Modifier.fillMaxWidth(0.3f).fillMaxHeight(0.3f)
+            var selectedFilter by remember { mutableStateOf(Filter.ALL) }
+            FilterButtons(
+                selectedFilter = selectedFilter,
+                onFilterClick = { selectedFilter = it } // 클릭하면 상태 변경
             )
+
 //            val mainNavController = rememberNavController()
 //
 //            NavHost(

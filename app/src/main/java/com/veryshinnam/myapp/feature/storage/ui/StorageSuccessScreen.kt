@@ -17,5 +17,10 @@ fun StorageSuccessScreen(
 ) {
     // 보관함 상단
     // 캐릭터 성별 필터
+//    Column {
+//        FilterButtons(
+//            selectedFilter = selectedFilter,
+//            onFilterClick = { viewModel.changeFilter(it) }
+//        )
     // 캐릭터 아이템 그리드 (3*3)
 }

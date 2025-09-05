@@ -7,8 +7,8 @@ import com.veryshinnam.myapp.feature.storage.enums.Filter
 sealed interface StorageUiState {
     data object Loading : StorageUiState
     data class Success(
-        val data: List<StorageData>,
-        val selectedFilter: Filter = Filter.ALL
+        val selectedFilter: Filter = Filter.ALL,
+        val data: List<StorageData>
     ) : StorageUiState
     data class Error(val message: String) : StorageUiState
 
