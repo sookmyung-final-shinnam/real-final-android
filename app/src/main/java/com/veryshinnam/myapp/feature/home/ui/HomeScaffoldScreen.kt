@@ -45,6 +45,7 @@ import com.veryshinnam.myapp.common.component.AppTopBar
 @Composable
 fun HomeScaffoldScreen (
     data: HomeUiState.HomeData,
+    lastSelectedId:  Long?,
     onSettingsClick: () -> Unit,
     onCheckInClick: () -> Unit,
     onDashboardClick: () -> Unit,   // bottom bar
@@ -211,6 +212,7 @@ fun HomeScaffoldScreen (
                 HomeFavoriteCharacters(
                     modifier = Modifier.weight(0.8f),
                     characters = data.favoriteCharacters,
+                    initialSelectedId = lastSelectedId,
                     onCharacterClick = onCharacterClick
                 )
             }

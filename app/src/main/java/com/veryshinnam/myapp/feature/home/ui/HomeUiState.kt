@@ -11,6 +11,7 @@ sealed interface HomeUiState {
         val username: String,
         val points: Int,
         val myCharacters: Int,
+        val lastSelectedCharacter: Long? = null,
         val favoriteCharacters: List<FavoriteCharacter>
     )
 }

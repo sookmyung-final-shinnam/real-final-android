@@ -66,6 +66,20 @@ class CharacterViewModel @Inject constructor(
                 videoTitle = "바람의 언덕",
                 createdAt = "2025-01-01"
             )
+            18L -> CharacterUiState.CharacterData(
+                characterId = 18,
+                name = "민수",
+                gender = "MALE",
+                age = 11,
+                imageUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
+                personality = "민수는 긍정적이고 모험심이 강한 소년으로, 친구를 아끼고 사랑을 꿈꾸는 따뜻한 마음을 지니고 있어요.",
+                important = false,
+                storyId = 11,
+                storyTitle = "민수와 깜찍한 요정의 사랑 모험",
+                videoId = null,
+                videoTitle = null,
+                createdAt = "2025-01-01"
+            )
             else -> null
         }
 
