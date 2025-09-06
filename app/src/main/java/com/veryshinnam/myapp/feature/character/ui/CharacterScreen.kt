@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.character.ui
 
+import android.app.Activity
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.LocalActivity
@@ -22,6 +23,7 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
@@ -44,23 +46,20 @@ fun CharacterScreen(
     onBack: () -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
+    val uiState by vm.charUiState.collectAsStateWithLifecycle()
     val activity = LocalActivity.current
 
-    SideEffect {
-        // 가로 모드
+    // 가로모드 + id가 바뀌면 재로딩
+    LaunchedEffect(id) {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        vm.loadDummyCharacter(id)
     }
 
+    // 뒤로가기 세로모드
     BackHandler {
-        // 뒤로 갈때 세로 모드
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         onBack()
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
-
-    // id가 바뀌면 재로딩
-    LaunchedEffect(id) { vm.loadDummyCharacter(id) }
-
-    val uiState by vm.charUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -69,7 +68,10 @@ fun CharacterScreen(
                 AppTopBar() // 기존 바
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = onBack)
+                        .clickable(onClick = {
+                            onBack()
+                            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        })
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -112,10 +114,16 @@ fun CharacterScreen(
                 is CharacterUiState.Success -> {
                     CharacterCardScreen(
                         cData = state.characterData,
-                        sData = state.storyData
+                        sData = state.storyData,
+                        onFavoriteClick = { id -> vm.updateFavorite(id) }
                     )
                 }
             }
         }
     }
+}
+
+fun handleBack(activity: Activity?, onBack: () -> Unit) {
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onBack()
 }

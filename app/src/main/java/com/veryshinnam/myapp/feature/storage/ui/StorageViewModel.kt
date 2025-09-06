@@ -21,13 +21,10 @@ class StorageViewModel @Inject constructor(
     private val _storageUiState = MutableStateFlow<StorageUiState>(StorageUiState.Loading)
     val storageUiState: StateFlow<StorageUiState> = _storageUiState.asStateFlow()
 
-
-
     // 초기화
     init {
         loadStorageData(Filter.ALL)
     }
-
 
     // 필터 선택
     fun selectFilter(filter: Filter) {
@@ -56,7 +53,6 @@ class StorageViewModel @Inject constructor(
             }
         }
     }
-
 
     // 즐겨찾기 업데이트
     fun updateFavorite(cId: Long) {

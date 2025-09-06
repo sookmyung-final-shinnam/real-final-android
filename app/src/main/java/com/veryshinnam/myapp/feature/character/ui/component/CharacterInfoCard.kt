@@ -3,17 +3,24 @@ package com.veryshinnam.myapp.feature.character.ui.component
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -22,6 +29,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -52,8 +61,7 @@ fun CharacterInfoCard(
         )
     )
 
-
-    Column(modifier = modifier) {
+    Box(modifier = modifier) {
         Card(
             modifier = Modifier
                 .fillMaxWidth()
@@ -66,23 +74,33 @@ fun CharacterInfoCard(
                 containerColor = colorResource(R.color.card_orange_90)
             )
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxSize(),
+            Box(modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
                 // 90도 전까지는 앞면
                 if (rotation <= 90f) {
+
+                    // 앞면: 캐릭터 이름 + 기본 정보
                     CharacterCardFront(character)
+
+                    // 공통 탭버튼
+                    CharacterTabButton(
+                        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 12.dp, end = 12.dp),
+                        onClick = { isFront = !isFront })
                 } else {
+
                     // 넘어가면 뒷면 표시 + 회전 다시 보정
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
+
+                        // 뒷면: 동화 정보
                         CharacterCardBack(story)
+
+                        // 공통 탭버튼
+                        CharacterTabButton(
+                            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 12.dp, end = 12.dp),
+                            onClick = { isFront = !isFront })
                     }
                 }
-
-                // 공통 탭버튼
-
             }
         }
     }

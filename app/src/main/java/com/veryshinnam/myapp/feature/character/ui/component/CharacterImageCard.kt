@@ -55,7 +55,7 @@ fun CharacterImageCard(
                     .fillMaxWidth(0.3f)
                     .aspectRatio(1f)
                     .padding(16.dp)
-                    .clickable { onFavoriteClick },
+                    .clickable { onFavoriteClick(character.id) },
                 contentScale = ContentScale.Fit
             )
         }

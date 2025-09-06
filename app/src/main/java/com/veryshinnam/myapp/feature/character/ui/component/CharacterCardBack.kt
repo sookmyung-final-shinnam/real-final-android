@@ -38,7 +38,7 @@ fun CharacterCardBack(
         // 양 옆에 동화 보러가기 버튼
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.SpaceAround
         ) {
             // 종이책
             CharacterStoryButton(

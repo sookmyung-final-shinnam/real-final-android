@@ -25,7 +25,8 @@ import com.veryshinnam.myapp.feature.character.ui.component.CharacterInfoCard
 @Composable
 fun CharacterCardScreen(
     cData: CharacterData,
-    sData: StoryData
+    sData: StoryData,
+    onFavoriteClick: (Long) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -37,7 +38,7 @@ fun CharacterCardScreen(
         // 왼쪽 캐릭터 이미지 카드
         CharacterImageCard(
             character = cData,
-            onFavoriteClick = { println("즐겨찾기 클릭! ${cData.id}") },
+            onFavoriteClick = { onFavoriteClick(cData.id) },
             modifier = Modifier
                 .aspectRatio(0.78f) // 카드 비율
                 .offset(x = (40).dp)       // 오른쪽 이동

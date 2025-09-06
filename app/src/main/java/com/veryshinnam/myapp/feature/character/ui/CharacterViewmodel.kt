@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoryData
+import com.veryshinnam.myapp.feature.storage.ui.StorageUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -114,5 +115,20 @@ class CharacterViewModel @Inject constructor(
         loadDummyCharacter(id)
     }
 
-    // 즐겨찾기
+    // 즐겨찾기 업데이트
+    fun updateFavorite(cId: Long) {
+        val currentState = _charUiState.value
+        if (currentState is CharacterUiState.Success) {
+            val character = currentState.characterData
+            // id 일치 > isFavorite 토글
+            if (character.id == cId) {
+                val updatedCharacter = character.copy(
+                    isFavorite = !character.isFavorite
+                )
+                _charUiState.value = currentState.copy(
+                    characterData = updatedCharacter
+                )
+            }
+        }
+    }
 }
