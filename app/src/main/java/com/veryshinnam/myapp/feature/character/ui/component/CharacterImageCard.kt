@@ -25,7 +25,7 @@ fun CharacterImageCard(
     cImage: String,    // 캐릭터 이미지
     isFavorite: Boolean, // 캐릭터 즐찾 여부
     onFavoriteClick: (Long) -> Unit,   // 클릭 시 외부 처리
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier      // 부모가 넘겨준 크기
 ) {
     // 즐찾 아이콘
     val iconRes = if (isFavorite) R.drawable.img_star_on else R.drawable.img_star_off

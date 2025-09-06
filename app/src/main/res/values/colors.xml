@@ -10,6 +10,7 @@
     <!-- 앱컬러 -->
     <color name="brand_orange">#F04400</color>
     <color name="main_orange">#F3A600</color>
+    <color name="card_orange_90">#E5FFD579</color>
     <color name="yellow_80">#ccfeefae</color>
     <color name="background_yellow">#FFF5CE</color>
 

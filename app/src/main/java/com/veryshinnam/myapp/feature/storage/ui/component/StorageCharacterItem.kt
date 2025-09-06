@@ -45,7 +45,6 @@ fun StorageCharacterItem(
         tonalElevation = 2.dp,
         modifier = modifier
     ) {
-
         Box(
             modifier = Modifier.fillMaxWidth(),
             contentAlignment = Alignment.Center
