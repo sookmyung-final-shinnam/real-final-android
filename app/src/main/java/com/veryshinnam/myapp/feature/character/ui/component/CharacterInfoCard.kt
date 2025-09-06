@@ -28,15 +28,14 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.character.model.CharacterData
+import com.veryshinnam.myapp.feature.character.model.StoryData
 
 @Composable
 fun CharacterInfoCard(
-    cName: String,   // 캐릭터 이름
-    cGender: String, // 캐릭터 성별
-    cAge: Int,       // 캐릭터 나이
-    cPersonality: String,   // 캐릭터 성격
-    cBirth: String?,        // 캐릭터 생일
-    modifier: Modifier      // 부모가 넘겨준 크기
+    character: CharacterData,     // 캐릭터 정보
+    story: StoryData,             // 스토리 정보
+    modifier: Modifier = Modifier // 부모가 넘겨준 크기
 ) {
     // 카드 앞뒷면 구분
     var isFront by rememberSaveable { mutableStateOf(true) }
@@ -74,13 +73,11 @@ fun CharacterInfoCard(
             ) {
                 // 90도 전까지는 앞면
                 if (rotation <= 90f) {
-                    CharacterCardFront(
-                        cName, cGender, cAge, cPersonality, cBirth)
+                    CharacterCardFront(character)
                 } else {
-                    // 넘어가면 뒷면 표시
-                    // 회전으로 인한 보정
+                    // 넘어가면 뒷면 표시 + 회전 다시 보정
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
-                        BackFace()
+                        CharacterCardBack(story)
                     }
                 }
 
@@ -89,16 +86,4 @@ fun CharacterInfoCard(
             }
         }
     }
-}
-
-@Composable
-private fun FrontFace() {
-    // ✅ 여기 원하는 "앞면" UI 작성
-    Text("캐릭터 기본 정보(앞면)")
-}
-
-@Composable
-private fun BackFace() {
-    // ✅ 여기 원하는 "뒷면" UI 작성
-    Text("캐릭터 성격 설명(뒷면)")
 }

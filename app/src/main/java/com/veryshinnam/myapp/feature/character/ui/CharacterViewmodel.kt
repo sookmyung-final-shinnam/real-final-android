@@ -2,6 +2,8 @@ package com.veryshinnam.myapp.feature.character.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.feature.character.model.CharacterData
+import com.veryshinnam.myapp.feature.character.model.StoryData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -18,75 +20,93 @@ class CharacterViewModel @Inject constructor(
     private val _charUiState = MutableStateFlow<CharacterUiState>(CharacterUiState.Loading)
     val charUiState = _charUiState.asStateFlow()
 
-    /** 더미 로딩 (GET만 있다고 했으니 조회만) */
     fun loadDummyCharacter(id: Long) = viewModelScope.launch {
         _charUiState.value = CharacterUiState.Loading
-        delay(500) // 로딩감
+        delay(500) // 로딩 감주기
 
-        val dummy = when (id) {
-            11L -> CharacterUiState.CharacterData(
-                characterId = 11,
-                name = "소피",
-                gender = "FEMALE",
-                age = 11,
-                imageUrl = "https://ifh.cc/g/QP5O4d.png",
-                personality = "상냥하고 친구들을 잘 챙김",
-                important = false,
-                storyId = 11,
-                storyTitle = "숲속 마을의 친구들",
-                videoId = null,
-                videoTitle = null,
-                createdAt = "2025-01-01"
+        _charUiState.value = when (id) {
+            11L -> CharacterUiState.Success(
+                characterData = CharacterData(
+                    11,
+                    "유리",
+                    "FEMALE",
+                    11,
+                    "https://ifh.cc/g/QP5O4d.png",
+                    "상냥하고 친구들을 잘 챙김",
+                    "2025-06-01",
+                    false
+                ),
+                storyData = StoryData(
+                    title = "숲속 마을의 친구들",
+                    storyId = 11,
+                    storyImage = "https://ifh.cc/g/QP5O4d.png",
+                    videoId = null,
+                    videoUrl = null
+                )
             )
-            12L -> CharacterUiState.CharacterData(
-                characterId = 12,
-                name = "카일",
-                gender = "MALE",
-                age = 12,
-                imageUrl = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
-                personality = "활발하고 모험을 좋아함",
-                important = true,
-                storyId = null,
-                storyTitle = null,
-                videoId = 1,
-                videoTitle = "바람의 언덕",
-                createdAt = "2025-01-01"
+
+            12L -> CharacterUiState.Success(
+                characterData = CharacterData(
+                    12,
+                    "파워",
+                    "MALE",
+                    12,
+                    "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
+                    "활발하고 모험을 좋아함",
+                    "2025-11-16",
+                    true
+                ),
+                storyData = StoryData(
+                    title = "집에 가지마, 베이베",
+                    storyId = null,
+                    storyImage = null,
+                    videoId = 1,
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
+                )
             )
-            13L -> CharacterUiState.CharacterData(
-                characterId = 13,
-                name = "엘라",
-                gender = "FEMALE",
-                age = 13,
-                imageUrl = "https://ifh.cc/g/XTGSPy.png",
-                personality = "지혜롭고 용감함",
-                important = false,
-                storyId = 13,
-                storyTitle = "빛과 그림자",
-                videoId = 1,
-                videoTitle = "바람의 언덕",
-                createdAt = "2025-01-01"
+
+            13L -> CharacterUiState.Success(
+                characterData = CharacterData(
+                    13,
+                    "파파워",
+                    "FEMALE",
+                    13,
+                    "https://ifh.cc/g/XTGSPy.png",
+                    "지혜롭고 용감함",
+                    "2025-01-13",
+                    false
+                ),
+                storyData = StoryData(
+                    title = "빛과 그림자",
+                    storyId = 13,
+                    storyImage = "https://ifh.cc/g/XTGSPy.png",
+                    videoId = null,
+                    videoUrl = null
+                )
             )
-            18L -> CharacterUiState.CharacterData(
-                characterId = 18,
-                name = "민수",
-                gender = "MALE",
-                age = 11,
-                imageUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
-                personality = "민수는 긍정적이고 모험심이 강한 소년으로, 친구를 아끼고 사랑을 꿈꾸는 따뜻한 마음을 지니고 있어요.",
-                important = false,
-                storyId = 11,
-                storyTitle = "민수와 깜찍한 요정의 사랑 모험",
-                videoId = null,
-                videoTitle = null,
-                createdAt = "2025-01-01"
+
+            18L -> CharacterUiState.Success(
+                characterData = CharacterData(
+                    18,
+                    "민수",
+                    "MALE",
+                    11,
+                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
+                    "긍정적이고 모험심이 강함.",
+                    "2025-01-11",
+                    false
+                ),
+                storyData = StoryData(
+                    title = "민수와 깜찍한 요정의 사랑 모험",
+                    storyId = 11,
+                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
+                    videoId = 18,
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
+                )
             )
-            else -> null
+
+            else -> CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
         }
-
-        _charUiState.value = dummy?.let { CharacterUiState.Success(it) }
-            ?: CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
-
-//        _charUiState.value = CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
     }
 
     // 다시 조회
@@ -94,43 +114,5 @@ class CharacterViewModel @Inject constructor(
         loadDummyCharacter(id)
     }
 
-   // 즐겨찾기
-    fun toggleImportantLocal() {
-       val cur = _charUiState.value
-       if (cur !is CharacterUiState.Success) return
-       if (cur.favoriteInFlight) return // 중복 탭 방지
-
-       val before = cur.data.important
-       val after = !before
-
-       // 1) 낙관적 업데이트
-       _charUiState.value = cur.copy(
-           data = cur.data.copy(important = after),
-           favoriteInFlight = true
-       )
-
-       viewModelScope.launch {
-           val result = runCatching {
-//               repo.setFavorite(id, after) // ← 실제 API 호출
-           }
-           result.onSuccess { resp ->
-               val now = _charUiState.value
-               if (now is CharacterUiState.Success) {
-                   _charUiState.value = now.copy(
-//                       data = now.da?ta.copy(important = resp.),
-                       favoriteInFlight = false
-                   )
-               }
-           }.onFailure {
-               val now = _charUiState.value
-               if (now is CharacterUiState.Success) {
-                   // 실패 → 롤백
-                   _charUiState.value = now.copy(
-                       data = now.data.copy(important = before),
-                       favoriteInFlight = false
-                   )
-               }
-           }
-       }
-    }
+    // 즐겨찾기
 }

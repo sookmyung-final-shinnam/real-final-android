@@ -19,16 +19,16 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.character.model.CharacterData
 
 @Composable
 fun CharacterImageCard(
-    cImage: String,    // 캐릭터 이미지
-    isFavorite: Boolean, // 캐릭터 즐찾 여부
-    onFavoriteClick: (Long) -> Unit,   // 클릭 시 외부 처리
-    modifier: Modifier = Modifier      // 부모가 넘겨준 크기
+    character: CharacterData, // 캐릭터 정보
+    onFavoriteClick: (Long) -> Unit, // 즐찾 대상 캐릭터 id
+    modifier: Modifier = Modifier    // 부모가 넘겨준 크기
 ) {
     // 즐찾 아이콘
-    val iconRes = if (isFavorite) R.drawable.img_star_on else R.drawable.img_star_off
+    val iconRes = if (character.isFavorite) R.drawable.img_star_on else R.drawable.img_star_off
 
     Card(
         modifier = modifier,
@@ -41,7 +41,7 @@ fun CharacterImageCard(
         Box(modifier = Modifier.fillMaxSize()) {
             // 캐릭터 이미지
             AsyncImage(
-                model = cImage,
+                model = character.image,
                 contentDescription = "캐릭터 이미지",
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Crop

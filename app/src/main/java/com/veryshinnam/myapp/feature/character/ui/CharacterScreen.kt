@@ -44,14 +44,18 @@ fun CharacterScreen(
     onBack: () -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
-    // 현재 스크린은 가로모드로
     val activity = LocalActivity.current
-    SideEffect {
 
+    SideEffect {
+        // 가로 모드
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
     }
 
-    BackHandler { onBack() }
+    BackHandler {
+        // 뒤로 갈때 세로 모드
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        onBack()
+    }
 
     // id가 바뀌면 재로딩
     LaunchedEffect(id) { vm.loadDummyCharacter(id) }
@@ -106,7 +110,10 @@ fun CharacterScreen(
                 }
                 // 조회 성공
                 is CharacterUiState.Success -> {
-                    CharacterCardScreen(data = state.data)
+                    CharacterCardScreen(
+                        cData = state.characterData,
+                        sData = state.storyData
+                    )
                 }
             }
         }

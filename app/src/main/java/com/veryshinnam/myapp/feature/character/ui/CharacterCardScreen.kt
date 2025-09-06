@@ -17,12 +17,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.veryshinnam.myapp.feature.character.model.CharacterData
+import com.veryshinnam.myapp.feature.character.model.StoryData
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterImageCard
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterInfoCard
 
 @Composable
 fun CharacterCardScreen(
-    data: CharacterUiState.CharacterData
+    cData: CharacterData,
+    sData: StoryData
 ) {
     Row(
         modifier = Modifier
@@ -31,25 +34,21 @@ fun CharacterCardScreen(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.End // Row 안 가로 배치 방향
     ) {
-        // 이미지 카드
+        // 왼쪽 캐릭터 이미지 카드
         CharacterImageCard(
-            cImage = data.imageUrl,
-            isFavorite = data.important,
-            onFavoriteClick = { println("즐겨찾기 클릭! ${data.characterId}") },
+            character = cData,
+            onFavoriteClick = { println("즐겨찾기 클릭! ${cData.id}") },
             modifier = Modifier
                 .aspectRatio(0.78f) // 카드 비율
                 .offset(x = (40).dp)       // 오른쪽 이동
         )
 
-        // 정보 카드 (겹치게)
+        // 오른쪽 캐릭터 정보 카드
         CharacterInfoCard(
-            cName = data.name,
-            cGender = data.gender,
-            cAge = data.age,
-            cPersonality = data.personality,
-            cBirth = data.createdAt,
+            character = cData,
+            story = sData,
             modifier = Modifier
-                .aspectRatio(1.9f) // 카드 비율
+                .aspectRatio(2f) // 카드 비율
                 .zIndex(1f)
         )
     }
