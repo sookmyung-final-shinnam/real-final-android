@@ -32,9 +32,6 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.feature.character.ui.CharacterSuccessScreen
-import com.veryshinnam.myapp.feature.character.ui.CharacterUiState
-import com.veryshinnam.myapp.feature.character.ui.CharacterViewModel
 
 @Composable
 fun StorageScreen(
@@ -42,6 +39,8 @@ fun StorageScreen(
     onItemClick: (Long) -> Unit,
     vm: StorageViewModel = hiltViewModel()
 ) {
+
+    // ViewModel 상태 구독
     val uiState by vm.storageUiState.collectAsStateWithLifecycle()
     BackHandler { onBack() }
 
@@ -93,8 +92,12 @@ fun StorageScreen(
                 }
                 // 조회 성공
                 is StorageUiState.Success -> {
-                    StorageSuccessScreen(
+                    StorageCharactersScreen(
                         data = state.data,
+                        selectedFilter = state.selectedFilter,
+                        onFilterClick = { filter -> vm.selectFilter(filter) },
+                        onFavoriteClick = { id -> vm.updateFavorite(id) },
+                        onItemClick = onItemClick
                     )
                 }
             }

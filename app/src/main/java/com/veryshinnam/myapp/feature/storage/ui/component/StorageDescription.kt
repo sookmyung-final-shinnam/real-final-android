@@ -2,10 +2,8 @@ package com.veryshinnam.myapp.feature.storage.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -21,7 +19,6 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
 
 @Composable
@@ -38,7 +35,7 @@ fun StorageInfo(
             contentDescription = "설명하는 토끼 이미지",
             modifier = Modifier
                 .align(Alignment.End) // end 정렬
-                .fillMaxHeight(0.5f)
+                .weight(0.5f)
                 .padding(end = 20.dp),
             contentScale = ContentScale.Fit
         )

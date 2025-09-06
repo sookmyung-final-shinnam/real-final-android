@@ -1,17 +1,12 @@
 package com.veryshinnam.myapp.feature.storage.ui.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
@@ -25,14 +20,13 @@ import com.veryshinnam.myapp.feature.storage.enums.Filter
 @Composable
 fun FilterButtons(
     selectedFilter: Filter,
-    onFilterClick: (Filter) -> Unit
+    onFilterClick: (Filter) -> Unit,
+    modifier: Modifier = Modifier // 부모 너비 가져옴
 ) {
     // 성별 필터
     val filters = listOf(Filter.ALL, Filter.FEMALE, Filter.MALE)
 
-    Row (
-      modifier = Modifier.fillMaxWidth(0.6f)
-    ) {
+    Row (modifier = modifier) {
         filters.forEach { filter ->
             val isSelected = filter == selectedFilter
 
@@ -46,7 +40,7 @@ fun FilterButtons(
                     containerColor = backgroundColor,
                     contentColor = textColor
                 ),
-                shape = RoundedCornerShape(12.dp),
+                shape = CircleShape,
                 modifier = Modifier
                     .weight(1f) 
                     .padding(end = 16.dp) // 버튼 간 여백
