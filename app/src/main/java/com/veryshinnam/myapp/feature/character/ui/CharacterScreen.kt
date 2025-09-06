@@ -1,6 +1,9 @@
 package com.veryshinnam.myapp.feature.character.ui
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -22,10 +25,12 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -34,6 +39,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.feature.character.ui.component.CharacterImageCard
+
 
 @Composable
 fun CharacterScreen(
@@ -41,6 +48,13 @@ fun CharacterScreen(
     onBack: () -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
+    // 현재 스크린은 가로모드로
+    val activity = LocalActivity.current
+    SideEffect {
+
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+    }
+
     BackHandler { onBack() }
 
     // id가 바뀌면 재로딩
