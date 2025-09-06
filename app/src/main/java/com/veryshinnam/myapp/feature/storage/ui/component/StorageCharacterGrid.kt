@@ -69,7 +69,7 @@ fun StorageCharacterGrid(
                             .aspectRatio(3f / 4f)
                             .clickable { onItemClick(item.characterId) }
                             .then(
-                                if (isLast) Modifier.padding(bottom = 16.dp) else Modifier
+                                if (isLast) Modifier.padding(bottom = 8.dp) else Modifier
                             )
                     )
                 }
