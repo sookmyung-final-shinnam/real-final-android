@@ -28,23 +28,22 @@ fun StorageCharactersScreen(
 
     Column(
         modifier = Modifier.fillMaxSize()
-            .padding(horizontal = 16.dp)
+            .padding(horizontal = sectionSpacing)
     ) {
         // 보관함 상단
         StorageInfo(
             modifier = Modifier
             .fillMaxWidth()
-            .weight(0.2f)    // 높이 비율 0.2
+            .weight(0.25f)    // 높이 비율 0.2
         )
 
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(0.8f) // 높이 비율 0.8
+                .weight(0.75f) // 높이 비율 0.8
         ) {
-            Spacer(modifier = Modifier.height(sectionSpacing))
-
             // 캐릭터 성별 필터
+            Spacer(modifier = Modifier.height(sectionSpacing))
             FilterButtons(
                 selectedFilter = selectedFilter,
                 onFilterClick = onFilterClick,

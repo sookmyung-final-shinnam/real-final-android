@@ -8,10 +8,12 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.derivedStateOf
@@ -51,7 +53,11 @@ fun StorageCharacterGrid(
             verticalArrangement = Arrangement.spacedBy(8.dp),
             horizontalArrangement = Arrangement.spacedBy(8.dp),
             content = {
-                items(data) { item ->
+                itemsIndexed(data) { index, item ->
+
+                    // 마지막 행에 바닥 여백 줌
+                    val isLast = isLastRow(index, data.size, 3)
+
                     StorageCharacterItem(
                         cId = item.characterId,
                         cName = item.characterName,
@@ -62,6 +68,9 @@ fun StorageCharacterGrid(
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
                             .clickable { onItemClick(item.characterId) }
+                            .then(
+                                if (isLast) Modifier.padding(bottom = 16.dp) else Modifier
+                            )
                     )
                 }
             }
@@ -84,4 +93,15 @@ fun StorageCharacterGrid(
             )
         }
     }
+}
+
+// index가 마지막 행의 아이템인지 체크하는 함수
+fun isLastRow(
+    index: Int,      // 현재 아이템 index
+    totalItems: Int, // 전체 아이템 개수
+    columns: Int     // 한 행에 들어가는 열 수 
+): Boolean {
+    val totalRows = (totalItems + columns - 1) / columns // 전체 행(= 마지막 행) 수 계산
+    val currentRow = index / columns    // 현재 행수
+    return currentRow == totalRows - 1  // 0부터 시작 고려
 }

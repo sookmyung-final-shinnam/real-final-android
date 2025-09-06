@@ -27,15 +27,14 @@ fun StorageInfo(
 ) {
     Column(
         modifier = modifier
-        // End에 이미지 맞추기
     ) {
        // 토끼 이미지
         Image(
             painter = painterResource(R.drawable.img_rabbit),
             contentDescription = "설명하는 토끼 이미지",
             modifier = Modifier
-                .align(Alignment.End) // end 정렬
-                .weight(0.5f)
+                .align(Alignment.End)  // end 정렬
+                .weight(0.45f)  // 이미지 비율 조절
                 .padding(end = 20.dp),
             contentScale = ContentScale.Fit
         )
@@ -46,17 +45,19 @@ fun StorageInfo(
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(id = R.color.blue_gray)),
             color = Color.White,
-            tonalElevation = 2.dp
+            tonalElevation = 2.dp,
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(0.55f)
         ) {
             // 텍스트
             Text(
                 "네가 만든 멋진 캐릭터들이야! \n" +
                         "좋아하는 캐릭터 5명을 표시해 줘. 그럼 홈 화면에서도 만나 볼 수 있어!",
                 modifier = Modifier
-                    .fillMaxWidth()
                     .padding(20.dp),
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineMedium
             )
         }
     }
