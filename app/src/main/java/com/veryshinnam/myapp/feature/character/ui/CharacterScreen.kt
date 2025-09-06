@@ -1,6 +1,9 @@
 package com.veryshinnam.myapp.feature.character.ui
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -15,13 +18,14 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,18 +39,27 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 
+
 @Composable
 fun CharacterScreen(
     id: Long,
     onBack: () -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
-    BackHandler { onBack() }
-
-    // id가 바뀌면 재로딩
-    LaunchedEffect(id) { vm.loadDummyCharacter(id) }
-
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
+    val activity = LocalActivity.current
+
+    // 가로모드 + id가 바뀌면 재로딩
+    LaunchedEffect(id) {
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        vm.loadDummyCharacter(id)
+    }
+
+    // 뒤로가기 세로모드
+    BackHandler {
+        onBack()
+        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -55,7 +68,10 @@ fun CharacterScreen(
                 AppTopBar() // 기존 바
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = onBack)
+                        .clickable(onClick = {
+                            onBack()
+                            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+                        })
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -96,9 +112,18 @@ fun CharacterScreen(
                 }
                 // 조회 성공
                 is CharacterUiState.Success -> {
-                    CharacterSuccessScreen(data = state.data)
+                    CharacterCardScreen(
+                        cData = state.characterData,
+                        sData = state.storyData,
+                        onFavoriteClick = { id -> vm.updateFavorite(id) }
+                    )
                 }
             }
         }
     }
+}
+
+fun handleBack(activity: Activity?, onBack: () -> Unit) {
+    activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+    onBack()
 }
