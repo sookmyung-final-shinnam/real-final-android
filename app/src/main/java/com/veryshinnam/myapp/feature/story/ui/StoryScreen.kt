@@ -62,11 +62,8 @@ fun StoryScreen(
                         .clickable{
                             when (val state = uiState) {
                                 is StoryUiState.Success -> {
-                                    when (state.phase) {
-                                        StoryPhase.PROLOGUE -> onBack() // 전체 뒤로가기
-                                        StoryPhase.READING -> vm.goToPrologue() // 프롤로그로
-                                        StoryPhase.ENDING -> vm.goToPrologue() // 엔딩에서 뒤로도 프롤로그로
-                                    }
+                                   if (state.isPrologue) onBack() // 프롤로그 >  이전 스크린
+                                   else vm.goToPrologue() // 엔딩 포함 페이지 > 프롤로그 스크린
                                 }
                                 else -> onBack()
                             }
@@ -115,31 +112,21 @@ fun StoryScreen(
                 }
                 // 조회 성공
                 is StoryUiState.Success -> {
-                    when (state.phase) {
-                        // 맨 처음 프롤로그 화면
-                        StoryPhase.PROLOGUE -> {
-                            StoryPrologueScreen(
-                                story = state.storyData,
-                                onReadClick = { vm.goToReader() }
-                            )
-                        }
 
+                    // 맨 처음 프롤로그 화면
+                    if (state.isPrologue) {
+                        StoryPrologueScreen(
+                            story = state.storyData,
+                            onReadClick = { vm.goToReader() }
+                        )
+                    } else {
                         // 동화 진행 화면
-                        StoryPhase.READING -> {
-                            StoryReadingScreen(
-                                pages = state.pagesData,
-                                onBack = { vm.goToPrologue() }
-                            )
-                        }
-
-                        // 동화 마지막 화면
-                        StoryPhase.ENDING -> {
-                            StoryEndingScreen(
-//                                onRestart = { vm.goToReader() },  // 처음부터
-//                                onHome = { /* 홈으로 이동 네비게이션 */ },
-//                                onBack = { vm.goToPrologue() }    // 뒤로 가기
-                            )
-                        }
+                        StoryReadingScreen(
+                            pages = state.pagesData,
+                            isSpeaking = state.isSpeaking,
+                            onBack = { vm.goToPrologue() },
+                            onTtsClick = { vm.setSpeaking(!state.isSpeaking) },
+                        )
                     }
                 }
             }

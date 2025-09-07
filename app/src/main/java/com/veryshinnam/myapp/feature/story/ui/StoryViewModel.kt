@@ -47,7 +47,7 @@ class StoryViewModel @Inject constructor(
     fun goToPrologue() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(phase = StoryPhase.PROLOGUE)
+            _storyUiState.value = current.copy(isPrologue = true)
         }
     }
 
@@ -55,15 +55,15 @@ class StoryViewModel @Inject constructor(
     fun goToReader() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(phase = StoryPhase.READING)
+            _storyUiState.value = current.copy(isPrologue = false)
         }
     }
 
-    // 엔딩 페이지 스크린 이동
-    fun goToEnding() {
+    // tts 설정 버튼
+    fun setSpeaking(enabled: Boolean) {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(phase = StoryPhase.ENDING)
+            _storyUiState.value = current.copy(isSpeaking = enabled)
         }
     }
 

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
 
@@ -39,14 +40,14 @@ fun StoryEndingPage(
                 .fillMaxWidth()
                 .weight(4f),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.SpaceEvenly
+            horizontalArrangement = Arrangement.Center
         ) {
             StrokeText(
                 "THE",
                 Color.White,
                 colorResource(R.color.main_orange),
                 8f,
-                MaterialTheme.typography.displayLarge,
+                fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
                 FontWeight.Bold,
                 Modifier
             )
@@ -56,7 +57,8 @@ fun StoryEndingPage(
                 contentDescription = "마지막 페이지 이미지",
                 modifier = Modifier
                     .fillMaxWidth(0.4f)
-                    .aspectRatio(1f),
+                    .aspectRatio(1f)
+                    .offset(y=40.dp),
                 contentScale = ContentScale.Fit
             )
 
@@ -65,7 +67,7 @@ fun StoryEndingPage(
                 Color.White,
                 colorResource(R.color.main_orange),
                 8f,
-                MaterialTheme.typography.displayLarge,
+                fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
                 FontWeight.Bold,
                 Modifier
             )
@@ -75,7 +77,8 @@ fun StoryEndingPage(
         Row(
             modifier = Modifier
                 .fillMaxWidth()
-                .weight(1f),
+                .weight(1f)
+                .offset(y=(-20).dp),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -87,7 +90,8 @@ fun StoryEndingPage(
                 ),
                 shape = CircleShape,
                 modifier = Modifier
-                    .aspectRatio(9/5f)   // 1.8 비율
+                    .fillMaxHeight(0.7f)
+                    .aspectRatio(3f)
                     .border(
                         width = 4.dp,
                         color = colorResource(id = R.color.blue_gray),
@@ -109,7 +113,8 @@ fun StoryEndingPage(
                 ),
                 shape = CircleShape,
                 modifier = Modifier
-                    .aspectRatio(9/5f)   // 1.8 비율
+                    .fillMaxHeight(0.7f)
+                    .aspectRatio(3f)
                     .border(
                         width = 4.dp,
                         color = colorResource(id = R.color.blue_gray),

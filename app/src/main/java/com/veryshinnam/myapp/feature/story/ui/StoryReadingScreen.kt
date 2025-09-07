@@ -38,7 +38,9 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoryReadingScreen(
     pages: List<PageData>,
-    onBack: () -> Unit
+    isSpeaking: Boolean,
+    onBack: () -> Unit,
+    onTtsClick: () -> Unit
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -64,19 +66,13 @@ fun StoryReadingScreen(
         if (pagerState.currentPage < pages.size) {
             // TTS 재생 버튼
             Image(
-                painter = painterResource(R.drawable.img_speak_on),
-//            painter = painterResource(R.drawable.img_speak_off),
+                painter = if (isSpeaking) { painterResource(R.drawable.img_speak_on) }
+                        else { painterResource(R.drawable.img_speak_off) },
                 contentDescription = "읽어주기 버튼",
                 modifier = Modifier.align(Alignment.TopEnd)
                     .fillMaxHeight(0.2f)
                     .padding(16.dp)
-                    .clickable() {
-                        // TODO: 현재 페이지 텍스트 읽기
-                        if (pagerState.currentPage < pages.size) {
-                            val textToRead = pages[pagerState.currentPage].content
-                            // TTSManager.speak(textToRead)
-                        }
-                    },
+                    .clickable { onTtsClick() },
                 contentScale = ContentScale.Fit
             )
 
