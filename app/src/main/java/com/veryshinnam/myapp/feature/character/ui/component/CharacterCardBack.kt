@@ -21,6 +21,7 @@ import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 fun CharacterCardBack(
     story: StoryVideoData,             // 동화 정보 (종이책+영상)
     onStoryClick: (Long) -> Unit,
+    onVideoClick: (Long) -> Unit,
     modifier: Modifier = Modifier // 부모에서 넘겨받은 크기
 ) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
@@ -54,7 +55,7 @@ fun CharacterCardBack(
                 storyId = story.videoId ?: -1L,
                 storyUrl = story?.videoUrl,
                 type = "짧은 영상",
-                onStoryClick = onStoryClick,
+                onStoryClick = onVideoClick,
                 modifier = Modifier.weight(1f)
             )
         }

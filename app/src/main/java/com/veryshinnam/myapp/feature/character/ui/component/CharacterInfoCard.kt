@@ -30,6 +30,7 @@ fun CharacterInfoCard(
     character: CharacterData,     // 캐릭터 정보
     story: StoryVideoData,        // 스토리 정보
     onStoryClick: (Long) -> Unit, // 스토리 버튼 클릭 콜백
+    onVideoClick: (Long) -> Unit, // 영상 버튼 클릭 콜백
     modifier: Modifier = Modifier // 부모가 넘겨준 크기
 ) {
     // 카드 앞뒷면 구분
@@ -79,7 +80,7 @@ fun CharacterInfoCard(
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
 
                         // 뒷면: 동화 정보
-                        CharacterCardBack(story, onStoryClick)
+                        CharacterCardBack(story, onStoryClick, onVideoClick)
 
                         // 공통 탭버튼
                         CharacterTabButton(

@@ -21,7 +21,8 @@ fun CharacterCardScreen(
     cData: CharacterData,
     sData: StoryVideoData,
     onFavoriteClick: (Long) -> Unit,
-    onStoryClick: (Long) -> Unit
+    onStoryClick: (Long) -> Unit,
+    onVideoClick: (Long) -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -44,6 +45,7 @@ fun CharacterCardScreen(
             character = cData,
             story = sData,
             onStoryClick = onStoryClick,
+            onVideoClick = onVideoClick,
             modifier = Modifier
                 .aspectRatio(2f) // 카드 비율
                 .zIndex(1f)

@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -25,9 +26,12 @@ class StoryViewModel @Inject constructor(
                 _storyUiState.value = StoryUiState.Loading
                 delay(300) // 로딩감
 
-                val data  = getDummyStoryData(storyId)
-                val pages = getDummyPageData(storyId)
-
+                // 동시에 실행
+                val (data, pages) = kotlinx.coroutines.coroutineScope {
+                    val dataDeferred = async { getDummyStoryData(storyId) }
+                    val pagesDeferred = async { getDummyPageData(storyId) }
+                    dataDeferred.await() to pagesDeferred.await()
+                }
                 _storyUiState.value = StoryUiState.Success(
                     storyData = data,
                     pagesData = pages
@@ -73,22 +77,22 @@ class StoryViewModel @Inject constructor(
         return listOf(
             PageData(
                 1,
-                "https://i.ibb.co/RG7Fxwrx/img-calender.png",
+                "https://i.ibb.co/FkBMgqGS/Kakao-Talk-20250424-120644425.png",
                 "민수는 숲 속 깊은 곳에서 빛나는 나무를 발견했다."
             ),
             PageData(
                 2,
-                "https://i.ibb.co/27QsVLDT/img-prince.png",
-                "민수는 배가 고픈 다람쥐 토미를 만났다."
+                "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
+                "민수는 배가 고픈 다람쥐 토미를 만났다.민수는 배가 고픈 다람쥐 토미를 만났다.민수는 배가 고픈 다람쥐 토미를 만났다.민수는 배가 고픈 다람쥐 토미를 만났다."
             ),
             PageData(
                 3,
-                "https://i.ibb.co/FkBMgqGS/Kakao-Talk-20250424-120644425.png",
+                "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_3.png",
                 "\"가진 게 있으면 모두 다 내놔\"라고 외치는 토미에게 사과를 건네주었다."
             ),
             PageData(
                 4,
-                "https://i.ibb.co/DDvNSjv5/image.png",
+                "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_4.png",
                 "민수와 토미는 결혼을 해서 행복하게 살았다."
             )
         )

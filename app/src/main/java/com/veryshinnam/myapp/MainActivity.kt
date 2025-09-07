@@ -15,8 +15,6 @@ import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
-import com.veryshinnam.myapp.feature.storage.ui.StorageUiState
-import com.veryshinnam.myapp.feature.story.ui.StoryPrologueScreen
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -85,7 +83,8 @@ class MainActivity : ComponentActivity() {
                         onBack = { mainNavController.popBackStack() },
                         onStoryClick = { storyId ->
                             mainNavController.navigate("story/$storyId")
-                        }
+                        },
+                        onVideoClick = {}
                     )
                 }
 

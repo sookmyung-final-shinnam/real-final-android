@@ -46,6 +46,7 @@ fun CharacterScreen(
     id: Long,
     onBack: () -> Unit,
     onStoryClick: (Long) -> Unit,
+    onVideoClick:  (Long) -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
@@ -119,7 +120,8 @@ fun CharacterScreen(
                         cData = state.characterData,
                         sData = state.storyData,
                         onFavoriteClick = { id -> vm.updateFavorite(id) },
-                        onStoryClick = onStoryClick
+                        onStoryClick = onStoryClick,
+                        onVideoClick = onVideoClick
                     )
                 }
             }
