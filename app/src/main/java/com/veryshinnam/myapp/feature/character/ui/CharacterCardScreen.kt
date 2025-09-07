@@ -1,31 +1,25 @@
 package com.veryshinnam.myapp.feature.character.ui
 
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoryData
+import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterImageCard
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterInfoCard
 
 @Composable
 fun CharacterCardScreen(
     cData: CharacterData,
-    sData: StoryData,
+    sData: StoryVideoData,
     onFavoriteClick: (Long) -> Unit,
 ) {
     Row(

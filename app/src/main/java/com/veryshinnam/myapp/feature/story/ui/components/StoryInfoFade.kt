@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.story.ui.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
@@ -33,7 +32,7 @@ import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
 
 @Composable
-fun StoryInfo(
+fun StoryInfoFade(
     title: String,  // 동화책 제목
     desc: String,    // 동화책 설명
     modifier: Modifier = Modifier // 부모에게서 받은 높이를 가져옴

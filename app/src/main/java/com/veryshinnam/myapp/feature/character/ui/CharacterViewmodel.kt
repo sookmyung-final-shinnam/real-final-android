@@ -3,14 +3,12 @@ package com.veryshinnam.myapp.feature.character.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoryData
-import com.veryshinnam.myapp.feature.storage.ui.StorageUiState
+import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.time.LocalDate
 import javax.inject.Inject
 
 @HiltViewModel
@@ -37,7 +35,7 @@ class CharacterViewModel @Inject constructor(
                     "2025-06-01",
                     false
                 ),
-                storyData = StoryData(
+                storyData = StoryVideoData(
                     title = "숲속 마을의 친구들",
                     storyId = 11,
                     storyImage = "https://ifh.cc/g/QP5O4d.png",
@@ -57,7 +55,7 @@ class CharacterViewModel @Inject constructor(
                     "2025-11-16",
                     true
                 ),
-                storyData = StoryData(
+                storyData = StoryVideoData(
                     title = "집에 가지마, 베이베",
                     storyId = null,
                     storyImage = null,
@@ -77,7 +75,7 @@ class CharacterViewModel @Inject constructor(
                     "2025-01-13",
                     false
                 ),
-                storyData = StoryData(
+                storyData = StoryVideoData(
                     title = "빛과 그림자",
                     storyId = 13,
                     storyImage = "https://ifh.cc/g/XTGSPy.png",
@@ -97,7 +95,7 @@ class CharacterViewModel @Inject constructor(
                     "2025-01-11",
                     false
                 ),
-                storyData = StoryData(
+                storyData = StoryVideoData(
                     title = "민수와 깜찍한 요정의 사랑 모험",
                     storyId = 11,
                     storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",

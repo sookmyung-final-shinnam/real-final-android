@@ -20,23 +20,11 @@ fun StoryPrologueScreen(
 ) {
         Box(
             modifier = Modifier.fillMaxSize()
-                .padding(horizontal = 16.dp) // 양옆 여백
         ) {
-            // 캐릭터 액자 이미지
-            CharacterFrame(
-                imageUrl = cImage,
-                modifier = Modifier
-                    .align(Alignment.TopCenter)   // 상단부
-                    .fillMaxHeight(0.75f) // 높이 75%
-            )
+            // 동화 이미지
+            // 왼쪽으로
 
-            // 스토리 정보
-            StoryInfo(
-                title = sTitle,
-                desc = sContent,
-                modifier = Modifier
-                    .align(Alignment.BottomCenter) // 하단부
-                    .fillMaxHeight(0.5f)  // 높이 50%
-            )
+            // 동화 정보
+            // 오른쪽으로
         }
 }

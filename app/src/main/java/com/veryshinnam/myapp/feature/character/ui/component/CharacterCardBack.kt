@@ -4,7 +4,6 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -16,11 +15,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import com.veryshinnam.myapp.feature.character.model.StoryData
+import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 
 @Composable
 fun CharacterCardBack(
-    story: StoryData,             // 동화 정보 (종이책+영상)
+    story: StoryVideoData,             // 동화 정보 (종이책+영상)
     modifier: Modifier = Modifier // 부모에서 넘겨받은 크기
 ) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {

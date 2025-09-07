@@ -1,7 +1,5 @@
 package com.veryshinnam.myapp.feature.character.model
 
-import android.media.Image
-
 data class CharacterData(
     val id: Long,          // 캐릭터 아이디
     val name: String,      // 캐릭터 이름
