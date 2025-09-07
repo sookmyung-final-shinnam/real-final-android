@@ -1,5 +1,7 @@
 package com.veryshinnam.myapp.feature.home.ui
 
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -7,6 +9,7 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -26,6 +29,10 @@ fun HomeScreen(
     // 홈화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
     var lastSelectedId by rememberSaveable { mutableStateOf<Long?>(null) }
+
+    // 동화책 상세 > 홈 화면: 세로 모드
+    val context = LocalContext.current
+    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
 
     when (val state = uiState) {
         is HomeUiState.Loading -> {

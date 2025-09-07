@@ -50,7 +50,6 @@ fun CharacterScreen(
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
-    val layoutDirection = LocalLayoutDirection.current
     val activity = LocalActivity.current
 
     // 가로모드 + id가 바뀌면 재로딩
@@ -62,7 +61,6 @@ fun CharacterScreen(
     // 뒤로가기 세로모드
     BackHandler {
         onBack()
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
     }
 
     Scaffold(
@@ -74,7 +72,6 @@ fun CharacterScreen(
                     modifier = Modifier
                         .clickable(onClick = {
                             onBack()
-                            activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
                         })
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
@@ -86,8 +83,7 @@ fun CharacterScreen(
             }
         },
         bottomBar = {
-            // 네비게이션 바만큼 여백
-            Spacer(
+            Spacer( // 네비게이션 바만큼 여백
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
             )
         }

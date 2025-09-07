@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.story.ui
 
-import android.R.attr.layoutDirection
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
@@ -37,12 +36,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.feature.story.model.StoryPhase
 
 @Composable
 fun StoryScreen(
     storyId: Long,      // 동화 아이디
     onBack: () -> Unit,
+    onHome: () -> Unit,
     vm: StoryViewModel = hiltViewModel()
 ) {
     val uiState by vm.storyUiState.collectAsStateWithLifecycle()
@@ -124,8 +123,9 @@ fun StoryScreen(
                         StoryReadingScreen(
                             pages = state.pagesData,
                             isSpeaking = state.isSpeaking,
-                            onBack = { vm.goToPrologue() },
                             onTtsClick = { vm.setSpeaking(!state.isSpeaking) },
+                            onBack = { vm.goToPrologue() },
+                            onHome = onHome
                         )
                     }
                 }

@@ -95,7 +95,14 @@ class MainActivity : ComponentActivity() {
                     val storyId = backStackEntry.arguments?.getLong("id") ?: return@composable
                     StoryScreen(
                         storyId = storyId,
-                        onBack = { mainNavController.popBackStack() }
+                        onBack = { mainNavController.popBackStack() },
+                        onHome = {
+                            // 스택 다 비워서 홈으로 이동
+                            mainNavController.navigate("home") {
+                                popUpTo(0) { inclusive = true }
+                                launchSingleTop = true
+                            }
+                        }
                     )
                 }
             }

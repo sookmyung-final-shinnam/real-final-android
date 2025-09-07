@@ -25,8 +25,8 @@ import com.veryshinnam.myapp.common.component.StrokeText
 
 @Composable
 fun StoryEndingPage(
-    onRestart: () -> Unit = {}, // 처음부터 버튼 클릭
-    onHome: () -> Unit = {}     // 홈으로 버튼 클릭
+    onRestart: () -> Unit,   // 첫 페이지로 버튼 클릭
+    onHome: () -> Unit  // 홈 화면으로 버튼 클릭
 ) {
     Column(
         modifier = Modifier
@@ -99,14 +99,14 @@ fun StoryEndingPage(
                     )
             ) {
                 Text(
-                    "처음부터",
+                    "첫 페이지로",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )
             }
 
             Button(
-                onClick = onRestart,
+                onClick = { onHome() },
                 colors = ButtonDefaults.buttonColors(
                     containerColor = colorResource(R.color.blue_sky),
                     contentColor = Color.Black
@@ -122,7 +122,7 @@ fun StoryEndingPage(
                     )
             ) {
                 Text(
-                    "홈으로",
+                    "홈 화면으로",
                     style = MaterialTheme.typography.bodyLarge,
                     fontWeight = FontWeight.SemiBold
                 )

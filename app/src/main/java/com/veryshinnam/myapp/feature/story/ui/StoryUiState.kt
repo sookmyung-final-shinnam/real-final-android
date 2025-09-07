@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.story.ui
 
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryData
-import com.veryshinnam.myapp.feature.story.model.StoryPhase
 
 sealed interface StoryUiState {
     data object Loading : StoryUiState

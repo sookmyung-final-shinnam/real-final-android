@@ -3,30 +3,18 @@ package com.veryshinnam.myapp.feature.story.ui
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.PageData
@@ -39,8 +27,9 @@ import kotlinx.coroutines.launch
 fun StoryReadingScreen(
     pages: List<PageData>,
     isSpeaking: Boolean,
+    onTtsClick: () -> Unit,
     onBack: () -> Unit,
-    onTtsClick: () -> Unit
+    onHome: () -> Unit
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -59,7 +48,14 @@ fun StoryReadingScreen(
             if (page < pages.size) {
                 StoryReaderPage(page = pages[page])
             } else {
-                StoryEndingPage()
+                StoryEndingPage(
+                    onRestart = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(0) // 첫 페이지로 이동
+                        }
+                    },
+                    onHome = onHome
+                )
             }
         }
 
