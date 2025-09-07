@@ -37,6 +37,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.feature.story.model.StoryPhase
 
 @Composable
 fun StoryScreen(
@@ -58,7 +59,18 @@ fun StoryScreen(
                 AppTopBar() // 기존 바
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = onBack)
+                        .clickable{
+                            when (val state = uiState) {
+                                is StoryUiState.Success -> {
+                                    when (state.phase) {
+                                        StoryPhase.PROLOGUE -> onBack() // 전체 뒤로가기
+                                        StoryPhase.READING -> vm.goToPrologue() // 프롤로그로
+                                        StoryPhase.ENDING -> vm.goToPrologue() // 엔딩에서 뒤로도 프롤로그로
+                                    }
+                                }
+                                else -> onBack()
+                            }
+                        }
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -103,18 +115,31 @@ fun StoryScreen(
                 }
                 // 조회 성공
                 is StoryUiState.Success -> {
-                    // 맨 처음 프롤로그 스크린
-                    if (state.isPrologue) {
-                        StoryPrologueScreen(
-                            story = state.storyData,
-                            onReadClick = { vm.goToReader() }
-                        )
-                    } else {
-                        // 이후 리더 스크린
-                        StoryReaderScreen(
-                            pages = state.pagesData,
-                            onBack = { vm.goToPrologue() }
-                        )
+                    when (state.phase) {
+                        // 맨 처음 프롤로그 화면
+                        StoryPhase.PROLOGUE -> {
+                            StoryPrologueScreen(
+                                story = state.storyData,
+                                onReadClick = { vm.goToReader() }
+                            )
+                        }
+
+                        // 동화 진행 화면
+                        StoryPhase.READING -> {
+                            StoryReadingScreen(
+                                pages = state.pagesData,
+                                onBack = { vm.goToPrologue() }
+                            )
+                        }
+
+                        // 동화 마지막 화면
+                        StoryPhase.ENDING -> {
+                            StoryEndingScreen(
+//                                onRestart = { vm.goToReader() },  // 처음부터
+//                                onHome = { /* 홈으로 이동 네비게이션 */ },
+//                                onBack = { vm.goToPrologue() }    // 뒤로 가기
+                            )
+                        }
                     }
                 }
             }

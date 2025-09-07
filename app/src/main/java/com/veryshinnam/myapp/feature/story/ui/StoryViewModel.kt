@@ -4,6 +4,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryData
+import com.veryshinnam.myapp.feature.story.model.StoryPhase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
@@ -42,19 +43,27 @@ class StoryViewModel @Inject constructor(
         }
     }
 
-    // 동화보기 스크린 이동
-    fun goToReader() {
-        val current = _storyUiState.value
-        if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isPrologue = false)
-        }
-    }
-
     // 프롤로그 스크린 이동
     fun goToPrologue() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isPrologue = true)
+            _storyUiState.value = current.copy(phase = StoryPhase.PROLOGUE)
+        }
+    }
+
+    // 동화보기 스크린 이동
+    fun goToReader() {
+        val current = _storyUiState.value
+        if (current is StoryUiState.Success) {
+            _storyUiState.value = current.copy(phase = StoryPhase.READING)
+        }
+    }
+
+    // 엔딩 페이지 스크린 이동
+    fun goToEnding() {
+        val current = _storyUiState.value
+        if (current is StoryUiState.Success) {
+            _storyUiState.value = current.copy(phase = StoryPhase.ENDING)
         }
     }
 
