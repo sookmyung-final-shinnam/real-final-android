@@ -1,4 +1,4 @@
-package com.veryshinnam.myapplication.feature.home.data.dto
+package com.veryshinnam.myapp.feature.home.data.dto
 
 // 홈 화면 응답 구조
 data class HomeResponse(
@@ -13,9 +13,13 @@ data class HomeResult(
     val userId: Long,
     val nickname: String,
     val userPoint: Int,
-    val userFairyNum: Int,
-    val maxFairyNum: Int,
-    val userFairyTaleNum: Int,
-    val maxFairyTaleNum: Int,
-    val favoriteFairies: List<CharacterShortResult>
+    val currentPoints: Int,
+    val profileImageUrl: String,
+    val favorites: List<FavoriteCharacter>
+)
+
+data class FavoriteCharacter(
+    val id: Long,
+    val name: String,
+    val imageUrl: String
 )
