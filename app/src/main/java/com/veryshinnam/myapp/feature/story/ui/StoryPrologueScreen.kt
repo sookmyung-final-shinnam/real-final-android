@@ -15,40 +15,32 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import com.veryshinnam.myapp.feature.story.ui.components.StoryGoToButton
+import com.veryshinnam.myapp.feature.story.model.StoryData
+import com.veryshinnam.myapp.feature.story.ui.components.StoryReadButton
 import com.veryshinnam.myapp.feature.story.ui.components.StoryInfoFade
 
 @Composable
 fun StoryPrologueScreen(
-    cImage: String,  // 캐릭터 이미지
-    sTitle: String,  // 동화책 제목
-    stags: String,
-    sDesc: String // 동화책 줄거리
+    story: StoryData,
+    onReadClick: () -> Unit,
 ) {
-    val activity = LocalActivity.current
-
-    // 가로모드 + id가 바뀌면 재로딩
-    LaunchedEffect(Unit) {
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-    }
-
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         // 동화 썸네일 이미지
         AsyncImage(
-            model = cImage,
+            model = story.thumbnail,
             contentDescription = "동화 썸네일 이미지",
             modifier = Modifier.fillMaxWidth(0.6f).zIndex(0f),
             contentScale = ContentScale.Crop
         )
 
         // 동화 정보 - 오른쪽으로 붙이기
-        StoryInfoFade(sTitle, stags, sDesc,
+        StoryInfoFade(story,
             Modifier.fillMaxWidth(0.6f).align(Alignment.CenterEnd))
 
         // 보러가기 버튼
-        StoryGoToButton(onButtonClick = {},
+        StoryReadButton(onButtonClick = onReadClick,
             modifier = Modifier
                 .fillMaxHeight(0.25f)
                 .padding(16.dp)

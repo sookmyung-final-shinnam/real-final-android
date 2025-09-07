@@ -20,12 +20,11 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.story.model.StoryData
 
 @Composable
 fun StoryInfoFade(
-    title: String,  // 동화책 제목
-    tags: String,   // 동화책 태그
-    desc: String,   // 동화책 설명
+    story: StoryData,
     modifier: Modifier // 부모에게서 받은 크기
 ) {
     Row(
@@ -59,21 +58,21 @@ fun StoryInfoFade(
                     .align(Alignment.TopStart)
                     .padding(top = 20.dp, start = 16.dp, end = 16.dp)
             ) {
-                Text(
-                    text = title,
+                Text( // 제목
+                    text = story.title,
                     style = MaterialTheme.typography.displayLarge.copy(
                         fontWeight = FontWeight.Bold)
                 )
                 Spacer(modifier = Modifier.height(4.dp))
-                Text(
-                    text = tags,
+                Text( // 태그
+                    text = story.tags,
                     color = colorResource(R.color.background_yellow),
                     style = MaterialTheme.typography.headlineMedium.copy(
                         fontWeight = FontWeight.SemiBold)
                 )
                 Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = desc,
+                Text( // 줄거리
+                    text = story.description,
                     style = MaterialTheme.typography.headlineLarge
                 )
             }

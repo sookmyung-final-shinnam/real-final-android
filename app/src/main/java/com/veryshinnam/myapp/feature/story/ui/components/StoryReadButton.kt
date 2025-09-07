@@ -28,7 +28,7 @@ import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
 
 @Composable
-fun StoryGoToButton(
+fun StoryReadButton(
     text: String = "  ▶ 보러가기",
     onButtonClick: () -> Unit,
     modifier: Modifier

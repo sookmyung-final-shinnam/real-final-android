@@ -34,7 +34,7 @@ fun CharacterStoryButton(
     storyId: Long?,    // 동화 아이디
     storyUrl: String?, // 동화 이미지 또는 영상 소스
     type: String,    // 동화 타입 구분
-    onClick: (Long) -> Unit = {},
+    onStoryClick: (Long) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isExist = !storyUrl.isNullOrBlank()
@@ -44,7 +44,7 @@ fun CharacterStoryButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { if (isExist && storyId != null) onClick(storyId) },
+            onClick = { if (isExist && storyId != null) onStoryClick(storyId) },  // storyId 전달
             modifier = Modifier
                 .weight(0.75f)
                 .aspectRatio(1f),

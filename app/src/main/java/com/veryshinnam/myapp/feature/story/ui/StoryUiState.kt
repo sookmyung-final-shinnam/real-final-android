@@ -8,8 +8,9 @@ sealed interface StoryUiState {
     data class Error(val message: String) : StoryUiState
 
     data class Success(
-        val data: StoryData,        // 동화책 정보
-        val pages: List<PageData>,  // 동화책 페이지 리스트
-        val isSpeaking: Boolean = false  // tts 재생 여부
+        val storyData: StoryData,        // 동화책 정보
+        val pagesData: List<PageData>,  // 동화책 페이지 리스트
+        val isSpeaking: Boolean = true, // tts 재생 여부
+        val isPrologue: Boolean = true   // 프롤로그 진입 여부
     ) : StoryUiState
 }

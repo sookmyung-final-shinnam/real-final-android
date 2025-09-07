@@ -20,6 +20,7 @@ import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 @Composable
 fun CharacterCardBack(
     story: StoryVideoData,             // 동화 정보 (종이책+영상)
+    onStoryClick: (Long) -> Unit,
     modifier: Modifier = Modifier // 부모에서 넘겨받은 크기
 ) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
@@ -44,6 +45,7 @@ fun CharacterCardBack(
                 storyId = story.storyId ?: -1L,
                 storyUrl = story?.storyImage,
                 type = "종이책",
+                onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)
             )
 
@@ -52,6 +54,7 @@ fun CharacterCardBack(
                 storyId = story.videoId ?: -1L,
                 storyUrl = story?.videoUrl,
                 type = "짧은 영상",
+                onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)
             )
         }

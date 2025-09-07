@@ -29,8 +29,8 @@ class StoryViewModel @Inject constructor(
                 val pages = getDummyPageData(storyId)
 
                 _storyUiState.value = StoryUiState.Success(
-                    data = data,
-                    pages = pages
+                    storyData = data,
+                    pagesData = pages
                 )
             } catch (e: Exception) {
                 _storyUiState.value = StoryUiState.Error("스토리 데이터를 불러오는데 실패했습니다.")
@@ -38,13 +38,31 @@ class StoryViewModel @Inject constructor(
         }
     }
 
+    // 동화보기 스크린 이동
+    fun goToReader() {
+        val current = _storyUiState.value
+        if (current is StoryUiState.Success) {
+            _storyUiState.value = current.copy(isPrologue = false)
+        }
+    }
+
+    // 프롤로그 스크린 이동
+    fun goToPrologue() {
+        val current = _storyUiState.value
+        if (current is StoryUiState.Success) {
+            _storyUiState.value = current.copy(isPrologue = true)
+        }
+    }
+
     // 스토리 기본 정보
     private suspend fun getDummyStoryData(storyId: Long): StoryData {
         delay(100)
         return StoryData(
-            title = "민수와 깜찍한 요정의 사랑 모험",
-             "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png", // 표지
-             "민수와 깜찍한 요정의 사랑 모험의 내용 테스트"
+            18,
+            "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png", // 표지
+            "민수와 깜찍한 요정의 사랑 모험",
+            "#해시태그1 #해시태그2 #해시태그3 #해시태그4",
+            "민수와 깜찍한 요정의 사랑 모험의 내용 테스트입니다~~~~~~~~~~~줄거리!!"
         )
     }
 
@@ -54,24 +72,24 @@ class StoryViewModel @Inject constructor(
 
         return listOf(
             PageData(
-                 1,
-                 "https://i.ibb.co/RG7Fxwrx/img-calender.png",
-                 "민수는 숲 속 깊은 곳에서 빛나는 나무를 발견했다."
+                1,
+                "https://i.ibb.co/RG7Fxwrx/img-calender.png",
+                "민수는 숲 속 깊은 곳에서 빛나는 나무를 발견했다."
             ),
             PageData(
-                 2,
-                 "https://i.ibb.co/27QsVLDT/img-prince.png",
-                 "민수는 배가 고픈 다람쥐 토미를 만났다."
+                2,
+                "https://i.ibb.co/27QsVLDT/img-prince.png",
+                "민수는 배가 고픈 다람쥐 토미를 만났다."
             ),
             PageData(
-                 3,
-                 "https://i.ibb.co/FkBMgqGS/Kakao-Talk-20250424-120644425.png",
-                 "\"가진 게 있으면 모두 다 내놔\"라고 외치는 토미에게 사과를 건네주었다."
+                3,
+                "https://i.ibb.co/FkBMgqGS/Kakao-Talk-20250424-120644425.png",
+                "\"가진 게 있으면 모두 다 내놔\"라고 외치는 토미에게 사과를 건네주었다."
             ),
             PageData(
-                 4,
-                 "https://i.ibb.co/DDvNSjv5/image.png",
-                 "민수와 토미는 결혼을 해서 행복하게 살았다."
+                4,
+                "https://i.ibb.co/DDvNSjv5/image.png",
+                "민수와 토미는 결혼을 해서 행복하게 살았다."
             )
         )
     }
