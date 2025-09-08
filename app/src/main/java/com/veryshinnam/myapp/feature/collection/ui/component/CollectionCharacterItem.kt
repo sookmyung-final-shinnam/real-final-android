@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.storage.ui.component
+package com.veryshinnam.myapp.feature.collection.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -25,7 +25,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
 
 @Composable
-fun StorageCharacterItem(
+fun CollectionCharacterItem(
     cId: Long,       // 캐릭터 아이디
     cName: String,   // 캐릭터 이름
     cImage: String?, // 캐릭터 이미지

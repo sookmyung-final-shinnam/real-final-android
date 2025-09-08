@@ -15,79 +15,86 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
 fun HomeScreen(
     onSettingsClick: () -> Unit = {},
     onCheckInClick: () -> Unit = {},
-    onDashboardClick: () -> Unit = {},
-    onCreationClick: () -> Unit = {},
-    onStorageClick: () -> Unit = {},
+    onDashboardClick: () -> Unit = {}, // 바텀 버튼
+    onCreationClick: () -> Unit = {},  // 바텀 버튼
+    onCollectionClick: () -> Unit = {},   // 바텀 버튼
     onCharacterClick: (Long) -> Unit = {},
     vm: HomeViewModel =  hiltViewModel()
 ) {
     // 홈화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
-    var lastSelectedId by rememberSaveable { mutableStateOf<Long?>(null) }
 
     // 동화책 상세 > 홈 화면: 세로 모드
     val context = LocalContext.current
     SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
 
-    when (val state = uiState) {
-        is HomeUiState.Loading -> {
-            Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-                CircularProgressIndicator(
-                    color = colorResource(id = R.color.main_orange), // 주황색
-                    trackColor = Color.Gray.copy(alpha = 0.5f),
-                    strokeWidth = 4.dp
-                )
-            }
-        }
-        is HomeUiState.Error -> {
-            ErrorView(
-                message = state.message,
-                onRetry = { vm.reload() }
-            )
-        }
-        is HomeUiState.Success -> {
-            HomeScaffoldScreen(
-                data = state.data,
-                lastSelectedId = lastSelectedId,
-                onSettingsClick = onSettingsClick,
-                onCheckInClick = onCheckInClick,
-                onDashboardClick = onDashboardClick,
-                onCreationClick = onCreationClick,
-                onStorageClick = onStorageClick,
-                onCharacterClick =  { id ->
-                    lastSelectedId = id
-                    onCharacterClick(id)
-                }
-            )
-        }
+    // HomeScreen 진입할 때마다 실행
+    LaunchedEffect(Unit) {
+        vm.updateRandomMessage()
     }
-}
 
-@Composable
-fun ErrorView(
-    message: String,
-    onRetry: () -> Unit
-) {
-    Column(
-        Modifier
-            .fillMaxSize()
-            .padding(24.dp),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Text(
-            text = message,
-            style = MaterialTheme.typography.bodyLarge,
-            color = MaterialTheme.colorScheme.error
-        )
-        Spacer(Modifier.height(16.dp))
-        Button(onClick = onRetry) {
-            Text("다시 시도")
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = {
+            Column (Modifier.fillMaxWidth()) {
+                AppTopBar() // 상단 로고
+            }
+        },
+        bottomBar = {
+            // 네비게이션 바만큼 여백
+            Spacer(
+                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+            )
+        }
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = uiState) {
+                // 조회 로딩 중
+                is HomeUiState.Loading -> {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.main_orange), // 주황색
+                        trackColor = Color.Gray.copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
+                    )
+                }
+                // 조회 오류
+                is HomeUiState.Error -> {
+                    LoadErrorView(
+                        message = state.message,
+                        onRetry = { vm.reload() }
+                    )
+                }
+                // 조회 성공
+                is HomeUiState.Success -> {
+                    HomeMainScreen(
+                        user = state.userData,
+                        favorites = state.favoritesData,
+                        lastSelectedId = state.lastSelectedCharacter,
+                        randomMessage = state.randomMessage,
+                        onSettingsClick = onSettingsClick,
+                        onCheckInClick = onCheckInClick,
+                        onDashboardClick = onDashboardClick,
+                        onCreationClick = onCreationClick,
+                        onCollectionClick = onCollectionClick,
+                        onCharacterClick =  { id ->
+                            vm.updateLastSelectedCharacter(id) // 마지막 선택 캐릭터 업데이트
+                            onCharacterClick(id)               // 캐릭터 상세화면으로 이동
+                        }
+                    )
+                }
+            }
         }
     }
 }

@@ -14,7 +14,7 @@ import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
 import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
-import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
+import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -42,9 +42,9 @@ class MainActivity : ComponentActivity() {
                             // 캐릭터 생성
                             mainNavController.navigate(SelectRoutes.ROOT)
                         },
-                        onStorageClick = {
+                        onCollectionClick = {
                             // 보관함
-                            mainNavController.navigate("storage")
+                            mainNavController.navigate("collection")
                         },
                         onCharacterClick = { charId ->
                             // 캐릭터 상세 보기
@@ -66,8 +66,8 @@ class MainActivity : ComponentActivity() {
                 selectNavGraph(mainNavController)
 
                 // 보관함
-                composable("storage") {
-                    StorageScreen(
+                composable("collection") {
+                    CollectionScreen(
                         onBack = { mainNavController.popBackStack() },
                         onItemClick = { id -> mainNavController.navigate("character/$id") }
                     )

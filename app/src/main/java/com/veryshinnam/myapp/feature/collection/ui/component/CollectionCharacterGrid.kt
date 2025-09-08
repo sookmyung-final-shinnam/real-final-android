@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.storage.ui.component
+package com.veryshinnam.myapp.feature.collection.ui.component
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -7,12 +7,10 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyGridState
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.itemsIndexed
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.runtime.Composable
@@ -26,11 +24,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.storage.ui.StorageUiState
+import com.veryshinnam.myapp.feature.collection.ui.CollectionUiState
 
 @Composable
-fun StorageCharacterGrid(
-    data: List<StorageUiState.StorageData>,
+fun CollectionCharacterGrid(
+    data: List<CollectionUiState.StorageData>,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -58,7 +56,7 @@ fun StorageCharacterGrid(
                     // 마지막 행에 바닥 여백 줌
                     val isLast = isLastRow(index, data.size, 3)
 
-                    StorageCharacterItem(
+                    CollectionCharacterItem(
                         cId = item.characterId,
                         cName = item.characterName,
                         cImage = item.characterImage,

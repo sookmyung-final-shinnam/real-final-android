@@ -43,12 +43,12 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.home.data.dto.FavoriteCharacter
+import com.veryshinnam.myapp.feature.home.model.FavoriteData
 
 @Composable
 fun HomeFavoriteCharacters (
     modifier: Modifier = Modifier,
-    characters: List<FavoriteCharacter>,
+    characters: List<FavoriteData>,
     initialSelectedId: Long? = null,
     cornerRadius: Dp = 20.dp,
     spaceBetween: Dp = 12.dp,
@@ -157,12 +157,12 @@ fun HomeFavoriteCharacters (
 
 @Composable
 private fun CharacterSlot(
-    character: FavoriteCharacter?,
+    character: FavoriteData?,
     modifier: Modifier,
     cornerRadius: Dp,
     isCenter: Boolean = false,
     dimAlpha: Float = 0.5f,
-    onClick: (FavoriteCharacter?) -> Unit = {}
+    onClick: (FavoriteData?) -> Unit = {}
 ) {
     val isClickable = isCenter && character != null
     val shape = RoundedCornerShape(cornerRadius)
@@ -191,7 +191,7 @@ private fun CharacterSlot(
             Box(Modifier.fillMaxSize())
         } else {
             AsyncImage(
-                model = character.imageUrl,
+                model = character.image,
                 contentDescription = character.name,
                 modifier = Modifier
                     .fillMaxSize()

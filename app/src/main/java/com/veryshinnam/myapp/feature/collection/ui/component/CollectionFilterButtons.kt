@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.storage.ui.component
+package com.veryshinnam.myapp.feature.collection.ui.component
 
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Row
@@ -15,7 +15,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.storage.enums.Filter
+import com.veryshinnam.myapp.feature.collection.model.Filter
 
 @Composable
 fun FilterButtons(
