@@ -1,9 +1,6 @@
-package com.veryshinnam.myapp.feature.character.ui
+package com.veryshinnam.myapp.feature.story.ui
 
-import android.app.Activity
-import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -40,39 +37,36 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 
-
 @Composable
-fun CharacterScreen(
-    id: Long,
+fun StoryScreen(
+    storyId: Long,      // 동화 아이디
     onBack: () -> Unit,
-    onStoryClick: (Long) -> Unit,
-    onVideoClick:  (Long) -> Unit,
-    vm: CharacterViewModel = hiltViewModel()
+    onHome: () -> Unit,
+    vm: StoryViewModel = hiltViewModel()
 ) {
-    val uiState by vm.charUiState.collectAsStateWithLifecycle()
-    val activity = LocalActivity.current
+    val uiState by vm.storyUiState.collectAsStateWithLifecycle()
+    val layoutDirection = LocalLayoutDirection.current
 
-    // 가로모드 + id가 바뀌면 재로딩
-    LaunchedEffect(id) {
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        vm.loadDummyCharacter(id)
-    }
+    // storyId 바뀔 때마다 데이터 로드
+    LaunchedEffect(storyId) { vm.loadStoryData(storyId) }
 
-    // 뒤로가기 세로모드
-    BackHandler {
-        onBack()
-    }
+    BackHandler { onBack() }
 
     Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
             Column (Modifier.fillMaxWidth()) {
                 AppTopBar() // 기존 바
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = {
-                            onBack()
-                        })
+                        .clickable{
+                            when (val state = uiState) {
+                                is StoryUiState.Success -> {
+                                   if (state.isPrologue) onBack() // 프롤로그 >  이전 스크린
+                                   else vm.goToPrologue() // 엔딩 포함 페이지 > 프롤로그 스크린
+                                }
+                                else -> onBack()
+                            }
+                        }
                         .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
                     verticalAlignment = Alignment.CenterVertically
                 ) {
@@ -83,7 +77,8 @@ fun CharacterScreen(
             }
         },
         bottomBar = {
-            Spacer( // 네비게이션 바만큼 여백
+            // 네비게이션 바만큼 여백
+            Spacer(
                 modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
             )
         }
@@ -91,12 +86,16 @@ fun CharacterScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
+                .padding(
+                    // top 부분 제외 여백 설정
+                    start = innerPadding.calculateStartPadding(layoutDirection),
+                    end = innerPadding.calculateEndPadding(layoutDirection),
+                    bottom = innerPadding.calculateBottomPadding()),
             contentAlignment = Alignment.Center
         ) {
             when (val state = uiState) {
                 // 조회 로딩 중
-                is CharacterUiState.Loading -> {
+                is StoryUiState.Loading -> {
                     CircularProgressIndicator(
                         color = colorResource(id = R.color.main_orange), // 주황색
                         trackColor = Color.Gray.copy(alpha = 0.5f),
@@ -104,21 +103,31 @@ fun CharacterScreen(
                     )
                 }
                 // 조회 오류
-                is CharacterUiState.Error -> {
+                is StoryUiState.Error -> {
                     LoadErrorView(
                         message = state.message,
-                        onRetry = { vm.reload(id) }
+                        onRetry = {  }
                     )
                 }
                 // 조회 성공
-                is CharacterUiState.Success -> {
-                    CharacterCardScreen(
-                        cData = state.characterData,
-                        sData = state.storyData,
-                        onFavoriteClick = { id -> vm.updateFavorite(id) },
-                        onStoryClick = onStoryClick,
-                        onVideoClick = onVideoClick
-                    )
+                is StoryUiState.Success -> {
+
+                    // 맨 처음 프롤로그 화면
+                    if (state.isPrologue) {
+                        StoryPrologueScreen(
+                            story = state.storyData,
+                            onReadClick = { vm.goToReader() }
+                        )
+                    } else {
+                        // 동화 진행 화면
+                        StoryReadingScreen(
+                            pages = state.pagesData,
+                            isSpeaking = state.isSpeaking,
+                            onTtsClick = { vm.setSpeaking(!state.isSpeaking) },
+                            onBack = { vm.goToPrologue() },
+                            onHome = onHome
+                        )
+                    }
                 }
             }
         }
