@@ -5,7 +5,6 @@ import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
-import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -88,10 +87,8 @@ fun HomeScreen(
                         onDashboardClick = onDashboardClick,
                         onCreationClick = onCreationClick,
                         onCollectionClick = onCollectionClick,
-                        onCharacterClick =  { id ->
-                            vm.updateLastSelectedCharacter(id) // 마지막 선택 캐릭터 업데이트
-                            onCharacterClick(id)               // 캐릭터 상세화면으로 이동
-                        }
+                        onCharacterClick = onCharacterClick,
+                        onUpdateLastSelected = { id -> vm.updateLastSelectedCharacter(id) }
                     )
                 }
             }
