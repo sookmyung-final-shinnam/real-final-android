@@ -1,17 +1,17 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import com.veryshinnam.myapp.feature.home.data.dto.FavoriteCharacter
+import com.veryshinnam.myapp.feature.home.model.FavoriteData
+import com.veryshinnam.myapp.feature.home.model.UserData
 
 sealed interface HomeUiState {
     data object Loading : HomeUiState
-    data class Success(val data: HomeData) : HomeUiState
     data class Error(val message: String) : HomeUiState
 
-    data class HomeData(
-        val username: String,
-        val points: Int,
-        val myCharacters: Int,
-        val favoriteCharacters: List<FavoriteCharacter>
-    )
+    data class Success(
+        val userData: UserData,   // 홈 정보
+        val favoritesData: List<FavoriteData>,   // 즐찾 캐릭터
+        val lastSelectedCharacter: Long? = null, // 마지막 선택 캐릭터
+        val randomMessage: String // 랜덤 메시지
+    ) : HomeUiState
 }
 

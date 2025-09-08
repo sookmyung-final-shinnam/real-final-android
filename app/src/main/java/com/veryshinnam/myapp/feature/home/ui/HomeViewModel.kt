@@ -2,7 +2,8 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.veryshinnam.myapp.feature.home.data.dto.FavoriteCharacter
+import com.veryshinnam.myapp.feature.home.model.FavoriteData
+import com.veryshinnam.myapp.feature.home.model.UserData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -20,7 +21,6 @@ class HomeViewModel @Inject constructor(
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-
     init {
         fetchHomeDummy()
     }
@@ -34,17 +34,15 @@ class HomeViewModel @Inject constructor(
             delay(300)
 
             // 성공 케이스 (더미)
-            val data = HomeUiState.HomeData(
-                username = "짱신남",
-                points = 99,
-                myCharacters = 5,
-                favoriteCharacters = listOf(
-                    FavoriteCharacter(id = 11, name = "유리", imageUrl = "https://ifh.cc/g/QP5O4d.png"),
-                    FavoriteCharacter(id = 12, name = "파워", imageUrl = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"),
-                    FavoriteCharacter(id = 13, name = "파파워", imageUrl = "https://ifh.cc/g/XTGSPy.png")
-                )
+            val user = getDummyUser()
+            val favorites = getDummyFavorites()
+            val randomMessage = HomeRandomMessages.messages.random()
+
+            _homeUiState.value = HomeUiState.Success(
+                userData = user,
+                favoritesData = favorites,
+                randomMessage = randomMessage
             )
-            _homeUiState.value = HomeUiState.Success(data)
 
             // 에러 케이스 테스트 용도
 //             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
@@ -54,6 +52,41 @@ class HomeViewModel @Inject constructor(
     // 홈 화면 다시 조회
     fun reload() {
         fetchHomeDummy()
+    }
+
+    private fun getDummyUser(): UserData {
+        return UserData(
+            username = "짱신남",
+            points = 99,
+            characters = 5
+        )
+    }
+
+    private fun getDummyFavorites(): List<FavoriteData> {
+        return listOf(
+            FavoriteData(id = 11, name = "미니", image = "https://ifh.cc/g/QP5O4d.png"),
+            FavoriteData(id = 12,  name = "미니", image = "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg"),
+            FavoriteData(id = 13,  name = "미니", image = "https://ifh.cc/g/XTGSPy.png"),
+            FavoriteData(id = 18,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")
+        )
+    }
+
+    // 마지막 선택 캐릭터 업데이트
+    fun updateLastSelectedCharacter(id: Long) {
+        val currentState = _homeUiState.value
+        if (currentState is HomeUiState.Success) {
+            _homeUiState.value = currentState.copy(lastSelectedCharacter = id)
+        }
+    }
+
+    // 랜덤 문구 업데이트
+    fun updateRandomMessage() {
+        val currentState = _homeUiState.value
+        if (currentState is HomeUiState.Success) {
+            _homeUiState.value = currentState.copy(
+                randomMessage = HomeRandomMessages.messages.random()
+            )
+        }
     }
 
     // 홈 화면 api 호출

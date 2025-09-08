@@ -15,11 +15,5 @@ data class HomeResult(
     val userPoint: Int,
     val currentPoints: Int,
     val profileImageUrl: String,
-    val favorites: List<FavoriteCharacter>
-)
-
-data class FavoriteCharacter(
-    val id: Long,
-    val name: String,
-    val imageUrl: String
+//    val favorites: List<FavoriteCharacter>
 )

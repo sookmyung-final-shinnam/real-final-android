@@ -14,7 +14,7 @@ android {
 
     defaultConfig {
         applicationId = "com.veryshinnam.myapp"
-        minSdk = 23
+        minSdk = 24
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -60,6 +60,8 @@ dependencies {
     // hilt 적용
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
+    implementation(libs.androidx.constraintlayout)
+    implementation(libs.androidx.compose.testing)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
 
