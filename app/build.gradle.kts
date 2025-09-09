@@ -57,6 +57,9 @@ dependencies {
     // compose url 이미지 조회
     implementation("io.coil-kt:coil-compose:2.5.0")
 
+    // compose icon 확장
+    implementation("androidx.compose.material:material-icons-extended")
+
     // hilt 적용
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")

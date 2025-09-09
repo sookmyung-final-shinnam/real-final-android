@@ -60,7 +60,6 @@ fun SelectCustomButton(
             )
             Text(
                 text = "직접 추가하기",
-                fontSize = 14.sp,
                 modifier = Modifier.offset(y=(-20).dp).weight(0.2f),
                 color = colorResource(R.color.main_orange),
                 style = MaterialTheme.typography.headlineSmall.copy(

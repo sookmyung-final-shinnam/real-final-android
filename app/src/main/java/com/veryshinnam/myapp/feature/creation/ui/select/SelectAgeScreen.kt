@@ -33,8 +33,8 @@ import com.veryshinnam.myapp.R
 
 @Composable
 fun SelectAgeScreen(
-    onNext: () -> Unit,
-    onBack: () -> Unit,
+    onNextClick: () -> Unit,
+    onBackClick: () -> Unit,
     vm: SelectViewModel = hiltViewModel()
 ) {
 
@@ -51,7 +51,7 @@ fun SelectAgeScreen(
             .padding(16.dp),
     ) {
         // 1. 상단 뒤로
-        TextButton(onClick = onBack) { Text("뒤로") }
+        TextButton(onClick = onBackClick) { Text("뒤로") }
         Spacer(Modifier.height(8.dp))
 
         // 2. 나이 선택 컨테이너
@@ -75,7 +75,7 @@ fun SelectAgeScreen(
             enabled = age in 1..100,
             onClick = {
                 vm.selectAge(age)
-                onNext()
+                onNextClick()
             },
             modifier = Modifier
                 .navigationBarsPadding()

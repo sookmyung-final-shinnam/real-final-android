@@ -45,7 +45,8 @@ fun SelectTripleButtons(
                 modifier = Modifier
                     .weight(1f)
                     .clickable(onClick = {onLeftClick()}),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "이전",
@@ -77,7 +78,8 @@ fun SelectTripleButtons(
                 modifier = Modifier
                     .weight(1f)
                     .clickable(onClick = {onRightClick()}),
-                horizontalArrangement = Arrangement.Center
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically
             ) {
                 Text("다음",
                     fontWeight = FontWeight.Medium,

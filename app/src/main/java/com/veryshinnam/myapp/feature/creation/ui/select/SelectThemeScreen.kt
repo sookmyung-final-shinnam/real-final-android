@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.creation.ui.select
 import android.R.attr.onClick
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -70,7 +71,7 @@ import com.veryshinnam.myapp.feature.home.ui.HomeUiState
 // 캐릭터 생성 - 테마 선택 진입점
 @Composable
 fun SelectThemeScreen(
-    onNext: () -> Unit,
+    onNextClick: () -> Unit,
     onBackClick: () -> Unit,
     vm: SelectViewModel = hiltViewModel()
 ) {
@@ -88,19 +89,18 @@ fun SelectThemeScreen(
         contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            BackButton(onBackClick, modifier = Modifier.align(Alignment.TopStart))
+            BackButton(onBackClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopStart))
 
             // TODO: 프로그레스바
 
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = horizontalPadding)
+            Column(modifier = Modifier.fillMaxSize()
+                .padding(horizontal = horizontalPadding)
             ) {
                 // 현재 스크린 설명
                 SelectInfo(
@@ -147,7 +147,7 @@ fun SelectThemeScreen(
                         isCenter = true,   // 직접추가 버튼
                         isRight = true,    // 다음 버튼
                         onCenterClick = { isInputMode = true }, // 직접추가 입력창 열기
-                        onRightClick = { onNext() },            // 다음 단계로 이동
+                        onRightClick = { onNextClick() },       // 다음 단계로 이동
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(0.2f),

@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.creation.ui.select
 
 import androidx.lifecycle.ViewModel
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
+import com.veryshinnam.myapp.feature.creation.model.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -78,7 +79,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     }
 
     // 성별
-    fun selectGender(value: String) { _selectUiState.update { it.copy(gender = value) } }
+    fun selectGender(value: Gender) { _selectUiState.update { it.copy(gender = value) } }
 
     // 나이
     fun selectAge(value: Int) { _selectUiState.update { it.copy(age = value.coerceIn(1, 100)) } }
@@ -99,7 +100,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
             backgroundName = currentState.selectedBackground,
             characterName = currentState.name,
             characterAge = currentState.age,
-            gender = currentState.gender,
+            gender = currentState.gender!!, // null이 아님을 보장
             eyeColor = currentState.eyeColor,
             hairColor = currentState.hairColor,
             hairStyle = currentState.hairStyle

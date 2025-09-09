@@ -94,8 +94,7 @@ fun SelectItemGrid(
                             modifier = Modifier.fillMaxHeight().weight(1f)
                         ) {
                             Text(item,
-                                style = MaterialTheme.typography.displaySmall.copy(
-                                    fontWeight = FontWeight.Bold)
+                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold)
                             )
                         }
                     }

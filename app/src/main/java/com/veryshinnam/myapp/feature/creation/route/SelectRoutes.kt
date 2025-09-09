@@ -39,56 +39,35 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
     ) {
         // 테마
         composable(SelectRoutes.Theme) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
-            val vm: SelectViewModel = hiltViewModel(parentEntry)
 
             SelectThemeScreen(
-                onNext = { navController.navigate(SelectRoutes.Background) },
+                onNextClick = { navController.navigate(SelectRoutes.Background) },
                 onBackClick = { navController.popBackStack() }
             )
         }
 
         // 배경
         composable(SelectRoutes.Background) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
-            val vm: SelectViewModel = hiltViewModel(parentEntry)
 
             SelectBackgroundScreen(
-                onNext = { navController.navigate(SelectRoutes.Gender) },
-                onBack = { navController.popBackStack() },
-                vm = vm
+                onNextClick = { navController.navigate(SelectRoutes.Gender) },
+                onBackClick = { navController.popBackStack() }
             )
         }
 
         // 성별
         composable(SelectRoutes.Gender) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
-            val vm: SelectViewModel = hiltViewModel(parentEntry)
-
             SelectGenderScreen(
-                onNext = { navController.navigate(SelectRoutes.Age) },
-                onBack = { navController.popBackStack() },
-                vm = vm
+                onNextClick = { navController.navigate(SelectRoutes.Age) },
+                onBackClick = { navController.popBackStack() },
             )
         }
 
         // 나이
         composable(SelectRoutes.Age) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
-            val vm: SelectViewModel = hiltViewModel(parentEntry)
-
             SelectAgeScreen(
-                onNext = { navController.navigate(SelectRoutes.Name) },
-                onBack = { navController.popBackStack() },
-                vm = vm
+                onNextClick = { navController.navigate(SelectRoutes.Name) },
+                onBackClick = { navController.popBackStack() },
             )
         }
 
@@ -122,7 +101,7 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
                         themeNames      = uiState.selectedThemes,
                         backgroundName = uiState.selectedBackground,
                         characterName        = uiState.name,
-                        gender      = uiState.gender,
+                        gender      = uiState.gender!!, // null이 아님을 보장
                         characterAge         = uiState.age,
                         hairColor   = uiState.hairColor,
                         eyeColor    = uiState.eyeColor,
