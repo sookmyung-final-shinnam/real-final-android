@@ -38,6 +38,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
@@ -71,6 +72,7 @@ fun CollectionScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            BackButton(onBack, modifier = Modifier.align(Alignment.TopStart))
             when (val state = uiState) {
                 // 조회 로딩 중
                 is CollectionUiState.Loading -> {
@@ -92,7 +94,6 @@ fun CollectionScreen(
                     CollectionCharactersScreen(
                         data = state.data,
                         selectedFilter = state.selectedFilter,
-                        onBack = onBack,
                         onFilterClick = { filter -> vm.selectFilter(filter) },
                         onFavoriteClick = { id -> vm.updateFavorite(id) },
                         onItemClick = onItemClick

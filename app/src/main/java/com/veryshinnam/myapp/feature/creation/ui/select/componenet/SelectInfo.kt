@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.creation.ui.select.componenet
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -25,28 +26,27 @@ import org.w3c.dom.Text
 
 @Composable
 fun SelectInfo(
-    modifier: Modifier,
-    text: String
+    text: String,
+    modifier: Modifier
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.fillMaxHeight()
     ) {
         // 다람쥐 이미지
         Image(
-            painter = painterResource(R.drawable.img_rabbit_cut),
-            contentDescription = "다람쥐 이미지",
+            painter = painterResource(R.drawable.img_squirrel_cut),
+            contentDescription = "설명하는 다람쥐 이미지",
             modifier = Modifier
+                .fillMaxHeight(0.5f)
                 .align(Alignment.End)  // end 정렬
-                .weight(0.45f),  // 이미지 비율 조절
+                .padding(end = 20.dp),
             contentScale = ContentScale.Fit
         )
 
-        // 선택스크린 설명 텍스트
+        // 선택 스크린 설명 텍스트
         Card(
-            modifier = Modifier.weight(1f),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
         ) {

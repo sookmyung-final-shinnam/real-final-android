@@ -62,6 +62,7 @@ dependencies {
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.compose.testing)
+    implementation(libs.androidx.foundation)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
 

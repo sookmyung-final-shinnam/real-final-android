@@ -46,8 +46,7 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
 
             SelectThemeScreen(
                 onNext = { navController.navigate(SelectRoutes.Background) },
-                onBack = { navController.popBackStack() },
-                vm = vm
+                onBackClick = { navController.popBackStack() }
             )
         }
 

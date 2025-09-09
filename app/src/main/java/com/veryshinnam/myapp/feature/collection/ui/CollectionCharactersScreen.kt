@@ -19,6 +19,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.feature.collection.model.Filter
 import com.veryshinnam.myapp.feature.collection.ui.component.FilterButtons
 import com.veryshinnam.myapp.feature.collection.ui.component.CollectionCharacterGrid
@@ -28,7 +29,6 @@ import com.veryshinnam.myapp.feature.collection.ui.component.CollectionInfo
 fun CollectionCharactersScreen(
     data: List<CollectionUiState.StorageData>,
     selectedFilter: Filter,
-    onBack: () -> Unit,
     onFilterClick: (Filter) -> Unit,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (Long) -> Unit
@@ -36,22 +36,9 @@ fun CollectionCharactersScreen(
     val sectionSpacing = 16.dp // 컴포저블 사이 여백
 
     Box(Modifier.fillMaxSize()) {
-        Row(
-            modifier = Modifier
-                .clickable(onClick = onBack)
-                .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
-            verticalAlignment = Alignment.CenterVertically
+        Column(modifier = Modifier.fillMaxSize()
+            .padding(horizontal = sectionSpacing)
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "이전")
-            Spacer(Modifier.width(4.dp))
-            Text("이전", fontWeight = FontWeight.Medium)
-        }
-
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .padding(horizontal = sectionSpacing)
-        ) {
-
             // 보관함 상단
             CollectionInfo(
                 modifier = Modifier

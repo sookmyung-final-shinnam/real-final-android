@@ -3,9 +3,12 @@ package com.veryshinnam.myapp.feature.collection.ui.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
@@ -25,29 +28,25 @@ fun CollectionInfo(
     modifier: Modifier = Modifier // 부모가 넘겨준 높이
 ) {
     Column(
-        modifier = modifier
+        modifier = modifier.fillMaxHeight()
     ) {
        // 토끼 이미지
         Image(
             painter = painterResource(R.drawable.img_rabbit_cut),
             contentDescription = "설명하는 토끼 이미지",
             modifier = Modifier
+                .fillMaxHeight(0.5f)
                 .align(Alignment.End)  // end 정렬
-                .weight(0.45f)  // 이미지 비율 조절
                 .padding(end = 20.dp),
             contentScale = ContentScale.Fit
         )
 
         // 보관함 설명 텍스트
-        Surface(
-            // 테두리
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(id = R.color.blue_gray)),
-            color = Color.White,
-            tonalElevation = 2.dp,
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.55f)
         ) {
             // 텍스트
             Text(
