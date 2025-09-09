@@ -18,35 +18,29 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     // 테마 선택 업데이트
     fun selectTheme(theme: String) {
         val current = _selectUiState.value.selectedThemes.toMutableList()
-
         if (current.contains(theme)) {
-            // 이미 있으면 선택 제거
-            current.remove(theme)
+            current.remove(theme) // 이미 있으면 선택 제거
         } else if (current.size < 3) {
-            // 개수 초과되지 않으면 추가
-            current.add(theme)
+            current.add(theme)  // 개수 초과되지 않으면 추가
         }
 
         _selectUiState.update { it.copy(selectedThemes = current) }
     }
 
     // 직접추가 테마 추가
-    fun addCustomTheme(index: Int, value: String) {
-        _selectUiState.update { current ->
-            val updated = current.customThemes.toMutableMap()
-            updated[index] = value
-            current.copy(customThemes = updated)
-        }
-
-        selectTheme(value)
+    fun addCustomTheme(value: String) {
+        _selectUiState.update { current -> current.copy(customTheme = value) }
+        selectTheme(value) // 추가 후 자동 선택
     }
 
     // 직접추가 테마 삭제
     fun removeCustomTheme(value: String) {
         _selectUiState.update { state ->
-            val updatedCustoms = state.customThemes.filterValues { it != value }
             val updatedThemes = state.selectedThemes.filterNot { it == value }
-            state.copy(customThemes = updatedCustoms, selectedThemes = updatedThemes)
+            state.copy(
+                customTheme = null,
+                selectedThemes = updatedThemes
+            )
         }
     }
 
@@ -84,19 +78,13 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     }
 
     // 성별
-    fun selectGender(value: String) {
-        _selectUiState.update { it.copy(gender = value) }
-    }
+    fun selectGender(value: String) { _selectUiState.update { it.copy(gender = value) } }
 
     // 나이
-    fun selectAge(value: Int) {
-        _selectUiState.update { it.copy(age = value.coerceIn(1, 100)) }
-    }
+    fun selectAge(value: Int) { _selectUiState.update { it.copy(age = value.coerceIn(1, 100)) } }
 
     // 이름
-    fun setName(value: String) {
-        _selectUiState.update { it.copy(name = value.trim()) }
-    }
+    fun setName(value: String) { _selectUiState.update { it.copy(name = value.trim()) } }
 
     // 외형
     fun setEyeColor(value: String)  { _selectUiState.update { it.copy(eyeColor = value) } }
