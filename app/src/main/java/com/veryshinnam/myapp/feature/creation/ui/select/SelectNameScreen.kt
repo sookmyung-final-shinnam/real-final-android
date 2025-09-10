@@ -1,22 +1,14 @@
 package com.veryshinnam.myapp.feature.creation.ui.select
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.navigationBarsPadding
-import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -26,123 +18,105 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.input.ImeAction
-import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.feature.creation.model.NameError
+import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectInfo
+import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectNameInput
+import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectTripleButtons
 
-private val JAMO_REGEX = Regex("[ㄱ-ㅎㅏ-ㅣ]")
-private enum class NameError {
-    NONE, LENGTH, EXIST_JAMO, SPECIAL_CHAR
-}
 
 @Composable
 fun SelectNameScreen(
-    onNext: () -> Unit,
-    onBack: () -> Unit,
-    vm: SelectViewModel= hiltViewModel()
+    onNextClick: () -> Unit,
+    onBackClick: () -> Unit,
+    vm: SelectViewModel = hiltViewModel()
 ) {
-
     val uiState by vm.selectUiState.collectAsState()
 
-    // 이름은 바텀 버튼에서 업데이트
-    var name by rememberSaveable(uiState.name) {
-        mutableStateOf(uiState.name)
-    }
+    // TODO: 이름은 바텀 버튼에서 업데이트
+    var name by rememberSaveable(uiState.name) { mutableStateOf(uiState.name) }
 
     // 닉네임 유효성 검사
     val trimmed = name.trim()
     val error = validateKoreanName(name)
-    val isValid = error == NameError.NONE && name.isNotEmpty()
+    val isValid = error == NameError.NONE && name.isNotBlank()
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        // 1. 상단 '뒤로'
-        TextButton(onClick = onBack) { Text("뒤로") }
-        Spacer(Modifier.height(8.dp))
+    val horizontalPadding = 16.dp
 
-        // 2. 이름 입력 컨테이너
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = { AppTopBar() }, // 상단 로고
+        contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
+    ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(0.8f),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            NameInputContainer(
-                name = name,
-                onNameChange = { new -> if (new.length <= 10) name = new },
-                isValid = isValid,
-                error = error,
-                modifier = Modifier.fillMaxWidth(0.8f)
+            BackButton(
+                onBackClick = onBackClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopStart)
             )
-        }
 
-        Spacer(Modifier.weight(0.1f))
-        // 3. 하단 공통 버튼
-        BottomButton(
-            text = "다음 단계로",
-            enabled = isValid,
-            onClick = {
-                vm.setName(trimmed)
-                onNext()
-            },
-            modifier = Modifier
-                .navigationBarsPadding()
-                .weight(.1f)
-        )
-    }
-}
+            // TODO: 프로그레스바
 
-// 이름 입력 컨테이너
-@Composable
-private fun NameInputContainer(
-    name: String,
-    onNameChange: (String) -> Unit,
-    isValid: Boolean,
-    error: NameError,
-    modifier: Modifier = Modifier
-) {
-    ElevatedCard(
-        modifier = modifier.fillMaxWidth(),
-        elevation = CardDefaults.elevatedCardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.elevatedCardColors(
-            containerColor = colorResource(R.color.yellow_80)
-        )
-    ) {
-        Column(Modifier.padding(horizontal = 20.dp, vertical = 16.dp)) {
-            Text(
-                text = "이름",
-                style = MaterialTheme.typography.titleMedium
-            )
-            Spacer(Modifier.height(8.dp))
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .padding(horizontal = horizontalPadding)
+            ) {
+                // 현재 스크린 설명
+                SelectInfo(
+                    text = "동화 속 주인공의 이름은 뭐야?",
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.25f)
+                )
 
-            OutlinedTextField(
-                value = name,
-                onValueChange = onNameChange,
-                singleLine = true,
-                label = { Text("이름을 입력해주세요!") },
-                placeholder = { Text("한글 2~10자") },
-                isError = name.isNotEmpty() && !isValid,
-                supportingText = {
-                    when (error) {
-                        NameError.NONE -> Text(" ") // 정상 or 비어있을 때는 공백
-                        NameError.LENGTH -> Text("2~10자 사이로 입력해 주세요.")
-                        NameError.EXIST_JAMO -> Text("자음/모음(ㄱ-ㅎ, ㅏ-ㅣ)은 사용할 수 없습니다.")
-                        NameError.SPECIAL_CHAR -> Text("특수문자(!@#$)는 사용할 수 없습니다.")
-                    }
-                },
-                modifier = Modifier.fillMaxWidth()
-            )
+                // 텍스트 필드
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .weight(0.55f),
+                    verticalArrangement = Arrangement.Center,            // 세로 중앙
+                    horizontalAlignment = Alignment.CenterHorizontally   // 가로 중앙
+                ) {
+                    SelectNameInput(
+                        name = name,
+                        onNameChange = { new -> if (new.length <= 10) name = new },
+                        error = error,
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    )
+                }
+
+                // 하단 버튼 영역
+                SelectTripleButtons(
+                    isLeft = true,     // 이전 버튼
+                    isCenter = false,  // 없음
+                    isRight = true,    // 다음 버튼
+                    onLeftClick = { onBackClick() },  // 이전 단계로 이동
+                    onRightClick = {
+                        if (isValid) {
+                            vm.setName(trimmed)
+                            onNextClick()
+                        }
+                    }, // 다음 단계로 이동
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .weight(0.2f),
+                )
+            }
         }
     }
 }
 
 
 // 한국어 닉네임 유효성 처리
+private val JAMO_REGEX = Regex("[ㄱ-ㅎㅏ-ㅣ]")
+
 private fun validateKoreanName(input: String): NameError {
     val trimmed = input.trim()
 
@@ -159,4 +133,3 @@ private fun validateKoreanName(input: String): NameError {
 
     return NameError.NONE
 }
-

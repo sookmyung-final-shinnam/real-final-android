@@ -79,8 +79,8 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
             val vm: SelectViewModel = hiltViewModel(parentEntry)
 
             SelectNameScreen(
-                onNext = { navController.navigate(SelectRoutes.Face) },
-                onBack = { navController.popBackStack() },
+                onNextClick = { navController.navigate(SelectRoutes.Face) },
+                onBackClick = { navController.popBackStack() },
                 vm = vm
             )
         }
