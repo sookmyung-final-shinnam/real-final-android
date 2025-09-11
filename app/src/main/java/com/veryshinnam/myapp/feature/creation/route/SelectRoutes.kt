@@ -95,7 +95,7 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
             val context = LocalContext.current
 
             SelectFaceScreen(
-                onNext = {
+                onNextClick = {
                     val uiState = vm.selectUiState.value
                     val req = StartConversationRequest(
                         themeNames      = uiState.selectedThemes,
@@ -121,7 +121,7 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
                         }
                     )
                 },
-                onBack = { navController.popBackStack() },
+                onBackClick = { navController.popBackStack() },
                 vm = vm
             )
         }

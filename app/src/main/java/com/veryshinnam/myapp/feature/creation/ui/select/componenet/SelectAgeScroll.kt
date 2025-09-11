@@ -40,6 +40,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -103,13 +104,18 @@ fun SelectAgeScroll(
                     kotlin.math.abs(itemCenter - center).toFloat()
                 } ?: 0f
 
-                // 거리에 따라 보간 (가까울수록 강조)
+                // 거리에 따라 가까울수록 강조
                 val rawFraction = (distance / (itemInfo?.size?.times(3) ?: 1)).coerceIn(0f, 1f)
                 val fraction = rawFraction.toDouble().pow(0.5).toFloat() // 부드럽게
 
                 val scale = 1.2f - 0.7f * fraction
                 val alpha = 1f - 0.7f * fraction
-                val color = Color.Black.copy(alpha = alpha)
+//                val color = Color.Black.copy(alpha = alpha)
+                val color = lerp(
+                    start = colorResource(R.color.main_orange),
+                    stop = Color.Black,
+                    fraction = fraction
+                ).copy(alpha = alpha)
 
                 Text(
                     text = itemValue.toString(),

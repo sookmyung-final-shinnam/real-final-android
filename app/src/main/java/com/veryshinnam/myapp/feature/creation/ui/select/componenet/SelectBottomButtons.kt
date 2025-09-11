@@ -36,7 +36,7 @@ fun SelectTripleButtons(
     modifier: Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.padding(bottom = 16.dp),
         verticalAlignment = Alignment.CenterVertically,
     ) {
         if (isLeft) {
