@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,7 +37,6 @@ fun SelectFaceScreen(
     onBackClick: () -> Unit,
     vm: SelectViewModel
 ) {
-
     val uiState by vm.selectUiState.collectAsState()
     val horizontalPadding = 16.dp
 
@@ -56,21 +57,13 @@ fun SelectFaceScreen(
     )
     val styles = listOf("단발 머리", "긴 머리", "곱슬 머리", "대머리")
 
-    // 초기 팔레트 세팅
-    var selectEyeColor by rememberSaveable(uiState.eyeColor) {
-        mutableStateOf(uiState.eyeColor.ifEmpty { colors.first().first })
-    }
-    var selectHairColor by rememberSaveable(uiState.hairColor) {
-        mutableStateOf(uiState.hairColor.ifEmpty { colors.first().first })
-    }
-
-    var selectHairStyle by rememberSaveable(uiState.hairStyle) {
-        mutableStateOf(uiState.hairStyle)
-    }
-
     // 유효성 체크 (모두 선택)
-    val isValid = selectEyeColor.isNotEmpty() && selectHairColor.isNotEmpty() && selectHairStyle.isNotEmpty()
+    val isValid = uiState.eyeColor.isNotEmpty() && uiState.hairColor.isNotEmpty()
+            && uiState.hairStyle.isNotEmpty()
 
+    LaunchedEffect(uiState.hairStyle) {
+        Log.d("SelectScreen", "현재 선택된 머리: ${uiState.hairStyle}")
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -116,8 +109,8 @@ fun SelectFaceScreen(
                     SelectPaletteGrid(
                         title = "눈동자 색",
                         colors = colors,
-                        selectedColorName = selectEyeColor,
-                        onSelect = { selectEyeColor = it },
+                        selectedColorName = uiState.eyeColor,
+                        onSelect = { vm.selectEyeColor(it) },
                         modifier = Modifier.weight(0.4f)
                     )
                     Spacer(Modifier.weight(0.05f))
@@ -126,8 +119,8 @@ fun SelectFaceScreen(
                     SelectPaletteGrid(
                         title = "머리카락 색",
                         colors = colors,
-                        selectedColorName = selectHairColor,
-                        onSelect = { selectHairColor = it },
+                        selectedColorName = uiState.hairColor,
+                        onSelect = { vm.selectHairColor(it) },
                         modifier = Modifier.weight(0.4f)
                     )
 
@@ -137,8 +130,8 @@ fun SelectFaceScreen(
                     SelectStyleButtons(
                         title = "머리 모양",
                         styles = styles,
-                        selected = selectHairStyle,
-                        onSelect = { selectHairStyle = it },
+                        selected = uiState.hairStyle,
+                        onSelect = { vm.selectHairStyle(it)},
                         modifier = Modifier.weight(0.2f)
                     )
                 }
@@ -151,9 +144,6 @@ fun SelectFaceScreen(
                     onLeftClick = { onBackClick() },  // 이전 단계로 이동
                     onRightClick = {
                         if (isValid) {
-                            vm.setEyeColor(selectEyeColor)
-                            vm.setHairColor(selectHairColor)
-                            vm.setHairStyle(selectHairStyle)
                             onNextClick()
                         }
                     },

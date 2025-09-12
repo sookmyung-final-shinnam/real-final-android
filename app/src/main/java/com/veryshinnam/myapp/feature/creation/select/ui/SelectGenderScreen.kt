@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
@@ -31,7 +33,6 @@ fun SelectGenderScreen(
     onBackClick: () -> Unit,
     vm: SelectViewModel
 ) {
-
     val uiState by vm.selectUiState.collectAsState()
 
     val horizontalPadding = 16.dp
@@ -39,6 +40,10 @@ fun SelectGenderScreen(
     // 성별 버튼 체크 용도
     val isFemaleSelected = uiState.gender == Gender.FEMALE
     val isMaleSelected = uiState.gender == Gender.MALE
+
+    LaunchedEffect(uiState.gender) {
+        Log.d("SelectScreen", "현재 선택된 성별: ${uiState.gender}")
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -101,7 +106,13 @@ fun SelectGenderScreen(
                     isCenter = false,  // 없음
                     isRight = true,    // 다음 버튼
                     onLeftClick = { onBackClick() },  // 이전 단계로 이동
-                    onRightClick = { onNextClick() }, // 다음 단계로 이동
+                    onRightClick = {
+                        if (uiState.gender != Gender.NONE) {
+                            onNextClick() // 다음 단계로 이동
+                        } else {
+                            // TODO: 성별을 선택하세요
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.2f),

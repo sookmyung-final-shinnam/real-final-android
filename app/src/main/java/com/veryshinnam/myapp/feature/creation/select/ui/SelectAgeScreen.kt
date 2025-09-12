@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,9 +37,13 @@ fun SelectAgeScreen(
 ) {
 
     val uiState by vm.selectUiState.collectAsState()
+    val listState = vm.ageListState
+
     val horizontalPadding = 16.dp
-    var selectedValue by remember { mutableStateOf(50) }
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = 9)
+
+    LaunchedEffect(uiState.age) {
+        Log.d("SelectScreen", "현재 선택된 나이: ${uiState.age}")
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -71,8 +77,9 @@ fun SelectAgeScreen(
 
                 // 나이 스크롤
                 SelectAgeScroll(
-                    value = selectedValue,
-                    onValueChange = { selectedValue = it },
+                    age = uiState.age,
+                    listState = listState,
+                    onAgeConfirm = { vm.selectAge(it) },
                     modifier = Modifier.fillMaxWidth().weight(0.55f)
                 )
 
@@ -83,10 +90,11 @@ fun SelectAgeScreen(
                     isRight = true,    // 다음 버튼
                     onLeftClick = { onBackClick() },  // 이전 단계로 이동
                     onRightClick = {
-                        val centerIndex = listState.firstVisibleItemIndex + 2
-                        val selectedAge = centerIndex + 1
-                        vm.selectAge(selectedAge) // 나이 업데이트
-                        onNextClick() // 다음 단계로 이동
+                        if (uiState.age != -1) {
+                            onNextClick()
+                        } else {
+                            // TODO: 나이를 선택하세요
+                        }
                     },
                     modifier = Modifier
                         .fillMaxWidth()

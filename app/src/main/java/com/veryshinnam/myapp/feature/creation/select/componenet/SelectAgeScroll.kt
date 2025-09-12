@@ -9,12 +9,18 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.material3.Divider
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -25,30 +31,48 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlin.math.abs
 import kotlin.math.pow
 
 @Composable
 fun SelectAgeScroll(
-    value: Int,
-    onValueChange: (Int) -> Unit,
+    age: Int,
+    listState: LazyListState,
+    onAgeConfirm: (Int) -> Unit, // 나이 확정
     modifier: Modifier = Modifier,
     range: IntRange = 1..100,
 ) {
 
     val values = range.toList()
-
-    val listState = rememberLazyListState(
-        // 중앙 근처에서 시작 (예: 10000번째 아이템에서 시작)
-        initialFirstVisibleItemIndex = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % values.size) + (value - 1)
-    )
     val flingBehavior = rememberSnapFlingBehavior(listState)
 
+    // 사용자가 스크롤했는지 추적
+    var hasUserScrolled by remember { mutableStateOf(false) }
+
     // 중앙값 추적 (스크롤 멈췄을 때)
-    LaunchedEffect(value) {
-        // 1. 우선 대략적인 위치로 이동
-        val targetIndex = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % values.size) + (value - 1)
-        listState.scrollToItem(targetIndex)
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (listState.isScrollInProgress) {
+            hasUserScrolled = true
+        }
+        if (!listState.isScrollInProgress && hasUserScrolled) {
+
+            // 화면 중앙 좌표 계산
+            val center = (listState.layoutInfo.viewportStartOffset + listState.layoutInfo.viewportEndOffset) / 2
+
+            // 중앙과 가장 가까운 값 찾기
+            val closest = listState.layoutInfo.visibleItemsInfo.minByOrNull { item ->
+                val itemCenter = item.offset + item.size / 2
+                abs(itemCenter - center)
+            }
+
+            // 중앙과 가장 가까운 값 > 나이
+            closest?.let {
+                val selectedAge = values[it.index % values.size]
+                onAgeConfirm(selectedAge)
+            }
+        }
     }
 
     Box(
@@ -83,7 +107,6 @@ fun SelectAgeScroll(
 
                 val scale = 1.2f - 0.7f * fraction
                 val alpha = 1f - 0.7f * fraction
-//                val color = Color.Black.copy(alpha = alpha)
                 val color = lerp(
                     start = colorResource(R.color.main_orange),
                     stop = Color.Black,

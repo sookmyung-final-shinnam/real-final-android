@@ -26,7 +26,6 @@ import com.veryshinnam.myapp.R
 fun SelectItemGrid(
     items: List<String>,         // 아이템 리스트
     selectedItems: List<String>, // 선택된 아이템 리스트
-    maxSelectCount: Int,         // 선택 가능 아이템 수
     customItem: String?,         // 직접 추가 아이템
     onItemClick: (String) -> Unit, // 선택 이벤트
     modifier: Modifier = Modifier,

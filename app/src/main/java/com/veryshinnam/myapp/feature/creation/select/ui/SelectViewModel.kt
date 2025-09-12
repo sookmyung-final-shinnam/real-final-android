@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.model.Gender
@@ -16,10 +17,15 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     private val _selectUiState = MutableStateFlow(SelectUiState())
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
+    // 나이 스크롤 상태
+    val ageListState: LazyListState = LazyListState(
+        firstVisibleItemIndex = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % 100) + 5
+    )
+
     // 테마 선택/해제
     fun selectTheme(theme: String) {
         val current = _selectUiState.value
-        val updated = current.selectedThemes.toMutableList()
+        val updated = current.themes.toMutableList()
 
         if (updated.contains(theme)) {
             updated.remove(theme) // 이미 있으면 선택 해제
@@ -27,12 +33,12 @@ class SelectViewModel @Inject constructor() : ViewModel() {
             // 만약 해제한 게 customTheme라면 customTheme도 초기화
             val updatedCustom = if (theme == current.customTheme) "" else current.customTheme
             _selectUiState.update { it.copy(
-                selectedThemes = updated,
+                themes = updated,
                 customTheme = updatedCustom
             ) }
         } else if (updated.size < 3) {
             updated.add(theme)  // 개수 초과되지 않으면 추가
-            _selectUiState.update { it.copy(selectedThemes = updated) }
+            _selectUiState.update { it.copy(themes = updated) }
         }
     }
 
@@ -46,21 +52,21 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     fun selectBackground(value: String) {
         _selectUiState.update { state ->
             // 선택 해제
-            if (state.selectedBackground == value) {
+            if (state.background == value) {
                 // 직접추가 배경 해제
                 if (state.customBackground == value) {
                     state.copy(
                         customBackground = "",
-                        selectedBackground = ""
+                        background = ""
                     )
                 } else {
                     // 일반 배경 해제
-                    state.copy(selectedBackground = "")
+                    state.copy(background = "")
                 }
             }
             // 선택
             else {
-                state.copy(selectedBackground = value)
+                state.copy(background = value)
             }
         }
     }
@@ -70,7 +76,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
         _selectUiState.update {
             it.copy(
                 customBackground = value,
-                selectedBackground = value 
+                background = value
             )
         }
     }
@@ -82,19 +88,19 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     fun selectAge(value: Int) { _selectUiState.update { it.copy(age = value.coerceIn(1, 100)) } }
 
     // 이름
-    fun setName(value: String) { _selectUiState.update { it.copy(name = value.trim()) } }
+    fun selectName(value: String) { _selectUiState.update { it.copy(name = value.trim()) } }
 
     // 외형
-    fun setEyeColor(value: String)  { _selectUiState.update { it.copy(eyeColor = value) } }
-    fun setHairColor(value: String) { _selectUiState.update { it.copy(hairColor = value) } }
-    fun setHairStyle(value: String) { _selectUiState.update { it.copy(hairStyle = value) } }
+    fun selectEyeColor(value: String)  { _selectUiState.update { it.copy(eyeColor = value) } }
+    fun selectHairColor(value: String) { _selectUiState.update { it.copy(hairColor = value) } }
+    fun selectHairStyle(value: String) { _selectUiState.update { it.copy(hairStyle = value) } }
 
     // 대화 시작 (동화 생성)
     fun createStartDialogRequest(): StartConversationRequest {
         val currentState = _selectUiState.value
         return StartConversationRequest(
-            themeNames = currentState.selectedThemes,
-            backgroundName = currentState.selectedBackground,
+            themeNames = currentState.themes,
+            backgroundName = currentState.background,
             characterName = currentState.name,
             characterAge = currentState.age,
             gender = currentState.gender,

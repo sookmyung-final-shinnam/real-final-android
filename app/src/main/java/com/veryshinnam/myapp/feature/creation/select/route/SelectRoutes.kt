@@ -105,10 +105,10 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
                 onNextClick = {
                     val uiState = vm.selectUiState.value
                     val req = StartConversationRequest(
-                        themeNames      = uiState.selectedThemes,
-                        backgroundName = uiState.selectedBackground,
+                        themeNames      = uiState.themes,
+                        backgroundName = uiState.background,
                         characterName        = uiState.name,
-                        gender      = uiState.gender!!, // null이 아님을 보장
+                        gender      = uiState.gender, // null이 아님을 보장
                         characterAge         = uiState.age,
                         hairColor   = uiState.hairColor,
                         eyeColor    = uiState.eyeColor,

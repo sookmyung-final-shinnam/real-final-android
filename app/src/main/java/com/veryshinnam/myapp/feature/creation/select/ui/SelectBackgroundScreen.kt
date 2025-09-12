@@ -46,8 +46,8 @@ fun SelectBackgroundScreen (
     val horizontalPadding = 16.dp
     val backgrounds = listOf("숲 속","바다","왕국","학교","집","우주")
 
-    LaunchedEffect(uiState.selectedBackground) {
-        Log.d("SelectScreen", "현재 선택된 배경: ${uiState.selectedBackground}")
+    LaunchedEffect(uiState.background) {
+        Log.d("SelectScreen", "현재 선택된 배경: ${uiState.background}")
     }
 
     // 뒤로가기 동작 제어
@@ -121,9 +121,8 @@ fun SelectBackgroundScreen (
                 } else {
                     SelectItemGrid(
                         items = backgrounds,
-                        selectedItems = listOf(uiState.selectedBackground).filter { it.isNotBlank() },
+                        selectedItems = listOf(uiState.background).filter { it.isNotBlank() },
                         customItem = uiState.customBackground,
-                        maxSelectCount = 1,
                         onItemClick = { vm.selectBackground(it) },
                         modifier = Modifier
                             .fillMaxWidth()
@@ -141,7 +140,7 @@ fun SelectBackgroundScreen (
                             if (uiState.customBackground.isBlank()) isInputMode = true
                         },
                         onRightClick = {
-                            if (uiState.selectedBackground.isNotBlank()) {
+                            if (uiState.background.isNotBlank()) {
                                 onNextClick()
                             } else {
                                 // TODO: 배경 선택하세요

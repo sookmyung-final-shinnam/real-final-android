@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -46,6 +48,10 @@ fun SelectNameScreen(
     val isValid = error == NameError.NONE && name.isNotBlank()
 
     val horizontalPadding = 16.dp
+
+    LaunchedEffect(uiState.name) {
+        Log.d("SelectScreen", "현재 선택된 이름: ${uiState.name}")
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -100,7 +106,7 @@ fun SelectNameScreen(
                     onLeftClick = { onBackClick() },  // 이전 단계로 이동
                     onRightClick = {
                         if (isValid) {
-                            vm.setName(trimmed)
+                            vm.selectName(trimmed)
                             onNextClick()
                         }
                     }, // 다음 단계로 이동
