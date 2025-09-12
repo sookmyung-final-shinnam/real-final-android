@@ -52,7 +52,7 @@ class MainActivity : ComponentActivity() {
                         },
                         onCreationClick = {
                             // 캐릭터 생성
-                            mainNavController.navigate(SelectRoutes.ROOT)
+                            mainNavController.navigate(SelectRoutes.SELECT)
                         },
                         onCollectionClick = {
                             // 보관함

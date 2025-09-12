@@ -29,7 +29,7 @@ import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButt
 fun SelectGenderScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
-    vm: SelectViewModel = hiltViewModel()
+    vm: SelectViewModel
 ) {
 
     val uiState by vm.selectUiState.collectAsState()

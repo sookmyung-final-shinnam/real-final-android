@@ -36,7 +36,7 @@ import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButt
 fun SelectThemeScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
-    vm: SelectViewModel = hiltViewModel()
+    vm: SelectViewModel
 ) {
     val uiState by vm.selectUiState.collectAsState()
 

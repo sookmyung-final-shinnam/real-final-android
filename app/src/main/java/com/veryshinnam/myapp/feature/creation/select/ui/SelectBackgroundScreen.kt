@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -33,7 +35,7 @@ import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButt
 fun SelectBackgroundScreen (
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
-    vm: SelectViewModel = hiltViewModel()
+    vm: SelectViewModel
 ) {
 
     val uiState by vm.selectUiState.collectAsState()
@@ -43,6 +45,10 @@ fun SelectBackgroundScreen (
 
     val horizontalPadding = 16.dp
     val backgrounds = listOf("숲 속","바다","왕국","학교","집","우주")
+
+    LaunchedEffect(uiState.selectedBackground) {
+        Log.d("SelectScreen", "현재 선택된 배경: ${uiState.selectedBackground}")
+    }
 
     // 뒤로가기 동작 제어
     BackHandler {
@@ -100,10 +106,12 @@ fun SelectBackgroundScreen (
                         value = customInput,
                         onValueChange = { customInput = it },
                         onConfirm = {
-                            if (customInput.isNotBlank()) {
+                            if (customInput.isNotBlank() && customInput !in backgrounds) {
                                 vm.addCustomBackground(customInput)
                                 customInput = ""
                                 isInputMode = false
+                            } else {
+                                // TODO: 이미 있는 배경
                             }
                         },
                         modifier = Modifier
@@ -128,8 +136,17 @@ fun SelectBackgroundScreen (
                         isCenter = true,   // 직접추가 버튼
                         isRight = true,    // 다음 버튼
                         onLeftClick = { onBackClick() },
-                        onCenterClick = { isInputMode = true }, // 직접추가 입력창 열기
-                        onRightClick = { onNextClick() }, // 다음 단계로 이동
+                        onCenterClick = {
+                            // 직접추가 배경 값 비어있으면, 직접추가 입력창 열기
+                            if (uiState.customBackground.isBlank()) isInputMode = true
+                        },
+                        onRightClick = {
+                            if (uiState.selectedBackground.isNotBlank()) {
+                                onNextClick()
+                            } else {
+                                // TODO: 배경 선택하세요
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(0.2f),

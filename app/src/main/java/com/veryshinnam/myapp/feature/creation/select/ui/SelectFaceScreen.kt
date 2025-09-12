@@ -33,7 +33,7 @@ import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButt
 fun SelectFaceScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
-    vm: SelectViewModel = hiltViewModel()
+    vm: SelectViewModel
 ) {
 
     val uiState by vm.selectUiState.collectAsState()
@@ -42,7 +42,7 @@ fun SelectFaceScreen(
     // 기본 팔레트 색상 및 머리 스타일
     val colors = listOf(
         "빨강색" to R.color.palette_red,
-        "핑크색" to R.color.palette_pink,
+        "분홍색" to R.color.palette_pink,
         "주황색" to R.color.palette_orange,
         "노랑색" to R.color.palette_yellow,
         "초록색" to R.color.palette_green,

@@ -22,74 +22,81 @@ import kotlin.jvm.java
 
 // SelectNavigation에 필요한 라우트 상수
 object SelectRoutes {
-    const val ROOT      = "select_root"  // 그래프 루트
-    const val Theme      = "select_theme"
-    const val Background = "select_background"
-    const val Gender     = "select_gender"
-    const val Age        = "select_age"
-    const val Name       = "select_name"
-    const val Face       = "select_face"
+    const val SELECT      = "select"  // 그래프 루트
+    const val THEME      = "select_theme"
+    const val BACKGROUND = "select_background"
+    const val GENDER     = "select_gender"
+    const val AGE        = "select_age"
+    const val NAME       = "select_name"
+    const val FACE       = "select_face"
 }
 
 // 선택 플로우 네비게이션 그래프
 fun NavGraphBuilder.selectNavGraph(navController: NavController) {
     navigation(
-        route = SelectRoutes.ROOT,
-        startDestination = SelectRoutes.Theme
+        route = SelectRoutes.SELECT,
+        startDestination = SelectRoutes.THEME
     ) {
         // 테마
-        composable(SelectRoutes.Theme) { backStackEntry ->
-
+        composable(SelectRoutes.THEME) { backStackEntry ->
+            // SELECT 그래프 범위 ViewModel 공유용 BackStackEntry 생성
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
+            val vm: SelectViewModel = hiltViewModel(parentEntry)
             SelectThemeScreen(
-                onNextClick = { navController.navigate(SelectRoutes.Background) },
-                onBackClick = { navController.popBackStack() }
+                onNextClick = { navController.navigate(SelectRoutes.BACKGROUND) },
+                onBackClick = { navController.popBackStack() },
+                vm = vm
             )
         }
 
         // 배경
-        composable(SelectRoutes.Background) { backStackEntry ->
-
+        composable(SelectRoutes.BACKGROUND) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
+            val vm: SelectViewModel = hiltViewModel(parentEntry)
             SelectBackgroundScreen(
-                onNextClick = { navController.navigate(SelectRoutes.Gender) },
-                onBackClick = { navController.popBackStack() }
+                onNextClick = { navController.navigate(SelectRoutes.GENDER) },
+                onBackClick = { navController.popBackStack() },
+                vm = vm
             )
         }
 
         // 성별
-        composable(SelectRoutes.Gender) { backStackEntry ->
+        composable(SelectRoutes.GENDER) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
+            val vm: SelectViewModel = hiltViewModel(parentEntry)
             SelectGenderScreen(
-                onNextClick = { navController.navigate(SelectRoutes.Age) },
+                onNextClick = { navController.navigate(SelectRoutes.AGE) },
                 onBackClick = { navController.popBackStack() },
+                vm = vm
             )
         }
 
         // 나이
-        composable(SelectRoutes.Age) { backStackEntry ->
+        composable(SelectRoutes.AGE) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
+            val vm: SelectViewModel = hiltViewModel(parentEntry)
             SelectAgeScreen(
-                onNextClick = { navController.navigate(SelectRoutes.Name) },
+                onNextClick = { navController.navigate(SelectRoutes.NAME) },
                 onBackClick = { navController.popBackStack() },
+                vm = vm
             )
         }
 
         // 이름
-        composable(SelectRoutes.Name) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
+        composable(SelectRoutes.NAME) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
             val vm: SelectViewModel = hiltViewModel(parentEntry)
 
             SelectNameScreen(
-                onNextClick = { navController.navigate(SelectRoutes.Face) },
+                onNextClick = { navController.navigate(SelectRoutes.FACE) },
                 onBackClick = { navController.popBackStack() },
                 vm = vm
             )
         }
 
         // 외형 (마지막)
-        composable(SelectRoutes.Face) { backStackEntry ->
-            val parentEntry = remember(backStackEntry) {
-                navController.getBackStackEntry(SelectRoutes.ROOT)
-            }
+        composable(SelectRoutes.FACE) { backStackEntry ->
+            val parentEntry = remember(backStackEntry) { navController.getBackStackEntry(SelectRoutes.SELECT) }
             val vm: SelectViewModel = hiltViewModel(parentEntry)
 
             val context = LocalContext.current
@@ -110,7 +117,7 @@ fun NavGraphBuilder.selectNavGraph(navController: NavController) {
 
                     // 생성 플로우 스택 모두 삭제 > 홈으로 이동
                     navController.navigate("home") {
-                        popUpTo(SelectRoutes.ROOT) { inclusive = true }
+                        popUpTo(SelectRoutes.SELECT) { inclusive = true }
                         launchSingleTop = true
                     }
 
