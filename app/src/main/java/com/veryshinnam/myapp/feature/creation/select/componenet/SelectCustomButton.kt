@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.ui.select.componenet
+package com.veryshinnam.myapp.feature.creation.select.componenet
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background

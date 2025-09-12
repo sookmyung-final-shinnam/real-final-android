@@ -1,5 +1,6 @@
-package com.veryshinnam.myapp.feature.creation.ui.conversation
+package com.veryshinnam.myapp.feature.creation.conversation
 
+import android.util.Log
 import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
@@ -11,9 +12,6 @@ import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
@@ -68,7 +66,7 @@ class ConversationViewModel @Inject constructor(
 
     // 캐릭터 선택 이후 대화 시작
     fun startConversationDummy(req: StartConversationRequest) {
-        android.util.Log.d("ConversationStsrtScreen", "넘겨받은 req = $req")
+        Log.d("ConversationStsrtScreen", "넘겨받은 req = $req")
 
         // 로딩 시작
         _convUiState.value = _convUiState.value.copy(isLoading = true)

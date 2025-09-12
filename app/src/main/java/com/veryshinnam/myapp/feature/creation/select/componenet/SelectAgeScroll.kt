@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.ui.select.componenet
+package com.veryshinnam.myapp.feature.creation.select.componenet
 
 import android.R.attr.scaleX
 import android.R.attr.scaleY
@@ -53,6 +53,7 @@ import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
 import kotlinx.coroutines.flow.distinctUntilChanged
+import kotlin.math.abs
 import kotlin.math.pow
 
 @Composable
@@ -101,7 +102,7 @@ fun SelectAgeScroll(
                 // 중앙과 거리
                 val distance = itemInfo?.let {
                     val itemCenter = it.offset + it.size / 2
-                    kotlin.math.abs(itemCenter - center).toFloat()
+                    abs(itemCenter - center).toFloat()
                 } ?: 0f
 
                 // 거리에 따라 가까울수록 강조

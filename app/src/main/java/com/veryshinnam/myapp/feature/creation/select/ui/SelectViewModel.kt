@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.ui.select
+package com.veryshinnam.myapp.feature.creation.select.ui
 
 import androidx.lifecycle.ViewModel
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest

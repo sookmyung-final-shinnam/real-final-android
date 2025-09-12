@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.route
+package com.veryshinnam.myapp.feature.creation.select.route
 
 import android.content.Intent
 import androidx.compose.runtime.remember
@@ -10,13 +10,13 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navigation
 import com.veryshinnam.myapp.ConversationActivity
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectAgeScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectBackgroundScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectFaceScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectGenderScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectNameScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectThemeScreen
-import com.veryshinnam.myapp.feature.creation.ui.select.SelectViewModel
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectAgeScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectBackgroundScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectFaceScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectGenderScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectNameScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectThemeScreen
+import com.veryshinnam.myapp.feature.creation.select.ui.SelectViewModel
 import kotlin.jvm.java
 
 

@@ -10,8 +10,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
-import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
-import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
+import com.veryshinnam.myapp.feature.creation.select.route.SelectRoutes
+import com.veryshinnam.myapp.feature.creation.select.route.selectNavGraph
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
@@ -25,6 +25,18 @@ class MainActivity : ComponentActivity() {
         enableEdgeToEdge()
 
         setContent {
+//            ConversationStartScreen( onBack= {} , onNext = {id, name ->},
+//                req = StartConversationRequest(
+//                    themeNames = listOf("테마"),
+//                    backgroundName = "배경",
+//                    "이름",
+//                    10,
+//                    Gender.FEMALE,
+//                    "빨간색",
+//                    "노란색",
+//                    "대머리"
+//                )
+//            )
             val mainNavController = rememberNavController()
 
             NavHost(

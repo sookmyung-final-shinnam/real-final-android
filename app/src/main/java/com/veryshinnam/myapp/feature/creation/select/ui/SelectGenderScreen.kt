@@ -1,13 +1,11 @@
-package com.veryshinnam.myapp.feature.creation.ui.select
+package com.veryshinnam.myapp.feature.creation.select.ui
 
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
@@ -23,9 +21,9 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.feature.creation.model.Gender
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectGenderButton
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectInfo
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectTripleButtons
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectGenderButton
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectInfo
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButtons
 
 @Composable
 fun SelectGenderScreen(
@@ -92,7 +90,7 @@ fun SelectGenderScreen(
                     SelectGenderButton(
                         gender = Gender.MALE,
                         isSelected = isMaleSelected,
-                        onButtonClick = { vm.selectGender( Gender.MALE) },
+                        onButtonClick = { vm.selectGender(Gender.MALE) },
                         modifier = Modifier.fillMaxWidth().weight(1f)
                     )
                 }

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.ui.select.componenet
+package com.veryshinnam.myapp.feature.creation.select.componenet
 
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn

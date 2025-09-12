@@ -1,60 +1,51 @@
-package com.veryshinnam.myapp.feature.creation.ui.select
+package com.veryshinnam.myapp.feature.creation.select.ui
 
-import android.widget.NumberPicker
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.lazy.rememberLazyListState
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.ElevatedCard
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
-import com.veryshinnam.myapp.feature.creation.model.Gender
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectAgeScroll
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectGenderButton
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectInfo
-import com.veryshinnam.myapp.feature.creation.ui.select.componenet.SelectTripleButtons
+import com.veryshinnam.myapp.feature.creation.model.NameError
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectInfo
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectNameInput
+import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButtons
+
 
 @Composable
-fun SelectAgeScreen(
+fun SelectNameScreen(
     onNextClick: () -> Unit,
     onBackClick: () -> Unit,
     vm: SelectViewModel = hiltViewModel()
 ) {
-
     val uiState by vm.selectUiState.collectAsState()
+
+    // TODO: 이름은 바텀 버튼에서 업데이트
+    var name by rememberSaveable(uiState.name) { mutableStateOf(uiState.name) }
+
+    // 닉네임 유효성 검사
+    val trimmed = name.trim()
+    val error = validateKoreanName(name)
+    val isValid = error == NameError.NONE && name.isNotBlank()
+
     val horizontalPadding = 16.dp
-    var selectedValue by remember { mutableStateOf(50) }
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = 9)
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -80,18 +71,26 @@ fun SelectAgeScreen(
             ) {
                 // 현재 스크린 설명
                 SelectInfo(
-                    text = "동화 속 주인공의 나이는 뭐야?",
+                    text = "동화 속 주인공의 이름은 뭐야?",
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.25f)
                 )
 
-                // 나이 스크롤
-                SelectAgeScroll(
-                    value = selectedValue,
-                    onValueChange = { selectedValue = it },
-                    modifier = Modifier.fillMaxWidth().weight(0.55f)
-                )
+                // 텍스트 필드
+                Column(
+                    modifier = Modifier.fillMaxWidth()
+                        .weight(0.55f),
+                    verticalArrangement = Arrangement.Center,          // 세로 중앙
+                    horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙
+                ) {
+                    SelectNameInput(
+                        name = name,
+                        onNameChange = { new -> if (new.length <= 10) name = new },
+                        error = error,
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    )
+                }
 
                 // 하단 버튼 영역
                 SelectTripleButtons(
@@ -100,11 +99,11 @@ fun SelectAgeScreen(
                     isRight = true,    // 다음 버튼
                     onLeftClick = { onBackClick() },  // 이전 단계로 이동
                     onRightClick = {
-                        val centerIndex = listState.firstVisibleItemIndex + 2
-                        val selectedAge = centerIndex + 1
-                        vm.selectAge(selectedAge) // 나이 업데이트
-                        onNextClick() // 다음 단계로 이동
-                    },
+                        if (isValid) {
+                            vm.setName(trimmed)
+                            onNextClick()
+                        }
+                    }, // 다음 단계로 이동
                     modifier = Modifier
                         .fillMaxWidth()
                         .weight(0.2f),
@@ -112,4 +111,25 @@ fun SelectAgeScreen(
             }
         }
     }
+}
+
+
+// 한국어 닉네임 유효성 처리
+private val JAMO_REGEX = Regex("[ㄱ-ㅎㅏ-ㅣ]")
+
+private fun validateKoreanName(input: String): NameError {
+    val trimmed = input.trim()
+
+    if (trimmed.isEmpty()) return NameError.NONE
+
+    // 길이 체크 (2~10자)
+    if (trimmed.length !in 2..10) return NameError.LENGTH
+
+    // 자음 또는 모음 배제
+    if (JAMO_REGEX.containsMatchIn(trimmed)) return NameError.EXIST_JAMO
+
+    // 특수문자(!@# 등) 배제
+    if (!trimmed.all { it.isLetterOrDigit() || it == ' ' }) return NameError.SPECIAL_CHAR
+
+    return NameError.NONE
 }

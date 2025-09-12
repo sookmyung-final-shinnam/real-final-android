@@ -66,7 +66,7 @@ fun HomeFavoriteCarousel(
             val selectedIndex = characters.indexOfFirst { it.id == lastSelectedId }
             if (selectedIndex >= 0) baseIndex + selectedIndex else baseIndex
         }
-        listState.scrollToItem(targetIndex, scrollOffset = -160)
+//        listState.scrollToItem(targetIndex, scrollOffset = -160)
     }
 
     Column(

@@ -1,16 +1,17 @@
-package com.veryshinnam.myapp.feature.creation.ui.select.componenet
+package com.veryshinnam.myapp.feature.creation.conversation.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,11 +23,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import org.w3c.dom.Text
 
 @Composable
-fun SelectInfo(
-    text: String,
+fun ConversationStoryText(
+    nextStory: String,
     modifier: Modifier
 ) {
     Column(
@@ -45,18 +45,26 @@ fun SelectInfo(
 
         // 선택 스크린 설명 텍스트
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier.fillMaxSize(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
         ) {
             // 텍스트
             Text(
-                text = text,
+                text = nextStory,
                 modifier = Modifier.padding(20.dp),
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.headlineMedium
+                style = MaterialTheme.typography.titleMedium
             )
+            
+            // 다시듣기
+            Button(
+                onClick = { },
+//                enabled = !uiState.isLoading && uiState.sessionId != null && uiState.currentStep != null
+            ) {
+                Text("다시 듣기")
+            }
         }
     }
 }

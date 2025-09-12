@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.ui.conversation
+package com.veryshinnam.myapp.feature.creation.conversation
 
 enum class ConversationPhase {
     IDLE,               // 초기

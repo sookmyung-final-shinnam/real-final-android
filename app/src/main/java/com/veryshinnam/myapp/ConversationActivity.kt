@@ -9,8 +9,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationScreen
-import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationStartScreen
+import com.veryshinnam.myapp.feature.creation.conversation.ConversationScreen
+import com.veryshinnam.myapp.feature.creation.conversation.ConversationStartScreen
 import dagger.hilt.android.AndroidEntryPoint;
 
 @AndroidEntryPoint
