@@ -113,6 +113,7 @@ fun SelectBackgroundScreen (
                 } else {
                     SelectItemGrid(
                         items = backgrounds,
+                        selectedItems = listOf(uiState.selectedBackground).filter { it.isNotBlank() },
                         customItem = uiState.customBackground,
                         maxSelectCount = 1,
                         onItemClick = { vm.selectBackground(it) },

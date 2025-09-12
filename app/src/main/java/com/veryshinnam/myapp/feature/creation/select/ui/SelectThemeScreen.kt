@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -10,6 +11,7 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +45,9 @@ fun SelectThemeScreen(
 
     val horizontalPadding = 16.dp
     val themes = listOf("로맨스", "모험", "일상", "공포", "우정", "추리")
+    LaunchedEffect(uiState.selectedThemes) {
+        Log.d("SelectScreen", "현재 선택된 테마: ${uiState.selectedThemes}")
+    }
 
     // 뒤로가기 동작 제어
     BackHandler {
@@ -100,10 +105,12 @@ fun SelectThemeScreen(
                         value = customInput,
                         onValueChange = { customInput = it },
                         onConfirm = {
-                            if (customInput.isNotBlank()) {
+                            if (customInput.isNotBlank() && customInput !in themes) {
                                 vm.addCustomTheme(customInput)
                                 customInput = ""
                                 isInputMode = false
+                            } else {
+                                // TODO: 이미 있는 주제
                             }
                         },
                         modifier = Modifier
@@ -113,9 +120,10 @@ fun SelectThemeScreen(
                 } else {
                     SelectItemGrid(
                         items = themes,
-                        customItem = uiState.customTheme,
+                        selectedItems = uiState.selectedThemes,
+                        customItem = uiState.customTheme, // vm 상태 read
                         maxSelectCount = 3,
-                        onItemClick = { vm.selectTheme(it) },
+                        onItemClick = { vm.selectTheme(it) }, // vm 상태 write
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(0.55f)
@@ -126,8 +134,20 @@ fun SelectThemeScreen(
                         isLeft = false,    // 첫 화면이니 이전 버튼 없음
                         isCenter = true,   // 직접추가 버튼
                         isRight = true,    // 다음 버튼
-                        onCenterClick = { isInputMode = true }, // 직접추가 입력창 열기
-                        onRightClick = { onNextClick() },       // 다음 단계로 이동
+                        onCenterClick = {
+                            if (uiState.customTheme.isBlank() && uiState.selectedThemes.size < 3) {
+                                isInputMode = true // 직접추가 입력창 열기
+                            } else {
+                                // TODO: 3개까지만 선택 가능
+                            }
+                        },
+                        onRightClick = {
+                            if (uiState.selectedThemes.isNotEmpty()) {
+                                onNextClick() // 다음 단계로 이동
+                            } else {
+                                // TODO: 주제를 하나 이상 선택
+                            }
+                        },
                         modifier = Modifier
                             .fillMaxWidth()
                             .weight(0.2f),

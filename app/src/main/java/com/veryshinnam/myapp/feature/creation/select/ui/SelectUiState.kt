@@ -3,16 +3,14 @@ package com.veryshinnam.myapp.feature.creation.select.ui
 import com.veryshinnam.myapp.feature.creation.model.Gender
 
 data class SelectUiState (
-    val customTheme: String? = null,      // 직접추가 테마
+    val customTheme: String = "",        // 직접추가 테마
     val selectedThemes: List<String> = emptyList(), // 선택된 테마(최대 3개)
-
-    val customBackground: String? = null, // 직접추가 배경
-    val selectedBackground: String = "",  // 선택된 배경
-
-    val gender: Gender? = null,
-    val age: Int = 10,
-    val name: String = "",
-    val eyeColor: String = "",
-    val hairColor: String = "",
-    val hairStyle: String = ""
+    val customBackground: String = "",   // 직접추가 배경
+    val selectedBackground: String = "", // 선택된 배경
+    val gender: Gender = Gender.NONE,    // 성별
+    val age: Int = -1,          // 나이
+    val name: String = "",      // 이름
+    val eyeColor: String = "",  // 눈색
+    val hairColor: String = "", // 머리색
+    val hairStyle: String = ""  // 머리모양
 )

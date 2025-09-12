@@ -16,33 +16,30 @@ class SelectViewModel @Inject constructor() : ViewModel() {
     private val _selectUiState = MutableStateFlow(SelectUiState())
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
-    // 테마 선택 업데이트
+    // 테마 선택/해제
     fun selectTheme(theme: String) {
-        val current = _selectUiState.value.selectedThemes.toMutableList()
-        if (current.contains(theme)) {
-            current.remove(theme) // 이미 있으면 선택 제거
-        } else if (current.size < 3) {
-            current.add(theme)  // 개수 초과되지 않으면 추가
-        }
+        val current = _selectUiState.value
+        val updated = current.selectedThemes.toMutableList()
 
-        _selectUiState.update { it.copy(selectedThemes = current) }
+        if (updated.contains(theme)) {
+            updated.remove(theme) // 이미 있으면 선택 해제
+
+            // 만약 해제한 게 customTheme라면 customTheme도 초기화
+            val updatedCustom = if (theme == current.customTheme) "" else current.customTheme
+            _selectUiState.update { it.copy(
+                selectedThemes = updated,
+                customTheme = updatedCustom
+            ) }
+        } else if (updated.size < 3) {
+            updated.add(theme)  // 개수 초과되지 않으면 추가
+            _selectUiState.update { it.copy(selectedThemes = updated) }
+        }
     }
 
-    // 직접추가 테마 추가
+    // 테마 직접추가
     fun addCustomTheme(value: String) {
         _selectUiState.update { current -> current.copy(customTheme = value) }
         selectTheme(value) // 추가 후 자동 선택
-    }
-
-    // 직접추가 테마 삭제
-    fun removeCustomTheme(value: String) {
-        _selectUiState.update { state ->
-            val updatedThemes = state.selectedThemes.filterNot { it == value }
-            state.copy(
-                customTheme = null,
-                selectedThemes = updatedThemes
-            )
-        }
     }
 
     // 배경 선택/해제
@@ -53,8 +50,8 @@ class SelectViewModel @Inject constructor() : ViewModel() {
                 // 직접추가 배경 해제
                 if (state.customBackground == value) {
                     state.copy(
-                        selectedBackground = "",
-                        customBackground = null
+                        customBackground = "",
+                        selectedBackground = ""
                     )
                 } else {
                     // 일반 배경 해제
@@ -68,7 +65,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
         }
     }
 
-    // 직접추가 배경 추가
+    // 배경 직접추가
     fun addCustomBackground(value: String) {
         _selectUiState.update {
             it.copy(
@@ -100,7 +97,7 @@ class SelectViewModel @Inject constructor() : ViewModel() {
             backgroundName = currentState.selectedBackground,
             characterName = currentState.name,
             characterAge = currentState.age,
-            gender = currentState.gender!!, // null이 아님을 보장
+            gender = currentState.gender,
             eyeColor = currentState.eyeColor,
             hairColor = currentState.hairColor,
             hairStyle = currentState.hairStyle
