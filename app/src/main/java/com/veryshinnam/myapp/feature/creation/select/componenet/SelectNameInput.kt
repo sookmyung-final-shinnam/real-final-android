@@ -43,7 +43,7 @@ fun SelectNameInput(
 ) {
     val horizontalPadding = 10.dp
     val topPadding = 8.dp
-    val textPadding = 16.dp
+    val textPadding = 20.dp
 
     Column(modifier) {
         // 제목

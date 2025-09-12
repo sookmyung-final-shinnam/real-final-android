@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -43,6 +44,16 @@ fun SelectBackgroundScreen (
     val horizontalPadding = 16.dp
     val backgrounds = listOf("숲 속","바다","왕국","학교","집","우주")
 
+    // 뒤로가기 동작 제어
+    BackHandler {
+        if (isInputMode) {
+            // 입력 모드일 때는 모드만 해제
+            isInputMode = false
+        } else {
+            // 일반 모드일 때는 원래 뒤로가기 동작
+            onBackClick()
+        }
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -53,7 +64,17 @@ fun SelectBackgroundScreen (
             modifier = Modifier.fillMaxSize().padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            BackButton(onBackClick, modifier = Modifier.align(Alignment.TopStart)) // 백버튼
+            BackButton(
+                onBackClick = {
+                    if (isInputMode) {
+                        isInputMode = false // 입력 모드 해제
+                    } else {
+                        onBackClick()       // 원래 뒤로가기
+                    }},
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .align(Alignment.TopStart)
+            )
 
             // TODO: 프로그레스바
 

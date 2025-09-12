@@ -11,9 +11,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyHorizontalGrid
 import androidx.compose.foundation.lazy.grid.items
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -55,12 +57,13 @@ fun SelectPaletteGrid(
             shape = RoundedCornerShape(24.dp),
             border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         ) {
-            LazyHorizontalGrid(
-                rows = GridCells.Fixed(2), // 2행
+            LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalArrangement = Arrangement.spacedBy(topPadding),
-                contentPadding = PaddingValues(vertical = verticalPadding, horizontal = horizontalPadding)
+                horizontalArrangement = Arrangement.spacedBy(12.dp),
+                contentPadding = PaddingValues(
+                    vertical = verticalPadding,
+                    horizontal = horizontalPadding
+                )
             ) {
                 items(colors) { (label, resId) ->
                     val color = colorResource(resId)
@@ -69,7 +72,8 @@ fun SelectPaletteGrid(
                         color = color,
                         selected = selected,
                         onClick = { onSelect(label) },
-                        modifier = Modifier.aspectRatio(1f) // 1:1 비율
+                        modifier = Modifier
+                            .aspectRatio(1f) // 정사각형
                     )
                 }
             }

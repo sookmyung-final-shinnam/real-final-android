@@ -138,9 +138,9 @@ fun SelectFaceScreen(
                         colors = colors,
                         selectedColorName = selectEyeColor,
                         onSelect = { selectEyeColor = it },
-                        modifier = Modifier.weight(0.4f).fillMaxWidth(0.95f)
+                        modifier = Modifier.weight(0.4f)
                     )
-                    Spacer(Modifier.weight(0.1f))
+                    Spacer(Modifier.weight(0.05f))
 
                     // 머리색 선택 파레트
                     SelectPaletteGrid(
@@ -148,10 +148,10 @@ fun SelectFaceScreen(
                         colors = colors,
                         selectedColorName = selectHairColor,
                         onSelect = { selectHairColor = it },
-                        modifier = Modifier.weight(0.4f).fillMaxWidth(0.95f)
+                        modifier = Modifier.weight(0.4f)
                     )
 
-                    Spacer(Modifier.weight(0.1f))
+                    Spacer(Modifier.weight(0.05f))
 
                     // 머리 모양 선택 버튼
                     SelectStyleButtons(
@@ -159,7 +159,7 @@ fun SelectFaceScreen(
                         styles = styles,
                         selected = selectHairStyle,
                         onSelect = { selectHairStyle = it },
-                        modifier = Modifier.weight(0.2f).fillMaxWidth(0.95f)
+                        modifier = Modifier.weight(0.2f)
                     )
                 }
 

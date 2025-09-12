@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.WindowInsets
@@ -43,6 +44,18 @@ fun SelectThemeScreen(
     val horizontalPadding = 16.dp
     val themes = listOf("로맨스", "모험", "일상", "공포", "우정", "추리")
 
+    // 뒤로가기 동작 제어
+    BackHandler {
+        if (isInputMode) {
+            // 입력 모드일 때는 모드만 해제
+            isInputMode = false
+        } else {
+            // 일반 모드일 때는 원래 뒤로가기 동작
+            onBackClick()
+        }
+    }
+
+    // 화면
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = { AppTopBar() }, // 상단 로고
@@ -52,10 +65,17 @@ fun SelectThemeScreen(
             modifier = Modifier.fillMaxSize().padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            BackButton(onBackClick,
+            BackButton(
+                onBackClick = {
+                    if (isInputMode) {
+                        isInputMode = false // 입력 모드 해제
+                    } else {
+                        onBackClick()       // 원래 뒤로가기
+                    }},
                 modifier = Modifier
                     .fillMaxWidth()
-                    .align(Alignment.TopStart))
+                    .align(Alignment.TopStart)
+            )
 
             // TODO: 프로그레스바
 
