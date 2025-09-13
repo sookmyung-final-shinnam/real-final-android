@@ -99,7 +99,7 @@ fun ConversationScreen(
                             CurrentStep.START -> { // 대화 시작 (다음 이야기)
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
-                                    onNextClick = {  },
+                                    onNextClick = {  vm.goToNextStep() },
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }
@@ -107,25 +107,30 @@ fun ConversationScreen(
                             CurrentStep.STORY -> { // 다음 이야기
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
-                                    onNextClick = {  },
+                                    onNextClick = { vm.goToNextStep() },
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }
 
-                            CurrentStep.QUESTION -> { // llm 질문
-                                //                            QuestionContent(
-                                //                                question = state.questionData?.question.orEmpty(),
-                                //                                onAnswerClick = { vm.goToNextStep() }
-                                //                            )
+                            CurrentStep.QUESTION -> { // llm 질문 (STORY 단계 이동 가능)
+                                BackHandler { vm.goToPreviousStep() }
+                                ConversationQuestionContent(
+                                    question = state.questionData!!.question,
+                                    onReplayClick = { },
+                                    onRecordClick = { vm.goToNextStep() },
+                                    modifier =  Modifier.weight(0.8f)
+                                )
                             }
 
-                            CurrentStep.ANSWER -> {
+                            CurrentStep.ANSWER -> { //(QUESTION 단계 이동 가능)
+                                BackHandler { vm.goToPreviousStep() }
                                 //                            AnswerInputContent(
                                 //                                onAnswer = { answer -> vm.sendAnswer(answer) }
                                 //                            )
                             }
 
-                            CurrentStep.FEEDBACK -> {
+                            CurrentStep.FEEDBACK -> { //(QUESTION 단계 이동 가능)
+                                BackHandler { vm.goToPreviousStep() }
                                 //                            FeedbackContent(
                                 //                                feedback = state.feedbackData!!,
                                 //                                onNext = { vm.goToNextStep() }

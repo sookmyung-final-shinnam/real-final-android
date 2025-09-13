@@ -1,11 +1,9 @@
 package com.veryshinnam.myapp.feature.creation.conversation.component
 
-import android.R.attr.scaleX
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -31,36 +29,26 @@ import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
 @Composable
-fun ConversationStoryText(
-    nextStory: String,
+fun ConversationQuestionText(
+    question: String,
     onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
-    Column(
-        modifier = modifier.fillMaxWidth(0.9f)
+    Box(
+        modifier = modifier.fillMaxWidth(0.9f).fillMaxHeight()
     ) {
-        // 다람쥐 이미지
-        Image(
-            painter = painterResource(R.drawable.img_squirrel_cut),
-            contentDescription = "설명하는 다람쥐 이미지",
-            modifier = Modifier
-                .weight(0.2f)
-                .padding(start = 16.dp)
-                .graphicsLayer(scaleX = -1f), // 가로 반전
-            contentScale = ContentScale.Fit
-        )
-
-        // 다음 스토리 텍스트
+        // 질문 텍스트
         Card(
-            modifier = Modifier.fillMaxSize().weight(0.8f),
+            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f)
+                .align(Alignment.TopCenter), // Box 위쪽
             colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(48.dp),
+            shape = RoundedCornerShape(32.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
         ) {
             Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-                // 스토리 텍스트
+                // 질문 텍스트
                 Text(
-                    text = nextStory,
+                    text = question,
                     modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
@@ -84,5 +72,17 @@ fun ConversationStoryText(
                 }
             }
         }
+
+        // 다람쥐 이미지
+        Image(
+            painter = painterResource(R.drawable.img_llm_question),
+            contentDescription = "다람쥐 이미지",
+            modifier = Modifier
+                .fillMaxHeight(0.85f)
+                .align(Alignment.BottomCenter) // Box 아래쪽
+                .padding(start = 16.dp)
+                .graphicsLayer(scaleX = -1f), // 가로 반전
+            contentScale = ContentScale.Fit
+        )
     }
 }

@@ -26,10 +26,10 @@ fun ConversationStoryContent(
             onReplayClick = onReplayClick
         )
 
-
+        Spacer(Modifier.weight(0.05f))
         // 다음 버튼
         ConversationNextButton(
-            modifier = Modifier.weight(0.2f).align(Alignment.CenterHorizontally),
+            modifier = Modifier.weight(0.15f).align(Alignment.CenterHorizontally),
             onClick = onNextClick
         )
     }

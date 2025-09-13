@@ -7,10 +7,12 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
+import com.veryshinnam.myapp.feature.creation.data.dto.NextStoryResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
 import com.veryshinnam.myapp.feature.creation.model.CurrentStep
+import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,6 +21,15 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import java.util.Locale
 import javax.inject.Inject
+
+private fun changeLoopStep(loopStep: Int): String {
+    return when (loopStep) {
+        1 -> "STEP_01"
+        2 -> "STEP_02"
+        3 -> "STEP_03"
+        else -> "END"
+    }
+}
 
 @HiltViewModel
 class ConversationViewModel @Inject constructor(
@@ -37,162 +48,10 @@ class ConversationViewModel @Inject constructor(
     val isSttReady: StateFlow<Boolean> = stt.isReady
     val isSttListening: StateFlow<Boolean> = stt.isListening
 
-//    // STT 이벤트 수집
-//    init {
-//        viewModelScope.launch {
-//            stt.events.collect { ev ->
-//                when (ev) {
-//                    is SttManager.SttEvent.Ready -> {
-//                        _convUiState.value = _convUiState.value.copy(
-//                            phase = ConversationPhase.LISTENING,
-//                            errorMessage = null
-//                        )
-//                    }
-//                    is SttManager.SttEvent.Partial -> {
-//                        _convUiState.value = _convUiState.value.copy(partialAnswer = ev.text)
-//                    }
-//                    is SttManager.SttEvent.Final -> {
-//                        _convUiState.value = _convUiState.value.copy(
-//                            userAnswer = ev.text,
-//                            partialAnswer = null
-//                        )
-//                        // 피드백은 현재 요구 범위에서 제외
-//                    }
-//                    is SttManager.SttEvent.Error -> {
-//                        _convUiState.value = _convUiState.value.copy(
-//                            errorMessage = "STT 오류(${ev.code}): ${ev.message}",
-//                            phase = ConversationPhase.ASKING
-//                        )
-//                    }
-//                    is SttManager.SttEvent.End -> Unit
-//                }
-//            }
-//        }
-//    }
-//
-//    // 캐릭터 선택 이후 대화 시작
-//    fun startConversationDummy(req: StartConversationRequest) {
-//        Log.d("ConversationStsrtScreen", "넘겨받은 req = $req")
-//
-//        // 로딩 시작
-//        _convUiState.value = _convUiState.value.copy(isLoading = true)
-//
-//        // 더미 데이터
-//        // TODO: api 연결
-//        val response = StartConversationResponse(
-//            isSuccess = true,
-//            code = "COMMON_200",
-//            message = "성공입니다.",
-//            result = StartConversationResult(
-//                sessionId = 17,
-//                nextStory = "우주의 끝자락에서 붉은 눈과 보라색 머리를 가진 테스트가 떠다니며 사랑과 건강을 찾기 위한 모험을 시작했어요.",
-//                currentStep = "START"
-//            )
-//        )
-//
-//        if (response.isSuccess) {
-//            _convUiState.value = ConversationUiState(
-//                sessionId = response.result.sessionId,
-//                currentStep = response.result.currentStep,
-//                nextStory = response.result.nextStory,
-//                isLoading = false
-//            )
-//        } else {
-//            _convUiState.value = _convUiState.value.copy(
-//                isLoading = false,
-//                errorMessage = "대화 시작 실패"
-//            )
-//        }
-//    }
-//
-//    // 줄거리 및 질문 진행
-//    fun processConversation(sessionId: Long, currentStep: String) {
-//        stopAll()
-//
-//        // 현재 단계에 따른 다음 단계 준비
-//        val next = when (currentStep.uppercase()) {
-//            "START" -> "STEP_01"
-//            "STEP_01" -> "STEP_02"
-//            "STEP_02" -> "STEP_03"
-//            else -> "END"
-//        }
-//
-//        if (next == "END") {}
-//
-//        // 로딩 시작
-//        // llm 질문 텍스트는 유지해도 되지만 답변은 비우기
-//        _convUiState.value = _convUiState.value.copy(
-//            sessionId = sessionId,
-//            currentStep = next,
-//            isLoading = true,
-//            phase = ConversationPhase.FETCHING_QUESTION,
-//            userAnswer = null,
-//            partialAnswer = null,
-//            errorMessage = null
-//        )
-//
-//        // 더미 실패 응답
-//        val simulatePending = false
-//        if (simulatePending) {
-//            _convUiState.value = _convUiState.value.copy(
-//                isLoading = false, phase = ConversationPhase.PENDING
-//            )
-//            return
-//        }
-//
-//        // 더미 성공 응답: next에 따라 다른 메시지
-//        val (story, q) = when (next) {
-//            "STEP_01" -> "테스트는 반짝이는 별들 사이에서 이상한 소리를 들었어요. 그곳엔 요정 길버트가 있었어요." to
-//                    "길버트는 테스트에게 어떤 도움을 줄까요?"
-//            "STEP_02" -> "길버트는 반짝이는 가루를 뿌리며 테스트의 마음을 들여다보았어요." to
-//                    "테스트의 마음 속 가장 큰 소원은 무엇일까요?"
-//            else      -> "하늘길이 열리고 새로운 행성이 모습을 드러났어요." to
-//                    "그 행성에서 테스트는 무엇을 배울까요?"
-//        }
-//
-//        _convUiState.value = _convUiState.value.copy(
-//            nextStory = story, llmQuestion = q, isLoading = false, phase = ConversationPhase.ASKING
-//        )
-//
-//        // 스토리 → 질문 읽기
-//        if (story.isNotBlank()) tts.speak(story, flush = true)
-//        if (q.isNotBlank())     tts.speak(q,     flush = false)
-//    }
-//
-//
-//    // tts 관련 제어
-//    // tts 시작
-//    fun startTts(story: String) {
-//        if (story.isNotBlank()) tts.speak(story, flush = true)
-//    }
-//
-//    // tts 다시 시작
-//    fun replayTts() {
-//        val s = _convUiState.value.nextStory.orEmpty()
-//        val q = _convUiState.value.llmQuestion.orEmpty()
-//        if (s.isNotBlank()) tts.speak(s, flush = true)   // 끊고 시작
-//        if (q.isNotBlank()) tts.speak(q, flush = false)  // 큐에 이어서
-//    }
-//
-//    // tts 중단
-//    fun stopTts() {
-//        tts.stop()
-//    }
-//
-//    // stt 제어
-//    // stt 시작
-//    fun startStt(lang: Locale = Locale.KOREAN) {
-//        tts.stop()
-//        _convUiState.value = _convUiState.value.copy(
-//            phase = ConversationPhase.LISTENING,
-//            partialAnswer = null,
-//            errorMessage = null
-//        )
-//        // 메인에서 호출되는게 보장
-//        stt.start(lang.toLanguageTag())
-//    }
-//
-//    fun stopAll() { tts.stop(); stt.stop() }
+    init {
+        // ViewModel 생성 시, 기본 Loading
+        _conversationUiState.value = ConversationUiState.Loading
+    }
 
     fun startConversation(req: StartConversationRequest) {
         _conversationUiState.value = ConversationUiState.Loading
@@ -201,11 +60,15 @@ class ConversationViewModel @Inject constructor(
             try {
                 delay(300)
 //                val res = repository.startConversation(req) // API 호출
-                val res = startConversationDummy(req) // API 호출
+                val res = StartConversationResult(
+                    sessionId = 20L,
+                    nextStory = "빛나는 우주 속에서 분홍색 곱슬머리를 가진 히히가 흰색 눈을 반짝이며 하루를 시작했어요.",
+                    currentStep = "START"
+                )
+
                 _conversationUiState.value = ConversationUiState.Success(
                     sessionId = res.sessionId,
                     nextStory = res.nextStory,
-                    currentStep = CurrentStep.START
                 )
             } catch (e: Exception) {
                 _conversationUiState.value = ConversationUiState.Error(e.message ?: "Unknown error")
@@ -213,11 +76,136 @@ class ConversationViewModel @Inject constructor(
         }
     }
 
-    fun startConversationDummy(req: StartConversationRequest): StartConversationResult {
-        return StartConversationResult(
-            sessionId = 20L,
-            nextStory = "빛나는 우주 속에서 분홍색 곱슬머리를 가진 히히가 흰색 눈을 반짝이며 하루를 시작했어요.",
-            currentStep = "START"
-        )
+    fun goToNextStep() {
+
+        // ConversationUiState.Success 상태 아니면 무시
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+        val loop = state.loopStep
+
+        when (state.currentStep) {
+            CurrentStep.START -> {
+                // START → STORY (첫 이야기, api 요청)
+                viewModelScope.launch {
+                    fetchNextStep(state)
+                }
+            }
+
+            CurrentStep.STORY -> {
+                // STORY → QUESTION (질문 표시, 단계만 바뀜)
+                _conversationUiState.value = state.copy(currentStep = CurrentStep.QUESTION)
+            }
+
+            CurrentStep.QUESTION -> {
+                // QUESTION → ANSWER (사용자 입력 단계)
+//                currentStep = CurrentStep.ANSWER
+//                _uiState.value = state.copy(currentStep = currentStep)
+            }
+
+            CurrentStep.ANSWER -> {
+                // ANSWER → FEEDBACK (피드백 표시)
+//                currentStep = CurrentStep.FEEDBACK
+//                val dummyF = proceedFeedbackDummy(loopStep)
+//                _uiState.value = state.copy(
+//                    currentStep = currentStep,
+//                    feedbackData = dummyF
+//                )
+            }
+
+            CurrentStep.FEEDBACK -> {
+//                loopStep++
+//                if (loopStep < 4) {
+//                    // FEEDBACK → STORY (다음 회차)
+//                    currentStep = CurrentStep.STORY
+//                    val dummy = proceedStoryDummy(loopStep)
+//                    _uiState.value = state.copy(
+//                        nextStory = dummy.nextStory,
+//                        currentStep = currentStep,
+//                        loopStep = loopStep,
+//                        questionData = null,
+//                        feedbackData = null
+//                    )
+//                } else {
+//                    // 모든 루프 끝 → END
+//                    currentStep = CurrentStep.END
+//                    _uiState.value = state.copy(
+//                        nextStory = "대화가 끝났습니다 🎉",
+//                        currentStep = currentStep,
+//                        loopStep = loopStep
+//                    )
+//                }
+            }
+
+            else -> {}
+        }
+    }
+
+    // 스토리 진행
+    private suspend fun fetchNextStep(state: ConversationUiState.Success) {
+        try {
+            // 실제 API
+            // val res = repository.nextStep(state.sessionId, loopStepToApiStep(state.loopStep))
+
+            // 더미 응답
+            val res = when (state.loopStep) {
+                1 -> NextStoryResponse(
+                    messageId = 33,
+                    nextStory = "히히의 친구인 푸른색 다람쥐가 나타났어요. 그들은 모험을 떠나기로 했죠.",
+                    llmQuestion = "히히와 다람쥐는 어디로 모험을 떠날까요?"
+                )
+                2 -> NextStoryResponse(
+                    messageId = 34,
+                    nextStory = "히히와 다람쥐는 우주를 가로지르는 별의 다리를 건너 마법이 가득한 정원으로 향했어요. 그곳에서 신비한 생물들을 만났죠.",
+                    llmQuestion = "그 신비한 생물들은 어떤 도움을 줄까요?"
+                )
+                3 -> NextStoryResponse(
+                    messageId = 35,
+                    nextStory = "아 다음 내용 까먹었다, 근데 다음 질문은 기억나",
+                    llmQuestion = "히히와 다람쥐는 어떤 게임을 하며 마법을 부렸을까?"
+                )
+                else -> NextStoryResponse(
+                    messageId = 36,
+                    nextStory = "히히와 다람쥐는 가위바위보에서 서로를 믿으며 힘껏 외쳤어요. 결국, 그들은 신비한 생물들의 사랑스러운 도토리들을 가득 담았고, 즐거운 모험을 계속할 수 있게 되었어요!",
+                    llmQuestion = "히히와 다람쥐는 어떻게 팀워크를 발휘했을까요?"
+                )
+            }
+
+            // 상태 업데이트
+            _conversationUiState.value = state.copy(
+                nextStory = res.nextStory,
+                currentStep = CurrentStep.STORY,
+                questionData = QuestionData(
+                    messageId = res.messageId,
+                    question = res.llmQuestion
+                )
+            )
+        } catch (e: Exception) {
+            _conversationUiState.value = ConversationUiState.Error(e.message ?: "Next step error")
+        }
+    }
+
+    fun goToPreviousStep() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+
+        when (state.currentStep) {
+            CurrentStep.QUESTION -> {
+                // 질문 → 스토리
+                _conversationUiState.value = state.copy(
+                    currentStep = CurrentStep.STORY
+                )
+            }
+            CurrentStep.ANSWER -> {
+                // 답변 → 질문
+                _conversationUiState.value = state.copy(
+                    currentStep = CurrentStep.QUESTION
+                )
+            }
+            CurrentStep.FEEDBACK -> {
+                // 피드백 → 질문
+                _conversationUiState.value = state.copy(
+                    currentStep = CurrentStep.QUESTION
+                )
+            }
+            else -> { /* START, STORY, END는 뒤로가기 없음 */ }
+        }
     }
 }

@@ -24,9 +24,10 @@ fun ConversationNextButton(
     onClick: () -> Unit,
     modifier: Modifier
 ) {
-    Column(
-        modifier = modifier
-            .clickable(onClick = {onClick()}),
+    Row (
+        modifier = modifier.clickable(onClick = { onClick() }),
+        horizontalArrangement = Arrangement.Center,
+        verticalAlignment = Alignment.CenterVertically
     ) {
         Text("다음",
             fontWeight = FontWeight.Medium,
