@@ -34,7 +34,7 @@ fun HomeMainScreen (
     onCheckInClick: () -> Unit,
     onDashboardClick: () -> Unit,   // bottom bar
     onCreationClick: () -> Unit,    // bottom bar
-    onCollectionClick: () -> Unit,     // bottom bar
+    onCollectionClick: () -> Unit,  // bottom bar
     onCharacterClick: (Long) -> Unit, // 캐릭터 상세
     onUpdateLastSelected: (Long) -> Unit
 ) {

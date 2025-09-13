@@ -1,5 +1,9 @@
 package com.veryshinnam.myapp.feature.creation.model
 
-enum class Gender {
+import android.os.Parcelable
+import kotlinx.parcelize.Parcelize
+
+@Parcelize
+enum class Gender: Parcelable {
     NONE, FEMALE, MALE
 }

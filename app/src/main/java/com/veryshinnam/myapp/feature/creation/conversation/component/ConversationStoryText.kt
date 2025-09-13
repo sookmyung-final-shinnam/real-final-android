@@ -1,14 +1,18 @@
 package com.veryshinnam.myapp.feature.creation.conversation.component
 
+import android.R.attr.scaleX
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -17,6 +21,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -27,25 +32,25 @@ import com.veryshinnam.myapp.R
 @Composable
 fun ConversationStoryText(
     nextStory: String,
+    onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxHeight()
+        modifier = modifier.fillMaxWidth(0.8f)
     ) {
         // 다람쥐 이미지
         Image(
             painter = painterResource(R.drawable.img_squirrel_cut),
             contentDescription = "설명하는 다람쥐 이미지",
             modifier = Modifier
-                .fillMaxHeight(0.5f)
-                .align(Alignment.End)  // end 정렬
-                .padding(end = 20.dp),
+                .weight(0.3f)
+                .graphicsLayer(scaleX = -1f), // 가로 반전
             contentScale = ContentScale.Fit
         )
 
-        // 선택 스크린 설명 텍스트
+        // 다음 이야기 텍스트
         Card(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier.fillMaxSize().weight(0.7f),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -57,13 +62,23 @@ fun ConversationStoryText(
                 fontWeight = FontWeight.SemiBold,
                 style = MaterialTheme.typography.titleMedium
             )
-            
+
             // 다시듣기
             Button(
-                onClick = { },
-//                enabled = !uiState.isLoading && uiState.sessionId != null && uiState.currentStep != null
+                onClick = { onReplayClick() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.lemon_yellow),
+                ),
+                shape = CircleShape,
+                border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
+                modifier = modifier.align(Alignment.End).fillMaxHeight(0.2f)
             ) {
-                Text("다시 듣기")
+                Text(
+                    "다시 듣기",
+                    color = Color.Black,
+                    modifier = Modifier.padding(8.dp),
+                    style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.SemiBold)
+                )
             }
         }
     }
