@@ -112,7 +112,7 @@ fun ConversationNeedsText(
             painter = painter,
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
-                .fillMaxHeight(0.85f)
+                .fillMaxHeight(0.8f)
                 .align(Alignment.BottomCenter), // Box 아래쪽
             contentScale = ContentScale.Fit
         )

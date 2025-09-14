@@ -38,7 +38,13 @@ fun NavGraphBuilder.conversationNavGraph(
         }
 
         ConversationScreen(
-            onBack = { navController.popBackStack() },
+            onBack = {
+                // Select 스택 정리 후 홈으로
+                navController.popBackStack(SelectRoutes.ROOT, inclusive = true)
+                navController.navigate("home") {
+                    launchSingleTop = true
+                }
+            },
             vm = vm
         )
     }

@@ -78,6 +78,7 @@ class ConversationViewModel @Inject constructor(
         }
     }
 
+    // 다음 단계 진행
     fun goToNextStep() {
 
         // ConversationUiState.Success 상태 아니면 무시
@@ -108,35 +109,11 @@ class ConversationViewModel @Inject constructor(
                     fetchFeedback(state)
                 }
             }
-
-            CurrentStep.FEEDBACK -> {
-//                loopStep++
-//                if (loopStep < 4) {
-//                    // FEEDBACK → STORY (다음 회차)
-//                    currentStep = CurrentStep.STORY
-//                    val dummy = proceedStoryDummy(loopStep)
-//                    _uiState.value = state.copy(
-//                        nextStory = dummy.nextStory,
-//                        currentStep = currentStep,
-//                        loopStep = loopStep,
-//                        questionData = null,
-//                        feedbackData = null
-//                    )
-//                } else {
-//                    // 모든 루프 끝 → END
-//                    currentStep = CurrentStep.END
-//                    _uiState.value = state.copy(
-//                        nextStory = "대화가 끝났습니다 🎉",
-//                        currentStep = currentStep,
-//                        loopStep = loopStep
-//                    )
-//                }
-            }
-
             else -> {}
         }
     }
 
+    // 피드백 분기 진행
     fun goFromFeedback() {
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
         val feedback = state.feedbackData ?: return
@@ -147,23 +124,29 @@ class ConversationViewModel @Inject constructor(
         } else {
             // 긍정 → 다음 루프 or END
             val nextLoop = state.loopStep + 1
-            if (nextLoop <= 3) {
-                _conversationUiState.value = state.copy(
-                    currentStep = CurrentStep.STORY,
-                    loopStep = nextLoop,
-                    questionData = null,
-                    feedbackData = null
-                )
+            if (nextLoop <= 4) {
+                viewModelScope.launch {
+                    fetchNextStep(
+                        state.copy(
+                            loopStep = nextLoop,
+                            questionData = null,
+                            feedbackData = null
+                        )
+                    )
+                }
             } else {
-                _conversationUiState.value = state.copy(
-                    currentStep = CurrentStep.END,
-                    nextStory = "대화가 끝났습니다 🎉"
-                )
+                // 대화 끝 > complete 호출
+                viewModelScope.launch {
+                    fetchEndStory(state.sessionId)
+                    _conversationUiState.value = state.copy(
+                        currentStep = CurrentStep.END
+                    )
+                }
             }
         }
     }
 
-    // 스토리 진행
+    // 다음 이야기 불러오기
     private suspend fun fetchNextStep(state: ConversationUiState.Success) {
         try {
             // 실제 API
@@ -234,6 +217,7 @@ class ConversationViewModel @Inject constructor(
         }
     }
 
+    // 피드백 불러오기
     private suspend fun fetchFeedback(state: ConversationUiState.Success) {
         try {
             // 실제 API 호출 시
@@ -268,7 +252,7 @@ class ConversationViewModel @Inject constructor(
                     feedbackResult = "GOOD",
                     feedbackText = "완벽해! 이번 질문은 통과야.",
                     currentStep = "STEP_02",
-                    tryNum = 3
+                    tryNum = 1
                 )
 
                 3 -> when (currentTry) {
@@ -292,12 +276,21 @@ class ConversationViewModel @Inject constructor(
                     )
                 }
 
-                else -> FeedbackResponse(
-                    feedbackResult = "GOOD",
-                    feedbackText = "훌륭해! 대화가 마무리됐어 🎉",
-                    currentStep = "END",
-                    tryNum = 1
-                )
+                else -> when (currentTry) {
+                    1 -> FeedbackResponse(
+                        feedbackResult = "NEEDS_CORRECTION",
+                        feedbackText = "팀워크를 \"어떻게\" 발휘했을까요?",
+                        currentStep = "STEP_03",
+                        tryNum = 1
+                    )
+
+                    else -> FeedbackResponse(
+                        feedbackResult = "GOOD",
+                        feedbackText = "맞아 서로의 손을 잡으며, 눈을 마주치며 기도를 했을거야.",
+                        currentStep = "STEP_03",
+                        tryNum = 2
+                    )
+                }
             }
 
             // 상태 업데이트 (Response → Data 변환)
@@ -311,6 +304,19 @@ class ConversationViewModel @Inject constructor(
             )
         } catch (e: Exception) {
             _conversationUiState.value = ConversationUiState.Error(e.message ?: "Feedback error")
+        }
+    }
+
+    // 스토리 끝내기
+    private suspend fun fetchEndStory(sessionId: Long) {
+        try {
+            // 실제 API
+            // repository.complete(sessionId)
+
+            // 더미 호출
+            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
+        } catch (e: Exception) {
+            _conversationUiState.value = ConversationUiState.Error(e.message ?: "Complete error")
         }
     }
 }

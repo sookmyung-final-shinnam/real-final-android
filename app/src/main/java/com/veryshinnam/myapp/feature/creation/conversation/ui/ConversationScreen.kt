@@ -38,6 +38,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationProgressBar
 import com.veryshinnam.myapp.feature.creation.model.CurrentStep
 import com.veryshinnam.myapp.feature.home.ui.HomeMainScreen
@@ -97,6 +98,7 @@ fun ConversationScreen(
 
                         when (state.currentStep) {
                             CurrentStep.START -> { // 대화 시작 (다음 이야기)
+                                BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     onNextClick = {  vm.goToNextStep() },
@@ -105,6 +107,7 @@ fun ConversationScreen(
                             }
 
                             CurrentStep.STORY -> { // 다음 이야기
+                                BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     onNextClick = { vm.goToNextStep() },
@@ -130,7 +133,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.FEEDBACK -> { //(QUESTION 단계 이동 가능)
+                            CurrentStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
                                 BackHandler { vm.goToPreviousStep() }
                                 ConversationFeedbackContent(
                                     feedback = state.feedbackData!!,
@@ -140,8 +143,10 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.END -> {
-                                //                            EndingContent(onFinish = { /* 홈으로 이동 */ })
+                            CurrentStep.END -> { // 대화 종료
+                                ConversationEndContent(
+                                    { onBack() }
+                                )
                             }
                         }
                     }
