@@ -17,6 +17,7 @@ import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
 import com.veryshinnam.myapp.feature.creation.route.CreationRoutes
 import com.veryshinnam.myapp.feature.creation.route.creationNavGraph
+import com.veryshinnam.myapp.feature.dashboard.ui.DashboardScreen
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -40,6 +41,10 @@ class MainActivity : ComponentActivity() {
                             // 환경 설정
                             mainNavController.navigate("settings")
                         },
+                        onDashboardClick = {
+                            // 대시보드
+                            mainNavController.navigate("dashboard")
+                        },
                         onCreationClick = {
                             // 캐릭터 생성
                             mainNavController.navigate(CreationRoutes.ROOT)
@@ -61,6 +66,13 @@ class MainActivity : ComponentActivity() {
                         onBack = { mainNavController.popBackStack() },
                         onClickLogout = {    },
                         onClickDelete = {    }
+                    )
+                }
+
+                // 대시보드
+                composable("dashboard") {
+                    DashboardScreen(
+                        onBack = { mainNavController.popBackStack() },
                     )
                 }
 

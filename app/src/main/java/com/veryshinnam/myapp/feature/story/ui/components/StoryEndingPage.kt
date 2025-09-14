@@ -31,7 +31,7 @@ fun StoryEndingPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.yellow_80)), // 배경 색상
+            .background(colorResource(R.color.background_yellow)), // 배경 색상
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // THE + 이미지 + END

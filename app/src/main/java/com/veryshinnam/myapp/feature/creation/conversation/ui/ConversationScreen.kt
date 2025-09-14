@@ -86,7 +86,8 @@ fun ConversationScreen(
                 // 조회 성공
                 is ConversationUiState.Success -> {
                     Column(Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally) {
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
                         // 진행바 (START, END 제외)
                         if (state.currentStep != CurrentStep.START && state.currentStep != CurrentStep.END) {
                             ConversationProgressBar(

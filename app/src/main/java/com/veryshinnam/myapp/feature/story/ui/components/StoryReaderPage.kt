@@ -44,7 +44,7 @@ fun StoryReaderPage(
                 .fillMaxHeight(0.2f)
                 .padding(bottom = 8.dp), // 바텀 마진 효과
             colors = CardDefaults.cardColors(
-                containerColor = colorResource(R.color.yellow_80)
+                containerColor = colorResource(R.color.background_yellow)
             ),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange))

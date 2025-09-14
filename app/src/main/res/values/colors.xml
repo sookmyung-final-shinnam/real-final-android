@@ -19,10 +19,17 @@
     <color name="main_orange">#F3A600</color>
     <color name="main_orange_shade">#7A570A</color>
     <color name="card_orange_90">#E5FFD579</color>
+
+    <!-- 앱컬러(생성) -->
     <color name="background_yellow">#FFF5CE</color>
-    <color name="yellow_80">#ccfeefae</color>
     <color name="lemon_yellow">#FFFAE6</color>
 
+    <!-- 앱컬러(보관함) -->
     <color name="blue_gray">#549ACF</color>
     <color name="blue_sky">#96C4E7</color>
+
+    <!-- 앱컬러(대시보드) -->
+    <color name="deep_green">#99CB53</color>
+    <color name="light_green">#AFD37D</color>
+    <color name="light_orange">#FBC36A</color>
 </resources>
