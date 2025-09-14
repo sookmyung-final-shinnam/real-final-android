@@ -7,11 +7,13 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
+import com.veryshinnam.myapp.feature.creation.data.dto.FeedbackResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStoryResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
 import com.veryshinnam.myapp.feature.creation.model.CurrentStep
+import com.veryshinnam.myapp.feature.creation.model.FeedbackData
 import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
@@ -96,19 +98,15 @@ class ConversationViewModel @Inject constructor(
             }
 
             CurrentStep.QUESTION -> {
-                // QUESTION → ANSWER (사용자 입력 단계)
-//                currentStep = CurrentStep.ANSWER
-//                _uiState.value = state.copy(currentStep = currentStep)
+                // STORY → QUESTION (녹음 화면, 단계만 바뀜)
+                _conversationUiState.value = state.copy(currentStep = CurrentStep.ANSWER)
             }
 
             CurrentStep.ANSWER -> {
                 // ANSWER → FEEDBACK (피드백 표시)
-//                currentStep = CurrentStep.FEEDBACK
-//                val dummyF = proceedFeedbackDummy(loopStep)
-//                _uiState.value = state.copy(
-//                    currentStep = currentStep,
-//                    feedbackData = dummyF
-//                )
+                viewModelScope.launch {
+                    fetchFeedback(state)
+                }
             }
 
             CurrentStep.FEEDBACK -> {
@@ -136,6 +134,32 @@ class ConversationViewModel @Inject constructor(
             }
 
             else -> {}
+        }
+    }
+
+    fun goFromFeedback() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+        val feedback = state.feedbackData ?: return
+
+        if (feedback.result == "NEEDS_CORRECTION" && feedback.tryNum < 3) {
+            // 부정 → 다시 녹음 단계로
+            _conversationUiState.value = state.copy(currentStep = CurrentStep.ANSWER)
+        } else {
+            // 긍정 → 다음 루프 or END
+            val nextLoop = state.loopStep + 1
+            if (nextLoop <= 3) {
+                _conversationUiState.value = state.copy(
+                    currentStep = CurrentStep.STORY,
+                    loopStep = nextLoop,
+                    questionData = null,
+                    feedbackData = null
+                )
+            } else {
+                _conversationUiState.value = state.copy(
+                    currentStep = CurrentStep.END,
+                    nextStory = "대화가 끝났습니다 🎉"
+                )
+            }
         }
     }
 
@@ -183,10 +207,11 @@ class ConversationViewModel @Inject constructor(
         }
     }
 
+    // 뒤로 가기
     fun goToPreviousStep() {
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
-        when (state.currentStep) {
+        val res = when (state.currentStep) {
             CurrentStep.QUESTION -> {
                 // 질문 → 스토리
                 _conversationUiState.value = state.copy(
@@ -206,6 +231,86 @@ class ConversationViewModel @Inject constructor(
                 )
             }
             else -> { /* START, STORY, END는 뒤로가기 없음 */ }
+        }
+    }
+
+    private suspend fun fetchFeedback(state: ConversationUiState.Success) {
+        try {
+            // 실제 API 호출 시
+            // val res = repository.feedback(state.sessionId, userAnswer)
+
+            val currentTry = (state.feedbackData?.tryNum ?: 0) + 1
+
+            // 더미 응답
+            val res = when (state.loopStep) {
+                1 -> when (currentTry) {
+                    1 -> FeedbackResponse(
+                        feedbackResult = "NEEDS_CORRECTION",
+                        feedbackText = "숨바꼭질은 재미있지만, 신비한 생물들이 내린 시험은 좀 더 특별해야 해.",
+                        currentStep = "STEP_01",
+                        tryNum = 1
+                    )
+                    2 -> FeedbackResponse(
+                        feedbackResult = "NEEDS_CORRECTION",
+                        feedbackText = "한줄 테스트?",
+                        currentStep = "STEP_01",
+                        tryNum = 2
+                    )
+                    else -> FeedbackResponse(
+                        feedbackResult = "GOOD",
+                        feedbackText = "최종적으로 아주 멋진 대답이야!",
+                        currentStep = "STEP_01",
+                        tryNum = 3
+                    )
+                }
+
+                2 -> FeedbackResponse(
+                    feedbackResult = "GOOD",
+                    feedbackText = "완벽해! 이번 질문은 통과야.",
+                    currentStep = "STEP_02",
+                    tryNum = 3
+                )
+
+                3 -> when (currentTry) {
+                    1 -> FeedbackResponse(
+                        feedbackResult = "NEEDS_CORRECTION",
+                        feedbackText = "게임의 규칙을 조금 더 창의적으로 말해줄래?",
+                        currentStep = "STEP_03",
+                        tryNum = 1
+                    )
+                    2 -> FeedbackResponse(
+                        feedbackResult = "NEEDS_CORRECTION",
+                        feedbackText = "좋아지고 있어! 하지만 조금 더 재미있게 해볼까?",
+                        currentStep = "STEP_03",
+                        tryNum = 2
+                    )
+                    else -> FeedbackResponse(
+                        feedbackResult = "GOOD",
+                        feedbackText = "정말 멋진 발상이야! 이제 충분해.",
+                        currentStep = "STEP_03",
+                        tryNum = 3
+                    )
+                }
+
+                else -> FeedbackResponse(
+                    feedbackResult = "GOOD",
+                    feedbackText = "훌륭해! 대화가 마무리됐어 🎉",
+                    currentStep = "END",
+                    tryNum = 1
+                )
+            }
+
+            // 상태 업데이트 (Response → Data 변환)
+            _conversationUiState.value = state.copy(
+                currentStep = CurrentStep.FEEDBACK,
+                feedbackData = FeedbackData(
+                    result = res.feedbackResult,
+                    text = res.feedbackText,
+                    tryNum = res.tryNum
+                )
+            )
+        } catch (e: Exception) {
+            _conversationUiState.value = ConversationUiState.Error(e.message ?: "Feedback error")
         }
     }
 }

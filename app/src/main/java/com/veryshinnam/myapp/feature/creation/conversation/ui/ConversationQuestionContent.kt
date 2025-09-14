@@ -1,16 +1,15 @@
 package com.veryshinnam.myapp.feature.creation.conversation.ui
 
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationNextButton
-import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationQuestionText
+import androidx.compose.ui.res.painterResource
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationCommonText
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationRecordButton
-import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationStoryText
 
 @Composable
 fun ConversationQuestionContent(
@@ -21,8 +20,9 @@ fun ConversationQuestionContent(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
         // 질문 텍스트
-        ConversationQuestionText(
-            question = question,
+        ConversationCommonText(
+            text = question,
+            painter = painterResource(R.drawable.img_llm_question),
             modifier = Modifier
                 .weight(0.8f)
                 .align(Alignment.CenterHorizontally),

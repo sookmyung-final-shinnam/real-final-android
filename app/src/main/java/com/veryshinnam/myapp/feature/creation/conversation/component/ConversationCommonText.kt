@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.creation.conversation.component
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -20,17 +19,17 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
 @Composable
-fun ConversationQuestionText(
-    question: String,
+fun ConversationCommonText(
+    text: String, // 질문 또는 피드백 긍정 텍스트
+    painter: Painter,
     onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -48,7 +47,7 @@ fun ConversationQuestionText(
             Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
                 // 질문 텍스트
                 Text(
-                    text = question,
+                    text = text,
                     modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
@@ -75,13 +74,11 @@ fun ConversationQuestionText(
 
         // 다람쥐 이미지
         Image(
-            painter = painterResource(R.drawable.img_llm_question),
+            painter = painter,
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
                 .fillMaxHeight(0.85f)
-                .align(Alignment.BottomCenter) // Box 아래쪽
-                .padding(start = 16.dp)
-                .graphicsLayer(scaleX = -1f), // 가로 반전
+                .align(Alignment.BottomCenter), // Box 아래쪽
             contentScale = ContentScale.Fit
         )
     }

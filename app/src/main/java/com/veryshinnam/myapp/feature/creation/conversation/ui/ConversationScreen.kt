@@ -122,19 +122,22 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.ANSWER -> { //(QUESTION 단계 이동 가능)
+                            CurrentStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
                                 BackHandler { vm.goToPreviousStep() }
-                                //                            AnswerInputContent(
-                                //                                onAnswer = { answer -> vm.sendAnswer(answer) }
-                                //                            )
+                                ConversationAnswerContent(
+                                    onRecordDone = { vm.goToNextStep() },
+                                    modifier =  Modifier.weight(0.8f)
+                                )
                             }
 
                             CurrentStep.FEEDBACK -> { //(QUESTION 단계 이동 가능)
                                 BackHandler { vm.goToPreviousStep() }
-                                //                            FeedbackContent(
-                                //                                feedback = state.feedbackData!!,
-                                //                                onNext = { vm.goToNextStep() }
-                                //                            )
+                                ConversationFeedbackContent(
+                                    feedback = state.feedbackData!!,
+                                    onReplayClick = {  },
+                                    onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
+                                    modifier = Modifier.weight(0.8f)
+                                )
                             }
 
                             CurrentStep.END -> {
