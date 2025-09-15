@@ -23,18 +23,26 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.ui.component.HomeUserItem
+import org.threeten.bp.YearMonth
 
 @Composable
 fun AttendanceInfo(
+    month: YearMonth,
     stamps: Int,
     attendances: Int,
     modifier: Modifier
 ) {
+    val currentMonth = YearMonth.now() // 현재 달
+    val monthLabel = if (month == currentMonth) "이번 달"
+                    else "지난 ${month.monthValue}월"
+
     Column(
         modifier = modifier.fillMaxHeight()
     ) {
         Box(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .fillMaxHeight(0.5f)
         ) {
             // 돼지 이미지
             Image(
@@ -54,7 +62,8 @@ fun AttendanceInfo(
                 value = "${stamps}",
                 spacer = 30.dp,
                 color = colorResource(R.color.deep_pink),
-                modifier = Modifier.padding(bottom = 8.dp)
+                modifier = Modifier
+                    .padding(bottom = 8.dp)
                     .align(Alignment.BottomCenter)
                     .fillMaxWidth(0.3f)
                     .fillMaxHeight(0.5f)
@@ -70,7 +79,7 @@ fun AttendanceInfo(
         ) {
             Text(
                 text = "오늘도 만나서 반가워\n" +
-                        "이번 달은 총 ${attendances}번 출석체크 했어!\n" +
+                        "${monthLabel}은 총 ${attendances}번 출석했어!\n" +
                         "도장 10개당 나침반 1개인걸 잊지마~!",
                 modifier = Modifier.padding(20.dp),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold)

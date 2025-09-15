@@ -85,6 +85,7 @@ fun AttendanceScreen(
                     ) {
                         // 출첵 설명 부분
                         AttendanceInfo(
+                            month = state.month,
                             stamps = state.stamps,
                             attendances = state.attendances,
                             Modifier.weight(0.25f)    // 높이 비율 0.25

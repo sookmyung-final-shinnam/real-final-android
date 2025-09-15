@@ -45,15 +45,18 @@ fun AttendanceCalender(
     onNextMonth: () -> Unit,
     modifier: Modifier
 ) {
+    val sectionPadding = 8.dp   // 섹션 패딩, 요일 행 패딩
+    val calendarPadding = 24.dp // 달력 패딩, 도장 아래 패딩
+    val roundCorner = 16.dp     // 둥근 모서리
+    val buttonSize = 32.dp      // 월 이동 버튼 사이즈
+
     val days = month.lengthOfMonth()                                 // 이번 달 일 수
     val firstDay = month.atDay(1).dayOfWeek.value % 7   // 이번 달 1일의 요일
     val weeks = (firstDay + days + 6) / 7                            // 달력 그리기에 필요한 행 수
     val weekDays = listOf("일", "월", "화", "수", "목", "금", "토")    // 요일
 
-    val sectionPadding = 8.dp   // 섹션 패딩, 요일 행 패딩
-    val calendarPadding = 24.dp // 달력 패딩, 도장 아래 패딩
-    val roundCorner = 16.dp     // 둥근 모서리
-    val buttonSize = 32.dp      // 월 이동 버튼 사이즈
+    val currentMonth = YearMonth.now() // 현재 달
+    val isNextEnabled = month.isBefore(currentMonth) // 미래 시점 이동 불가
 
     // 배경
     Box(
@@ -106,7 +109,10 @@ fun AttendanceCalender(
                     contentDescription = "다음 달",
                     modifier = Modifier
                         .size(buttonSize)
-                        .clickable {  onNextMonth()  }
+                        .let {
+                            if (isNextEnabled) it.clickable { onNextMonth() }
+                            else it.alpha(0.3f) // 비활성화
+                        }
                 )
             }
 

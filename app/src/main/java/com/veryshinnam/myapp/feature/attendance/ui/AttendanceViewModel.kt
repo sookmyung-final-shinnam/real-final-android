@@ -69,13 +69,12 @@ class AttendanceViewModel @Inject constructor(
         }
 
         val usedDate = YearMonth.of(2025, 8).atDay(15)
-//        val usedDate = if (month.monthValue == 8) month.atDay(15) else null
         val stamps = 7
 
         return AttendanceUiState.Success(
             month = month,
             stamps = stamps,
-            attendances = attendanceDays.size,
+            attendances = attendanceDates.size,
             attendanceDates = attendanceDates,
             usedDate = usedDate
         )
