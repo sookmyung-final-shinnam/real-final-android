@@ -31,7 +31,7 @@ fun HomeMainScreen (
     lastSelectedId: Long?,
     randomMessage: String,
     onSettingsClick: () -> Unit,
-    onCheckInClick: () -> Unit,
+    onAttendanceClick: () -> Unit,
     onDashboardClick: () -> Unit,   // bottom bar
     onCreationClick: () -> Unit,    // bottom bar
     onCollectionClick: () -> Unit,  // bottom bar
@@ -82,7 +82,7 @@ fun HomeMainScreen (
                         bounded = false
                     ),
                     interactionSource = remember { MutableInteractionSource() }
-                ) { onCheckInClick() }
+                ) { onAttendanceClick() }
         )
     }
 }

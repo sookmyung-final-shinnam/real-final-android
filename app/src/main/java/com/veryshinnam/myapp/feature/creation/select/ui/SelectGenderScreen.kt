@@ -18,10 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
-import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
-import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.component.common.AppTopBar
+import com.veryshinnam.myapp.component.common.BackButton
 import com.veryshinnam.myapp.feature.creation.model.Gender
 import com.veryshinnam.myapp.feature.creation.select.componenet.SelectGenderButton
 import com.veryshinnam.myapp.feature.creation.select.componenet.SelectInfo

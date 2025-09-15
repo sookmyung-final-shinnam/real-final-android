@@ -14,17 +14,17 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
-import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.component.common.AppTopBar
+import com.veryshinnam.myapp.component.common.LoadErrorView
 
 @Composable
 fun HomeScreen(
-    onSettingsClick: () -> Unit = {},
-    onCheckInClick: () -> Unit = {},
-    onDashboardClick: () -> Unit = {}, // 바텀 버튼
-    onCreationClick: () -> Unit = {},  // 바텀 버튼
-    onCollectionClick: () -> Unit = {},   // 바텀 버튼
-    onCharacterClick: (Long) -> Unit = {},
+    onSettingsClick: () -> Unit,
+    onAttendanceClick: () -> Unit,
+    onDashboardClick: () -> Unit, // 바텀 버튼
+    onCreationClick: () -> Unit,  // 바텀 버튼
+    onCollectionClick: () -> Unit,   // 바텀 버튼
+    onCharacterClick: (Long) -> Unit,
     vm: HomeViewModel =  hiltViewModel()
 ) {
     // 홈화면 상태 관리
@@ -83,7 +83,7 @@ fun HomeScreen(
                         lastSelectedId = state.lastSelectedCharacter,
                         randomMessage = state.randomMessage,
                         onSettingsClick = onSettingsClick,
-                        onCheckInClick = onCheckInClick,
+                        onAttendanceClick = onAttendanceClick,
                         onDashboardClick = onDashboardClick,
                         onCreationClick = onCreationClick,
                         onCollectionClick = onCollectionClick,

@@ -1,8 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.conversation.ui
 
 import android.util.Log
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.stt.SttManager
@@ -10,7 +8,6 @@ import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import com.veryshinnam.myapp.feature.creation.data.dto.FeedbackResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStoryResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
 import com.veryshinnam.myapp.feature.creation.model.CurrentStep
 import com.veryshinnam.myapp.feature.creation.model.FeedbackData
@@ -21,7 +18,6 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
 
 private fun changeLoopStep(loopStep: Int): String {

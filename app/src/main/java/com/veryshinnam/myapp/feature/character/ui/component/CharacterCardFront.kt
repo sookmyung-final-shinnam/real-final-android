@@ -12,7 +12,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.component.common.StrokeText
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 
 @Composable

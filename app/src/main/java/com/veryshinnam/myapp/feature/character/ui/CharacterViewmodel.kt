@@ -44,13 +44,13 @@ class CharacterViewModel @Inject constructor(
                 )
             )
 
-            12L -> CharacterUiState.Success(
+            20L -> CharacterUiState.Success(
                 characterData = CharacterData(
                     12,
                     "파워",
-                    "MALE",
+                    "FEMALE",
                     12,
-                    "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
+                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png",
                     "활발하고 모험을 좋아함",
                     "2025-11-16",
                     true
@@ -60,47 +60,47 @@ class CharacterViewModel @Inject constructor(
                     storyId = null,
                     storyImage = null,
                     videoId = 1,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"
                 )
             )
 
-            13L -> CharacterUiState.Success(
+            18L -> CharacterUiState.Success(
                 characterData = CharacterData(
                     13,
-                    "파파워",
-                    "FEMALE",
+                    "초록이",
+                    "MALE",
                     13,
-                    "https://ifh.cc/g/XTGSPy.png",
+                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
                     "지혜롭고 용감함",
                     "2025-01-13",
                     false
                 ),
                 storyData = StoryVideoData(
                     title = "빛과 그림자",
-                    storyId = 13,
-                    storyImage = "https://ifh.cc/g/XTGSPy.png",
+                    storyId = 18,
+                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
                     videoId = null,
                     videoUrl = null
                 )
             )
 
-            18L -> CharacterUiState.Success(
+            19L -> CharacterUiState.Success(
                 characterData = CharacterData(
-                    18,
+                    19,
                     "민수",
-                    "MALE",
+                    "FEMALE",
                     11,
-                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
+                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_19.png",
                     "긍정적이고 모험심이 강함.",
                     "2025-01-11",
                     false
                 ),
                 storyData = StoryVideoData(
                     title = "민수와 깜찍한 요정의 사랑 모험",
-                    storyId = 11,
+                    storyId = 19,
                     storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
                     videoId = 18,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/3/videos/page_1.mp4"
                 )
             )
 

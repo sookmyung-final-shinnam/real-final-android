@@ -10,8 +10,7 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
-import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
-import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
+import com.veryshinnam.myapp.feature.attendance.ui.AttendanceScreen
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
@@ -41,6 +40,10 @@ class MainActivity : ComponentActivity() {
                             // 환경 설정
                             mainNavController.navigate("settings")
                         },
+                        onAttendanceClick = {
+                            // 환경 설정
+                            mainNavController.navigate("attendance")
+                        },
                         onDashboardClick = {
                             // 대시보드
                             mainNavController.navigate("dashboard")
@@ -66,6 +69,13 @@ class MainActivity : ComponentActivity() {
                         onBack = { mainNavController.popBackStack() },
                         onClickLogout = {    },
                         onClickDelete = {    }
+                    )
+                }
+
+                // 출석체크
+                composable("attendance") {
+                    AttendanceScreen(
+                        onBack = { mainNavController.popBackStack() },
                     )
                 }
 

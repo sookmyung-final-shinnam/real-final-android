@@ -29,6 +29,7 @@ fun HomeUserItem(
     contentDescription: String,
     value: String,
     spacer: Dp = 8.dp,
+    color: Color,
     modifier: Modifier
 ) {
     Box(
@@ -38,7 +39,7 @@ fun HomeUserItem(
             .background(Color.White, shape = CircleShape)
             .border(
                 width = 4.dp,
-                color = colorResource(id = R.color.main_orange),
+                color = color,
                 shape =CircleShape),
         contentAlignment = Alignment.Center
     ) {

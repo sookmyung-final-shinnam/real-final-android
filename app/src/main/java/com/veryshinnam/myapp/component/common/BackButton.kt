@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.common.component
+package com.veryshinnam.myapp.component.common
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Row

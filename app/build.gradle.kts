@@ -68,7 +68,9 @@ dependencies {
     implementation(libs.androidx.foundation)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
-
+    // calender용 날짜 계산
+    implementation("com.jakewharton.threetenabp:threetenabp:1.4.7")
+    
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -32,4 +32,9 @@
     <color name="deep_green">#99CB53</color>
     <color name="light_green">#AFD37D</color>
     <color name="light_orange">#FBC36A</color>
+
+
+    <!-- 앱컬러(출석체크) -->
+    <color name="deep_pink">#FEA17F</color>
+    <color name="light_pink">#FCBFA9</color>
 </resources>

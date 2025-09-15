@@ -1,7 +1,6 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
@@ -27,10 +26,10 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
-import com.veryshinnam.myapp.common.component.BackButton
-import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.feature.dashboard.ui.component.DashBoradUserInfo
+import com.veryshinnam.myapp.component.common.AppTopBar
+import com.veryshinnam.myapp.component.common.BackButton
+import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.feature.dashboard.ui.component.DashboardUserInfo
 import com.veryshinnam.myapp.feature.dashboard.ui.component.DashboardLanguageInfo
 
 @Composable
@@ -86,7 +85,7 @@ fun DashboardScreen(
                             contentPadding = PaddingValues(horizontal = 16.dp),
                         ) {
                             item {
-                                DashBoradUserInfo(
+                                DashboardUserInfo(
                                     username = state.username,
                                     interest = state.interest,
                                     modifier = Modifier

@@ -57,6 +57,7 @@ fun HomeUserInfo(
                     painter = painterResource(R.drawable.img_book),
                     contentDescription = "생성한 캐릭터 수",
                     value = "${user.characters}",
+                    color = colorResource(R.color.main_orange),
                     modifier = Modifier.weight(1f).fillMaxHeight(0.5f)
                 )
                 Spacer(Modifier.weight(0.05f))
@@ -65,6 +66,7 @@ fun HomeUserInfo(
                     painter = painterResource(R.drawable.img_compass),
                     contentDescription = "모은 포인트 수",
                     value = "${user.points}",
+                    color = colorResource(R.color.main_orange),
                     modifier = Modifier.weight(1f).fillMaxHeight(0.5f)
                 )
             }

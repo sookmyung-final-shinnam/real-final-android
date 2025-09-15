@@ -34,8 +34,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
-import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.component.common.AppTopBar
+import com.veryshinnam.myapp.component.common.LoadErrorView
 
 @Composable
 fun StoryScreen(
