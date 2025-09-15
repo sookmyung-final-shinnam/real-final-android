@@ -26,10 +26,12 @@ import com.veryshinnam.myapp.feature.home.ui.component.HomeUserItem
 
 @Composable
 fun AttendanceInfo(
+    stamps: Int,
+    attendances: Int,
     modifier: Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxHeight().padding(16.dp)
+        modifier = modifier.fillMaxHeight()
     ) {
         Box(
             modifier = Modifier.fillMaxWidth().fillMaxHeight(0.5f)
@@ -49,7 +51,7 @@ fun AttendanceInfo(
             HomeUserItem(
                 painter= painterResource(R.drawable.img_stamp),
                 contentDescription = "모은 스탬프 수",
-                value = 1.toString(),
+                value = "${stamps}",
                 spacer = 30.dp,
                 color = colorResource(R.color.deep_pink),
                 modifier = Modifier.padding(bottom = 8.dp)
@@ -68,7 +70,7 @@ fun AttendanceInfo(
         ) {
             Text(
                 text = "오늘도 만나서 반가워\n" +
-                        "이번 달은 총 8번 출석체크 했어!\n" +
+                        "이번 달은 총 ${attendances}번 출석체크 했어!\n" +
                         "도장 10개당 나침반 1개인걸 잊지마~!",
                 modifier = Modifier.padding(20.dp),
                 style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold)

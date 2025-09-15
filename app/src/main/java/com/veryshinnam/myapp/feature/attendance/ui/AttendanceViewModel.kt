@@ -1,0 +1,83 @@
+package com.veryshinnam.myapp.feature.attendance.ui
+
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.viewModelScope
+import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.launch
+import org.threeten.bp.Year
+import org.threeten.bp.YearMonth
+import javax.inject.Inject
+
+@HiltViewModel
+class AttendanceViewModel @Inject constructor(
+//    private val repository: CalendarRepository // API/로컬 데이터
+) : ViewModel() {
+
+    private val _attendanceUiState = MutableStateFlow<AttendanceUiState>(AttendanceUiState.Loading)
+    val attendanceUiState: StateFlow<AttendanceUiState> = _attendanceUiState.asStateFlow()
+
+    init {
+        // 처음 화면 진입 시 현재 달로 로드
+        fetchMonth(YearMonth.now())
+    }
+
+    fun fetchMonth(month: YearMonth) {
+        viewModelScope.launch {
+            try {
+                // repository.getStampedDates(month) 호출
+                val res = getAttendancesDummy(month)
+                _attendanceUiState.value = AttendanceUiState.Success(
+                    month = month,
+                    stamps = res.stamps,
+                    attendances = res.attendances,
+                    attendanceDates  = res.attendanceDates,
+                    usedDate = res.usedDate
+                )
+            } catch (e: Exception) {
+                _attendanceUiState.value = AttendanceUiState.Error(e.message ?: "Unknown error")
+            }
+        }
+    }
+
+    fun fetchPreviousMonth() {
+        val current = _attendanceUiState.value
+        if (current is AttendanceUiState.Success) {
+            fetchMonth(current.month.minusMonths(1))
+        }
+    }
+
+    fun fetchNextMonth() {
+        val current = _attendanceUiState.value
+        if (current is AttendanceUiState.Success) {
+            fetchMonth(current.month.plusMonths(1))
+        }
+    }
+
+    private fun getAttendancesDummy(month: YearMonth): AttendanceUiState.Success {
+        val currentYear = Year.now().value
+        val attendanceDays = setOf(1, 2, 5, 8, 14)
+
+        val attendanceDates = when {
+            month.year == currentYear && month.monthValue == 7 -> setOf(1, 2, 3, 4, 5, 9, 21, 22).map { month.atDay(it) }.toSet()
+            month.year == currentYear && month.monthValue == 8 -> setOf(10, 15, 23, 27).map { month.atDay(it) }.toSet()
+            month.year == currentYear && month.monthValue == 9 ->
+                attendanceDays.map { month.atDay(it) }.toSet()
+            else -> emptySet()
+        }
+
+        val usedDate = YearMonth.of(2025, 8).atDay(15)
+//        val usedDate = if (month.monthValue == 8) month.atDay(15) else null
+        val stamps = 7
+
+        return AttendanceUiState.Success(
+            month = month,
+            stamps = stamps,
+            attendances = attendanceDays.size,
+            attendanceDates = attendanceDates,
+            usedDate = usedDate
+        )
+    }
+}
