@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -35,6 +36,7 @@ fun ConversationScreen(
 ) {
     // 대화 화면 상태 관리
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle()
+    val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -63,6 +65,10 @@ fun ConversationScreen(
                 }
                 // 조회 성공
                 is ConversationUiState.Success -> {
+                    LaunchedEffect(state.conversationStep) {
+                        vm.replayText() // 자동 읽기
+                    }
+
                     Column(Modifier.fillMaxSize(),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
@@ -72,7 +78,7 @@ fun ConversationScreen(
                                 steps = 4,                        // 총 반복 횟수
                                 currentStep = state.loopStep,     // 현재 진행 단계
                                 modifier = Modifier
-                                    .fillMaxWidth(0.6f)  // 진행 바 길이
+                                    .fillMaxWidth(0.7f)  // 진행 바 길이
                                     .weight(0.2f),
                             )
                         } else Spacer(Modifier.weight(0.2f)) // 공간 차지
@@ -82,6 +88,8 @@ fun ConversationScreen(
                                 BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.replayText() },
                                     onNextClick = {  vm.goToNextStep() },
                                     modifier = Modifier.weight(0.8f)
                                 )
@@ -91,6 +99,8 @@ fun ConversationScreen(
                                 BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.replayText() },
                                     onNextClick = { vm.goToNextStep() },
                                     modifier = Modifier.weight(0.8f)
                                 )
@@ -100,7 +110,8 @@ fun ConversationScreen(
                                 BackHandler { vm.goToPreviousStep() }
                                 ConversationQuestionContent(
                                     question = state.questionData!!.question,
-                                    onReplayClick = { },
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.replayText() },
                                     onRecordClick = { vm.goToNextStep() },
                                     modifier =  Modifier.weight(0.8f)
                                 )
@@ -126,7 +137,8 @@ fun ConversationScreen(
                                 ConversationFeedbackContent(
                                     feedback = feedback,
                                     isGoodFeedback = isGoodFeedback,
-                                    onReplayClick = {  },
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.replayText() },
                                     onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
                                     modifier = Modifier.weight(0.8f)
                                 )

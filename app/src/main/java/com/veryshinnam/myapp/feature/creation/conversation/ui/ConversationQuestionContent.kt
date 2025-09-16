@@ -14,6 +14,7 @@ import com.veryshinnam.myapp.feature.creation.conversation.component.Conversatio
 @Composable
 fun ConversationQuestionContent(
     question: String,
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     onRecordClick: () -> Unit,
     modifier: Modifier
@@ -26,6 +27,7 @@ fun ConversationQuestionContent(
             modifier = Modifier
                 .weight(0.8f)
                 .align(Alignment.CenterHorizontally),
+            isTtsSpeaking = isTtsSpeaking,
             onReplayClick = onReplayClick
         )
 

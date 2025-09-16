@@ -42,7 +42,10 @@ class ConversationViewModel @Inject constructor(
 
 
     // ui에서 바로 쓸 수 있도록 준비
-    val isTtsReady: StateFlow<Boolean> = tts.isReady
+    val isTtsReady = tts.isReady
+    // isSpeaking 추가
+    val isTtsSpeaking = tts.isSpeaking
+
     val isSttReady: StateFlow<Boolean> = stt.isReady
     val isSttListening: StateFlow<Boolean> = stt.isListening
 
@@ -313,6 +316,26 @@ class ConversationViewModel @Inject constructor(
             Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
         } catch (e: Exception) {
             _conversationUiState.value = ConversationUiState.Error(e.message ?: "Complete error")
+        }
+    }
+
+    // 다시 읽기
+    fun replayText() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+
+        when (state.conversationStep) {
+            ConversationStep.START, ConversationStep.STORY -> {
+                tts.speak(state.nextStory, flush = true)
+            }
+            ConversationStep.QUESTION -> {
+                val question = state.questionData?.question ?: return
+                tts.speak(question, flush = true)
+            }
+            ConversationStep.FEEDBACK -> {
+                val feedback = state.feedbackData?.text ?: return
+                tts.speak(feedback, flush = true)
+            }
+            else -> { /* ANSWER, END 단계는 다시듣기 없음 */ }
         }
     }
 }

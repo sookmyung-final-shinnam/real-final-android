@@ -27,12 +27,14 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
 @Composable
 fun ConversationStoryText(
     nextStory: String,
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -61,13 +63,15 @@ fun ConversationStoryText(
                 // 스토리 텍스트
                 Text(
                     text = nextStory,
-                    modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙
+                    modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙 위치
+                    textAlign = TextAlign.Center, // 줄바꿈 고려 가운데 정렬
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
 
                 // 다시듣기
                 Button(
                     onClick = { onReplayClick() },
+                    enabled = !isTtsSpeaking, // speaking 중이면 비활성화
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.lemon_yellow),
                     ),

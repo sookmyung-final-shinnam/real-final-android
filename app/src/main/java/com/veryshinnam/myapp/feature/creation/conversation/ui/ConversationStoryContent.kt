@@ -12,6 +12,7 @@ import com.veryshinnam.myapp.feature.creation.conversation.component.Conversatio
 @Composable
 fun ConversationStoryContent(
     nextStory: String,
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit = {},
     onNextClick: () -> Unit,
     modifier: Modifier
@@ -22,6 +23,7 @@ fun ConversationStoryContent(
         // 다음 이야기 텍스트
         ConversationStoryText(
             nextStory = nextStory,
+            isTtsSpeaking = isTtsSpeaking,
             modifier = Modifier.weight(0.8f).align(Alignment.CenterHorizontally),
             onReplayClick = onReplayClick
         )

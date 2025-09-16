@@ -27,6 +27,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import kotlinx.coroutines.delay
@@ -71,6 +72,7 @@ fun ConversationEndContent(
                     text = "다 끝났어! 이제 동화가 생성 중이야.\n" +
                             "5분 뒤에 보관함에서 보자!",
                     modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙
+                    textAlign = TextAlign.Center, // 줄바꿈 고려 가운데 정렬
                     style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
                 )
             }

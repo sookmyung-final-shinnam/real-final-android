@@ -17,6 +17,7 @@ import com.veryshinnam.myapp.feature.creation.model.FeedbackData
 fun ConversationFeedbackContent(
     feedback: FeedbackData,
     isGoodFeedback: Boolean, // 피드백 긍정/부정
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier
@@ -24,13 +25,14 @@ fun ConversationFeedbackContent(
     Column(modifier = modifier.fillMaxSize()) {
             ConversationNeedsText(
                 feedback = if (isGoodFeedback) feedback.text
-                           else  feedback.text + "\n다시 한번 말해줄래?",
+                           else  feedback.text + " 다시 한번 말해줄래?",
                 tryNum = feedback.tryNum,
                 painter = if (isGoodFeedback) painterResource(R.drawable.img_feedback_positive)
                           else painterResource(R.drawable.img_feedback_negative),
                 modifier = Modifier
                     .weight(0.8f)
                     .align(Alignment.CenterHorizontally),
+                isTtsSpeaking = isTtsSpeaking,
                 onReplayClick = onReplayClick
             )
 

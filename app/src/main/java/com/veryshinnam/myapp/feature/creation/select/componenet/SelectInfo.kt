@@ -36,7 +36,6 @@ fun SelectInfo(
     currentStep: Int,   // 현재 단계
     modifier: Modifier,
     totalStep: Int = 6, // 전체 단계 수
-    offsetX: Dp = 40.dp,   // 진행바 오른쪽 이동
     endPadding: Dp = 20.dp // 이미지 오른쪽 패딩, 카드 텍스트 전체 패딩
 ) {
     Column(
@@ -52,9 +51,8 @@ fun SelectInfo(
                 steps = totalStep,
                 currentStep = currentStep,
                 modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .fillMaxWidth(0.7f)
-                    .offset(x = offsetX)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(0.6f)
             )
 
             // 다람쥐 이미지 (BottomEnd 정렬용)

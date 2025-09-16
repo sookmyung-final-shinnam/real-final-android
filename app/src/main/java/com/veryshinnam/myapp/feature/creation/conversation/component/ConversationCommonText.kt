@@ -30,6 +30,7 @@ import com.veryshinnam.myapp.R
 fun ConversationCommonText(
     text: String, // 질문 또는 피드백 긍정 텍스트
     painter: Painter,
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -55,6 +56,7 @@ fun ConversationCommonText(
                 // 다시듣기
                 Button(
                     onClick = { onReplayClick() },
+                    enabled = !isTtsSpeaking, // speaking 중이면 비활성화
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.lemon_yellow),
                     ),

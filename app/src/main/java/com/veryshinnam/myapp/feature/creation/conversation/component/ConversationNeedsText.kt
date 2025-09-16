@@ -35,6 +35,7 @@ fun ConversationNeedsText(
     feedback: String, // 피드백 부정 텍스트
     tryNum: Int,
     painter: Painter,
+    isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     modifier: Modifier
 ) {
@@ -89,6 +90,7 @@ fun ConversationNeedsText(
                     // 다시듣기
                     Button(
                         onClick = { onReplayClick() },
+                        enabled = !isTtsSpeaking, // speaking 중이면 비활성화
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.lemon_yellow),
                         ),
