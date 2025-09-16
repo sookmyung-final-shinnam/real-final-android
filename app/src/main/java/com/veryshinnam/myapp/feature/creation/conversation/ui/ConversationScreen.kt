@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
@@ -22,8 +23,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.AppTopBar
 import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.component.common.StepProgressBar
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationEndContent
-import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationProgressBar
 import com.veryshinnam.myapp.feature.creation.model.CurrentStep
 
 @Composable
@@ -72,12 +73,14 @@ fun ConversationScreen(
                     ) {
                         // 진행바 (START, END 제외)
                         if (state.currentStep != CurrentStep.START && state.currentStep != CurrentStep.END) {
-                            ConversationProgressBar(
-                                progress = state.loopStep, // 현재 회차
-                                total = 4,                  // 총 반복 횟수
-                                modifier = Modifier.weight(0.2f)
+                            StepProgressBar(
+                                steps = 4,                        // 총 반복 횟수
+                                currentStep = state.loopStep,     // 현재 진행 단계
+                                modifier = Modifier
+                                    .fillMaxWidth(0.6f)  // 진행 바 길이
+                                    .weight(0.2f),
                             )
-                        } else Spacer(Modifier.weight(0.2f)) // 공간차지
+                        } else Spacer(Modifier.weight(0.2f)) // 공간 차지
 
                         when (state.currentStep) {
                             CurrentStep.START -> { // 대화 시작 (다음 이야기)
@@ -117,9 +120,17 @@ fun ConversationScreen(
                             }
 
                             CurrentStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
-                                BackHandler { vm.goToPreviousStep() }
+                                val feedback = state.feedbackData!!
+                                val isGoodFeedback = feedback.result == "GOOD"
+
+                                BackHandler { // 긍정 >  홈으로, 부정 > QUESTION 단계 이동 가능
+                                    if (isGoodFeedback) onBack()
+                                    else vm.goToPreviousStep()
+                                }
+
                                 ConversationFeedbackContent(
-                                    feedback = state.feedbackData!!,
+                                    feedback = feedback,
+                                    isGoodFeedback = isGoodFeedback,
                                     onReplayClick = {  },
                                     onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
                                     modifier = Modifier.weight(0.8f)

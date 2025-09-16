@@ -8,7 +8,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationCommonText
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationNeedsText
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationNextButton
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationRecordButton
@@ -17,12 +16,11 @@ import com.veryshinnam.myapp.feature.creation.model.FeedbackData
 @Composable
 fun ConversationFeedbackContent(
     feedback: FeedbackData,
+    isGoodFeedback: Boolean, // 피드백 긍정/부정
     onReplayClick: () -> Unit,
     onButtonClick: () -> Unit,
     modifier: Modifier
 ) {
-    val isGoodFeedback = feedback.result == "GOOD"
-
     Column(modifier = modifier.fillMaxSize()) {
             ConversationNeedsText(
                 feedback = if (isGoodFeedback) feedback.text
@@ -51,6 +49,5 @@ fun ConversationFeedbackContent(
                     .align(Alignment.CenterHorizontally)
             )
         }
-
     }
 }
