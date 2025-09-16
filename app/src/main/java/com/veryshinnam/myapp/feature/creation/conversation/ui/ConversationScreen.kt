@@ -25,29 +25,24 @@ import com.veryshinnam.myapp.component.common.AppTopBar
 import com.veryshinnam.myapp.component.common.LoadErrorView
 import com.veryshinnam.myapp.component.common.StepProgressBar
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationEndContent
-import com.veryshinnam.myapp.feature.creation.model.CurrentStep
+import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 
+// 캐릭터 생성 > 대화 진입점
 @Composable
 fun ConversationScreen(
     onBack: () -> Unit,
     vm: ConversationViewModel
 ) {
-    // 홈화면 상태 관리
+    // 대화 화면 상태 관리
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle()
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = { AppTopBar() }, // 상단 로고
-        bottomBar = {
-            Spacer( // 네비게이션 바만큼 여백
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
-            )
-        }
+        contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
     ) { innerPadding ->
         Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
             when (val state = uiState) {
@@ -72,7 +67,7 @@ fun ConversationScreen(
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         // 진행바 (START, END 제외)
-                        if (state.currentStep != CurrentStep.START && state.currentStep != CurrentStep.END) {
+                        if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
                             StepProgressBar(
                                 steps = 4,                        // 총 반복 횟수
                                 currentStep = state.loopStep,     // 현재 진행 단계
@@ -82,8 +77,8 @@ fun ConversationScreen(
                             )
                         } else Spacer(Modifier.weight(0.2f)) // 공간 차지
 
-                        when (state.currentStep) {
-                            CurrentStep.START -> { // 대화 시작 (다음 이야기)
+                        when (state.conversationStep) {
+                            ConversationStep.START -> { // 대화 시작 (다음 이야기)
                                 BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
@@ -92,7 +87,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.STORY -> { // 다음 이야기
+                            ConversationStep.STORY -> { // 다음 이야기
                                 BackHandler { onBack() } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
@@ -101,7 +96,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.QUESTION -> { // llm 질문 (STORY 단계 이동 가능)
+                            ConversationStep.QUESTION -> { // llm 질문 (STORY 단계 이동 가능)
                                 BackHandler { vm.goToPreviousStep() }
                                 ConversationQuestionContent(
                                     question = state.questionData!!.question,
@@ -111,7 +106,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
+                            ConversationStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
                                 BackHandler { vm.goToPreviousStep() }
                                 ConversationAnswerContent(
                                     onRecordDone = { vm.goToNextStep() },
@@ -119,7 +114,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
+                            ConversationStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
                                 val feedback = state.feedbackData!!
                                 val isGoodFeedback = feedback.result == "GOOD"
 
@@ -137,7 +132,7 @@ fun ConversationScreen(
                                 )
                             }
 
-                            CurrentStep.END -> { // 대화 종료
+                            ConversationStep.END -> { // 대화 종료
                                 ConversationEndContent(
                                     { onBack() }
                                 )

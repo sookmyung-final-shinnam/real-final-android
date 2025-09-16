@@ -2,9 +2,13 @@ package com.veryshinnam.myapp.feature.creation.select.componenet
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
@@ -61,10 +65,21 @@ fun SelectTripleButtons(
         }
 
         if (isCenter) {
-            SelectCustomButton(
-                onButtonClick = onCenterClick,
+            BoxWithConstraints(
                 modifier = Modifier.weight(1f)
-            )
+            ) {
+                val side = minOf(maxWidth, maxHeight)  // 더 짧은 쪽
+                Box(
+                    modifier = Modifier
+                        .size(side) // 정사각형
+                        .align(Alignment.Center)
+                ) {
+                    SelectCustomButton(
+                        onButtonClick = onCenterClick,
+                        modifier = Modifier.fillMaxSize()
+                    )
+                }
+            }
         } else {
             Spacer(Modifier.weight(1f))
         }

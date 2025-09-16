@@ -9,7 +9,7 @@ import com.veryshinnam.myapp.feature.creation.data.dto.FeedbackResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStoryResponse
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
-import com.veryshinnam.myapp.feature.creation.model.CurrentStep
+import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 import com.veryshinnam.myapp.feature.creation.model.FeedbackData
 import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -81,25 +81,25 @@ class ConversationViewModel @Inject constructor(
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
         val loop = state.loopStep
 
-        when (state.currentStep) {
-            CurrentStep.START -> {
+        when (state.conversationStep) {
+            ConversationStep.START -> {
                 // START → STORY (첫 이야기, api 요청)
                 viewModelScope.launch {
                     fetchNextStep(state)
                 }
             }
 
-            CurrentStep.STORY -> {
+            ConversationStep.STORY -> {
                 // STORY → QUESTION (질문 표시, 단계만 바뀜)
-                _conversationUiState.value = state.copy(currentStep = CurrentStep.QUESTION)
+                _conversationUiState.value = state.copy(conversationStep = ConversationStep.QUESTION)
             }
 
-            CurrentStep.QUESTION -> {
+            ConversationStep.QUESTION -> {
                 // STORY → QUESTION (녹음 화면, 단계만 바뀜)
-                _conversationUiState.value = state.copy(currentStep = CurrentStep.ANSWER)
+                _conversationUiState.value = state.copy(conversationStep = ConversationStep.ANSWER)
             }
 
-            CurrentStep.ANSWER -> {
+            ConversationStep.ANSWER -> {
                 // ANSWER → FEEDBACK (피드백 표시)
                 viewModelScope.launch {
                     fetchFeedback(state)
@@ -116,7 +116,7 @@ class ConversationViewModel @Inject constructor(
 
         if (feedback.result == "NEEDS_CORRECTION" && feedback.tryNum < 3) {
             // 부정 → 다시 녹음 단계로
-            _conversationUiState.value = state.copy(currentStep = CurrentStep.ANSWER)
+            _conversationUiState.value = state.copy(conversationStep = ConversationStep.ANSWER)
         } else {
             // 긍정 → 다음 루프 or END
             val nextLoop = state.loopStep + 1
@@ -135,7 +135,7 @@ class ConversationViewModel @Inject constructor(
                 viewModelScope.launch {
                     fetchEndStory(state.sessionId)
                     _conversationUiState.value = state.copy(
-                        currentStep = CurrentStep.END
+                        conversationStep = ConversationStep.END
                     )
                 }
             }
@@ -175,7 +175,7 @@ class ConversationViewModel @Inject constructor(
             // 상태 업데이트
             _conversationUiState.value = state.copy(
                 nextStory = res.nextStory,
-                currentStep = CurrentStep.STORY,
+                conversationStep = ConversationStep.STORY,
                 questionData = QuestionData(
                     messageId = res.messageId,
                     question = res.llmQuestion
@@ -190,23 +190,23 @@ class ConversationViewModel @Inject constructor(
     fun goToPreviousStep() {
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
-        val res = when (state.currentStep) {
-            CurrentStep.QUESTION -> {
+        val res = when (state.conversationStep) {
+            ConversationStep.QUESTION -> {
                 // 질문 → 스토리
                 _conversationUiState.value = state.copy(
-                    currentStep = CurrentStep.STORY
+                    conversationStep = ConversationStep.STORY
                 )
             }
-            CurrentStep.ANSWER -> {
+            ConversationStep.ANSWER -> {
                 // 답변 → 질문
                 _conversationUiState.value = state.copy(
-                    currentStep = CurrentStep.QUESTION
+                    conversationStep = ConversationStep.QUESTION
                 )
             }
-            CurrentStep.FEEDBACK -> {
+            ConversationStep.FEEDBACK -> {
                 // 피드백 → 질문
                 _conversationUiState.value = state.copy(
-                    currentStep = CurrentStep.QUESTION
+                    conversationStep = ConversationStep.QUESTION
                 )
             }
             else -> { /* START, STORY, END는 뒤로가기 없음 */ }
@@ -291,7 +291,7 @@ class ConversationViewModel @Inject constructor(
 
             // 상태 업데이트 (Response → Data 변환)
             _conversationUiState.value = state.copy(
-                currentStep = CurrentStep.FEEDBACK,
+                conversationStep = ConversationStep.FEEDBACK,
                 feedbackData = FeedbackData(
                     result = res.feedbackResult,
                     text = res.feedbackText,
