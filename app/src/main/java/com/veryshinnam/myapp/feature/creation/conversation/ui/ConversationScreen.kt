@@ -34,9 +34,8 @@ fun ConversationScreen(
     onBack: () -> Unit,
     vm: ConversationViewModel
 ) {
-    // 대화 화면 상태 관리
-    val uiState by vm.conversationUiState.collectAsStateWithLifecycle()
-    val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle()
+    val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
+    val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),

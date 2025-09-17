@@ -1,7 +1,9 @@
 package com.veryshinnam.myapp.feature.story.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,15 +11,21 @@ import kotlinx.coroutines.async
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class StoryViewModel @Inject constructor(
-
+    private val tts: TtsManager
 ) : ViewModel() {
+
     private val _storyUiState = MutableStateFlow<StoryUiState>(StoryUiState.Loading)
     val storyUiState = _storyUiState.asStateFlow()
+
+    val isTtsReady = tts.isReady
+    val isTtsSpeaking = tts.isSpeaking
+
 
     // 스토리 데이터 호출
     fun loadStoryData(storyId: Long) {
@@ -46,7 +54,12 @@ class StoryViewModel @Inject constructor(
     fun goToPrologue() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isPrologue = true)
+            val newState = current.copy(isTtsMode = !current.isTtsMode)
+            _storyUiState.value = newState
+
+            if (!newState.isTtsMode) {
+                stopSpeaking() // OFF로 바뀌면 중단
+            }
         }
     }
 
@@ -58,12 +71,30 @@ class StoryViewModel @Inject constructor(
         }
     }
 
-    // tts 설정 버튼
-    fun setSpeaking(enabled: Boolean) {
+    fun changeTtsMode() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isSpeaking = enabled)
+            val newState = current.copy(isTtsMode = !current.isTtsMode)
+            _storyUiState.value = newState
+
+            if (!newState.isTtsMode) {
+                stopSpeaking() // OFF로 바뀌면 중단
+            }
         }
+    }
+
+    fun speakPage(text: String) {
+        Log.d("storyTTS", "speakPage 호출됨: $text")
+        tts.speak(text, flush = true)
+    }
+
+    fun stopSpeaking() {
+        tts.stop()
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        tts.stop()
     }
 
     // 스토리 기본 정보
@@ -166,4 +197,5 @@ class StoryViewModel @Inject constructor(
             else -> emptyList()
         }
     }
+
 }

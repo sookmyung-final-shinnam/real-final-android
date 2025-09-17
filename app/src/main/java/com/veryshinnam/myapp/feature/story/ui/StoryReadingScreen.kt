@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -26,16 +27,33 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoryReadingScreen(
     pages: List<PageData>,
-    isSpeaking: Boolean,
-    onTtsClick: () -> Unit,
+    isTtsMode: Boolean,
+    isReady: Boolean,
+    onTtsModeChange: () -> Unit,
     onBack: () -> Unit,
-    onHome: () -> Unit
+    onHome: () -> Unit,
+    onSpeakPage: (String) -> Unit,
+    onStopSpeaking: () -> Unit
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
         pageCount = { pages.size + 1 } // 마지막 EndingPage 포함
     )
     val coroutineScope = rememberCoroutineScope()
+
+    // 자동 읽기 > TTS 모드 ON + 엔진 준비 + 페이지 변경 시
+    LaunchedEffect(pagerState.currentPage, isTtsMode, isReady) {
+        if (pagerState.currentPage < pages.size) {
+            if (isTtsMode && isReady) {
+                val text = pages[pagerState.currentPage].content
+                onSpeakPage(text)
+            } else {
+                onStopSpeaking()
+            }
+        } else {
+            onStopSpeaking()
+        }
+    }
 
     BackHandler { onBack() }
 
@@ -62,13 +80,13 @@ fun StoryReadingScreen(
         if (pagerState.currentPage < pages.size) {
             // TTS 재생 버튼
             Image(
-                painter = if (isSpeaking) { painterResource(R.drawable.img_speak_on) }
+                painter = if (isTtsMode) { painterResource(R.drawable.img_speak_on) }
                         else { painterResource(R.drawable.img_speak_off) },
                 contentDescription = "읽어주기 버튼",
                 modifier = Modifier.align(Alignment.TopEnd)
                     .fillMaxHeight(0.2f)
                     .padding(16.dp)
-                    .clickable { onTtsClick() },
+                    .clickable { onTtsModeChange() },
                 contentScale = ContentScale.Fit
             )
 

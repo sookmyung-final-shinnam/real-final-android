@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.core.speech.tts
 import android.content.Context
 import android.speech.tts.TextToSpeech
 import android.speech.tts.UtteranceProgressListener
+import android.util.Log
 import androidx.annotation.MainThread
 import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,7 @@ class TtsManagerImpl @Inject constructor(
 
     // TTS 엔진 초기화
     override fun onInit(status: Int) {
+        Log.d("storyTTS", "onInit 호출됨: status=$status")
 
         // SUCCESS 상태가 되어야 준비 완료 상태(_isReady)로 간주
         _isReady.value = (status == TextToSpeech.SUCCESS)
@@ -41,14 +43,17 @@ class TtsManagerImpl @Inject constructor(
             // 재생 상태 리스너
             tts?.setOnUtteranceProgressListener(object : UtteranceProgressListener() {
                 override fun onStart(utteranceId: String?) {
+                    Log.d("storyTTS", "onStart 실행")
                     _isSpeaking.value = true
                 }
 
                 override fun onDone(utteranceId: String?) {
+                    Log.d("storyTTS", "onDone 실행")
                     _isSpeaking.value = false
                 }
 
                 override fun onError(utteranceId: String?) {
+                    Log.d("storyTTS", "onError 실행")
                     _isSpeaking.value = false
                 }
             })
@@ -69,15 +74,19 @@ class TtsManagerImpl @Inject constructor(
     // TTS 재생
     @MainThread
     override fun speak(text: String, flush: Boolean) {
-
+        Log.d("storyTTS", "speak 호출됨: ready=${_isReady.value}, text=$text")
         // 아직 준비 완료 상태가 아니거나 빈 문자열이면 생략
-        if (!_isReady.value || text.isBlank()) return
+        if (!_isReady.value || text.isBlank()) {
+            Log.e("storyTTS", "speak 실행 안 함: ready=${_isReady.value}, text=$text")
+            return
+        }
 
         // flush가 true면 현재 재생을 끊고 새 텍스트부터 재생
         // false면 큐에 이어붙여서 순차 재생
         val mode = if (flush) TextToSpeech.QUEUE_FLUSH else TextToSpeech.QUEUE_ADD
         val utteranceId = System.currentTimeMillis().toString()
-        tts?.speak(text, mode, null, utteranceId)
+        val result = tts?.speak(text, mode, null, utteranceId)
+        Log.d("storyTTS", "tts.speak 실행 결과=$result")
     }
 
     // TTS 즉시 중단 (TTS 엔진 유지)

@@ -45,6 +45,8 @@ fun StoryScreen(
     vm: StoryViewModel = hiltViewModel()
 ) {
     val uiState by vm.storyUiState.collectAsStateWithLifecycle()
+    val isTtsReady by vm.isTtsReady.collectAsStateWithLifecycle()
+
     val layoutDirection = LocalLayoutDirection.current
 
     // storyId 바뀔 때마다 데이터 로드
@@ -122,10 +124,13 @@ fun StoryScreen(
                         // 동화 진행 화면
                         StoryReadingScreen(
                             pages = state.pagesData,
-                            isSpeaking = state.isSpeaking,
-                            onTtsClick = { vm.setSpeaking(!state.isSpeaking) },
+                            isTtsMode = state.isTtsMode,
+                            isReady = isTtsReady,
+                            onTtsModeChange = { vm.changeTtsMode() },
                             onBack = { vm.goToPrologue() },
-                            onHome = onHome
+                            onHome = onHome,
+                            onSpeakPage = { vm.speakPage(it) },
+                            onStopSpeaking = { vm.stopSpeaking() }
                         )
                     }
                 }
