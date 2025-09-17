@@ -38,4 +38,5 @@
     <!-- 앱컬러(출석체크) -->
     <color name="deep_pink">#FEA17F</color>
     <color name="light_pink">#FCBFA9</color>
+    <color name="clear_blue">#1AB3ED</color>
 </resources>

@@ -19,6 +19,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.PageData
+import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.components.StoryEndingPage
 import com.veryshinnam.myapp.feature.story.ui.components.StoryPageButtons
 import com.veryshinnam.myapp.feature.story.ui.components.StoryReaderPage
@@ -27,6 +28,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoryReadingScreen(
     pages: List<PageData>,
+    storyType: StoryType,
     isTtsMode: Boolean,
     isReady: Boolean,
     onTtsModeChange: () -> Unit,
@@ -64,7 +66,7 @@ fun StoryReadingScreen(
             modifier = Modifier.matchParentSize()
         ) { page ->
             if (page < pages.size) {
-                StoryReaderPage(page = pages[page])
+                StoryReaderPage(page = pages[page], storyType = storyType)
             } else {
                 StoryEndingPage(
                     onRestart = {

@@ -17,6 +17,7 @@ import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
 import com.veryshinnam.myapp.feature.creation.route.CreationRoutes
 import com.veryshinnam.myapp.feature.creation.route.creationNavGraph
 import com.veryshinnam.myapp.feature.dashboard.ui.DashboardScreen
+import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -102,20 +103,25 @@ class MainActivity : ComponentActivity() {
                     CharacterScreen(
                         id = characterId,
                         onBack = { mainNavController.popBackStack() },
-                        onStoryClick = { storyId ->
-                            mainNavController.navigate("story/$storyId")
-                        },
-                        onVideoClick = {}
+                        onStoryClick = { storyId, type ->
+                            mainNavController.navigate("story/$storyId/${type.name}")
+                        }
                     )
                 }
 
                 // 동화 상세 보기
-                composable("story/{id}",
-                    arguments = listOf(navArgument("id") { type = NavType.LongType })
+                composable( route = "story/{id}/{type}",
+                    arguments = listOf(
+                        navArgument("id") { type = NavType.LongType },    // 동화 아이디
+                        navArgument("type") { type = NavType.StringType } // 동화 타입
+                    )
                 ) { backStackEntry ->
                     val storyId = backStackEntry.arguments?.getLong("id") ?: return@composable
+                    val storyType = backStackEntry.arguments?.getString("type")?.let { StoryType.valueOf(it) } ?: StoryType.IMAGE
+
                     StoryScreen(
                         storyId = storyId,
+                        storyType = storyType,
                         onBack = { mainNavController.popBackStack() },
                         onHome = {
                             // 스택 다 비워서 홈으로 이동

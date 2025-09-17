@@ -28,13 +28,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterStoryButton(
     storyId: Long?,    // 동화 아이디
-    storyUrl: String?, // 동화 이미지 또는 영상 소스
-    type: String,    // 동화 타입 구분
-    onStoryClick: (Long) -> Unit,
+    storyType: StoryType, // 동화 타입
+    storyUrl: String?, // 동화 또는 영상 표지 이미지
+    type: String,    // 동화 타입 텍스트
+    onStoryClick: (Long, StoryType) -> Unit,
     modifier: Modifier = Modifier
 ) {
     val isExist = !storyUrl.isNullOrBlank()
@@ -44,7 +46,7 @@ fun CharacterStoryButton(
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Button(
-            onClick = { if (isExist && storyId != null) onStoryClick(storyId) },  // storyId 전달
+            onClick = { if (isExist && storyId != null) onStoryClick(storyId, storyType) },  // storyId 전달
             modifier = Modifier
                 .weight(0.75f)
                 .aspectRatio(1f),

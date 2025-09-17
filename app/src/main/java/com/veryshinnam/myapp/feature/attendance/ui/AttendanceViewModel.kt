@@ -7,6 +7,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDate
 import org.threeten.bp.Year
 import org.threeten.bp.YearMonth
 import javax.inject.Inject
@@ -34,7 +35,8 @@ class AttendanceViewModel @Inject constructor(
                     stamps = res.stamps,
                     attendances = res.attendances,
                     attendanceDates  = res.attendanceDates,
-                    usedDate = res.usedDate
+                    usedDate = res.usedDate,
+                    isTodayAttendance = res.isTodayAttendance
                 )
             } catch (e: Exception) {
                 _attendanceUiState.value = AttendanceUiState.Error(e.message ?: "Unknown error")
@@ -76,7 +78,25 @@ class AttendanceViewModel @Inject constructor(
             stamps = stamps,
             attendances = attendanceDates.size,
             attendanceDates = attendanceDates,
-            usedDate = usedDate
+            usedDate = usedDate,
+            isTodayAttendance = false // 기본값
         )
+    }
+
+    fun fetchAttendance() {
+        val current = _attendanceUiState.value
+        if (current is AttendanceUiState.Success) {
+            val today = LocalDate.now()
+            val isNew = !current.attendanceDates.contains(today)
+            val updatedDates = if (isNew) current.attendanceDates + today else current.attendanceDates
+
+            // TODO: 서버에 API 호출
+            _attendanceUiState.value = current.copy(
+                attendanceDates = updatedDates,
+                attendances = updatedDates.size,
+                stamps = if (isNew) current.stamps + 1 else current.stamps,
+                isTodayAttendance = true  // 출석 인정
+            )
+        }
     }
 }

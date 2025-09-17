@@ -36,10 +36,12 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.AppTopBar
 import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun StoryScreen(
-    storyId: Long,      // 동화 아이디
+    storyId: Long,        // 동화 아이디
+    storyType: StoryType, // 동화 타입
     onBack: () -> Unit,
     onHome: () -> Unit,
     vm: StoryViewModel = hiltViewModel()
@@ -50,7 +52,9 @@ fun StoryScreen(
     val layoutDirection = LocalLayoutDirection.current
 
     // storyId 바뀔 때마다 데이터 로드
-    LaunchedEffect(storyId) { vm.loadStoryData(storyId) }
+    LaunchedEffect(storyId, storyType) {
+        vm.fetchStoryDetail(storyId, storyType)
+    }
 
     BackHandler { onBack() }
 
@@ -123,7 +127,8 @@ fun StoryScreen(
                     } else {
                         // 동화 진행 화면
                         StoryReadingScreen(
-                            pages = state.pagesData,
+                            pages = state.pagesData.drop(1), // 0번(프롤로그) 제외
+                            storyType = storyType,
                             isTtsMode = state.isTtsMode,
                             isReady = isTtsReady,
                             onTtsModeChange = { vm.changeTtsMode() },

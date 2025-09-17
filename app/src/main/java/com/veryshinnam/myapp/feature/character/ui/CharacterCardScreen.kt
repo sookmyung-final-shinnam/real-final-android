@@ -15,14 +15,14 @@ import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoryVideoData
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterImageCard
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterInfoCard
+import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterCardScreen(
     cData: CharacterData,
     sData: StoryVideoData,
     onFavoriteClick: (Long) -> Unit,
-    onStoryClick: (Long) -> Unit,
-    onVideoClick: (Long) -> Unit
+    onStoryClick: (Long, StoryType) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -45,7 +45,6 @@ fun CharacterCardScreen(
             character = cData,
             story = sData,
             onStoryClick = onStoryClick,
-            onVideoClick = onVideoClick,
             modifier = Modifier
                 .aspectRatio(2f) // 카드 비율
                 .zIndex(1f)

@@ -16,12 +16,12 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.character.model.StoryVideoData
+import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterCardBack(
     story: StoryVideoData,             // 동화 정보 (종이책+영상)
-    onStoryClick: (Long) -> Unit,
-    onVideoClick: (Long) -> Unit,
+    onStoryClick: (Long, StoryType) -> Unit,
     modifier: Modifier = Modifier // 부모에서 넘겨받은 크기
 ) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
@@ -44,7 +44,8 @@ fun CharacterCardBack(
             // 종이책
             CharacterStoryButton(
                 storyId = story.storyId ?: -1L,
-                storyUrl = story?.storyImage,
+                storyType = StoryType.IMAGE,
+                storyUrl = story.storyImage,
                 type = "종이책",
                 onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)
@@ -52,10 +53,11 @@ fun CharacterCardBack(
 
             // 짧은 영상
             CharacterStoryButton(
-                storyId = story.videoId ?: -1L,
-                storyUrl = story?.videoUrl,
-                type = "짧은 영상",
-                onStoryClick = onVideoClick,
+                storyId = story.storyId?: -1L,
+                storyType = StoryType.VIDEO,
+                storyUrl = story.videoImage,
+                type = "움직이는 책",
+                onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)
             )
         }

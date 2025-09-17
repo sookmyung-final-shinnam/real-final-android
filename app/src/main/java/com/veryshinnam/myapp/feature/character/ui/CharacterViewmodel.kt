@@ -37,10 +37,9 @@ class CharacterViewModel @Inject constructor(
                 ),
                 storyData = StoryVideoData(
                     title = "숲속 마을의 친구들",
-                    storyId = 11,
-                    storyImage = "https://ifh.cc/g/QP5O4d.png",
-                    videoId = null,
-                    videoUrl = null
+                    storyId = 1,
+                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/page_4.png",
+                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/page_4.png"
                 )
             )
 
@@ -59,8 +58,7 @@ class CharacterViewModel @Inject constructor(
                     title = "집에 가지마, 베이베",
                     storyId = null,
                     storyImage = null,
-                    videoId = 1,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"
+                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"
                 )
             )
 
@@ -79,8 +77,7 @@ class CharacterViewModel @Inject constructor(
                     title = "빛과 그림자",
                     storyId = 18,
                     storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
-                    videoId = null,
-                    videoUrl = null
+                    videoImage = null
                 )
             )
 
@@ -99,8 +96,7 @@ class CharacterViewModel @Inject constructor(
                     title = "민수와 깜찍한 요정의 사랑 모험",
                     storyId = 19,
                     storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
-                    videoId = 18,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/3/videos/page_1.mp4"
+                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/3/videos/page_1.mp4"
                 )
             )
 

@@ -35,14 +35,14 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.AppTopBar
 import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
 @Composable
 fun CharacterScreen(
     id: Long,
     onBack: () -> Unit,
-    onStoryClick: (Long) -> Unit,
-    onVideoClick:  (Long) -> Unit,
+    onStoryClick: (Long, StoryType) -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
@@ -113,7 +113,6 @@ fun CharacterScreen(
                         sData = state.storyData,
                         onFavoriteClick = { id -> vm.updateFavorite(id) },
                         onStoryClick = onStoryClick,
-                        onVideoClick = onVideoClick
                     )
                 }
             }

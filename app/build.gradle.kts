@@ -70,7 +70,11 @@ dependencies {
 
     // calender용 날짜 계산
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.7")
-    
+
+    // video용 ExoPlayer
+    implementation("androidx.media3:media3-exoplayer:1.3.1")
+    implementation("androidx.media3:media3-ui:1.3.1")
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.attendance.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -31,6 +32,7 @@ import com.veryshinnam.myapp.component.common.BackButton
 import com.veryshinnam.myapp.component.common.LoadErrorView
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceInfo
+import com.veryshinnam.myapp.feature.attendance.component.AttendanceStamp
 import org.threeten.bp.YearMonth
 
 @Composable
@@ -44,62 +46,72 @@ fun AttendanceScreen(
         onBack() // 뒤로 가기 (홈 이동)
     }
 
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() },
-        bottomBar = {
-            // 네비게이션 바만큼 여백
-            Spacer(
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+    Box(Modifier.fillMaxSize()) {
+        val state = uiState
+        if (state is AttendanceUiState.Success && !state.isTodayAttendance) {
+            AttendanceStamp(
+                onReceiveClick = { vm.fetchAttendance() },
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2f)
             )
         }
-    ) { innerPadding ->
-        Box(
+
+        Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
+                .background(colorResource(id = R.color.background_yellow))
         ) {
-            BackButton(onBackClick = onBack, modifier = Modifier.align(Alignment.TopStart).zIndex(1f) )
+            // 상단 AppBar
+            AppTopBar()
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center
+            ) {
+                BackButton(
+                    onBackClick = onBack,
+                    modifier = Modifier.align(Alignment.TopStart).zIndex(1f)
+                )
 
-            when (val state = uiState) {
-                // 조회 로딩 중
-                is AttendanceUiState.Loading -> {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.main_orange), // 주황색
-                        trackColor = Color.Gray.copy(alpha = 0.5f),
-                        strokeWidth = 4.dp
-                    )
-                }
-                // 조회 오류
-                is AttendanceUiState.Error -> {
-                    LoadErrorView(
-                        message = state.message,
-                        onRetry = {  }
-                    )
-                }
-                // 조회 성공
-                is AttendanceUiState.Success -> {
-                    Column(
-                        Modifier.fillMaxSize().padding(16.dp)
-                    ) {
-                        // 출첵 설명 부분
-                        AttendanceInfo(
-                            month = state.month,
-                            stamps = state.stamps,
-                            attendances = state.attendances,
-                            Modifier.weight(0.25f)    // 높이 비율 0.25
+                when (val state = uiState) {
+                    // 조회 로딩 중
+                    is AttendanceUiState.Loading -> {
+                        CircularProgressIndicator(
+                            color = colorResource(id = R.color.main_orange), // 주황색
+                            trackColor = Color.Gray.copy(alpha = 0.5f),
+                            strokeWidth = 4.dp
                         )
+                    }
+                    // 조회 오류
+                    is AttendanceUiState.Error -> {
+                        LoadErrorView(
+                            message = state.message,
+                            onRetry = { }
+                        )
+                    }
+                    // 조회 성공
+                    is AttendanceUiState.Success -> {
+                        Column(
+                            Modifier.fillMaxSize().padding(16.dp)
+                        ) {
+                            // 출첵 설명 부분
+                            AttendanceInfo(
+                                month = state.month,
+                                stamps = state.stamps,
+                                attendances = state.attendances,
+                                Modifier.weight(0.25f)    // 높이 비율 0.25
+                            )
 
-                        // 출첵 달력
-                        AttendanceCalender(
-                            month = state.month,
-                            attendanceDates = state.attendanceDates,
-                            usedDate = state.usedDate,
-                            onPrevMonth = { vm.fetchPreviousMonth() },
-                            onNextMonth = { vm.fetchNextMonth() },
-                            Modifier.weight(0.75f)
-                        )
+                            // 출첵 달력
+                            AttendanceCalender(
+                                month = state.month,
+                                attendanceDates = state.attendanceDates,
+                                usedDate = state.usedDate,
+                                onPrevMonth = { vm.fetchPreviousMonth() },
+                                onNextMonth = { vm.fetchNextMonth() },
+                                Modifier.weight(0.75f)
+                            )
+                        }
                     }
                 }
             }
