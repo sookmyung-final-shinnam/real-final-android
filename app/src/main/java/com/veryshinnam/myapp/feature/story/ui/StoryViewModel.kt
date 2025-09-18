@@ -41,7 +41,6 @@ class StoryViewModel @Inject constructor(
                 val prologueVideo = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/$storyId/videos/page_4.mp4"
 
                 val storyData = StoryData(
-                    story = storyType,
                     storyId = storyId,
                     thumbnail = if (storyType == StoryType.IMAGE) prologueImage else prologueVideo,
                     title = "지우의 모험과 친구가 되는 능력",
@@ -89,13 +88,9 @@ class StoryViewModel @Inject constructor(
     fun goToPrologue() {
         val current = _storyUiState.value
         if (current is StoryUiState.Success) {
-            val newState = current.copy(isTtsMode = !current.isTtsMode)
-            _storyUiState.value = newState
-
-            if (!newState.isTtsMode) {
-                stopSpeaking() // OFF로 바뀌면 중단
-            }
+            _storyUiState.value = current.copy(isPrologue = true)
         }
+        stopSpeaking() // tts 재생 중단
     }
 
     // 동화보기 스크린 이동

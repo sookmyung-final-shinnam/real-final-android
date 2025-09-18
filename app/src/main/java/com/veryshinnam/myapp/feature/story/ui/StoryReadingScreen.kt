@@ -32,8 +32,8 @@ fun StoryReadingScreen(
     isTtsMode: Boolean,
     isReady: Boolean,
     onTtsModeChange: () -> Unit,
-    onBack: () -> Unit,
     onHome: () -> Unit,
+    onPrologue: () -> Unit,
     onSpeakPage: (String) -> Unit,
     onStopSpeaking: () -> Unit
 ) {
@@ -57,8 +57,7 @@ fun StoryReadingScreen(
         }
     }
 
-    BackHandler { onBack() }
-
+    BackHandler { onPrologue() }
     Box(Modifier.fillMaxSize()) {
         // 동화 페이지
         HorizontalPager(

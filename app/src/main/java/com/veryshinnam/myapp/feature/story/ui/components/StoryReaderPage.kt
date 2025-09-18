@@ -13,22 +13,16 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.DisposableEffect
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.viewinterop.AndroidView
-import androidx.media3.common.MediaItem
-import androidx.media3.exoplayer.ExoPlayer
-import androidx.media3.ui.PlayerView
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.component.common.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
@@ -37,28 +31,9 @@ fun StoryReaderPage(
     page: PageData,
     storyType: StoryType
 ) {
-    val context = LocalContext.current
-
-    // ExoPlayer는 VIDEO일 때만 생성
-    val exoPlayer = remember(storyType, page.image) {
-        if (storyType == StoryType.VIDEO) {
-            ExoPlayer.Builder(context).build().apply {
-                setMediaItem(MediaItem.fromUri(Uri.parse(page.image))) // image 필드에 mp4 URL 들어옴
-                prepare()
-                playWhenReady = true
-            }
-        } else null
-    }
-
-    DisposableEffect(exoPlayer) {
-        onDispose {
-            exoPlayer?.release()
-        }
-    }
-
     Box(Modifier.fillMaxSize()) {
-        // 페이지 이미지
         when (storyType) {
+            // 페이지 이미지
             StoryType.IMAGE -> {
                 AsyncImage(
                     model = page.image,
@@ -68,15 +43,11 @@ fun StoryReaderPage(
                 )
             }
 
+            // 페이지 영상
             StoryType.VIDEO -> {
-                AndroidView(
-                    modifier = Modifier.fillMaxSize(),
-                    factory = {
-                        PlayerView(it).apply {
-                            player = exoPlayer
-                            useController = false // 기본 UI 컨트롤러 숨김
-                        }
-                    }
+                VideoPlayer(
+                    videoUrl = page.image,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }

@@ -12,25 +12,39 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
+import com.veryshinnam.myapp.component.common.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.StoryData
+import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.components.StoryReadButton
 import com.veryshinnam.myapp.feature.story.ui.components.StoryInfoFade
 
 @Composable
 fun StoryPrologueScreen(
     story: StoryData,
+    storyType: StoryType,
     onReadClick: () -> Unit,
 ) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
         // 동화 썸네일 이미지
-        AsyncImage(
-            model = story.thumbnail,
-            contentDescription = "동화 썸네일 이미지",
-            modifier = Modifier.fillMaxWidth(0.6f).zIndex(0f),
-            contentScale = ContentScale.Crop
-        )
+        when (storyType) {
+            // 페이지 이미지
+            StoryType.IMAGE -> {
+                AsyncImage(
+                    model = story.thumbnail,
+                    contentDescription = "동화 썸네일 이미지",
+                    modifier = Modifier.fillMaxWidth(0.6f).zIndex(0f),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            StoryType.VIDEO -> {
+                VideoPlayer(
+                    videoUrl = story.thumbnail,
+                    modifier = Modifier.fillMaxWidth(0.6f).fillMaxHeight().zIndex(0f)
+                )
+            }
+        }
 
         // 동화 정보 - 오른쪽으로 붙이기
         StoryInfoFade(story,

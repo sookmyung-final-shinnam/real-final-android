@@ -122,6 +122,7 @@ fun StoryScreen(
                     if (state.isPrologue) {
                         StoryPrologueScreen(
                             story = state.storyData,
+                            storyType = storyType,
                             onReadClick = { vm.goToReader() }
                         )
                     } else {
@@ -132,8 +133,8 @@ fun StoryScreen(
                             isTtsMode = state.isTtsMode,
                             isReady = isTtsReady,
                             onTtsModeChange = { vm.changeTtsMode() },
-                            onBack = { vm.goToPrologue() },
                             onHome = onHome,
+                            onPrologue = { vm.goToPrologue() },
                             onSpeakPage = { vm.speakPage(it) },
                             onStopSpeaking = { vm.stopSpeaking() }
                         )
