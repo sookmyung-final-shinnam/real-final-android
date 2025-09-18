@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.route
+package com.veryshinnam.myapp.core.navigation
 
 import android.util.Log
 import androidx.compose.runtime.LaunchedEffect
@@ -14,21 +14,14 @@ import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
 import com.veryshinnam.myapp.feature.creation.select.ui.SelectViewModel
 import com.veryshinnam.myapp.feature.creation.select.ui.SelectionScreen
 
-// creationNavGraph에 필요한 라우트 상수
-object CreationRoutes {
-    const val ROOT = "creation"
-    const val SELECTION = "selection"
-    const val CONVERSATION = "conversation"
-}
-
 // 캐릭터 생성 플로우 네비게이션 그래프
 fun NavGraphBuilder.creationNavGraph(navController: NavController) {
     navigation(
-        route = CreationRoutes.ROOT,
-        startDestination = CreationRoutes.SELECTION
+        route = NavGraphs.CREATION,
+        startDestination = "selection"
     ) {
-        // 선택 단계
-        composable(CreationRoutes.SELECTION) { backStackEntry ->
+        // 선택 화면
+        composable("selection") { backStackEntry ->
             val vm: SelectViewModel = hiltViewModel(backStackEntry)
 
             SelectionScreen(
@@ -49,7 +42,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                         ?.savedStateHandle
                         ?.set("request", req)
 
-                    navController.navigate(CreationRoutes.CONVERSATION) {
+                    navController.navigate("conversation") {
                         launchSingleTop = true
                     }
                 },
@@ -57,12 +50,12 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
             )
         }
 
-        // 대화 단계
-        composable(CreationRoutes.CONVERSATION) { backStackEntry ->
+        // llm 대화 화면
+        composable("conversation") { backStackEntry ->
             val vm: ConversationViewModel = hiltViewModel()
 
             val req = remember(backStackEntry) {
-                navController.getBackStackEntry(CreationRoutes.SELECTION)
+                navController.getBackStackEntry("selection")
                     .savedStateHandle
                     .get<StartConversationRequest>("request")
             }
@@ -77,8 +70,8 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
 
             ConversationScreen(
                 onBack = {
-                    // 선택 스택 정리 후 홈으로
-                    navController.popBackStack(CreationRoutes.SELECTION, inclusive = true)
+                    // 선택 화면 스택 정리 후 홈으로
+                    navController.popBackStack("selection", inclusive = true)
                     navController.navigate("home") {
                         launchSingleTop = true
                     }

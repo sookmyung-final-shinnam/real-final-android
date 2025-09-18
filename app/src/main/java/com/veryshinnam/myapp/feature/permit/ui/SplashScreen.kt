@@ -11,6 +11,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -19,14 +21,33 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.StrokeText
+import kotlinx.coroutines.delay
 
 @Composable
 fun SplashScreen(
     onHome: () -> Unit,
-    onLogin: () -> Unit
+    onLogin: () -> Unit,
+    vm: PermitViewModel = hiltViewModel()
 ) {
+    val state by vm.permitUiState.collectAsStateWithLifecycle()
+
+    LaunchedEffect(Unit) {
+        delay(3000) // 3초 스플래시 유지
+        vm.checkAccessToken()
+    }
+
+    LaunchedEffect(state) {
+        when (state) {
+            is PermitUiState.Success -> onHome()
+            is PermitUiState.Error -> onLogin()
+            else -> Unit
+        }
+    }
+
     Column(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow)),

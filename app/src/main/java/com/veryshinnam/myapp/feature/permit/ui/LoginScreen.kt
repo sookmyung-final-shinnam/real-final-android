@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
+import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -15,6 +16,7 @@ import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -27,6 +29,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.KakaoLoginWebView
 import com.veryshinnam.myapp.component.common.StrokeText
@@ -34,16 +38,35 @@ import com.veryshinnam.myapp.component.common.StrokeText
 @Composable
 fun LoginScreen(
     onSignup: () -> Unit,
-    onHome: () -> Unit
+    onHome: () -> Unit,
+    vm: PermitViewModel = hiltViewModel()
 ) {
+    val state by vm.permitUiState.collectAsStateWithLifecycle()
     var isKakaoLogin by remember { mutableStateOf(false) } // 카카오 로그인 웹뷰 띄우기
 
+    LaunchedEffect(state) {
+        Log.d("LoginScreen", "permitUiState = $state")
+        when (state) {
+            is PermitUiState.Success -> onHome()
+            is PermitUiState.Error -> {
+                isKakaoLogin = false // 로그인 재시도 유도
+            }
+            else -> Unit
+        }
+    }
+
     if (isKakaoLogin) { // 카카오 로그인 버튼 누르면 웹뷰
-        BackHandler { isKakaoLogin = false  } // 뒤로가기
+        BackHandler { isKakaoLogin = false } // 뒤로가기
 
         KakaoLoginWebView(
-            onHome = onHome,
-            onSignUp = onSignup,
+            onTempCodeReceived = { tempCode, isNewUser ->
+                Log.d("LoginScreen", "콜백 tempCode=$tempCode, isNewUser=$isNewUser")
+                if (isNewUser) {
+                    onSignup() // 신규 유저 > 회원가입
+                } else {
+                    vm.login(tempCode) // 기존 유저 > 로그인
+                }
+            },
             modifier = Modifier.fillMaxSize()
         )
     } else {

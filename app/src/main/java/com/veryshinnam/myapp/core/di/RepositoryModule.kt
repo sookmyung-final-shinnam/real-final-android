@@ -14,7 +14,5 @@ abstract class RepositoryModule {
 
     @Binds
     @Singleton
-    abstract fun bindPermitRepository(
-        impl: PermitRepositoryImpl
-    ): PermitRepository
+    abstract fun bindPermitRepository(impl: PermitRepositoryImpl): PermitRepository
 }

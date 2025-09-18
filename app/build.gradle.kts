@@ -60,12 +60,16 @@ dependencies {
     // compose icon 확장
     implementation("androidx.compose.material:material-icons-extended")
 
+    // compose splash
+    implementation("androidx.core:core-splashscreen:1.0.1")
+
     // hilt 적용
     implementation("com.google.dagger:hilt-android:2.51.1")
     implementation("androidx.hilt:hilt-navigation-compose:1.2.0")
     implementation(libs.androidx.constraintlayout)
     implementation(libs.androidx.compose.testing)
     implementation(libs.androidx.foundation)
+    implementation(libs.androidx.lifecycle.runtime.compose)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
     // calender 날짜 계산
@@ -78,6 +82,9 @@ dependencies {
     // retrofit
     implementation ("com.squareup.retrofit2:retrofit:2.9.0")
     implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+
+    // data store
+    implementation("androidx.datastore:datastore-preferences:1.1.1")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

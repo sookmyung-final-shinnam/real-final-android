@@ -37,7 +37,7 @@ object NetworkModule  {
             .build()
 
     // PermitApi 구현체 생성
-    // permit.login() > POST /api/permit/login
+    // permit.login() > PATCH /api/permit/login
     @Provides
     @Singleton
     fun providePermitApi(retrofit: Retrofit): PermitApi =
