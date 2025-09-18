@@ -45,7 +45,7 @@ fun CharacterCardBack(
             CharacterStoryButton(
                 storyId = story.storyId ?: -1L,
                 storyType = StoryType.IMAGE,
-                storyUrl = story.storyImage,
+                storyUrl = story.storyUrl,
                 type = "종이책",
                 onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)
@@ -55,7 +55,7 @@ fun CharacterCardBack(
             CharacterStoryButton(
                 storyId = story.storyId?: -1L,
                 storyType = StoryType.VIDEO,
-                storyUrl = story.videoImage,
+                storyUrl = story.videoUrl,
                 type = "움직이는 책",
                 onStoryClick = onStoryClick,
                 modifier = Modifier.weight(1f)

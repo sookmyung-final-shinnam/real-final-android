@@ -68,12 +68,16 @@ dependencies {
     implementation(libs.androidx.foundation)
     kapt("com.google.dagger:hilt-compiler:2.51.1")
 
-    // calender용 날짜 계산
+    // calender 날짜 계산
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.7")
 
-    // video용 ExoPlayer
+    // mp4 재생
     implementation("androidx.media3:media3-exoplayer:1.3.1")
     implementation("androidx.media3:media3-ui:1.3.1")
+
+    // retrofit
+    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)

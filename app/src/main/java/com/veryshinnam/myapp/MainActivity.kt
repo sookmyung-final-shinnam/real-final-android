@@ -17,6 +17,8 @@ import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
 import com.veryshinnam.myapp.feature.creation.route.CreationRoutes
 import com.veryshinnam.myapp.feature.creation.route.creationNavGraph
 import com.veryshinnam.myapp.feature.dashboard.ui.DashboardScreen
+import com.veryshinnam.myapp.feature.permit.ui.LoginScreen
+import com.veryshinnam.myapp.feature.permit.ui.SplashScreen
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 import dagger.hilt.android.AndroidEntryPoint
@@ -32,8 +34,40 @@ class MainActivity : ComponentActivity() {
 
             NavHost(
                 navController = mainNavController,
-                startDestination = "home"
+                startDestination = "login"
             ) {
+                // 스플래시
+                composable("splash") {
+                    SplashScreen(
+                        onLogin = {
+                            mainNavController.navigate("login") {
+                                popUpTo("splash") { inclusive = true } // 스플래시 백스택 제거
+                                launchSingleTop = true // 이미 Home이 있으면 재사용
+                            }
+                        },
+                        onHome = {
+                            mainNavController.navigate("home") {
+                                popUpTo("splash") { inclusive = true } // 스플래시 백스택 제거
+                                launchSingleTop = true // 이미 Home이 있으면 재사용
+                            }
+                        }
+                    )
+                }
+
+                composable("login") {
+                    LoginScreen(
+                        onSignup = {
+                            mainNavController.navigate("signup")
+                        },
+                        onHome = {
+                            mainNavController.navigate("home") {
+                                popUpTo("login") { inclusive = true } // 스플래시 백스택 제거
+                                launchSingleTop = true // 이미 Home이 있으면 재사용
+                            }
+                        }
+                    )
+                }
+
                 // 홈 화면
                 composable("home") {
                     HomeScreen(

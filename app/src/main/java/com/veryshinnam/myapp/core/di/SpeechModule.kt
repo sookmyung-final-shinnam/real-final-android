@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.speech
+package com.veryshinnam.myapp.core.di
 
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.stt.SttManagerImpl

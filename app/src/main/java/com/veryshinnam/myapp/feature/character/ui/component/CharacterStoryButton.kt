@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.component.common.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
@@ -56,27 +57,33 @@ fun CharacterStoryButton(
             ),
             contentPadding = PaddingValues(0.dp) // 패딩 제거
         ) {
-            if (isExist) {
-                // 존재하면 이미지
+            if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
                 AsyncImage(
                     model = storyUrl,
                     contentDescription = "${type} 버튼",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-            } else {
-                // 없으면 잠금 이미지
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorResource(R.color.main_orange_shade)),
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.img_locker),
-                        contentDescription = "${type} 잠금",
+            } else { // 동화가 비디오일 경우 > 버튼 또는 잠금
+                if (!storyUrl.isNullOrBlank()) {
+                    VideoPlayer(
+                        videoUrl = storyUrl,
                         modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Fit
+                        isAutoPlay = false
                     )
+                } else { // 비디오 링크 없으면 잠금 이미지
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(colorResource(R.color.main_orange_shade)),
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_locker),
+                            contentDescription = "${type} 잠금",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
                 }
             }
         }

@@ -64,7 +64,7 @@ class HomeViewModel @Inject constructor(
 
     private fun getDummyFavorites(): List<FavoriteData> {
         return listOf(
-            FavoriteData(id = 11, name = "미니", image = "https://ifh.cc/g/QP5O4d.png"),
+            FavoriteData(id = 11, name = "지우", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_1.png"),
             FavoriteData(id = 20,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"),
             FavoriteData(id = 19,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_19.png"),
             FavoriteData(id = 18,  name = "민수", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")

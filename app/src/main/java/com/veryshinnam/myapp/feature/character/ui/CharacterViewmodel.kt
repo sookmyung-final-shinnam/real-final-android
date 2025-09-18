@@ -26,11 +26,11 @@ class CharacterViewModel @Inject constructor(
         _charUiState.value = when (id) {
             11L -> CharacterUiState.Success(
                 characterData = CharacterData(
-                    11,
-                    "유리",
-                    "FEMALE",
-                    11,
-                    "https://ifh.cc/g/QP5O4d.png",
+                    1,
+                    "지우",
+                    "MALE",
+                    1,
+                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_1.png",
                     "상냥하고 친구들을 잘 챙김",
                     "2025-06-01",
                     false
@@ -38,14 +38,14 @@ class CharacterViewModel @Inject constructor(
                 storyData = StoryVideoData(
                     title = "숲속 마을의 친구들",
                     storyId = 1,
-                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/page_4.png",
-                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/page_4.png"
+                    storyUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/page_4.png",
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/1/videos/page_4.png"
                 )
             )
 
             20L -> CharacterUiState.Success(
                 characterData = CharacterData(
-                    12,
+                    20,
                     "파워",
                     "FEMALE",
                     12,
@@ -57,8 +57,8 @@ class CharacterViewModel @Inject constructor(
                 storyData = StoryVideoData(
                     title = "집에 가지마, 베이베",
                     storyId = null,
-                    storyImage = null,
-                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"
+                    storyUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/20/page_4.png",
+                    videoUrl = null
                 )
             )
 
@@ -76,8 +76,8 @@ class CharacterViewModel @Inject constructor(
                 storyData = StoryVideoData(
                     title = "빛과 그림자",
                     storyId = 18,
-                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
-                    videoImage = null
+                    storyUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
+                    videoUrl = null
                 )
             )
 
@@ -95,8 +95,8 @@ class CharacterViewModel @Inject constructor(
                 storyData = StoryVideoData(
                     title = "민수와 깜찍한 요정의 사랑 모험",
                     storyId = 19,
-                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
-                    videoImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/3/videos/page_1.mp4"
+                    storyUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
+                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/3/videos/page_1.mp4"
                 )
             )
 
