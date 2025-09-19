@@ -24,11 +24,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.feature.collection.model.CollectionData
 import com.veryshinnam.myapp.feature.collection.ui.CollectionUiState
 
 @Composable
 fun CollectionCharacterGrid(
-    data: List<CollectionUiState.StorageData>,
+    data: List<CollectionData>,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (Long) -> Unit,
     modifier: Modifier = Modifier,
@@ -57,15 +58,15 @@ fun CollectionCharacterGrid(
                     val isLast = isLastRow(index, data.size, 3)
 
                     CollectionCharacterItem(
-                        cId = item.characterId,
-                        cName = item.characterName,
-                        cImage = item.characterImage,
+                        cId = item.id,
+                        cName = item.name,
+                        cImage = item.image,
                         isFavorite = item.isFavorite,
                         onFavoriteClick = onFavoriteClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
-                            .clickable { onItemClick(item.characterId) }
+                            .clickable { onItemClick(item.id) }
                             .then(
                                 if (isLast) Modifier.padding(bottom = 8.dp) else Modifier
                             )

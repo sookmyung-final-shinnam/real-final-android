@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.core.session
 
+import android.util.Log
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
@@ -17,9 +18,6 @@ import javax.inject.Singleton
 class SessionManager @Inject constructor(
     private val dataStore: DataStore<Preferences>
 ) {
-    // 액세스 토큰 메모리 저장
-    private var cachedToken: String? = null
-
     // SessionManager 키 정의
     private val accessToken = stringPreferencesKey("access_token")
     private val refreshToken = stringPreferencesKey("refresh_token")
@@ -36,20 +34,16 @@ class SessionManager @Inject constructor(
             pref[refreshToken] = refresh
             pref[expiredAt] = expired
         }
-        cachedToken = access
         _requireLogin.value = false
+        Log.d("Session", "saveToken access=$access refresh=$refresh expiredAt=$expiredAt")
     }
 
     // 액세스 토큰 조회 (비동기)
-    suspend fun getToken(): String? {
-        if (cachedToken == null) {
-            cachedToken = dataStore.data.first()[accessToken]
-        }
-        return cachedToken
-    }
+    suspend fun getToken(): String? = dataStore.data.first()[accessToken]
 
     // 액세스 토큰 조회 (동기, Interceptor용)
-    fun getCachedToken(): String? = cachedToken
+    fun getTokenBlocking(): String? = runBlocking { getToken() }
+
 
     // 액세스 토큰 만료 여부
     suspend fun isTokenExpired(): Boolean {
@@ -57,12 +51,14 @@ class SessionManager @Inject constructor(
         val expiredAt = LocalDateTime
             .parse(expiredAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME) // 문자열 > 시간
 
+        Log.d("AccessToken", "expiredAt= $expiredAt")
         // expiredAt이 현재보다 과거면 만료
         return expiredAt.isBefore(LocalDateTime.now())
     }
 
-    fun clearToken() {
-        cachedToken = null
-        _requireLogin.value = true  // 401 발생 > 재로그인
+    // 토큰 삭제
+    fun clearTokenBlocking() {
+        runBlocking { dataStore.edit { it.clear() } } // DataStore 비우기
+        _requireLogin.value = true
     }
 }

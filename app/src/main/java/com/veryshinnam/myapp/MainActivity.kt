@@ -40,7 +40,7 @@ class MainActivity : ComponentActivity() {
             LaunchedEffect(requireLogin) {
                 if (requireLogin) {
                     navController.navigate(NavGraphs.PERMIT) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = true }
+                        popUpTo(0) { inclusive = true } // 스택 전체 비우기
                     }
                 }
             }

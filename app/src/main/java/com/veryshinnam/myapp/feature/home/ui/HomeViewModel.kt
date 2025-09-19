@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.home.ui
 
+import android.net.http.HttpException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
@@ -49,7 +50,6 @@ class HomeViewModel @Inject constructor(
                 // 에러 케이스 테스트 용도
 //             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
             } catch (e: Exception) {
-
                     _homeUiState.value = HomeUiState.Error("홈 불러오기 실패: ${e.message}")
             }
         }

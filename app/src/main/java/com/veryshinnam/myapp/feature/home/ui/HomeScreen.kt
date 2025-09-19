@@ -42,9 +42,7 @@ fun HomeScreen(
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
-            Column (Modifier.fillMaxWidth()) {
                 AppTopBar() // 상단 로고
-            }
         },
         bottomBar = {
             // 네비게이션 바만큼 여백
@@ -71,11 +69,16 @@ fun HomeScreen(
 
                 // 조회 오류
                 is HomeUiState.Error -> {
+                    if (state.message.contains("401")) {
+
+                    } else {
                     LoadErrorView(
                         message = state.message,
                         onRetry = { vm.reload() }
                     )
+                    }
                 }
+
                 // 조회 성공
                 is HomeUiState.Success -> {
                     HomeMainScreen(

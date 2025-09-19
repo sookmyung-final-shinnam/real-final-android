@@ -73,7 +73,10 @@ fun CollectionScreen(
                 is CollectionUiState.Error -> {
                     LoadErrorView(
                         message = state.message,
-                        onRetry = {  }
+                        onRetry = {
+                            val lastFilter = (vm.selectedFilter.value)
+                            vm.selectFilter(lastFilter)
+                        }
                     )
                 }
                 // 조회 성공

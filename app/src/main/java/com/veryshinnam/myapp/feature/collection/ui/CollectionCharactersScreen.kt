@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.feature.collection.model.CollectionData
 import com.veryshinnam.myapp.feature.collection.model.Filter
 import com.veryshinnam.myapp.feature.collection.ui.component.FilterButtons
 import com.veryshinnam.myapp.feature.collection.ui.component.CollectionCharacterGrid
@@ -17,7 +18,7 @@ import com.veryshinnam.myapp.feature.collection.ui.component.CollectionInfo
 
 @Composable
 fun CollectionCharactersScreen(
-    data: List<CollectionUiState.StorageData>,
+    data: List<CollectionData>,
     selectedFilter: Filter,
     onFilterClick: (Filter) -> Unit,
     onFavoriteClick: (Long) -> Unit,

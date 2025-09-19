@@ -37,7 +37,7 @@ fun SplashScreen(
     val state by vm.permitUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        val splashJob = launch { delay(1500) } // 1.5초 스플래시
+        val splashJob = launch { delay(3000) } // 3초 스플래시
         val tokenJob = launch { vm.checkAccessToken() }  // 동시 토큰 검사
 
         splashJob.join()

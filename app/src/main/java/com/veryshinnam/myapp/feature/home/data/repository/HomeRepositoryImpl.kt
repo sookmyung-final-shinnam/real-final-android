@@ -3,7 +3,7 @@ package com.veryshinnam.myapp.feature.home.data.repository
 import com.veryshinnam.myapp.core.network.BaseResponse
 import com.veryshinnam.myapp.feature.home.data.api.HomeApi
 import com.veryshinnam.myapp.feature.home.data.dto.HomeResponse
-import com.veryshinnam.myapp.feature.home.data.dto.toDomain
+import com.veryshinnam.myapp.feature.home.data.dto.toHomeData
 import com.veryshinnam.myapp.feature.home.model.HomeData
 import javax.inject.Inject
 
@@ -19,6 +19,6 @@ class HomeRepositoryImpl  @Inject constructor(
             throw Exception("홈 화면 조회 실패: ${response.message}")
         }
 
-        return response.result.toDomain()
+        return response.result.toHomeData()
     }
 }
