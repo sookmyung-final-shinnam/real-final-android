@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.character.data.dto
 
 // 캐릭터 전체 조회 응답
-data class CharactersResponse(
+data class CharactersDto(
     val characters: List<CharacterDto>
 )
 

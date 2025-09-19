@@ -59,7 +59,7 @@ class CharacterViewModel @Inject constructor(
                         if (updatedCharacter.isFavorite) { repository.addFavorite(id) }
                         else { repository.removeFavorite(id) }
                     } catch (e: Exception) {
-                        // 실패 시 다시 원복
+                        // 실패 시 다시 복원
                         _charUiState.value = currentState
                     }
                 }

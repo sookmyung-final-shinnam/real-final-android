@@ -35,7 +35,7 @@ fun StoryReaderPage(
             // 페이지 이미지
             StoryType.IMAGE -> {
                 AsyncImage(
-                    model = page.image,
+                    model = page.url,
                     contentDescription = "페이지 이미지",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
@@ -45,7 +45,7 @@ fun StoryReaderPage(
             // 페이지 영상
             StoryType.VIDEO -> {
                 VideoPlayer(
-                    videoUrl = page.image,
+                    videoUrl = page.url,
                     modifier = Modifier.fillMaxSize()
                 )
             }

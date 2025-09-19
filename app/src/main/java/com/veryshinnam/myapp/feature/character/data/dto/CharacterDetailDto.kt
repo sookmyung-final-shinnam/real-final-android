@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.character.data.dto
 
 // 캐릭터 상세 조회 응답
-data class CharacterDetailResponse (
+data class CharacterDetailDto (
     val characterId: Long,
     val name: String,
     val gender: String,

@@ -5,6 +5,7 @@ import com.veryshinnam.myapp.core.network.BaseUrls
 import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
 import com.veryshinnam.myapp.feature.home.data.api.HomeApi
 import com.veryshinnam.myapp.feature.permit.data.api.PermitApi
+import com.veryshinnam.myapp.feature.story.data.api.StoryApi
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -42,22 +43,25 @@ object NetworkModule  {
             .addConverterFactory(GsonConverterFactory.create()) // JSON 변환
             .build()
 
-    // PermitApi 구현체 생성
-    // api.login() > PATCH /api/permit/login
+    // Api 구현체 생성
+    // ex) api.login() > PATCH /api/permit/login
     @Provides
     @Singleton
     fun providePermitApi(retrofit: Retrofit): PermitApi =
         retrofit.create(PermitApi::class.java)
 
-    // HomeApi 구현체 생성
     @Provides
     @Singleton
     fun provideHomeApi(retrofit: Retrofit): HomeApi =
         retrofit.create(HomeApi::class.java)
 
-    // CharacterApi 구현체 생성
     @Provides
     @Singleton
     fun provideCharacterApi(retrofit: Retrofit): CharacterApi =
         retrofit.create(CharacterApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideStoryApi(retrofit: Retrofit): StoryApi =
+        retrofit.create(StoryApi::class.java)
 }

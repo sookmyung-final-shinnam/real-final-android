@@ -2,13 +2,12 @@ package com.veryshinnam.myapp.feature.character.data.repository
 
 import com.veryshinnam.myapp.core.network.BaseResponse
 import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
-import com.veryshinnam.myapp.feature.character.data.dto.CharacterDetailResponse
-import com.veryshinnam.myapp.feature.character.data.dto.CharactersResponse
+import com.veryshinnam.myapp.feature.character.data.dto.CharacterDetailDto
+import com.veryshinnam.myapp.feature.character.data.dto.CharactersDto
 import com.veryshinnam.myapp.feature.character.data.dto.toCharacterData
 import com.veryshinnam.myapp.feature.character.data.dto.toCollectionData
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
-import retrofit2.http.GET
 import javax.inject.Inject
 
 class CharacterRepositoryImpl @Inject constructor(
@@ -17,7 +16,7 @@ class CharacterRepositoryImpl @Inject constructor(
 
     // 캐릭터 전체 조회 api 호출
     override suspend fun getCharacters(gender: String?): List<CollectionData> {
-        val response: BaseResponse<CharactersResponse> = api.getCharacters(gender)
+        val response: BaseResponse<CharactersDto> = api.getCharacters(gender)
 
         if (!response.isSuccess || response.result == null) {
             throw Exception("캐릭터 전체 조회 실패: ${response.message}")
@@ -28,7 +27,7 @@ class CharacterRepositoryImpl @Inject constructor(
 
     // 캐릭터 상세 조회 api 호출
     override suspend fun getCharacterDetail(id: Long): CharacterData {
-        val response: BaseResponse<CharacterDetailResponse> = api.getCharacterDetail(id)
+        val response: BaseResponse<CharacterDetailDto> = api.getCharacterDetail(id)
 
         if (!response.isSuccess || response.result == null) {
             throw Exception("캐릭터 상세 조회 실패: ${response.message}")

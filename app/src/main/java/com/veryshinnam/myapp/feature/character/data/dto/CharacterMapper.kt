@@ -3,13 +3,10 @@ package com.veryshinnam.myapp.feature.character.data.dto
 import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import org.threeten.bp.OffsetDateTime
 import org.threeten.bp.format.DateTimeFormatter
 
-fun CharacterDetailResponse.toCharacterData(): CharacterData {
-    val formatter = DateTimeFormatter.ofPattern("yyyy-MM-dd'T'HH:mm:ss.SSSSSS")
-
-    return CharacterData(
+fun CharacterDetailDto.toCharacterData(): CharacterData =
+    CharacterData(
         id = characterId,
         name = name,
         gender = Gender.valueOf(gender),
@@ -20,9 +17,8 @@ fun CharacterDetailResponse.toCharacterData(): CharacterData {
         isFavorite = important,
         stories = this.toStoriesData()
     )
-}
 
-fun CharacterDetailResponse.toStoriesData(): StoriesData =
+fun CharacterDetailDto.toStoriesData(): StoriesData =
     StoriesData(
         storyId = storyId,
         title = storyTitle,

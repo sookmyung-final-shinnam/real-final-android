@@ -53,7 +53,7 @@ fun StoryScreen(
 
     // storyId 바뀔 때마다 데이터 로드
     LaunchedEffect(storyId, storyType) {
-        vm.fetchStoryDetail(storyId, storyType)
+        vm.fetchStory(storyId, storyType)
     }
 
     BackHandler { onBack() }
@@ -67,7 +67,7 @@ fun StoryScreen(
                         .clickable{
                             when (val state = uiState) {
                                 is StoryUiState.Success -> {
-                                   if (state.isPrologue) onBack() // 프롤로그 >  이전 스크린
+                                   if (state.isPrologue) onBack() // 프롤로그 > 이전 스크린
                                    else vm.goToPrologue() // 엔딩 포함 페이지 > 프롤로그 스크린
                                 }
                                 else -> onBack()
@@ -128,7 +128,7 @@ fun StoryScreen(
                     } else {
                         // 동화 진행 화면
                         StoryReadingScreen(
-                            pages = state.pagesData.drop(1), // 0번(프롤로그) 제외
+                            pages = state.pagesData,
                             storyType = storyType,
                             isTtsMode = state.isTtsMode,
                             isReady = isTtsReady,

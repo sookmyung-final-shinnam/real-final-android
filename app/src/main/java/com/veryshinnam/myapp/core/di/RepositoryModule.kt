@@ -7,6 +7,8 @@ import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepositoryImpl
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepository
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepositoryImpl
+import com.veryshinnam.myapp.feature.story.data.repository.StoryRepository
+import com.veryshinnam.myapp.feature.story.data.repository.StoryRepositoryImpl
 import dagger.Binds
 import dagger.Module
 import dagger.Provides
@@ -30,4 +32,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCharacterRepository(impl: CharacterRepositoryImpl): CharacterRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindStoryRepository(impl: StoryRepositoryImpl): StoryRepository
 }
