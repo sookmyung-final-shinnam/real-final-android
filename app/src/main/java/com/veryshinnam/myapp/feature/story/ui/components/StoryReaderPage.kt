@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.story.ui.components
 
-import android.net.Uri
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +21,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.VideoPlayer
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 

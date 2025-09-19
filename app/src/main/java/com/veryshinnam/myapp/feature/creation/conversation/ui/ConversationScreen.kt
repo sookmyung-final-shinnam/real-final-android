@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -22,9 +21,9 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.LoadErrorView
-import com.veryshinnam.myapp.component.common.StepProgressBar
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.feature.creation.conversation.component.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 

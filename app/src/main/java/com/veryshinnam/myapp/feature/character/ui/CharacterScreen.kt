@@ -33,8 +33,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
@@ -51,7 +51,7 @@ fun CharacterScreen(
     // 가로모드 + id가 바뀌면 재로딩
     LaunchedEffect(id) {
         activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        vm.loadDummyCharacter(id)
+        vm.fetchCharacter(id)
     }
 
     // 뒤로가기 세로모드
@@ -109,8 +109,7 @@ fun CharacterScreen(
                 // 조회 성공
                 is CharacterUiState.Success -> {
                     CharacterCardScreen(
-                        cData = state.characterData,
-                        sData = state.storyData,
+                        character = state.characterData,
                         onFavoriteClick = { id -> vm.updateFavorite(id) },
                         onStoryClick = onStoryClick,
                     )

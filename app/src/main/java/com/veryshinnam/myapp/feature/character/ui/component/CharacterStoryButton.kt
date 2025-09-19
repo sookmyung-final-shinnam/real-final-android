@@ -28,15 +28,15 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.VideoPlayer
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterStoryButton(
-    storyId: Long?,    // 동화 아이디
+    storyId: Long?,       // 동화 아이디
     storyType: StoryType, // 동화 타입
-    storyUrl: String?, // 동화 또는 영상 표지 이미지
-    type: String,    // 동화 타입 텍스트
+    storyUrl: String?,    // 동화 또는 영상 표지 이미지
+    typeText: String,     // 동화 타입 텍스트
     onStoryClick: (Long, StoryType) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -60,7 +60,7 @@ fun CharacterStoryButton(
             if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
                 AsyncImage(
                     model = storyUrl,
-                    contentDescription = "${type} 버튼",
+                    contentDescription = "${typeText} 버튼",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
@@ -68,8 +68,7 @@ fun CharacterStoryButton(
                 if (!storyUrl.isNullOrBlank()) {
                     VideoPlayer(
                         videoUrl = storyUrl,
-                        modifier = Modifier.fillMaxSize(),
-                        isAutoPlay = false
+                        modifier = Modifier.fillMaxSize()
                     )
                 } else { // 비디오 링크 없으면 잠금 이미지
                     Box(
@@ -79,7 +78,7 @@ fun CharacterStoryButton(
                     ) {
                         Image(
                             painter = painterResource(R.drawable.img_locker),
-                            contentDescription = "${type} 잠금",
+                            contentDescription = "${typeText} 잠금",
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
                         )
@@ -91,7 +90,7 @@ fun CharacterStoryButton(
         Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "${type} 보러 가기",
+            text = "${typeText} 보러 가기",
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.SemiBold,
             ),

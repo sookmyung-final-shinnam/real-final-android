@@ -33,8 +33,7 @@ fun AttendanceInfo(
     modifier: Modifier
 ) {
     val currentMonth = YearMonth.now() // 현재 달
-    val monthLabel = if (month == currentMonth) "이번 달"
-                    else "지난 ${month.monthValue}월"
+    val monthLabel = if (month == currentMonth) "이번 달" else "지난 ${month.monthValue}월"
 
     Column(modifier = modifier.fillMaxHeight()) {
         Box(

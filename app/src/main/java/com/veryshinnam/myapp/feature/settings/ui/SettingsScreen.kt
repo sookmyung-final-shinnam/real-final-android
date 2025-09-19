@@ -31,7 +31,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
+import com.veryshinnam.myapp.common.component.AppTopBar
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

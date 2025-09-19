@@ -14,8 +14,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
 fun HomeScreen(
@@ -36,7 +36,8 @@ fun HomeScreen(
 
     // HomeScreen 진입할 때마다 실행
     LaunchedEffect(Unit) {
-        vm.changeMessage()
+        vm.reload()        // 홈 데이터 다시 불러오기
+        vm.changeMessage() // 랜덤 메시지도 갱신
     }
 
     Scaffold(

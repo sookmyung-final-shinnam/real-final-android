@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.component.common
+package com.veryshinnam.myapp.common.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column

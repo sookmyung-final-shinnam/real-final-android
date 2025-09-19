@@ -47,11 +47,12 @@ class SessionManager @Inject constructor(
 
     // 액세스 토큰 만료 여부
     suspend fun isTokenExpired(): Boolean {
-        val expiredAtStr = dataStore.data.first()[expiredAt] ?: return true // 없으면 토큰 만료
-        val expiredAt = LocalDateTime
-            .parse(expiredAtStr, DateTimeFormatter.ISO_LOCAL_DATE_TIME) // 문자열 > 시간
 
-        Log.d("AccessToken", "expiredAt= $expiredAt")
+        val expiredAtStr = dataStore.data.first()[expiredAt] ?: return true // 없으면 토큰 만료
+
+        val expiredAtSub = expiredAtStr.substring(0, 19) // 마이크로초 무시
+        val expiredAt = LocalDateTime.parse(expiredAtSub, DateTimeFormatter.ISO_LOCAL_DATE_TIME)
+
         // expiredAt이 현재보다 과거면 만료
         return expiredAt.isBefore(LocalDateTime.now())
     }

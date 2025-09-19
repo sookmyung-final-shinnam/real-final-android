@@ -12,15 +12,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoryVideoData
+import com.veryshinnam.myapp.feature.character.model.StoriesData
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterImageCard
 import com.veryshinnam.myapp.feature.character.ui.component.CharacterInfoCard
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterCardScreen(
-    cData: CharacterData,
-    sData: StoryVideoData,
+    character: CharacterData,
     onFavoriteClick: (Long) -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
 ) {
@@ -33,8 +32,8 @@ fun CharacterCardScreen(
     ) {
         // 왼쪽 캐릭터 이미지 카드
         CharacterImageCard(
-            character = cData,
-            onFavoriteClick = { onFavoriteClick(cData.id) },
+            character = character,
+            onFavoriteClick = { onFavoriteClick(character.id) },
             modifier = Modifier
                 .aspectRatio(0.78f) // 카드 비율
                 .offset(x = (40).dp)       // 오른쪽 이동
@@ -42,8 +41,7 @@ fun CharacterCardScreen(
 
         // 오른쪽 캐릭터 정보 카드
         CharacterInfoCard(
-            character = cData,
-            story = sData,
+            character = character,
             onStoryClick = onStoryClick,
             modifier = Modifier
                 .aspectRatio(2f) // 카드 비율

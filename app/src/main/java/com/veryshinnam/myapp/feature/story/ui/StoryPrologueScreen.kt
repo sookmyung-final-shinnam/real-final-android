@@ -12,7 +12,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
-import com.veryshinnam.myapp.component.common.VideoPlayer
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.StoryData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.components.StoryReadButton

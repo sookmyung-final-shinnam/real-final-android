@@ -22,7 +22,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeText
 
 @Composable
 fun CollectionCharacterItem(

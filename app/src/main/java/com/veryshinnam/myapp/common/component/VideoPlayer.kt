@@ -1,5 +1,6 @@
 @file:OptIn(UnstableApi::class)
-package com.veryshinnam.myapp.component.common
+
+package com.veryshinnam.myapp.common.component
 
 import android.net.Uri
 import androidx.compose.foundation.layout.fillMaxSize
@@ -19,7 +20,6 @@ import androidx.media3.ui.PlayerView
 @Composable
 fun VideoPlayer(
     videoUrl: String,
-    isAutoPlay: Boolean = true, // 자동 재생 여부 (기본 자동 재생)
     modifier: Modifier
 ) {
     val context = LocalContext.current
@@ -29,7 +29,8 @@ fun VideoPlayer(
         ExoPlayer.Builder(context).build().apply {
             setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
             prepare()
-            this.playWhenReady = isAutoPlay
+            playWhenReady = true // 바로 재생
+            repeatMode = Player.REPEAT_MODE_ONE // 무한 반복
         }
     }
 

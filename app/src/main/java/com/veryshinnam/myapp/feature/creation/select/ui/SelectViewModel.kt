@@ -2,8 +2,8 @@ package com.veryshinnam.myapp.feature.creation.select.ui
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
+import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.model.Gender
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
 import dagger.hilt.android.lifecycle.HiltViewModel

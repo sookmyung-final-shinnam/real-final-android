@@ -24,9 +24,9 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.BackButton
-import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
 fun CollectionScreen(
@@ -35,7 +35,7 @@ fun CollectionScreen(
     vm: CollectionViewModel = hiltViewModel()
 ) {
     // ViewModel 상태 구독
-    val uiState by vm.storageUiState.collectAsStateWithLifecycle()
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
 
     // 캐릭터 상세 > 보관함 화면: 세로 모드
     val context = LocalContext.current
@@ -82,7 +82,7 @@ fun CollectionScreen(
                 // 조회 성공
                 is CollectionUiState.Success -> {
                     CollectionCharactersScreen(
-                        data = state.data,
+                        data = state.collectionDataList,
                         selectedFilter = state.selectedFilter,
                         onFilterClick = { filter -> vm.selectFilter(filter) },
                         onFavoriteClick = { id -> vm.updateFavorite(id) },

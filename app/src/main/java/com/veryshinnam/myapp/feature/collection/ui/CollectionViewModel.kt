@@ -3,7 +3,7 @@ package com.veryshinnam.myapp.feature.collection.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
-import com.veryshinnam.myapp.feature.collection.model.Filter
+import com.veryshinnam.myapp.common.enums.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -16,66 +16,69 @@ class CollectionViewModel @Inject constructor(
     private val characterRepository: CharacterRepository
 ) : ViewModel() {
 
-    private val _selectedFilter = MutableStateFlow(Filter.ALL)
+    private val _selectedFilter = MutableStateFlow(Gender.ALL)
     val selectedFilter = _selectedFilter.asStateFlow()
 
-    private val _storageUiState = MutableStateFlow<CollectionUiState>(CollectionUiState.Loading)
-    val storageUiState: StateFlow<CollectionUiState> = _storageUiState.asStateFlow()
+    private val _uiState = MutableStateFlow<CollectionUiState>(CollectionUiState.Loading)
+    val uiState: StateFlow<CollectionUiState> = _uiState.asStateFlow()
 
     init {
-        fetchCollection(Filter.ALL)
+        fetchCollection(Gender.ALL)
     }
 
     // 성별 필터 선택
-    fun selectFilter(filter: Filter) {
-        _selectedFilter.value = filter
-        fetchCollection(filter) // 선택된 필터에 맞게 데이터 다시 불러오기
+    fun selectFilter(gender: Gender) {
+        _selectedFilter.value = gender
+        fetchCollection(gender) // 선택된 필터에 맞게 데이터 다시 불러오기
     }
 
     // 보관함 데이터 불러오기
-    private fun fetchCollection(filter: Filter) {
+    private fun fetchCollection(gender: Gender) {
         viewModelScope.launch {
-//            try {
-//                _storageUiState.value = CollectionUiState.Loading
-//
-//                // 더미데이터 불러옴
-//                val data = generateDummyData(filter)
-//
-//                _storageUiState.value = CollectionUiState.Success(
-//                    data = data,
-//                    selectedFilter = filter
-//                )
-//            } catch (e: Exception) {
-//                _storageUiState.value = CollectionUiState.Error("데이터를 불러오는데 실패했습니다.")
-//            }
             try {
-                val genderQuery = when (filter) {
-                    Filter.ALL -> null
-                    Filter.MALE -> "MALE"
-                    Filter.FEMALE -> "FEMALE"
+                val queryGender = when (gender) {
+                    Gender.ALL -> null
+                    Gender.MALE -> "MALE"
+                    Gender.FEMALE -> "FEMALE"
                 }
 
-                val data = characterRepository.getCharacters(genderQuery)
-
-                _storageUiState.value = CollectionUiState.Success(
-                    data = data,
-                    selectedFilter = filter
+                val characters = characterRepository.getCharacters(queryGender) // 캐릭터 전체 조회 api
+                _uiState.value = CollectionUiState.Success(
+                    collectionDataList = characters,
+                    selectedFilter = gender
                 )
             } catch (e: Exception) {
-                _storageUiState.value = CollectionUiState.Error("보관함 불러오기 실패: ${e.message}")
+                _uiState.value = CollectionUiState.Error("보관함 불러오기 실패: ${e.message}")
             }
         }
     }
 
-    // 즐겨찾기 업데이트
-    fun updateFavorite(cId: Long) {
-        val currentState = _storageUiState.value
+    // 캐릭터 즐겨찾기 업데이트
+    fun updateFavorite(id: Long) {
+        val currentState = _uiState.value
         if (currentState is CollectionUiState.Success) {
-            val updatedList = currentState.data.map { item ->
-                if (item.id == cId) item.copy(isFavorite = !item.isFavorite)
-                else item
+            val character = currentState.collectionDataList.find { it.id == id }
+            if (character != null) {
+
+                // ui 먼저 반영
+                val updatedList = currentState.collectionDataList.map { item ->
+                    if (item.id == id) item.copy(isFavorite = !item.isFavorite)
+                    else item
+                }
+                val updatedState = currentState.copy(collectionDataList = updatedList)
+                _uiState.value = updatedState
+
+                // 서버 반영
+                viewModelScope.launch {
+                    try { // 관심 캐릭터 등록-해제 api
+                        if (character.isFavorite) { characterRepository.addFavorite(id) }
+                        else { characterRepository.removeFavorite(id) }
+                    } catch (e: Exception) {
+                        // 실패 시 복구
+                        _uiState.value = currentState
+                    }
+                }
             }
-            _storageUiState.value = currentState.copy(data = updatedList)
         }
     }
 }

@@ -23,13 +23,12 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoryVideoData
+import com.veryshinnam.myapp.feature.character.model.StoriesData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterInfoCard(
     character: CharacterData,     // 캐릭터 정보
-    story: StoryVideoData,        // 스토리 정보
     onStoryClick: (Long, StoryType) -> Unit,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기
 ) {
@@ -80,7 +79,7 @@ fun CharacterInfoCard(
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
 
                         // 뒷면: 동화 정보
-                        CharacterCardBack(story, onStoryClick)
+                        CharacterCardBack(character.stories, onStoryClick)
 
                         // 공통 탭버튼
                         CharacterTabButton(

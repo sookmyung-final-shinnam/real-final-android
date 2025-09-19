@@ -22,7 +22,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.creation.model.Gender
+import com.veryshinnam.myapp.common.enums.Gender
 
 @Composable
 fun SelectGenderButton(

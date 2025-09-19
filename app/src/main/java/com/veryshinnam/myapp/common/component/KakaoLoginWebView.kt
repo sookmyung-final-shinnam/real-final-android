@@ -1,5 +1,6 @@
-package com.veryshinnam.myapp.component.common
+package com.veryshinnam.myapp.common.component
 
+import android.view.ViewGroup
 import android.webkit.WebResourceRequest
 import android.webkit.WebView
 import android.webkit.WebViewClient
@@ -16,9 +17,9 @@ fun KakaoLoginWebView(
     AndroidView(
         factory = { context ->
             WebView(context).apply {
-                layoutParams = android.view.ViewGroup.LayoutParams(
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT,
-                    android.view.ViewGroup.LayoutParams.MATCH_PARENT
+                layoutParams = ViewGroup.LayoutParams(
+                    ViewGroup.LayoutParams.MATCH_PARENT,
+                    ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
                 settings.javaScriptEnabled = true

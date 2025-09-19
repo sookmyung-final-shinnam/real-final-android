@@ -1,18 +1,13 @@
 package com.veryshinnam.myapp.feature.character.data.dto
 
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
-import com.veryshinnam.myapp.feature.collection.model.Filter
+import com.veryshinnam.myapp.common.enums.Gender
 
-fun CharacterDto.toCollectionData(): CollectionData {
-    return CollectionData(
+fun CharacterDto.toCollectionData(): CollectionData =
+    CollectionData(
         id = characterId,
         name = name,
         image = imageUrl,
-        gender = when (gender.uppercase()) {
-            "MALE" -> Filter.MALE
-            "FEMALE" -> Filter.FEMALE
-            else -> Filter.ALL // 기본값
-        },
+        gender = Gender.valueOf(gender),
         isFavorite = important
     )
-}

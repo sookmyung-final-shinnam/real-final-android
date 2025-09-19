@@ -12,7 +12,8 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 
 @Composable
@@ -39,7 +40,7 @@ fun CharacterCardFront(
                 textAlign = TextAlign.Center,   // 가운데 정렬
                 text = "\n${
                     // 여자 남자 구분
-                    if (character.gender == "FEMALE") "여자" else "남자"
+                    if (character.gender == Gender.FEMALE) "여자" else "남자"
                 } ${character.age}세\n${character.personality}\n${character.birth}",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold

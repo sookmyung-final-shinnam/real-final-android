@@ -1,36 +1,15 @@
 package com.veryshinnam.myapp.feature.creation.select.ui
 
-import android.util.Log
-import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
-import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
-import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.unit.dp
-import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.BackButton
-import com.veryshinnam.myapp.component.common.LoadErrorView
-import com.veryshinnam.myapp.feature.creation.conversation.ui.ConversationUiState
-import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.select.componenet.SelectCustomInput
-import com.veryshinnam.myapp.feature.creation.select.componenet.SelectInfo
 import com.veryshinnam.myapp.feature.creation.select.componenet.SelectItemGrid
 import com.veryshinnam.myapp.feature.creation.select.componenet.SelectTripleButtons
 

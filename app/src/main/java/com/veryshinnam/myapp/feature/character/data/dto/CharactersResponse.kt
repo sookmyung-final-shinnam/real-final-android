@@ -11,5 +11,5 @@ data class CharacterDto(
     val gender: String,
     val imageUrl: String?,
     val important: Boolean,
-    val createTime: String
+    val createTime: String,
 )

@@ -11,7 +11,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
-import com.veryshinnam.myapp.feature.collection.model.Filter
+import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.collection.ui.component.FilterButtons
 import com.veryshinnam.myapp.feature.collection.ui.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.ui.component.CollectionInfo
@@ -19,8 +19,8 @@ import com.veryshinnam.myapp.feature.collection.ui.component.CollectionInfo
 @Composable
 fun CollectionCharactersScreen(
     data: List<CollectionData>,
-    selectedFilter: Filter,
-    onFilterClick: (Filter) -> Unit,
+    selectedFilter: Gender,
+    onFilterClick: (Gender) -> Unit,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (Long) -> Unit
 ) {
@@ -32,6 +32,7 @@ fun CollectionCharactersScreen(
         ) {
             // 보관함 상단
             CollectionInfo(
+                characters = data.size,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(0.25f)    // 높이 비율 0.25

@@ -1,10 +1,9 @@
 plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
-    alias(libs.plugins.kotlin.compose)
 
     id("com.google.dagger.hilt.android")  // hilt 플러그인
-    id("kotlin-kapt")                     // KAPT
+    id("com.google.devtools.ksp")         // ksp
     id("kotlin-parcelize")                // parcelize
 }
 
@@ -41,10 +40,13 @@ android {
     buildFeatures {
         compose = true
     }
+
+    composeOptions {
+        kotlinCompilerExtensionVersion = "1.5.15"
+    }
 }
 
 dependencies {
-
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -54,13 +56,9 @@ dependencies {
     implementation(libs.androidx.ui.tooling.preview)
     implementation(libs.androidx.material3)
 
-    // compose url 이미지 조회
+    // compose 관련
     implementation("io.coil-kt:coil-compose:2.5.0")
-
-    // compose icon 확장
     implementation("androidx.compose.material:material-icons-extended")
-
-    // compose splash
     implementation("androidx.core:core-splashscreen:1.0.1")
 
     // hilt 적용
@@ -70,7 +68,7 @@ dependencies {
     implementation(libs.androidx.compose.testing)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.compose)
-    kapt("com.google.dagger:hilt-compiler:2.51.1")
+    ksp("com.google.dagger:hilt-compiler:2.51.1")
 
     // calender 날짜 계산
     implementation("com.jakewharton.threetenabp:threetenabp:1.4.7")
@@ -80,8 +78,8 @@ dependencies {
     implementation("androidx.media3:media3-ui:1.3.1")
 
     // retrofit
-    implementation ("com.squareup.retrofit2:retrofit:2.9.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
 
     // data store
     implementation("androidx.datastore:datastore-preferences:1.1.1")

@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.creation.data.dto
 
 import android.os.Parcelable
-import com.veryshinnam.myapp.feature.creation.model.Gender
+import com.veryshinnam.myapp.common.enums.Gender
 import kotlinx.parcelize.Parcelize
 
 @Parcelize

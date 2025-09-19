@@ -11,13 +11,8 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,13 +22,12 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.AppTopBar
-import com.veryshinnam.myapp.component.common.BackButton
-import com.veryshinnam.myapp.component.common.LoadErrorView
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceStamp
-import org.threeten.bp.YearMonth
 
 @Composable
 fun AttendanceScreen(

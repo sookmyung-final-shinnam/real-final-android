@@ -15,16 +15,16 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.collection.model.Filter
+import com.veryshinnam.myapp.common.enums.Gender
 
 @Composable
 fun FilterButtons(
-    selectedFilter: Filter,
-    onFilterClick: (Filter) -> Unit,
+    selectedFilter: Gender,
+    onFilterClick: (Gender) -> Unit,
     modifier: Modifier = Modifier // 부모 너비 가져옴
 ) {
     // 성별 필터
-    val filters = listOf(Filter.ALL, Filter.FEMALE, Filter.MALE)
+    val filters = listOf(Gender.ALL, Gender.FEMALE, Gender.MALE)
 
     Row (modifier = modifier) {
         filters.forEach { filter ->
@@ -52,9 +52,9 @@ fun FilterButtons(
             ) {
                 Text(
                     text = when (filter) {
-                        Filter.ALL -> "전체"
-                        Filter.FEMALE -> "여자"
-                        Filter.MALE -> "남자"
+                        Gender.ALL -> "전체"
+                        Gender.FEMALE -> "여자"
+                        Gender.MALE -> "남자"
                     },
                     fontWeight = FontWeight.SemiBold,
                     style = MaterialTheme.typography.headlineSmall

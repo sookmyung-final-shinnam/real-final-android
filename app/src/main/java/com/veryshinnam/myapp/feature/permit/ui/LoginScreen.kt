@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -32,8 +31,8 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.KakaoLoginWebView
-import com.veryshinnam.myapp.component.common.StrokeText
+import com.veryshinnam.myapp.common.component.KakaoLoginWebView
+import com.veryshinnam.myapp.common.component.StrokeText
 
 @Composable
 fun LoginScreen(

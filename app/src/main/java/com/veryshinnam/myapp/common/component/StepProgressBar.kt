@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.component.common
+package com.veryshinnam.myapp.common.component
 
 import android.graphics.Paint
 import androidx.compose.animation.core.animateFloatAsState

@@ -7,6 +7,6 @@ import retrofit2.http.GET
 interface HomeApi {
 
     // 홈 화면 조회
-    @GET("/api/home")
+    @GET("api/home")
     suspend fun getHome(): BaseResponse<HomeResponse>
 }

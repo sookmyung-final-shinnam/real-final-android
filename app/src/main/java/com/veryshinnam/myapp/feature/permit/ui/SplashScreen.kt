@@ -24,7 +24,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.component.common.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeText
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
