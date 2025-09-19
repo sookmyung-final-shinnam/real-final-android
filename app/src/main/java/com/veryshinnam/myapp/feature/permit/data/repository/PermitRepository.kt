@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.permit.data.repository
 
-import com.veryshinnam.myapp.feature.permit.data.JwtResponse
+import com.veryshinnam.myapp.feature.permit.data.dto.JwtResponse
 
 interface PermitRepository {
 

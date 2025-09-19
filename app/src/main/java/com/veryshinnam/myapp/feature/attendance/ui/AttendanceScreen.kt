@@ -115,6 +115,7 @@ fun AttendanceScreen(
                     }
                 }
             }
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         }
     }
 }

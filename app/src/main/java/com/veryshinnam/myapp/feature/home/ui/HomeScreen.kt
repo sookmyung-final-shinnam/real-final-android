@@ -36,7 +36,7 @@ fun HomeScreen(
 
     // HomeScreen 진입할 때마다 실행
     LaunchedEffect(Unit) {
-        vm.updateRandomMessage()
+        vm.changeMessage()
     }
 
     Scaffold(
@@ -68,6 +68,7 @@ fun HomeScreen(
                         strokeWidth = 4.dp
                     )
                 }
+
                 // 조회 오류
                 is HomeUiState.Error -> {
                     LoadErrorView(
@@ -78,8 +79,7 @@ fun HomeScreen(
                 // 조회 성공
                 is HomeUiState.Success -> {
                     HomeMainScreen(
-                        user = state.userData,
-                        favorites = state.favoritesData,
+                        homeData = state.homeData,
                         lastSelectedId = state.lastSelectedCharacter,
                         randomMessage = state.randomMessage,
                         onSettingsClick = onSettingsClick,

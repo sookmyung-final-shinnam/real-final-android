@@ -4,7 +4,13 @@ package com.veryshinnam.myapp.feature.home.data.dto
 data class HomeResponse(
     val userId: Long,
     val username: String,
-    val userPoint: Int,
+//    val userPoint: Int,
     val profileImageUrl: String,
-//    val favorites: List<FavoriteCharacter>
+    val favorites: List<FavoritesDto>
+)
+
+data class FavoritesDto(
+    val id: Long,
+    val name: String,
+    val imageUrl: String
 )

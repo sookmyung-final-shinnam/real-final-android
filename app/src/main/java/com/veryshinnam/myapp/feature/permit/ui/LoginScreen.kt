@@ -45,7 +45,6 @@ fun LoginScreen(
     var isKakaoLogin by remember { mutableStateOf(false) } // 카카오 로그인 웹뷰 띄우기
 
     LaunchedEffect(state) {
-        Log.d("LoginScreen", "permitUiState = $state")
         when (state) {
             is PermitUiState.Success -> onHome()
             is PermitUiState.Error -> {
@@ -60,7 +59,6 @@ fun LoginScreen(
 
         KakaoLoginWebView(
             onTempCodeReceived = { tempCode, isNewUser ->
-                Log.d("LoginScreen", "콜백 tempCode=$tempCode, isNewUser=$isNewUser")
                 if (isNewUser) {
                     onSignup() // 신규 유저 > 회원가입
                 } else {

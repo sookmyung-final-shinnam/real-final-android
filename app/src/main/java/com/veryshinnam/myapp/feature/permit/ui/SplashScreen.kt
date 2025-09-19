@@ -26,6 +26,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.component.common.StrokeText
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.launch
 
 @Composable
 fun SplashScreen(
@@ -36,14 +37,23 @@ fun SplashScreen(
     val state by vm.permitUiState.collectAsStateWithLifecycle()
 
     LaunchedEffect(Unit) {
-        delay(3000) // 3초 스플래시 유지
-        vm.checkAccessToken()
+        val splashJob = launch { delay(1500) } // 1.5초 스플래시
+        val tokenJob = launch { vm.checkAccessToken() }  // 동시 토큰 검사
+
+        splashJob.join()
+        tokenJob.join()
     }
 
     LaunchedEffect(state) {
         when (state) {
-            is PermitUiState.Success -> onHome()
-            is PermitUiState.Error -> onLogin()
+            is PermitUiState.Success -> {
+                onHome()
+                vm.resetState()
+            }
+            is PermitUiState.Error -> {
+                onLogin()
+                vm.resetState()
+            }
             else -> Unit
         }
     }

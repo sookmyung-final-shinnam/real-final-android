@@ -36,13 +36,11 @@ fun AttendanceInfo(
     val monthLabel = if (month == currentMonth) "이번 달"
                     else "지난 ${month.monthValue}월"
 
-    Column(
-        modifier = modifier.fillMaxHeight()
-    ) {
+    Column(modifier = modifier.fillMaxHeight()) {
         Box(
             modifier = Modifier
+                .weight(1f)
                 .fillMaxWidth()
-                .fillMaxHeight(0.5f)
         ) {
             // 돼지 이미지
             Image(
@@ -60,7 +58,6 @@ fun AttendanceInfo(
                 painter= painterResource(R.drawable.img_stamp),
                 contentDescription = "모은 스탬프 수",
                 value = "${stamps}",
-                spacer = 30.dp,
                 color = colorResource(R.color.deep_pink),
                 modifier = Modifier
                     .padding(bottom = 8.dp)
@@ -72,7 +69,9 @@ fun AttendanceInfo(
 
         // 보관함 설명 텍스트
         Card(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(16.dp),
             border = BorderStroke(4.dp, colorResource(id = R.color.deep_pink)),
@@ -82,7 +81,8 @@ fun AttendanceInfo(
                         "${monthLabel}은 총 ${attendances}번 출석했어!\n" +
                         "도장 10개당 나침반 1개인걸 잊지마~!",
                 modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.SemiBold
             )
         }
     }

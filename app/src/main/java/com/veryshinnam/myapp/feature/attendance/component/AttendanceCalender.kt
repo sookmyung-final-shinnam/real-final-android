@@ -191,7 +191,7 @@ fun AttendanceCalender(
 
                                 if (attended) {
                                     Image( // 도장
-                                        painter = painterResource(R.drawable.img_stamp),
+                                        painter = painterResource(R.drawable.img_stamp_shining_no),
                                         contentDescription = "출석 도장",
                                         modifier = Modifier
                                             .weight(1f)

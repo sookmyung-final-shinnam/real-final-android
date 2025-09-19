@@ -20,7 +20,7 @@ class PermitViewModel @Inject constructor(
     private val _permitUiState = MutableStateFlow<PermitUiState>(PermitUiState.Idle)
     val permitUiState: StateFlow<PermitUiState> = _permitUiState
 
-    // 액세스 토큰 만료 확인
+    // 액세스 토큰 존재-만료 확인
     fun checkAccessToken() {
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
@@ -38,12 +38,12 @@ class PermitViewModel @Inject constructor(
         }
     }
 
+    // 로그인
     fun login(tempCode: String) {
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
             try {
                 val jwt = repository.login(tempCode) // 로그인 api 요청
-                Log.d("PermitViewModel", "로그인 성공: $jwt")
 
                 // 세션 저장
                 sessionManager.saveToken(
@@ -53,9 +53,13 @@ class PermitViewModel @Inject constructor(
                 )
                 _permitUiState.value = PermitUiState.Success
             } catch (e: Exception) {
-                Log.e("PermitViewModel", "로그인 실패", e)
                 _permitUiState.value = PermitUiState.Error("로그인 실패: ${e.message}")
             }
         }
+    }
+
+    // 상태 초기화
+    fun resetState() {
+        _permitUiState.value = PermitUiState.Idle
     }
 }

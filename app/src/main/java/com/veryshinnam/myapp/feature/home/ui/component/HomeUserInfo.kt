@@ -2,12 +2,14 @@ package com.veryshinnam.myapp.feature.home.ui.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -26,50 +28,50 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.home.model.UserData
 
 @Composable
 fun HomeUserInfo(
-    user: UserData,
+    username: String,
+    stamps: Int,
     randomMessage: String,
     onSettingsClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    bottomPadding: Dp = 8.dp  // 나침반 아래 패딩
 ) {
-    Column(modifier) {
+    Column(modifier.fillMaxHeight()) {
         // 유저 정보 - 생성한 캐릭터 수, 포인트
-        Row(
-            modifier = Modifier.weight(1f),
-            verticalAlignment = Alignment.Bottom
+        Box(
+            modifier = Modifier
+                .weight(1f)
+                .fillMaxWidth()
         ) {
-            // 마스코트 이미지
+            // 다람쥐 이미지
             Image(
                 painter = painterResource(R.drawable.img_home_squirrel),
-                contentDescription = "마스코트 이미지",
-                modifier = Modifier.weight(0.4f),
+                contentDescription = "다람쥐 이미지",
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .align(Alignment.BottomStart)  // start 정렬
+                    .padding(start = 40.dp),
                 contentScale = ContentScale.Fit
             )
 
-            Row(modifier = Modifier.weight(0.6f).padding(bottom = 8.dp)) {
-                // 캐릭터 수
-                HomeUserItem(
-                    painter = painterResource(R.drawable.img_book),
-                    contentDescription = "생성한 캐릭터 수",
-                    value = "${user.characters}",
-                    color = colorResource(R.color.main_orange),
-                    modifier = Modifier.weight(1f).fillMaxHeight(0.5f)
-                )
-                Spacer(Modifier.weight(0.05f))
-                // 포인트 수
-                HomeUserItem(
-                    painter = painterResource(R.drawable.img_compass),
-                    contentDescription = "모은 포인트 수",
-                    value = "${user.points}",
-                    color = colorResource(R.color.main_orange),
-                    modifier = Modifier.weight(1f).fillMaxHeight(0.5f)
-                )
-            }
+
+            // 나침반 수
+            HomeUserItem(
+                painter = painterResource(R.drawable.img_compass),
+                contentDescription = "모은 나침반 수",
+                value = "${stamps}",
+                color = colorResource(R.color.main_orange),
+                modifier = Modifier
+                    .padding(bottom = bottomPadding)
+                    .align(Alignment.BottomCenter)
+                    .fillMaxWidth(0.3f)
+                    .fillMaxHeight(0.5f)
+            )
         }
 
         // 유저 정보 - 닉네임
@@ -86,12 +88,13 @@ fun HomeUserInfo(
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "안녕 ${user.username}! \n${randomMessage}",
-                    style = MaterialTheme.typography.displaySmall.copy(
-                        fontWeight = FontWeight.Bold),
+                    text = "안녕 ${username}! \n${randomMessage}",
+                    style = MaterialTheme.typography.displaySmall,
+                    fontWeight = FontWeight.Bold,
                     modifier = Modifier
                         .weight(1f)
-                        .padding(20.dp))
+                        .padding(20.dp)
+                )
 
                 // 환경 설정 버튼
                 IconButton(

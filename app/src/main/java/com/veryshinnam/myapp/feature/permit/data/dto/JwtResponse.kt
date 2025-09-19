@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.permit.data
+package com.veryshinnam.myapp.feature.permit.data.dto
 
 data class JwtResponse(
     val accessToken: String,

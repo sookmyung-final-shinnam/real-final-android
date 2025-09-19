@@ -1,16 +1,23 @@
 package com.veryshinnam.myapp.feature.home.ui.component
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -19,7 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
 
 @Composable
@@ -30,9 +39,26 @@ fun HomeFavoriteCarousel(
     onCharacterClick: (Long) -> Unit,
 ) {
     // 즐찾 캐릭터가 없는 경우
-    if (characters.isEmpty()) return
+    if (characters.isEmpty()) {
+        Box(
+            modifier = modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            Card(
+                shape = RoundedCornerShape(12.dp),
+                border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
+                colors = CardDefaults.cardColors(colorResource(R.color.lemon_yellow)),
+                modifier = Modifier
+                    .fillMaxWidth(0.6f)   // 가로는 60% 정도
+                    .aspectRatio(3f / 4f) // 비율 유지 (3:4)
+            ) {
+                HomeNullCard(modifier = Modifier.fillMaxSize().padding(16.dp))
+            }
+        }
+        return
+    }
 
-    // 부족한 건 null로 채워서 카드 다섯개 맞추기
+// 부족한 건 null로 채워서 카드 다섯개 맞추기
     val favorites: List<FavoriteData?> =
         if (characters.size < 5) {
             characters + List(5 - characters.size) { null }
@@ -44,18 +70,18 @@ fun HomeFavoriteCarousel(
     val baseIndex = (loopCount / 2) - ((loopCount / 2) % n) // 스크롤 상태 관리 (첫 인덱스에서 시작)
     val listState = rememberLazyListState(initialFirstVisibleItemIndex = baseIndex)
 
-    // 현재 중앙 아이템 인덱스 계산
+// 현재 중앙 아이템 인덱스 계산
     val layoutInfo = listState.layoutInfo           // 현재 리스트 레이아웃 정보
     val visibleItems = layoutInfo.visibleItemsInfo  // 현재 보이는 아이템들 정보
     val screenCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.width / 2
 
 
-    // 보이는 아이템 중 "화면 중앙에 가장 가까운 아이템" 찾기
+// 보이는 아이템 중 "화면 중앙에 가장 가까운 아이템" 찾기
     val centerItem = visibleItems.minByOrNull { item ->
         kotlin.math.abs((item.offset + item.size / 2) - screenCenter)
     }
 
-    // 그 아이템의 index를 n(데이터 크기)로 나눈 값 → 실제 데이터 인덱스
+// 그 아이템의 index를 n(데이터 크기)로 나눈 값 → 실제 데이터 인덱스
     val currentIndex = centerItem?.index?.rem(n)?.let { (it + n) % n } ?: 0
 
     LaunchedEffect(lastSelectedId) {

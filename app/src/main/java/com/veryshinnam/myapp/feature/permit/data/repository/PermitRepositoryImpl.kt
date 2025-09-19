@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.permit.data.repository
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.permit.data.JwtResponse
+import com.veryshinnam.myapp.feature.permit.data.dto.JwtResponse
 import com.veryshinnam.myapp.feature.permit.data.api.PermitApi
 import javax.inject.Inject
 

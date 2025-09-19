@@ -19,15 +19,14 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
-import com.veryshinnam.myapp.feature.home.model.UserData
+import com.veryshinnam.myapp.feature.home.model.HomeData
 import com.veryshinnam.myapp.feature.home.ui.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.ui.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.feature.home.ui.component.HomeUserInfo
 
 @Composable
 fun HomeMainScreen (
-    user: UserData,
-    favorites: List<FavoriteData>,
+    homeData: HomeData,
     lastSelectedId: Long?,
     randomMessage: String,
     onSettingsClick: () -> Unit,
@@ -47,7 +46,7 @@ fun HomeMainScreen (
             modifier = Modifier.fillMaxSize()
         ) {
             // 유저 정보
-            HomeUserInfo(user, randomMessage, onSettingsClick,
+            HomeUserInfo(homeData.username, homeData.points, randomMessage, onSettingsClick,
                 modifier = Modifier.padding(horizontal = 16.dp).weight(0.25f).fillMaxWidth())
 
             // 즐찾 캐릭터 캐러셀
@@ -55,7 +54,7 @@ fun HomeMainScreen (
                 modifier = Modifier
                     .weight(0.6f)
                     .fillMaxWidth(),
-                characters = favorites,
+                characters = homeData.favorites,
                 lastSelectedId = lastSelectedId,
                 onCharacterClick = { id ->
                     onUpdateLastSelected(id)
