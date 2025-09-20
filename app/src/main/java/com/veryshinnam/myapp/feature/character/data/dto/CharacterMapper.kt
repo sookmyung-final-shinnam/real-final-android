@@ -3,9 +3,8 @@ package com.veryshinnam.myapp.feature.character.data.dto
 import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import org.threeten.bp.format.DateTimeFormatter
 
-fun CharacterDetailDto.toCharacterData(): CharacterData =
+fun CharacterDetailResult.toCharacterData(): CharacterData =
     CharacterData(
         id = characterId,
         name = name,
@@ -18,7 +17,7 @@ fun CharacterDetailDto.toCharacterData(): CharacterData =
         stories = this.toStoriesData()
     )
 
-fun CharacterDetailDto.toStoriesData(): StoriesData =
+fun CharacterDetailResult.toStoriesData(): StoriesData =
     StoriesData(
         storyId = storyId,
         title = storyTitle,

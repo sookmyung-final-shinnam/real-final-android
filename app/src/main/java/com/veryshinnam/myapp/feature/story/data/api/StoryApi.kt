@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.story.data.api
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.story.data.dto.StoryDto
+import com.veryshinnam.myapp.feature.story.data.dto.StoryResult
 import retrofit2.http.GET
 import retrofit2.http.Path
 
@@ -12,5 +12,5 @@ interface StoryApi {
     suspend fun getStoryPage(
         @Path("storyId") storyId: Long,
         @Path("pageId") pageId: Int
-    ): BaseResponse<StoryDto>
+    ): BaseResponse<StoryResult>
 }

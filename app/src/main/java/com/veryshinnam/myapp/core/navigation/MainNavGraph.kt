@@ -80,7 +80,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
             )
         }
 
-        // 스토리 상세 화면
+        // 동화 보기 화면
         composable("story/{id}/{type}",
             arguments = listOf(
                 navArgument("id") { type = NavType.LongType },

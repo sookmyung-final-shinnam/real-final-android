@@ -8,11 +8,10 @@ import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.compose.composable
 import androidx.navigation.navigation
-import com.veryshinnam.myapp.feature.creation.conversation.ui.ConversationScreen
-import com.veryshinnam.myapp.feature.creation.conversation.ui.ConversationViewModel
-import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.select.ui.SelectViewModel
-import com.veryshinnam.myapp.feature.creation.select.ui.SelectionScreen
+import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationScreen
+import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationViewModel
+import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
+import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
 
 // 캐릭터 생성 플로우 네비게이션 그래프
 fun NavGraphBuilder.creationNavGraph(navController: NavController) {
@@ -21,13 +20,11 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
         startDestination = "selection"
     ) {
         // 선택 화면
-        composable("selection") { backStackEntry ->
-            val vm: SelectViewModel = hiltViewModel(backStackEntry)
-
+        composable("selection") {
             SelectionScreen(
                 onHome = { navController.popBackStack() },
                 onFinish = { data ->
-                    val req = StartConversationRequest(
+                    val req = StartRequest(
                         themeNames = data.themes,
                         backgroundName = data.background,
                         characterName = data.name,
@@ -45,8 +42,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                     navController.navigate("conversation") {
                         launchSingleTop = true
                     }
-                },
-                vm = vm
+                }
             )
         }
 
@@ -57,7 +53,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
             val req = remember(backStackEntry) {
                 navController.getBackStackEntry("selection")
                     .savedStateHandle
-                    .get<StartConversationRequest>("request")
+                    .get<StartRequest>("request")
             }
 
             Log.d("Conversation", "req: $req")

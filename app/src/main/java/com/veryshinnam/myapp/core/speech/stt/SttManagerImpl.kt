@@ -35,24 +35,15 @@ class SttManagerImpl @Inject constructor(
     private val _events = MutableSharedFlow<SttManager.SttEvent>(extraBufferCapacity = 8)
     override val events = _events.asSharedFlow()
 
-    private fun ensureRecognizer() {
+    private fun ensureRecognizer(context: Context) {
         if (recognizer != null) return
-        recognizer = SpeechRecognizer.createSpeechRecognizer(app).apply {
+
+        recognizer = SpeechRecognizer.createSpeechRecognizer(context).apply {
             setRecognitionListener(object : RecognitionListener {
                 override fun onReadyForSpeech(params: Bundle?) {
                     _events.tryEmit(SttManager.SttEvent.Ready)
                     _isListening.value = true
                 }
-
-                override fun onEvent(eventType: Int, params: Bundle?) {}
-                override fun onRmsChanged(rmsdB: Float) {} // 음량 변화
-                override fun onBufferReceived(buffer: ByteArray?) {}
-
-                // 사용자 발화 시작
-                override fun onBeginningOfSpeech() {}
-
-                // 사용자 발화 끝
-                override fun onEndOfSpeech() {}
 
                 // 사용자 발화 부분 인식 결과 (스트리밍)
                 override fun onPartialResults(results: Bundle?) {
@@ -78,13 +69,19 @@ class SttManagerImpl @Inject constructor(
                     _events.tryEmit(SttManager.SttEvent.End)
                     _isListening.value = false
                 }
+
+                override fun onEvent(eventType: Int, params: Bundle?) {}
+                override fun onRmsChanged(rmsdB: Float) {} // 음량 변화
+                override fun onBufferReceived(buffer: ByteArray?) {}
+                override fun onBeginningOfSpeech() {} // 사용자 발화 시작
+                override fun onEndOfSpeech() {} // 사용자 발화 끝
             })
         }
         _isReady.value = true
     }
 
     // 음성 인식 시작
-    override fun start(langTag: String) {
+    override fun start(context: Context, langTag: String) {
 
         // 기기가 음석 인식 가능한지 확인
         if (!SpeechRecognizer.isRecognitionAvailable(app)) {
@@ -93,7 +90,7 @@ class SttManagerImpl @Inject constructor(
             return
         }
 
-        ensureRecognizer()
+        ensureRecognizer(context)
 
         // 음성 인식 세부 설정
         val intent = Intent(RecognizerIntent.ACTION_RECOGNIZE_SPEECH).apply {
@@ -117,6 +114,13 @@ class SttManagerImpl @Inject constructor(
         }
     }
 
+    // 음성 인식 재시작
+    override fun restart(context: Context) {
+        stop()
+        ensureRecognizer(context)
+        start(context)
+    }
+    
     // 음성 인식 즉시 중단 (엔진 유지)
     override fun stop() {
         recognizer?.stopListening()

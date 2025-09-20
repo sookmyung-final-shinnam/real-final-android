@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.home.ui.component.HomeUserItem
+import com.veryshinnam.myapp.feature.home.component.HomeUserItem
 import org.threeten.bp.YearMonth
 
 @Composable

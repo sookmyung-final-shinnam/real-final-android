@@ -12,9 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
 import com.veryshinnam.myapp.common.enums.Gender
-import com.veryshinnam.myapp.feature.collection.ui.component.FilterButtons
-import com.veryshinnam.myapp.feature.collection.ui.component.CollectionCharacterGrid
-import com.veryshinnam.myapp.feature.collection.ui.component.CollectionInfo
+import com.veryshinnam.myapp.feature.collection.component.FilterButtons
+import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
+import com.veryshinnam.myapp.feature.collection.component.CollectionInfo
 
 @Composable
 fun CollectionCharactersScreen(

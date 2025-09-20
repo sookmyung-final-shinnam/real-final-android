@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.permit.data.api
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.permit.data.dto.JwtDto
+import com.veryshinnam.myapp.feature.permit.data.dto.JwtResult
 import retrofit2.http.PATCH
 import retrofit2.http.Query
 
@@ -11,5 +11,5 @@ interface PermitApi {
     @PATCH("api/permit/login")
     suspend fun login(
         @Query("tempCode") tempCode: String
-    ): BaseResponse<JwtDto>
+    ): BaseResponse<JwtResult>
 }

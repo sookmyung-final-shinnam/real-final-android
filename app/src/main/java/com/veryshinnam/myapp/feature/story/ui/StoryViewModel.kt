@@ -37,7 +37,6 @@ class StoryViewModel @Inject constructor(
                 val prologue = repository.getPrologue(storyId, storyType)
                 val pages = repository.getPages(storyId, 4, storyType)
 
-                // 최종 State: 프롤로그 + 본문 4장
                 _storyUiState.value = StoryUiState.Success(
                     storyData = prologue,
                     pagesData = pages,
@@ -76,7 +75,7 @@ class StoryViewModel @Inject constructor(
             _storyUiState.value = newState
 
             if (!newState.isTtsMode) {
-                stopSpeaking() // OFF로 바뀌면 중단
+                stopSpeaking() // tts 중단
             }
         }
     }

@@ -6,15 +6,15 @@ import retrofit2.http.GET
 
 interface CharacterRepository {
 
-    // 캐릭터 전체 조회 api
+    // 캐릭터 전체 조회
     suspend fun getCharacters(gender: String? = null): List<CollectionData>
 
-    // 캐릭터 상세 조회 api
+    // 캐릭터 상세 조회
     suspend fun getCharacterDetail(id: Long): CharacterData
 
-    // 관심 캐릭터 등록 api
+    // 관심 캐릭터 등록
     suspend fun addFavorite(id: Long): Boolean
 
-    // 관심 캐릭터 취소 api
+    // 관심 캐릭터 취소
     suspend fun removeFavorite(id: Long): Boolean
 }

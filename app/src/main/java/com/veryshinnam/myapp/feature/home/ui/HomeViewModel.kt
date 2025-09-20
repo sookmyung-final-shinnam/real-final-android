@@ -28,21 +28,16 @@ class HomeViewModel @Inject constructor(
         fetchHome()
     }
 
-    // 홈 화면 조회
+    // 홈 화면 불러오기
     private fun fetchHome() {
         _homeUiState.value = HomeUiState.Loading
 
         viewModelScope.launch {
             try {
-
-//            val user = getDummyUser()
-//            val favorites = getDummyFavorites()
-                val homeData = repository.getHome() // 홈 화면 조회 api 호출
+                val homeData = repository.getHome() // api 호출
                 val randomMessage = HomeRandomMessages.messages.random()
 
                 _homeUiState.value = HomeUiState.Success(
-//                userData = user,
-//                favoritesData = favorites,
                     homeData = homeData,
                     randomMessage = randomMessage
                 )
@@ -50,7 +45,7 @@ class HomeViewModel @Inject constructor(
                 // 에러 케이스 테스트 용도
 //             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
             } catch (e: Exception) {
-                    _homeUiState.value = HomeUiState.Error("홈 불러오기 실패: ${e.message}")
+                    _homeUiState.value = HomeUiState.Error("홈 화면 불러오기 실패: ${e.message}")
             }
         }
     }

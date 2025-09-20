@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.model
 
+// ui 화면용 단계
 enum class ConversationStep {
     START,      // 대화 시작 단계
     STORY,      // 이야기 전개 단계

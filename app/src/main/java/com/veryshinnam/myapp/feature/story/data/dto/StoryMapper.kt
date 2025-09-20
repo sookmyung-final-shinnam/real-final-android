@@ -6,7 +6,7 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 import kotlin.String
 import kotlin.collections.List
 
-fun StoryDto.toStoryData(storyType: StoryType): StoryData =
+fun StoryResult.toStoryData(storyType: StoryType): StoryData =
     StoryData(
         id = storyId,
         title = title.orEmpty(),
@@ -18,7 +18,7 @@ fun StoryDto.toStoryData(storyType: StoryType): StoryData =
         }
     )
 
-fun StoryDto.toPageData(storyType: StoryType): PageData =
+fun StoryResult.toPageData(storyType: StoryType): PageData =
     PageData(
         id = pageNumber,
         url = when (storyType) {

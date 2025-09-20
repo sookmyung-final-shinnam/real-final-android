@@ -32,7 +32,7 @@ class CollectionViewModel @Inject constructor(
         fetchCollection(gender) // 선택된 필터에 맞게 데이터 다시 불러오기
     }
 
-    // 보관함 데이터 불러오기
+    // 보관함 불러오기
     private fun fetchCollection(gender: Gender) {
         viewModelScope.launch {
             try {
@@ -41,8 +41,8 @@ class CollectionViewModel @Inject constructor(
                     Gender.MALE -> "MALE"
                     Gender.FEMALE -> "FEMALE"
                 }
+                val characters = characterRepository.getCharacters(queryGender) // api 호출
 
-                val characters = characterRepository.getCharacters(queryGender) // 캐릭터 전체 조회 api
                 _uiState.value = CollectionUiState.Success(
                     collectionDataList = characters,
                     selectedFilter = gender
@@ -70,7 +70,7 @@ class CollectionViewModel @Inject constructor(
 
                 // 서버 반영
                 viewModelScope.launch {
-                    try { // 관심 캐릭터 등록-해제 api
+                    try { // api 호출
                         if (character.isFavorite) { characterRepository.addFavorite(id) }
                         else { characterRepository.removeFavorite(id) }
                     } catch (e: Exception) {

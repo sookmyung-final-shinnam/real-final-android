@@ -29,8 +29,8 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.feature.dashboard.ui.component.DashboardUserInfo
-import com.veryshinnam.myapp.feature.dashboard.ui.component.DashboardLanguageInfo
+import com.veryshinnam.myapp.feature.dashboard.component.DashboardUserInfo
+import com.veryshinnam.myapp.feature.dashboard.component.DashboardLanguageInfo
 
 @Composable
 fun DashboardScreen(

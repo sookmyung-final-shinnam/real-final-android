@@ -3,14 +3,14 @@ package com.veryshinnam.myapp.feature.home.data.dto
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import com.veryshinnam.myapp.feature.home.model.HomeData
 
-fun HomeDto.toHomeData(): HomeData =
+fun HomeResult.toHomeData(): HomeData =
     HomeData(
         username = username,
         points = 5, // 기본값
         favorites = favorites.map { it.toFavoriteData() }
     )
 
-fun FavoriteDto.toFavoriteData(): FavoriteData =
+fun FavoriteResult.toFavoriteData(): FavoriteData =
     FavoriteData(
         id = id,
         name = name,

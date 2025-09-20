@@ -18,11 +18,10 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import com.veryshinnam.myapp.feature.home.model.HomeData
-import com.veryshinnam.myapp.feature.home.ui.component.HomeBottomButtons
-import com.veryshinnam.myapp.feature.home.ui.component.HomeFavoriteCarousel
-import com.veryshinnam.myapp.feature.home.ui.component.HomeUserInfo
+import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
+import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
+import com.veryshinnam.myapp.feature.home.component.HomeUserInfo
 
 @Composable
 fun HomeMainScreen (

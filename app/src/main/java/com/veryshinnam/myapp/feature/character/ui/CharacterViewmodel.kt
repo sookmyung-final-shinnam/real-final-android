@@ -21,12 +21,12 @@ class CharacterViewModel @Inject constructor(
     private val _charUiState = MutableStateFlow<CharacterUiState>(CharacterUiState.Loading)
     val charUiState = _charUiState.asStateFlow()
 
-    // 캐릭터 상세 조회
+    // 캐릭터 상세 불러오기
     fun fetchCharacter(id: Long) {
         viewModelScope.launch {
             _charUiState.value = CharacterUiState.Loading
             try {
-                val characterDetail = repository.getCharacterDetail(id) // 캐릭터 상세 조회 api
+                val characterDetail = repository.getCharacterDetail(id) // api 호출
                 _charUiState.value = CharacterUiState.Success(
                     characterData = characterDetail
                 )
@@ -55,11 +55,11 @@ class CharacterViewModel @Inject constructor(
 
                 // 서버 반영
                 viewModelScope.launch {
-                    try { // 관심 캐릭터 등록-해제 api
+                    try { // api 호출
                         if (updatedCharacter.isFavorite) { repository.addFavorite(id) }
                         else { repository.removeFavorite(id) }
                     } catch (e: Exception) {
-                        // 실패 시 다시 복원
+                        // 실패 시 상태 복구
                         _charUiState.value = currentState
                     }
                 }

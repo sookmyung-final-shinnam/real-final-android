@@ -20,9 +20,9 @@ import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
-import com.veryshinnam.myapp.feature.story.ui.components.StoryEndingPage
-import com.veryshinnam.myapp.feature.story.ui.components.StoryPageButtons
-import com.veryshinnam.myapp.feature.story.ui.components.StoryReaderPage
+import com.veryshinnam.myapp.feature.story.components.StoryEndingPage
+import com.veryshinnam.myapp.feature.story.components.StoryPageButtons
+import com.veryshinnam.myapp.feature.story.components.StoryReaderPage
 import kotlinx.coroutines.launch
 
 @Composable

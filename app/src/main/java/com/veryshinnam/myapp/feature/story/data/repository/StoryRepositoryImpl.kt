@@ -1,11 +1,8 @@
 package com.veryshinnam.myapp.feature.story.data.repository
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
-import com.veryshinnam.myapp.feature.character.data.dto.CharactersDto
-import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.story.data.api.StoryApi
-import com.veryshinnam.myapp.feature.story.data.dto.StoryDto
+import com.veryshinnam.myapp.feature.story.data.dto.StoryResult
 import com.veryshinnam.myapp.feature.story.data.dto.toPageData
 import com.veryshinnam.myapp.feature.story.data.dto.toStoryData
 import com.veryshinnam.myapp.feature.story.model.PageData
@@ -19,7 +16,7 @@ class StoryRepositoryImpl @Inject constructor(
 
     // 동화 프롤로그 조회 (page: 0)
     override suspend fun getPrologue(storyId: Long, storyType: StoryType): StoryData {
-        val response: BaseResponse<StoryDto> = api.getStoryPage(storyId, 0)
+        val response: BaseResponse<StoryResult> = api.getStoryPage(storyId, 0)
 
         if (!response.isSuccess || response.result == null) {
             throw Exception("동화 프롤로그 조회 실패: ${response.message}")
@@ -35,7 +32,7 @@ class StoryRepositoryImpl @Inject constructor(
         storyType: StoryType
     ): List<PageData> {
         return (1..pageCount).map { pageNumber ->
-            val response: BaseResponse<StoryDto> = api.getStoryPage(storyId, pageNumber)
+            val response: BaseResponse<StoryResult> = api.getStoryPage(storyId, pageNumber)
 
             if (!response.isSuccess || response.result == null) {
                 throw Exception("동화 $pageNumber 페이지 조회 실패: ${response.message}")

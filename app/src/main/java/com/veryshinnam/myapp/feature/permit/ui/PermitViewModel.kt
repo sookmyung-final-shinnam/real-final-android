@@ -43,7 +43,7 @@ class PermitViewModel @Inject constructor(
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
             try {
-                val jwt = repository.login(tempCode) // 로그인 api 요청
+                val jwt = repository.login(tempCode) // api 호출
 
                 // 세션 저장
                 sessionManager.saveToken(

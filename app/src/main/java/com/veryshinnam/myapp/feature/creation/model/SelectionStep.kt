@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.model
 
+// ui 화면용 단계
 enum class SelectionStep {
     THEME,      // 테마 선택 단계
     BACKGROUND, // 배경 선택 단계

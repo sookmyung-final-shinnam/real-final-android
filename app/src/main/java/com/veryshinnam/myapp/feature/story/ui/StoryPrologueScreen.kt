@@ -15,8 +15,8 @@ import coil.compose.AsyncImage
 import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.StoryData
 import com.veryshinnam.myapp.feature.story.model.StoryType
-import com.veryshinnam.myapp.feature.story.ui.components.StoryReadButton
-import com.veryshinnam.myapp.feature.story.ui.components.StoryInfoFade
+import com.veryshinnam.myapp.feature.story.components.StoryReadButton
+import com.veryshinnam.myapp.feature.story.components.StoryInfoFade
 
 @Composable
 fun StoryPrologueScreen(

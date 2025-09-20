@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.core.speech.stt
 
+import android.content.Context
 import kotlinx.coroutines.flow.SharedFlow
 import kotlinx.coroutines.flow.StateFlow
 import java.util.Locale
@@ -15,7 +16,8 @@ interface SttManager: AutoCloseable {
     // 발생 가능한 stt 이벤트
     val events: SharedFlow<SttEvent>
 
-    fun start(langTag: String = Locale.KOREAN.toLanguageTag())
+    fun start(context: Context, langTag: String = Locale.KOREA.toLanguageTag())
+    fun restart(context: Context)
     fun stop()
     override fun close()
 

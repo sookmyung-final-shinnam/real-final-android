@@ -1,12 +1,12 @@
 package com.veryshinnam.myapp.feature.home.data.api
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.home.data.dto.HomeDto
+import com.veryshinnam.myapp.feature.home.data.dto.HomeResult
 import retrofit2.http.GET
 
 interface HomeApi {
 
-    // 홈 화면 조회
+    // 홈 화면 조회 api
     @GET("api/home")
-    suspend fun getHome(): BaseResponse<HomeDto>
+    suspend fun getHome(): BaseResponse<HomeResult>
 }
