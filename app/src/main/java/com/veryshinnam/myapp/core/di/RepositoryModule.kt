@@ -3,6 +3,8 @@ package com.veryshinnam.myapp.core.di
 import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepositoryImpl
+import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepository
+import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepositoryImpl
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepositoryImpl
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepository
@@ -32,6 +34,10 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindCharacterRepository(impl: CharacterRepositoryImpl): CharacterRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindConversationRepository(impl: ConversationRepositoryImpl): ConversationRepository
 
     @Binds
     @Singleton

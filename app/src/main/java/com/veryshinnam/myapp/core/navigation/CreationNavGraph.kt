@@ -11,6 +11,7 @@ import androidx.navigation.navigation
 import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationScreen
 import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationViewModel
 import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
+import com.veryshinnam.myapp.feature.creation.data.dto.toStartRequest
 import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
 
 // 캐릭터 생성 플로우 네비게이션 그래프
@@ -24,16 +25,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
             SelectionScreen(
                 onHome = { navController.popBackStack() },
                 onFinish = { data ->
-                    val req = StartRequest(
-                        themeNames = data.themes,
-                        backgroundName = data.background,
-                        characterName = data.name,
-                        gender = data.gender,
-                        characterAge = data.age,
-                        hairColor = data.hairColor,
-                        eyeColor = data.eyeColor,
-                        hairStyle = data.hairStyle
-                    )
+                    val req = data.toStartRequest()
 
                     navController.currentBackStackEntry
                         ?.savedStateHandle
@@ -56,11 +48,10 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                     .get<StartRequest>("request")
             }
 
-            Log.d("Conversation", "req: $req")
-
+            Log.d("conversation", "$req")
             LaunchedEffect(req) {
                 if (req != null) {
-                    vm.startConversation(req)
+                    vm.startConversation(req) // api 호출, 동화 세선 시작
                 }
             }
 

@@ -27,6 +27,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.core.content.ContextCompat
+import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
@@ -140,7 +141,7 @@ fun ConversationScreen(
                                             ContextCompat.checkSelfPermission(context, recordAudioPermission) == PackageManager.PERMISSION_GRANTED
 
                                         if (granted) {  // 이미 권한 있으면 녹음 시작
-                                            vm.goToNextStep(context)
+                                            vm.goToNextStep()
                                         } else { // 권한 없으면 런처 실행
                                             launcher.launch(recordAudioPermission)
                                         }
