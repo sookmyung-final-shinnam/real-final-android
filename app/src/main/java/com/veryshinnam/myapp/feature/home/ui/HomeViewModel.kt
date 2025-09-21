@@ -73,6 +73,17 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    fun updatePoint(newPoint: Int) {
+        val currentState = _homeUiState.value
+        if (currentState is HomeUiState.Success) {
+            val updatedHomeData = currentState.homeData.copy(
+                points = newPoint
+            )
+            _homeUiState.value = currentState.copy(
+                homeData = updatedHomeData
+            )
+        }
+    }
 //    private fun getDummyUser(): UserData {
 //        return UserData(
 //            username = "짱신남",

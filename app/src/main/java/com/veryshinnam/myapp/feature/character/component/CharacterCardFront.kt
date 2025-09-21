@@ -41,7 +41,7 @@ fun CharacterCardFront(
                 text = "\n${
                     // 여자 남자 구분
                     if (character.gender == Gender.FEMALE) "여자" else "남자"
-                } ${character.age}세\n${character.personality}\n${character.birth}",
+                } ${character.age}세\n${character.personality}\n\n${character.birth}",
                 style = MaterialTheme.typography.headlineSmall.copy(
                     fontWeight = FontWeight.Bold
                 )

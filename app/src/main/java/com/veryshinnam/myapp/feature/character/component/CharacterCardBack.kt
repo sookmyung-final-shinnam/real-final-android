@@ -22,6 +22,8 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 fun CharacterCardBack(
     stories: StoriesData,             // 동화 정보 (종이책+영상)
     onStoryClick: (Long, StoryType) -> Unit,
+    onLockerClick: (Long) -> Unit,
+    onShareClick: (String) -> Unit,
     modifier: Modifier = Modifier // 부모에서 넘겨받은 크기
 ) {
     Column(modifier = modifier.fillMaxSize().padding(16.dp)) {
@@ -43,21 +45,24 @@ fun CharacterCardBack(
         ) {
             // 종이책
             CharacterStoryButton(
-                storyId = stories.storyId ?: -1L,
+                storyId = stories.storyId,
                 storyType = StoryType.IMAGE,
                 storyUrl = stories.imageUrl,
                 typeText = "종이책",
                 onStoryClick = onStoryClick,
+                onShareClick = onShareClick,
                 modifier = Modifier.weight(1f)
             )
 
             // 짧은 영상
             CharacterStoryButton(
-                storyId = stories.storyId?: -1L,
+                storyId = stories.storyId,
                 storyType = StoryType.VIDEO,
                 storyUrl = stories.videoUrl,
                 typeText = "움직이는 책",
                 onStoryClick = onStoryClick,
+                onLockerClick = onLockerClick,
+                onShareClick = onShareClick,
                 modifier = Modifier.weight(1f)
             )
         }

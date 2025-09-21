@@ -41,8 +41,10 @@ fun AttendanceCalender(
     month: YearMonth,
     attendanceDates: Set<LocalDate>,
     usedDate: LocalDate?,
+    stamps: Int,
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit,
+    onStampClick: () -> Unit,
     modifier: Modifier
 ) {
     val sectionPadding = 8.dp   // 섹션 패딩, 요일 행 패딩
@@ -57,6 +59,12 @@ fun AttendanceCalender(
 
     val currentMonth = YearMonth.now() // 현재 달
     val isNextEnabled = month.isBefore(currentMonth) // 미래 시점 이동 불가
+
+    // 보상 날짜 > 10개 찍은 순간의 마지막 날짜 (오늘 포함)
+    val today = LocalDate.now()
+    val rewardDate = if (stamps >= 10) {
+        if (attendanceDates.contains(today)) today else attendanceDates.maxOrNull()
+    } else null
 
     // 배경
     Box(
@@ -177,7 +185,7 @@ fun AttendanceCalender(
                         items(days) { index ->
                             val date = month.atDay(index + 1)
                             val attended = date in attendanceDates
-                            val isUsed = usedDate?.let { !date.isAfter(it) } ?: false
+                            val isRewarded = usedDate != null && date.isBefore(usedDate.plusDays(1))
 
                             Column(
                                 modifier = Modifier.size(cellWidth, cellHeight),
@@ -189,18 +197,37 @@ fun AttendanceCalender(
                                     fontWeight = FontWeight.SemiBold,
                                 )
 
-                                if (attended) {
-                                    Image( // 도장
-                                        painter = painterResource(R.drawable.img_stamp_shining_no),
-                                        contentDescription = "출석 도장",
-                                        modifier = Modifier
-                                            .weight(1f)
-                                            .padding(bottom = calendarPadding)
-                                            .fillMaxSize()
-                                            .alpha(if (isUsed) 0.5f else 1f), // 사용 여부에 따라 불투명도 처리
-                                        contentScale = ContentScale.Fit
-                                    )
+                                if (attended) { // 도장
+                                    when {
+                                        // 아직 보상 안 받은 보상 도장
+                                        date == rewardDate && !isRewarded -> {
+                                            Image(
+                                                painter = painterResource(R.drawable.img_stamp_shining_blue),
+                                                contentDescription = "보상 도장",
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .padding(bottom = calendarPadding)
+                                                    .fillMaxSize()
+                                                    .clickable { onStampClick() },
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        }
+                                        // 일반 도장 (보상 받은 건 반투명)
+                                        else -> {
+                                            Image(
+                                                painter = painterResource(R.drawable.img_stamp_shining_no),
+                                                contentDescription = "출석 도장",
+                                                modifier = Modifier
+                                                    .weight(1f)
+                                                    .padding(bottom = calendarPadding)
+                                                    .fillMaxSize()
+                                                    .alpha(if (isRewarded) 0.5f else 1f),
+                                                contentScale = ContentScale.Fit
+                                            )
+                                        }
+                                    }
                                 }
+
                             }
                         }
                     }

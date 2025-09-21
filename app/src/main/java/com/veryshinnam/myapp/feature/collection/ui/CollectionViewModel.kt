@@ -59,10 +59,11 @@ class CollectionViewModel @Inject constructor(
         if (currentState is CollectionUiState.Success) {
             val character = currentState.collectionDataList.find { it.id == id }
             if (character != null) {
+                val newFavoriteState = !character.isFavorite
 
                 // ui 먼저 반영
                 val updatedList = currentState.collectionDataList.map { item ->
-                    if (item.id == id) item.copy(isFavorite = !item.isFavorite)
+                    if (item.id == id) item.copy(isFavorite = newFavoriteState)
                     else item
                 }
                 val updatedState = currentState.copy(collectionDataList = updatedList)
@@ -71,10 +72,10 @@ class CollectionViewModel @Inject constructor(
                 // 서버 반영
                 viewModelScope.launch {
                     try { // api 호출
-                        if (character.isFavorite) { characterRepository.addFavorite(id) }
+                        if (newFavoriteState) { characterRepository.addFavorite(id) }
                         else { characterRepository.removeFavorite(id) }
                     } catch (e: Exception) {
-                        // 실패 시 복구
+                        // 실패 시 원복
                         _uiState.value = currentState
                     }
                 }

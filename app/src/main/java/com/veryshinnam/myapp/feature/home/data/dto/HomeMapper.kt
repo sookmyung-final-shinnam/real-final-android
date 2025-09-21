@@ -5,7 +5,8 @@ import com.veryshinnam.myapp.feature.home.model.HomeData
 
 fun HomeResult.toHomeData(): HomeData =
     HomeData(
-        username = username,
+//        username = username,
+        username = "짱신남",
         points = 5, // 기본값
         favorites = favorites.map { it.toFavoriteData() }
     )

@@ -31,6 +31,10 @@ interface ConversationApi {
     ): BaseResponse<FeedbackResult>
 
     // 동화 생성 완성 api
-    @POST("/api/conversations/complete")
+    @POST("api/conversations/complete")
     suspend fun completeConversation(@Query("sessionId") sessionId: Long): BaseResponse<String>
+
+    // 페이지별 동영상 생성 api
+    @POST("api/conversations/video")
+    suspend fun generateVideo(@Query("storyId") storyId: Long): BaseResponse<String>
 }

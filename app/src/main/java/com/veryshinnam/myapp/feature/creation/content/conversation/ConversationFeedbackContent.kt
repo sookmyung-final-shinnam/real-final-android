@@ -23,8 +23,7 @@ fun ConversationFeedbackContent(
 ) {
     Column(modifier = modifier.fillMaxSize()) {
             ConversationNeedsText(
-                feedback = if (feedback.isPositive) feedback.text
-                           else  feedback.text + " 다시 한번 말해줄래?",
+                feedback = feedback.text,
                 tryNum = feedback.tryNum,
                 painter = if (feedback.isPositive) painterResource(R.drawable.img_feedback_positive)
                           else painterResource(R.drawable.img_feedback_negative),

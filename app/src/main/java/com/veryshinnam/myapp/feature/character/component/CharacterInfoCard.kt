@@ -29,10 +29,13 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 fun CharacterInfoCard(
     character: CharacterData,     // 캐릭터 정보
     onStoryClick: (Long, StoryType) -> Unit,
+    onLockerClick: (Long) -> Unit,
+    onFlip: (Boolean) -> Unit,
+    onShareClick: (String) -> Unit,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기
 ) {
     // 카드 앞뒷면 구분
-    var isFront by rememberSaveable { mutableStateOf(true) }
+    var isFront by rememberSaveable(character.id) { mutableStateOf(true) }
 
     val density = LocalDensity.current.density
     val cameraDistancePx = 20 * density * 100f // 원근감
@@ -54,7 +57,10 @@ fun CharacterInfoCard(
                     rotationX = rotation // x축 기준
                     cameraDistance = cameraDistancePx
                 }
-                .clickable { isFront = !isFront }, // 카드 전체 클릭시 뒤집기
+                .clickable {
+                    isFront = !isFront
+                    onFlip(isFront) // 앞 > 뒤 새로고침
+                    }, // 카드 전체 클릭시 뒤집기
             colors = CardDefaults.cardColors(
                 containerColor = colorResource(R.color.card_orange_90)
             )
@@ -71,14 +77,23 @@ fun CharacterInfoCard(
                     // 공통 탭버튼
                     CharacterTabButton(
                         modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 12.dp, end = 12.dp),
-                        onClick = { isFront = !isFront })
+                        onClick = {
+                            isFront = !isFront
+                            onFlip(isFront) // 앞 > 뒤 새로고침
+                        }
+                    )
                 } else {
 
                     // 넘어가면 뒷면 표시 + 회전 다시 보정
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
 
                         // 뒷면: 동화 정보
-                        CharacterCardBack(character.stories, onStoryClick)
+                        CharacterCardBack(
+                            character.stories,
+                            onStoryClick = onStoryClick,
+                            onLockerClick = onLockerClick,
+                            onShareClick = onShareClick
+                            )
 
                         // 공통 탭버튼
                         CharacterTabButton(

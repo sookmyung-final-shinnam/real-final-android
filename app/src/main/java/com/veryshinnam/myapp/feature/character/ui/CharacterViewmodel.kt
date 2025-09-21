@@ -56,14 +56,47 @@ class CharacterViewModel @Inject constructor(
                 // 서버 반영
                 viewModelScope.launch {
                     try { // api 호출
-                        if (updatedCharacter.isFavorite) { repository.addFavorite(id) }
-                        else { repository.removeFavorite(id) }
+                        if (updatedCharacter.isFavorite) {
+                            repository.addFavorite(id)
+                        } else {
+                            repository.removeFavorite(id)
+                        }
                     } catch (e: Exception) {
                         // 실패 시 상태 복구
                         _charUiState.value = currentState
                     }
                 }
             }
+        }
+    }
+
+    // 동화 영상 해제
+    fun fetchVideoStory(sId: Long) {
+        viewModelScope.launch {
+            try {
+                repository.generateVideo(sId)
+            } catch (e: Exception) {
+                _charUiState.value = CharacterUiState.Error(
+                    "동화 영상 해제 실패: ${e.message}"
+                )
+            }
+        }
+    }
+
+    // 캐릭터 동화 정보 새로고침
+    fun refreshStories(id: Long) {
+        viewModelScope.launch {
+            try {
+                val newStory = repository.getStories(id)
+                val currentState = _charUiState.value
+                if (currentState is CharacterUiState.Success && currentState.characterData.id == id) {
+                    // CharacterData 안의 stories 필드만 갱신
+                    val updatedCharacter = currentState.characterData.copy(
+                        stories = newStory
+                    )
+                    _charUiState.value = currentState.copy(characterData = updatedCharacter)
+                }
+            } catch (e: Exception) { }
         }
     }
 }

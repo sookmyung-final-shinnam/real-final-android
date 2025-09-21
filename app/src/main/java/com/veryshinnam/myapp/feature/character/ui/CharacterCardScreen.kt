@@ -11,6 +11,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
+import com.veryshinnam.myapp.common.component.WarningButtonSheet
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.component.CharacterImageCard
 import com.veryshinnam.myapp.feature.character.component.CharacterInfoCard
@@ -21,6 +22,9 @@ fun CharacterCardScreen(
     character: CharacterData,
     onFavoriteClick: (Long) -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
+    onLockerClick: (Long) -> Unit,
+    onFlip: (Boolean) -> Unit,
+    onShareClick: (String) -> Unit,
 ) {
     Row(
         modifier = Modifier
@@ -42,6 +46,9 @@ fun CharacterCardScreen(
         CharacterInfoCard(
             character = character,
             onStoryClick = onStoryClick,
+            onLockerClick = onLockerClick,
+            onFlip = onFlip,
+            onShareClick = onShareClick,
             modifier = Modifier
                 .aspectRatio(2f) // 카드 비율
                 .zIndex(1f)

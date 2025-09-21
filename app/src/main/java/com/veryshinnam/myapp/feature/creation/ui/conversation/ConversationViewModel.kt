@@ -60,7 +60,9 @@ class ConversationViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-                val res = repository.startConversation(req) // api 호출
+//                val res = repository.startConversation(req) // api 호출
+                val res = dummyStart()
+
                 _conversationUiState.value = ConversationUiState.Success(
                     sessionId = res.sessionId,
                     nextStory = res.nextStory,
@@ -108,7 +110,7 @@ class ConversationViewModel @Inject constructor(
     }
 
     // 피드백 분기 진행
-    fun goFromFeedback(context: Context? = null) {
+    fun goFromFeedback() {
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
         val feedback = state.feedbackData
 
@@ -132,7 +134,7 @@ class ConversationViewModel @Inject constructor(
                 }
             } else {
                 // 대화 끝 > complete 호출
-                viewModelScope.launch { fetchEndStory(state.sessionId) }
+//                viewModelScope.launch { fetchEndStory(state.sessionId) }
                 _conversationUiState.value = state.copy(conversationStep = ConversationStep.END)
             }
         }
@@ -141,7 +143,8 @@ class ConversationViewModel @Inject constructor(
     // 다음 이야기 불러오기
     private suspend fun fetchNextStep(state: ConversationUiState.Success) {
         try {
-            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
+//            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
+            val res = dummyNextStep(state.loopStep)
 
             _conversationUiState.value = state.copy(
                 nextStory = res.nextStory,
@@ -149,7 +152,8 @@ class ConversationViewModel @Inject constructor(
                 questionData = QuestionData(
                     messageId = res.messageId,
                     question = res.llmQuestion
-                )
+                ),
+                feedbackData = state.feedbackData.copy(tryNum = 0)
             )
         } catch (e: Exception) {
             _conversationUiState.value =
@@ -187,9 +191,14 @@ class ConversationViewModel @Inject constructor(
     // 피드백 불러오기
     private suspend fun fetchFeedback(state: ConversationUiState.Success) {
         try {
-            val res = repository.feedbackConversation( // api 호출
-                messageId = state.questionData.messageId,
-                userAnswer = state.answerData.userAnswer
+//            val res = repository.feedbackConversation( // api 호출
+//                messageId = state.questionData.messageId,
+//                userAnswer = state.answerData.userAnswer
+//            )
+
+            val res = dummyFeedback(
+                step = state.loopStep,
+                tryNum = state.feedbackData.tryNum + 1
             )
 
             _conversationUiState.value = state.copy(
@@ -269,6 +278,102 @@ class ConversationViewModel @Inject constructor(
     fun stopStt() {
         if (stt.isListening.value) {
             stt.stop()
+        }
+    }
+
+
+    // 더미 테스트
+    fun dummyStart():StartResult {
+        return StartResult(
+            sessionId = 1L,
+            nextStory = "옛날옛날, 아주 넓은 사막 한가운데에\n " +
+                    "‘숙명’이라는 12살 소녀가 살고 있었어요.\n" +
+                    "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였지요.\n" +
+                    "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
+            currentStep = "STEP_01"
+        )
+    }
+
+    fun dummyNextStep(step: Int): NextStepResult {
+        return when (step) {
+            1 -> NextStepResult(
+                messageId = 101L,
+                nextStory = "용사는 깊은 숲 속에 들어갔습니다.",
+                llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?"
+            )
+            2 -> NextStepResult(
+                messageId = 102L,
+                nextStory = "긍정피드백 준비",
+                llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?"
+            )
+            3 -> NextStepResult(
+                messageId = 103L,
+                nextStory = "용사는 오래된 성에 도착했습니다.",
+                llmQuestion = "성문을 열까요, 아니면 다른 길을 찾을까요?"
+            )
+            else -> NextStepResult(
+                messageId = 104L,
+                nextStory = "이야기가 끝났습니다. 모험은 잠시 마무리되었어요.",
+                llmQuestion = "다시 모험을 시작하고 싶으신가요?"
+            )
+        }
+    }
+
+    fun dummyFeedback(step: Int, tryNum: Int): FeedbackData {
+        return when (step) {
+            1 -> when (tryNum) {
+                1 -> FeedbackData(
+                    isPositive = false,
+                    text = "여기 이야기 속 주인공은 ‘지민’이 아니라 ‘숙명’이야. 또, 지금은 사과보다는 반짝이는 빛에 대해 말해보는 건 어떨까?",
+                    tryNum = tryNum
+                )
+                2 -> FeedbackData(
+                    isPositive = false,
+                    text = "그건 예쁜 표현이 아니야. 숙명이는 욕을 하지 않아. 반짝이는 빛을 보고 숙명이가 어떤 행동을 했을지 상상해보는 건 어떨까?",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "맞아! 숙명이는 신기한 마음으로 반짝이는 빛을 따라갔어.",
+                    tryNum = tryNum
+                )
+            }
+
+            2 -> FeedbackData(
+                isPositive = true,
+                text = "맞아! 숙명이는 신기한 마음으로 반짝이는 빛을 따라갔어.",
+                tryNum = tryNum
+            )
+
+            3 -> when (tryNum) {
+                1 -> FeedbackData(
+                    isPositive = false,
+                    text = "조금 더 생각해볼까요?",
+                    tryNum = tryNum
+                )
+                2 -> FeedbackData(
+                    isPositive = false,
+                    text = "좋아요! 올바른 선택이에요.",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "잘했습니다!",
+                    tryNum = tryNum
+                )
+            }
+            else -> when (tryNum) {
+                1-> FeedbackData(
+                    isPositive = false,
+                    text = "부정",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "이야기의 마지막까지 잘 해냈습니다!",
+                    tryNum = tryNum
+                )
+            }
         }
     }
 }
