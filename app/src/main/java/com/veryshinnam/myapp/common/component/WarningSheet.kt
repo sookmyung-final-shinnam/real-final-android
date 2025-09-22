@@ -34,6 +34,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
@@ -45,7 +46,8 @@ fun WarningSheet(
     warningText: String,
     confirmText: String,
     onDismiss: () -> Unit = {},
-    onConfirm: () -> Unit
+    onConfirm: () -> Unit,
+    fStyle: TextStyle = MaterialTheme.typography.headlineSmall,
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -102,17 +104,18 @@ fun WarningSheet(
                 modifier = Modifier.fillMaxWidth(0.2f),
                 contentScale = ContentScale.Fit
             )
-            Spacer(Modifier.height(30.dp))
+            Spacer(Modifier.height(20.dp))
 
             Text(
                 text = warningText,
                 color = Color.White,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
+                style = fStyle,
+                fontWeight = FontWeight.Bold,
                 textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier.fillMaxWidth(1f)
             )
 
-            Spacer(Modifier.height(40.dp))
+            Spacer(Modifier.height(36.dp))
 
             Button(
                 onClick = {

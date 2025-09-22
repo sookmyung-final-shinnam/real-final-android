@@ -42,11 +42,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         // 환경설정 화면
         composable("settings") {
             SettingsScreen(
-                onBack = { navController.popBackStack() },
+                onHome = { navController.popBackStack() },
                 onClickLogout = {
-                    navController.navigate(NavGraphs.PERMIT) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = true }
-                    }
+//                    navController.navigate(NavGraphs.PERMIT) {
+//                        popUpTo(NavGraphs.MAIN) { inclusive = true }
+//                    }
                 },
                 onClickDelete = { }
             )
