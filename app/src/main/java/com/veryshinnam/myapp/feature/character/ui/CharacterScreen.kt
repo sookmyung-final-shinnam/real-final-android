@@ -143,7 +143,7 @@ fun CharacterScreen(
                         },
                         onShareClick = { storyUrl ->
                             isSharing = true
-                            sharedStoryUrl = storyUrl
+                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8"
                         }
                     )
                 }
@@ -166,7 +166,7 @@ fun CharacterScreen(
 
     if (isSharing && sharedStoryUrl != null) {
         ShareSheet(
-            shareUrl = "https://youtu.be/CNACFyk39ZE",
+            shareUrl = "https://youtu.be/cX2PU3aEBL8",
 //            shareUrl = sharedStoryUrl!!,
             shareText = "카카오톡으로 공유하기",
             onDismiss = { isSharing = false },
@@ -174,7 +174,7 @@ fun CharacterScreen(
                 try {
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, "https://youtu.be/CNACFyk39ZE")
+                        putExtra(Intent.EXTRA_TEXT, "https://youtu.be/cX2PU3aEBL8")
                         setPackage("com.kakao.talk") // 카톡 패키지 지정
                     }
                     context.startActivity(intent)
