@@ -6,6 +6,7 @@ import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
 import com.veryshinnam.myapp.feature.creation.data.api.ConversationApi
 import com.veryshinnam.myapp.feature.home.data.api.HomeApi
 import com.veryshinnam.myapp.feature.permit.data.api.PermitApi
+import com.veryshinnam.myapp.feature.settings.data.api.UserApi
 import com.veryshinnam.myapp.feature.story.data.api.StoryApi
 import dagger.Module
 import dagger.Provides
@@ -70,4 +71,9 @@ object NetworkModule  {
     @Singleton
     fun provideStoryApi(retrofit: Retrofit): StoryApi =
         retrofit.create(StoryApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideUserApi(retrofit: Retrofit): UserApi =
+        retrofit.create(UserApi::class.java)
 }

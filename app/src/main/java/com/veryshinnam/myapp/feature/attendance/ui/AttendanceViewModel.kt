@@ -115,7 +115,7 @@ class AttendanceViewModel @Inject constructor(
                 attendances = updatedDates.size,
                 stamps = newStamps,
                 isTodayAttendance = true,
-                rewardDate = if (newStamps >= 10) today else null // 👈 여기서 rewardDate 지정
+                rewardDate = if (newStamps >= 10) today else null // rewardDate 지정
             )
         }
     }

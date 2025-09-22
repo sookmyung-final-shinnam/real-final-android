@@ -1,10 +1,14 @@
 package com.veryshinnam.myapp.core.session
 
+import android.content.Context
 import android.util.Log
+import android.webkit.CookieManager
+import android.webkit.WebStorage
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
@@ -16,7 +20,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionManager @Inject constructor(
-    private val dataStore: DataStore<Preferences>
+    private val dataStore: DataStore<Preferences>,
 ) {
     // SessionManager 키 정의
     private val accessToken = stringPreferencesKey("access_token")
@@ -57,9 +61,22 @@ class SessionManager @Inject constructor(
         return expiredAt.isBefore(LocalDateTime.now())
     }
 
-    // 토큰 삭제
+    // 토큰 삭제 (동기, Interceptor용)
     fun clearTokenBlocking() {
         runBlocking { dataStore.edit { it.clear() } } // DataStore 비우기
         _requireLogin.value = true
+    }
+
+    suspend fun clearToken() {
+        dataStore.edit { it.clear() } // DataStore 비우기
+        _requireLogin.value = true
+    }
+
+    // 웹뷰 세션 삭제
+    fun clearKakaoWebViewSession() {
+        val cookieManager = CookieManager.getInstance()
+        cookieManager.removeAllCookies(null)
+        cookieManager.flush()
+        WebStorage.getInstance().deleteAllData()
     }
 }

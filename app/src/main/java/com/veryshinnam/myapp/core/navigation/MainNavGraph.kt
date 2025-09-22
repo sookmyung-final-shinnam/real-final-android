@@ -43,12 +43,6 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable("settings") {
             SettingsScreen(
                 onHome = { navController.popBackStack() },
-                onClickLogout = {
-//                    navController.navigate(NavGraphs.PERMIT) {
-//                        popUpTo(NavGraphs.MAIN) { inclusive = true }
-//                    }
-                },
-                onClickDelete = { }
             )
         }
 
@@ -56,7 +50,6 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable("attendance") {
             AttendanceScreen(onBack = { navController.popBackStack() })
         }
-
 
         // 대시보드 화면
         composable("dashboard") {

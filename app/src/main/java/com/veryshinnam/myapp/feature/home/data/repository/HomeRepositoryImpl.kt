@@ -16,7 +16,7 @@ class HomeRepositoryImpl  @Inject constructor(
         val response: BaseResponse<HomeResult> = api.getHome()
 
         if (!response.isSuccess || response.result == null) {
-            throw Exception("홈 화면 조회 실패: ${response.message}")
+            throw Exception("홈 화면 조회 실패: ${response.result}")
         }
 
         return response.result.toHomeData()

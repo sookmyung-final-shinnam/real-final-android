@@ -1,13 +1,15 @@
 package com.veryshinnam.myapp.feature.settings.ui
 
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -15,8 +17,6 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -28,6 +28,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +42,8 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
@@ -51,9 +54,10 @@ import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 @Composable
 fun SettingsScreen(
     onHome: () -> Unit,
-    onClickLogout: () -> Unit,
-    onClickDelete: () -> Unit
+    vm: SettingsViewModel = hiltViewModel()
 ) {
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
+
     var isWarning by remember { mutableStateOf(false) }   // 경고창
     var warningText by remember { mutableStateOf("") }
     var confirmText by remember { mutableStateOf("") }
@@ -64,6 +68,16 @@ fun SettingsScreen(
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
+
+    LaunchedEffect(uiState) {
+        when (uiState) {
+            is SettingsUiState.Error -> {
+                SimpleWarningText = "요청에 실패하셨습니다"
+                isSimpleWarning = true
+            }
+            else -> Unit
+        }
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -111,6 +125,8 @@ fun SettingsScreen(
                                 warningStyle = titleStyle2
                                 confirmAction = {
                                     isWarning = false
+                                    vm.logout() // 로그아웃
+
                                     SimpleWarningText = "로그아웃이 완료되었습니다.\n" +
                                             "3초뒤 시작 화면으로 이동합니다. "
                                     isSimpleWarning = true
@@ -143,6 +159,8 @@ fun SettingsScreen(
                                 warningStyle = titleStyle
                                 confirmAction = {
                                     isWarning = false
+                                    vm.withdraw() // 회원 탈퇴
+
                                     SimpleWarningText = "회원 탈퇴가 완료되었습니다.\n" +
                                             "3초뒤 시작 화면으로 이동합니다. "
                                     isSimpleWarning = true
@@ -188,9 +206,20 @@ fun SettingsScreen(
     }
 
     if (isSimpleWarning) {
-        WarningSimpleSheet(
-            warningText = SimpleWarningText,
-            onDismiss = { isSimpleWarning = false}
-        )
+        BackHandler(enabled = true) {
+            // 뒤로가기 무시
+        }
+
+        Box(
+            modifier = Modifier.fillMaxSize()
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(enabled = true, onClick = { }) // 터치 불가
+        ){
+            WarningSimpleSheet(
+                warningText = SimpleWarningText,
+                onDismiss = { },    // 닫기 금지
+                dismissible = false // 시트 닫힘 방지
+            )
+        }
     }
 }

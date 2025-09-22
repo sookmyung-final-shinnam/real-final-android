@@ -16,7 +16,6 @@ import javax.inject.Inject
 class CharacterRepositoryImpl @Inject constructor(
     private val characterApi: CharacterApi,
     private val conversationApi: ConversationApi
-
 ) : CharacterRepository {
 
     // 캐릭터 전체 조회

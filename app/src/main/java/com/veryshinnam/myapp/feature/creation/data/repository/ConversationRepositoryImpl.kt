@@ -1,8 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.data.repository
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.character.data.dto.CharactersResult
-import com.veryshinnam.myapp.feature.character.data.dto.toCollectionData
 import com.veryshinnam.myapp.feature.creation.data.api.ConversationApi
 import com.veryshinnam.myapp.feature.creation.data.dto.FeedbackResult
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStepResult

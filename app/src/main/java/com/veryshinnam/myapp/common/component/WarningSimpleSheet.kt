@@ -41,6 +41,7 @@ import com.veryshinnam.myapp.R
 fun WarningSimpleSheet(
     warningText: String,
     onDismiss: () -> Unit,
+    dismissible: Boolean = true // 기본 값
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -52,12 +53,13 @@ fun WarningSimpleSheet(
 
     val sheetState = rememberModalBottomSheetState(
         confirmValueChange = { value ->
-            value != SheetValue.Expanded // 전체 높이 허용 x
+            if (!dismissible && value == SheetValue.Hidden) false
+            else value != SheetValue.Expanded
         }
     )
 
     ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {  onDismiss() },
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange),
