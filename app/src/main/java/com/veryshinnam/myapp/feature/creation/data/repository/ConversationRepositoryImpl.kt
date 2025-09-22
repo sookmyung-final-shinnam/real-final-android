@@ -60,7 +60,7 @@ class ConversationRepositoryImpl @Inject constructor(
         val response: BaseResponse<String> = api.completeConversation(sessionId)
 
         if (!response.isSuccess || response.result == null) {
-            throw Exception("동화 생성 완성 실패: ${response.message}")
+            throw Exception("동화 생성 완성 실패: ${response.result}")
         }
 
         return true

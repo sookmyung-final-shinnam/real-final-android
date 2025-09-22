@@ -15,6 +15,7 @@ fun SelectionAgeContent(
     onSelectAge: (Int) -> Unit,
     onPrevClick: () -> Unit,
     onNextClick: () -> Unit,
+    onSimpleWarning: (String) -> Unit,    // 경고 콜백
     modifier: Modifier
 ) {
     Column(modifier = modifier) {
@@ -37,7 +38,7 @@ fun SelectionAgeContent(
                 if (age != -1) {
                     onNextClick()
                 } else {
-                    // TODO: 나이를 선택하세요
+                    onSimpleWarning("아직 나이를 선택하지 않았어요!")
                 }
             },
             modifier = Modifier.fillMaxWidth().weight(2f)

@@ -24,6 +24,7 @@ fun SelectionThemeContent(
     onCustomThemeInput: (String) -> Unit,     // 테마 직접 추가 콜백
     onThemeSelect: (String) -> Unit,        // 테마 선택 콜백
     onNextClick: () -> Unit,                // 다음 단계 이동 콜백
+    onSimpleWarning: (String) -> Unit,    // 경고 콜백
     modifier: Modifier
 ) {
     var customInput by remember { mutableStateOf("") }
@@ -34,13 +35,15 @@ fun SelectionThemeContent(
             SelectionCustomInput(
                 value = customInput,
                 onValueChange = { customInput = it },
-                onConfirm = {
-                    if (customInput.isNotBlank() && customInput !in initThemes) {
-                        onCustomThemeInput(customInput)
-                        customInput = ""
-                        onInputModeChange(false)
-                    } else {
-                        // TODO: 이미 있는 주제
+                onConfirm = { input ->
+                    when {
+                        input.isBlank() -> onSimpleWarning("아직 주제를 입력하지 않았어요!")
+                        input in initThemes -> onSimpleWarning("이미 존재하는 주제예요!")
+                        else -> {
+                            onCustomThemeInput(input)
+                            customInput = ""
+                            onInputModeChange(false)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()
@@ -63,14 +66,14 @@ fun SelectionThemeContent(
                     if (customTheme.isBlank() && themes.size < 3) {
                         onInputModeChange(true) // 직접추가 입력창 열기
                     } else {
-                        // TODO: 3개까지만 선택 가능
+                        onSimpleWarning("주제는 3개까지 선택이 가능해요!")
                     }
                 },
                 onRightClick = {
                     if (themes.isNotEmpty()) {
                         onNextClick() // 다음 단계로 이동
                     } else {
-                        // TODO: 주제를 하나 이상 선택
+                        onSimpleWarning("아직 주제를 선택하지 않았어요!")
                     }
                 },
                 modifier = Modifier.fillMaxWidth().weight(2f)

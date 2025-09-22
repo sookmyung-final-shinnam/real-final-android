@@ -20,6 +20,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -33,6 +36,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StepProgressBar
+import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationFeedbackContent
@@ -48,7 +52,6 @@ fun ConversationScreen(
 ) {
 
     val context = LocalContext.current
-
     val recordAudioPermission = Manifest.permission.RECORD_AUDIO
 
     val launcher = rememberLauncherForActivityResult(
@@ -61,6 +64,8 @@ fun ConversationScreen(
 
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
     val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
+
+    var isWarning by remember { mutableStateOf(false) }   // 경고창
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -82,6 +87,7 @@ fun ConversationScreen(
                 }
                 // 조회 오류
                 is ConversationUiState.Error -> {
+                    BackHandler { onBack() }
                     LoadErrorView(
                         message = state.message,
                         onRetry = { }
@@ -109,7 +115,7 @@ fun ConversationScreen(
 
                         when (state.conversationStep) {
                             ConversationStep.START -> { // 대화 시작 (다음 이야기)
-                                BackHandler { onBack() } // 홈으로
+                                BackHandler {  isWarning = true } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     isTtsSpeaking = isTtsSpeaking,
@@ -120,7 +126,7 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.STORY -> { // 다음 이야기
-                                BackHandler { onBack() } // 홈으로
+                                BackHandler { isWarning = true } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     isTtsSpeaking = isTtsSpeaking,
@@ -182,6 +188,7 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.END -> { // 대화 종료
+                                BackHandler { onBack() }
                                 ConversationEndContent(
                                     { onBack() }
                                 )
@@ -191,5 +198,17 @@ fun ConversationScreen(
                 }
             }
         }
+    }
+
+    if (isWarning) {
+        WarningSheet(
+            warningText  = "대화를 그만 진행할까요?\n지금까지 이야기한 내용은 저장되지 않아요!",
+            confirmText = "그만하기",
+            onDismiss = { isWarning = false },
+            onConfirm = {
+                isWarning = false
+                onBack()
+            }
+        )
     }
 }

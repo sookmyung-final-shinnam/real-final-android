@@ -16,6 +16,7 @@ fun SelectionGenderContent(
     onSelectGender: (Gender) -> Unit,   // 성별 선택 콜백
     onPrevClick: () -> Unit,            // 이전 단계 이동
     onNextClick: () -> Unit,            // 다음 단계 이동
+    onSimpleWarning: (String) -> Unit,  // 경고
     modifier: Modifier
 ) {
     // 성별 버튼 체크 용도
@@ -59,7 +60,7 @@ fun SelectionGenderContent(
                 if (gender != Gender.ALL) {
                     onNextClick() // 다음 단계로 이동
                 } else {
-                    // TODO: 성별을 선택하세요
+                    onSimpleWarning("아직 성별을 선택하지 않았어요!")
                 }
             },
             modifier = Modifier.fillMaxWidth().weight(2f)

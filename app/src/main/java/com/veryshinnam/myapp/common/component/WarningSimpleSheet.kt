@@ -11,11 +11,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -41,11 +38,9 @@ import com.veryshinnam.myapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WarningSheet(
+fun WarningSimpleSheet(
     warningText: String,
-    confirmText: String,
-    onDismiss: () -> Unit = {},
-    onConfirm: () -> Unit
+    onDismiss: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -72,7 +67,7 @@ fun WarningSheet(
             modifier = Modifier
                 .fillMaxWidth()
                 .then(
-                    if (isPortrait) Modifier.height(heightDp * 0.34f) //  화면 높이 30%
+                    if (isPortrait) Modifier.height(heightDp * 0.3f) //  화면 높이 30%
                     else Modifier.fillMaxSize()
                 )
                 .padding(vertical = 8.dp, horizontal = 20.dp),
@@ -102,34 +97,16 @@ fun WarningSheet(
                 modifier = Modifier.fillMaxWidth(0.2f),
                 contentScale = ContentScale.Fit
             )
-            Spacer(Modifier.height(30.dp))
+
+            Spacer(Modifier.height(20.dp))
 
             Text(
-                text = warningText,
+                text = "앗!\n$warningText",
                 color = Color.White,
                 style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
                 textAlign = TextAlign.Center,
                 modifier = Modifier.fillMaxWidth(0.8f)
             )
-
-            Spacer(Modifier.height(40.dp))
-
-            Button(
-                onClick = {
-                    onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text(
-                    text = confirmText,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color.Black,
-                    modifier = Modifier.padding(4.dp)
-                )
-            }
         }
     }
 }

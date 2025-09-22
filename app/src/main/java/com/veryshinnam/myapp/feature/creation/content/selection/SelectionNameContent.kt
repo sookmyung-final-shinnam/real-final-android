@@ -21,6 +21,7 @@ fun SelectionNameContent(
     onNameChange: (String) -> Unit,
     onPrevClick: () -> Unit,
     onNextClick: () -> Unit,
+    onSimpleWarning: (String) -> Unit,    // 경고 콜백
     modifier: Modifier
 ) {
     var inputName by rememberSaveable(name) { mutableStateOf(name) }
@@ -73,9 +74,17 @@ fun SelectionNameContent(
             isRight = true,    // 다음 버튼
             onLeftClick = { onPrevClick() },  // 이전 단계로 이동
             onRightClick = {
-                if (isValid) {
-                    onNameChange(trimmed)
-                    onNextClick()
+                when {
+                    trimmed.isBlank() -> {
+                        onSimpleWarning("아직 이름을 입력하지 않았어요!")
+                    }
+                    error != NameError.NONE -> {
+                        onSimpleWarning("올바르지 않은 이름이에요!")
+                    }
+                    else -> {
+                        onNameChange(trimmed)
+                        onNextClick()
+                    }
                 }
             }, // 다음 단계로 이동
             modifier = Modifier.fillMaxWidth().weight(2f),

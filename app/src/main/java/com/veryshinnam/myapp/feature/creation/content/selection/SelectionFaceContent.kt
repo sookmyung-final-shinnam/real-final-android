@@ -21,7 +21,8 @@ fun SelectionFaceContent(
     onSelectHairColor: (String) -> Unit,
     onSelectHairStyle: (String) -> Unit,
     onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
+    onSimpleWarning: (String) -> Unit,    // 경고 콜백
+    onWarning: (String, String) -> Unit,
     modifier: Modifier,
 ) {
     // 기본 팔레트 색상 및 머리 스타일
@@ -90,7 +91,11 @@ fun SelectionFaceContent(
             onLeftClick = { onPrevClick() },  // 이전 단계로 이동
             onRightClick = {
                 if (isValid) {
-                    onNextClick()
+                    onWarning("선택한 정보로 동화를 시작할까요?", "시작하기")
+                    // > 아이템 1개가 소진됩니다.
+                }
+                else {
+                    onSimpleWarning("아직 머리 스타일을 선택하지 않았어요!")
                 }
             },
             modifier = Modifier.fillMaxWidth().weight(2f),

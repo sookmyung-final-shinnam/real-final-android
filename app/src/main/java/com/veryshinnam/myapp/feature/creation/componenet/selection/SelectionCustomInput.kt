@@ -27,7 +27,7 @@ import com.veryshinnam.myapp.R
 fun SelectionCustomInput(
     value: String,
     onValueChange: (String) -> Unit,
-    onConfirm: () -> Unit,
+    onConfirm: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
     // 뒤 배경
@@ -59,14 +59,7 @@ fun SelectionCustomInput(
                     imeAction = ImeAction.Done
                 ),
                 keyboardActions = KeyboardActions(
-                    onDone = {
-                        if (value.isNotBlank()) {
-                            onConfirm()
-                        }
-                        else {
-                            // TODO: 경고창
-                        }
-                    }
+                    onDone = { onConfirm(value) }
                 ),
                 decorationBox = { innerTextField ->
                         if (value.isEmpty()) {

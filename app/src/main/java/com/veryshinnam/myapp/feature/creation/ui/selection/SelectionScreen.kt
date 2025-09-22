@@ -26,6 +26,8 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionInfo
@@ -49,14 +51,24 @@ fun SelectionScreen(
     val selectionStep = uiState.selectionStep                    // 현재 선택 단계
     var isInputMode by remember { mutableStateOf(false) } // 테마+배경 직접추가 입력 모드
 
+    var isWarning by remember { mutableStateOf(false) }   // 경고창
+    var warningText by remember { mutableStateOf("") }
+    var confirmText by remember { mutableStateOf("") }
+    var confirmAction by remember { mutableStateOf<() -> Unit>({}) }
+
+    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
+    var SimpleWarningText by remember { mutableStateOf("") }
+
     // 뒤로 가기 로직
     fun handleBack() {
         if (isInputMode) {
             isInputMode = false // 입력모드 해제
         } else {
             if (uiState.selectionStep == SelectionStep.THEME) {
-                onHome() // 테마 선택 화면은 홈으로
-                // TODO: 저장 X
+                warningText = "홈으로 돌아갈까요?\n지금까지 선택한 내역은 저장되지 않아요!"
+                confirmText = "홈으로"
+                confirmAction = { onHome() }
+                isWarning = true
             } else {
                 vm.goToPrevStep()
             }
@@ -151,6 +163,10 @@ fun SelectionScreen(
                             onCustomThemeInput = { vm.addCustomTheme(it) },
                             onThemeSelect = { vm.selectTheme(it) },
                             onNextClick = { vm.goToNextStep() },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -166,6 +182,10 @@ fun SelectionScreen(
                             onBackgroundSelect = { vm.selectBackground(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -177,6 +197,10 @@ fun SelectionScreen(
                             onSelectGender = { vm.selectGender(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -189,6 +213,10 @@ fun SelectionScreen(
                             onSelectAge = { vm.selectAge(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -200,6 +228,10 @@ fun SelectionScreen(
                             onNameChange = { vm.selectName(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -214,7 +246,16 @@ fun SelectionScreen(
                             onSelectHairColor = { vm.selectHairColor(it) },
                             onSelectHairStyle = { vm.selectHairStyle(it) },
                             onPrevClick = { vm.goToPrevStep() },
-                            onNextClick = { onFinish(uiState.selectionData) },
+                            onSimpleWarning = { text ->  // 경고 문구
+                                SimpleWarningText = text
+                                isSimpleWarning = true
+                            },
+                            onWarning = {  wText, cText -> // 테마에서 뒤로가기, 이야기 시작 직전
+                                warningText = wText
+                                confirmText = cText
+                                confirmAction = { onFinish(uiState.selectionData) }
+                                isWarning = true
+                            },
                             modifier = Modifier.fillMaxWidth()
                                 .weight(0.75f)
                         )
@@ -222,6 +263,25 @@ fun SelectionScreen(
                 }
             }
         }
+    }
+
+    if (isWarning) {
+        WarningSheet(
+            warningText  = warningText,
+            confirmText = confirmText,
+            onDismiss = { isWarning = false },
+            onConfirm = {
+                isWarning = false
+                confirmAction()
+            }
+        )
+    }
+
+    if (isSimpleWarning) {
+        WarningSimpleSheet(
+            warningText = SimpleWarningText,
+            onDismiss = { isSimpleWarning = false}
+        )
     }
 }
 

@@ -102,7 +102,7 @@ class ConversationViewModel @Inject constructor(
             ConversationStep.ANSWER -> {
                 // ANSWER > FEEDBACK (피드백 표시)
 
-                viewModelScope.launch {     fetchFeedback(state) }
+                viewModelScope.launch { fetchFeedback(state) }
 
             }
             else -> {}
@@ -134,7 +134,7 @@ class ConversationViewModel @Inject constructor(
                 }
             } else {
                 // 대화 끝 > complete 호출
-//                viewModelScope.launch { fetchEndStory(state.sessionId) }
+                viewModelScope.launch { fetchEndStory(state.sessionId) }
                 _conversationUiState.value = state.copy(conversationStep = ConversationStep.END)
             }
         }

@@ -23,6 +23,7 @@ fun SelectionBackgroundContent (
     onBackgroundSelect: (String) -> Unit,    // 배경 선택 콜백
     onPrevClick: () -> Unit,                 // 이전 단계 이동 콜백
     onNextClick: () -> Unit,                 // 다음 단계 이동 콜백
+    onSimpleWarning: (String) -> Unit,    // 경고 콜백
     modifier: Modifier
 ) {
     var customInput by remember { mutableStateOf("") }
@@ -33,13 +34,15 @@ fun SelectionBackgroundContent (
             SelectionCustomInput(
                 value = customInput,
                 onValueChange = { customInput = it },
-                onConfirm = {
-                    if (customInput.isNotBlank() && customInput !in initBackgrounds) {
-                        onCustomBackgroundInput(customInput)
-                        customInput = ""
-                        onInputModeChange(false)
-                    } else {
-                        // TODO: 이미 있는 배경
+                onConfirm = { input ->
+                    when {
+                        input.isBlank() -> onSimpleWarning("아직 배경을 입력하지 않았어요!")
+                        input in initBackgrounds -> onSimpleWarning("이미 존재하는 배경이에요!")
+                        else -> {
+                            onCustomBackgroundInput(input)
+                            customInput = ""
+                            onInputModeChange(false)
+                        }
                     }
                 },
                 modifier = Modifier.fillMaxSize()
@@ -67,7 +70,7 @@ fun SelectionBackgroundContent (
                     if (background.isNotBlank()) {
                         onNextClick()
                     } else {
-                        // TODO: 배경 선택하세요
+                        onSimpleWarning("아직 배경을 선택하지 않았어요!")
                     }
                 },
                 modifier = Modifier.fillMaxWidth().weight(2f)

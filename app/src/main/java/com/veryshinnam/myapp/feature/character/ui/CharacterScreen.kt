@@ -44,8 +44,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
-import com.veryshinnam.myapp.common.component.WarningButtonSheet
-import com.veryshinnam.myapp.feature.home.ui.HomeViewModel
+import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
@@ -152,7 +151,7 @@ fun CharacterScreen(
     }
 
     if (isWarning && warnedStoryId != null) {
-        WarningButtonSheet(
+        WarningSheet(
             warningText = "동영상 동화의 잠금을 해제할까요?\n" +
                     "아이템 1개가 소진돼요!",
             confirmText = "해제하기",
