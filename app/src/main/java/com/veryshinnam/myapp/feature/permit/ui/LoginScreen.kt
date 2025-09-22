@@ -6,11 +6,14 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -70,7 +73,7 @@ fun LoginScreen(
         Column(
             modifier = Modifier.fillMaxSize()
                 .background(colorResource(R.color.background_yellow)),
-            verticalArrangement = Arrangement.SpaceAround,
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Spacer(modifier = Modifier.weight(2f))
@@ -98,16 +101,22 @@ fun LoginScreen(
                     modifier = Modifier
                 )
             }
+            Spacer(modifier = Modifier.weight(.4f))
 
             // 이미지
-            Image(
-                painter = painterResource(R.drawable.img_splash),
-                contentDescription = "스플래시 이미지",
+            Box(
                 modifier = Modifier
                     .weight(7f)
                     .fillMaxWidth(),
-                contentScale = ContentScale.Fit
-            )
+                contentAlignment = Alignment.Center
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_splash),
+                    contentDescription = "스플래시 이미지",
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Inside
+                )
+            }
 
             // 로그인 버튼
             Box(
@@ -125,7 +134,7 @@ fun LoginScreen(
                     contentScale = ContentScale.None
                 )
             }
-            Spacer(modifier = Modifier.weight(2f))
+            Spacer(modifier = Modifier.weight(1.6f))
         }
     }
 }

@@ -20,7 +20,10 @@ import androidx.media3.ui.PlayerView
 @Composable
 fun VideoPlayer(
     videoUrl: String,
-    modifier: Modifier
+    modifier: Modifier,
+    isRepeated: Boolean = true,                  // 반복 여부
+    resizeMode: Int = AspectRatioFrameLayout.RESIZE_MODE_ZOOM, // 기본 Crop
+    onVideoEnd: () -> Unit = {  }
 ) {
     val context = LocalContext.current
 
@@ -30,13 +33,25 @@ fun VideoPlayer(
             setMediaItem(MediaItem.fromUri(Uri.parse(videoUrl)))
             prepare()
             playWhenReady = true // 바로 재생
-            repeatMode = Player.REPEAT_MODE_ONE // 무한 반복
+            repeatMode = if (isRepeated) Player.REPEAT_MODE_ONE else Player.REPEAT_MODE_OFF
         }
     }
 
     // 생명주기 관리
     DisposableEffect(exoPlayer) {
-        onDispose { exoPlayer.release() }
+        val listener = object : Player.Listener {
+            override fun onPlaybackStateChanged(playbackState: Int) {
+                if (playbackState == Player.STATE_ENDED) {
+                    onVideoEnd.invoke()
+                }
+            }
+        }
+        exoPlayer.addListener(listener)
+
+        onDispose {
+            exoPlayer.removeListener(listener)
+            exoPlayer.release()
+        }
     }
 
     AndroidView(
@@ -45,7 +60,7 @@ fun VideoPlayer(
             PlayerView(it).apply {
                 player = exoPlayer
                 useController = false // 기본 ui 컨트롤러 숨김
-                resizeMode = AspectRatioFrameLayout.RESIZE_MODE_ZOOM // Crop
+                this.resizeMode = resizeMode // Crop
 
                 exoPlayer.addListener(object : Player.Listener {
                     override fun onRenderedFirstFrame() {

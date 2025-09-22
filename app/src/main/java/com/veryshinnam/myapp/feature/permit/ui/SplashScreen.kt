@@ -1,11 +1,19 @@
+@file:OptIn(UnstableApi::class)
+
 package com.veryshinnam.myapp.feature.permit.ui
 
 import android.net.Uri
+import android.view.SurfaceView
+import android.view.View
+import android.widget.VideoView
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -30,10 +38,13 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.media3.common.MediaItem
 import androidx.media3.common.Player
+import androidx.media3.common.util.UnstableApi
 import androidx.media3.exoplayer.ExoPlayer
+import androidx.media3.ui.AspectRatioFrameLayout
 import androidx.media3.ui.PlayerView
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 
@@ -45,40 +56,17 @@ fun SplashScreen(
 ) {
     val state by vm.permitUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
+    val splashVideo = "android.resource://${context.packageName}/${R.raw.splash}"
 
-    val exoPlayer = remember {
-        ExoPlayer.Builder(context).build().apply {
-            val videoUri = Uri.parse("android.resource://${context.packageName}/${R.raw.splash}")
-            setMediaItem(MediaItem.fromUri(videoUri))
-            repeatMode = ExoPlayer.REPEAT_MODE_OFF // 자동 반복 끄기
-            prepare()
-            playWhenReady = true
-        }
-    }
 
     LaunchedEffect(Unit) {
-        delay(4000) // 스플래시 2초 보여주기
-        vm.checkAccessToken() // 스플래시 끝나고 토큰 검사 실행
-    }
-
-    LaunchedEffect(state) {
-        when (state) {
-            is PermitUiState.Success -> {
-                onHome()
-                vm.resetState()
-            }
-            is PermitUiState.Error -> {
-                onLogin()
-                vm.resetState()
-            }
-            else -> Unit
-        }
+        vm.checkAccessToken()
     }
 
     Column(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow)),
-        verticalArrangement = Arrangement.SpaceAround,
+        verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         Spacer(modifier = Modifier.weight(2f))
@@ -107,39 +95,24 @@ fun SplashScreen(
             )
         }
 
-        // 이미지
-//        Image(
-//            painter = painterResource(R.drawable.img_splash),
-//            contentDescription = "스플래시 이미지",
-//            modifier = Modifier
-//                .weight(7f)
-//                .fillMaxWidth(),
-//            contentScale = ContentScale.Fit
-//        )
-
-        DisposableEffect(
-            AndroidView(
-                modifier = Modifier
-                    .weight(7f)
-                    .fillMaxWidth(),
-                factory = {
-                    PlayerView(it).apply {
-                        player = exoPlayer
-                        useController = false
-
-                        exoPlayer.addListener(object : Player.Listener {
-                            override fun onRenderedFirstFrame() {
-                                // 첫 프레임 렌더링 후 강제로 다시 레이아웃 → 검정 여백 제거
-                                this@apply.post { this@apply.requestLayout() }
-                            }
-                        })
-                    }
+        VideoPlayer(
+            videoUrl = splashVideo,
+            modifier = Modifier
+                .weight(7f)
+                .fillMaxWidth(),
+            isRepeated = false,
+            resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT, // 원본 비율 유지
+            onVideoEnd = {
+                // 상태가 결정된 후 이동
+                if (state is PermitUiState.Success) {
+                    onHome()
+                } else if (state is PermitUiState.Error) {
+                    onLogin()
                 }
-            )
-        ) {
-            onDispose { exoPlayer.release() }
-        }
+            }
+        )
 
         Spacer(modifier = Modifier.weight(3f))
+
     }
 }
