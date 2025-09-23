@@ -1,126 +1,219 @@
 package com.veryshinnam.myapp.feature.creation.ui.conversation
 
+import android.Manifest
+import android.app.Activity
+import android.content.pm.PackageManager
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
+import androidx.activity.compose.rememberLauncherForActivityResult
+import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
-import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.Text
-import androidx.compose.material3.TextButton
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.unit.TextUnit
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.core.content.ContextCompat
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import kotlinx.coroutines.flow.StateFlow
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.StepProgressBar
+import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationEndContent
+import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
+import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationFeedbackContent
+import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationQuestionContent
+import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationStoryContent
+import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 
+// 캐릭터 생성 > 대화 진입점
 @Composable
 fun ConversationScreen(
     onBack: () -> Unit,
-    sessionId: Long,
-    step: String,
-    vm: ConversationViewModel = hiltViewModel()
+    onLogoClick: () -> Unit,
+    vm: ConversationViewModel
 ) {
 
-    val uiState by vm.convUiState
-    val ttsReady by vm.isTtsReady.collectAsStateWithLifecycle(initialValue = false)
-    val sttReady by vm.isSttReady.collectAsStateWithLifecycle(initialValue = false)
-    val sttListening by vm.isSttListening.collectAsStateWithLifecycle(initialValue = false)
+    val context = LocalContext.current
+    val recordAudioPermission = Manifest.permission.RECORD_AUDIO
 
-    var isBackDialogShow by remember { mutableStateOf(false) }
-
-    BackHandler { isBackDialogShow = true }
-    BackHomeDialog(
-        isShow = isBackDialogShow,
-        onDismiss = { isBackDialogShow = false },
-        onConfirm = {
-            isBackDialogShow = false
-            vm.stopAll()   // tts 중단
-            onBack()
-        }
-    )
-
-    LaunchedEffect(sessionId, step) {
-        // START -> STEP_01 로 질문 받아오고 자동 TTS
-        vm.processConversation(sessionId, step)
-    }
-
-    Column(Modifier.padding(16.dp)) {
-        Text("대화시작", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(12.dp))
-
-        if (uiState.isLoading) {
-            Text("불러오는 중…")
-        }
-
-        // 다음 이야기 & 질문
-        uiState.nextStory?.takeIf { it.isNotBlank() }?.let {
-            Text(it)
-            Spacer(Modifier.height(8.dp))
-        }
-        uiState.llmQuestion?.takeIf { it.isNotBlank() }?.let {
-            Text(it)
-            Spacer(Modifier.height(12.dp))
-        }
-
-        // 버튼들
-        Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-            Button(
-                onClick = { vm.replayTts() }, // 다시 듣기: 스토리 → 질문 순서로 재생
-                enabled = !uiState.isLoading
-                        && ttsReady
-                        // 처음엔 비활성화
-                        && (!uiState.nextStory.isNullOrBlank() || !uiState.llmQuestion.isNullOrBlank())
-            ) {
-                Text("다시 듣기")
-            }
-
-            // 녹음 시작: 누르면 TTS 끊고 STT 시작 (VM에서 처리)
-            Button(
-                onClick = { vm.startStt() },
-                enabled = !uiState.isLoading && !sttListening
-            ) {
-                Text(if (sttListening) "듣고 있어요..." else "녹음 시작")
-            }
-        }
-
-        Spacer(Modifier.height(16.dp))
-
-        // STT 인식 결과 (부분/최종)
-        uiState.partialAnswer?.takeIf { it.isNotBlank() }?.let {
-            Text("인식 중: $it")
-            Spacer(Modifier.height(8.dp))
-        }
-        uiState.userAnswer?.takeIf { it.isNotBlank() }?.let {
-            Text("내 답변: $it")
-            Spacer(Modifier.height(8.dp))
-        }
-
-        Spacer(Modifier.height(12.dp))
-
-        // 다음 단계로 진행 (STEP_01 → 02 → 03 → END)
-
-        // 에러 표시
-        uiState.errorMessage?.takeIf { it.isNotBlank() }?.let {
-            Spacer(Modifier.height(12.dp))
-            Text("에러: $it", color = MaterialTheme.colorScheme.error)
+    val launcher = rememberLauncherForActivityResult(
+        contract = ActivityResultContracts.RequestPermission()
+    ) { isGranted ->
+        if (!isGranted) {
+            Toast.makeText(context, "마이크 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
 
+    val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
+    val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
 
-    // 처음엔 tts 진행때는 녹음 버튼 비활성화
-    // 다시듣기 이후로부터 tts 중단하고 녹음 가능
-    // 녹음시에 tts 끊기
-    // 인식후에 피드백api하지만 일단 더미데이터
+    var isWarning by remember { mutableStateOf(false) }   // 경고창
+
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = { AppTopBar(onLogoClick=onLogoClick) }, // 상단 로고
+        contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            when (val state = uiState) {
+                // 조회 로딩 중
+                is ConversationUiState.Loading -> {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.main_orange), // 주황색
+                        trackColor = Color.Gray.copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
+                    )
+                }
+                // 조회 오류
+                is ConversationUiState.Error -> {
+                    BackHandler { onBack() }
+                    LoadErrorView(
+                        message = state.message,
+                        onRetry = { }
+                    )
+                }
+                // 조회 성공
+                is ConversationUiState.Success -> {
+                    LaunchedEffect(state.conversationStep) {
+                        vm.startTts() // 자동 읽기
+                    }
+
+                    Column(Modifier.fillMaxSize(),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        // 진행바 (START, END 제외)
+                        if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
+                            StepProgressBar(
+                                steps = 4,                        // 총 반복 횟수
+                                currentStep = state.loopStep,     // 현재 진행 단계
+                                modifier = Modifier
+                                    .fillMaxWidth(0.7f)  // 진행 바 길이
+                                    .weight(0.2f),
+                            )
+                        } else Spacer(Modifier.weight(0.2f)) // 공간 차지
+
+                        when (state.conversationStep) {
+                            ConversationStep.START -> { // 대화 시작 (다음 이야기)
+                                BackHandler {  isWarning = true } // 홈으로
+                                ConversationStoryContent(
+                                    nextStory = state.nextStory,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.startTts() },
+                                    onNextClick = { vm.goToNextStep() },
+                                    nextEnabled = !isTtsSpeaking,
+                                    modifier = Modifier.weight(0.8f)
+                                )
+                            }
+
+                            ConversationStep.STORY -> { // 다음 이야기
+                                BackHandler { isWarning = true } // 홈으로
+                                ConversationStoryContent(
+                                    nextStory = state.nextStory,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.startTts() },
+                                    onNextClick = { vm.goToNextStep() },
+                                    nextEnabled = !isTtsSpeaking,
+                                    modifier = Modifier.weight(0.8f)
+                                )
+                            }
+
+                            ConversationStep.QUESTION -> { // llm 질문 (STORY 단계 이동 가능)
+                                BackHandler { vm.goToPreviousStep() }
+                                ConversationQuestionContent(
+                                    question = state.questionData.question,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.startTts() },
+                                    onRecordClick = {
+                                        val granted =
+                                            ContextCompat.checkSelfPermission(context, recordAudioPermission) == PackageManager.PERMISSION_GRANTED
+
+                                        if (granted) {  // 이미 권한 있으면 녹음 시작
+                                            vm.goToNextStep()
+                                        } else { // 권한 없으면 런처 실행
+                                            launcher.launch(recordAudioPermission)
+                                        }
+                                    },
+                                    nextEnabled = !isTtsSpeaking,
+                                    modifier = Modifier.weight(0.8f)
+                                )
+                            }
+
+                            ConversationStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
+                                BackHandler { vm.goToPreviousStep() }
+
+                                LaunchedEffect(state.conversationStep) {
+                                        vm.startStt(context)
+                                }
+
+                                ConversationAnswerContent(
+                                    answerData = state.answerData,
+                                    onRecordStop = { vm.stopStt() },
+                                    onFeedback = { vm.goToNextStep() },
+                                    modifier = Modifier.weight(0.8f)
+                                )
+                            }
+
+                            ConversationStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
+
+                                BackHandler { // 긍정 >  홈으로, 부정 > QUESTION 단계 이동 가능
+                                    if (state.feedbackData.isPositive) onBack()
+                                    else vm.goToPreviousStep()
+                                }
+
+                                ConversationFeedbackContent(
+                                    feedback = state.feedbackData,
+                                    isTtsSpeaking = isTtsSpeaking,
+                                    onReplayClick = { vm.startTts() },
+                                    onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
+                                    nextEnabled = !isTtsSpeaking,
+                                    modifier = Modifier.weight(0.8f)
+                                )
+                            }
+
+                            ConversationStep.END -> { // 대화 종료
+                                BackHandler { onBack() }
+                                ConversationEndContent(
+                                    { onBack() }
+                                )
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    if (isWarning) {
+        WarningSheet(
+            warningText  = "대화를 그만 진행할까요?\n지금까지 이야기한 내용은 저장되지 않아요!",
+            confirmText = "그만하기",
+            onDismiss = { isWarning = false },
+            onConfirm = {
+                isWarning = false
+                onBack()
+            }
+        )
+    }
 }

@@ -1,192 +1,374 @@
 package com.veryshinnam.myapp.feature.creation.ui.conversation
 
-import androidx.compose.runtime.State
-import androidx.compose.runtime.mutableStateOf
+import android.content.Context
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
-import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationRequest
-import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResponse
-import com.veryshinnam.myapp.feature.creation.data.dto.StartConversationResult
+import com.veryshinnam.myapp.feature.creation.data.dto.NextStepResult
+import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
+import com.veryshinnam.myapp.feature.creation.data.dto.StartResult
+import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepository
+import com.veryshinnam.myapp.feature.creation.model.AnswerData
+import com.veryshinnam.myapp.feature.creation.model.ConversationStep
+import com.veryshinnam.myapp.feature.creation.model.FeedbackData
+import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.filterIsInstance
-import kotlinx.coroutines.flow.first
-import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import java.util.Locale
 import javax.inject.Inject
+
+private fun changeLoopStep(loopStep: Int): String {
+    return when (loopStep) {
+        1 -> "STEP_01"
+        2 -> "STEP_02"
+        3 -> "STEP_03"
+        else -> "END"
+    }
+}
 
 @HiltViewModel
 class ConversationViewModel @Inject constructor(
-    // repository 주입은 일단 안씀
+    private val repository: ConversationRepository,
     private val tts: TtsManager,
     private val stt: SttManager
 ) : ViewModel() {
 
-    private val _convUiState = mutableStateOf(ConversationUiState())
-    val convUiState: State<ConversationUiState> = _convUiState
+    // 대화 화면 상태 관리
+    private val _conversationUiState = MutableStateFlow<ConversationUiState>(ConversationUiState.Loading)
+    val conversationUiState: StateFlow<ConversationUiState> = _conversationUiState.asStateFlow()
 
-    // ui에서 바로 쓸 수 있도록 준비
-    val isTtsReady: StateFlow<Boolean> = tts.isReady
-    val isSttReady: StateFlow<Boolean> = stt.isReady
-    val isSttListening: StateFlow<Boolean> = stt.isListening
+    // isSpeaking 추가
+    val isTtsSpeaking = tts.isSpeaking
 
-    // STT 이벤트 수집
     init {
+        // ViewModel 생성 > 기본 Loading + stt event collector 한 번만 실행
+        _conversationUiState.value = ConversationUiState.Loading
         viewModelScope.launch {
-            stt.events.collect { ev ->
-                when (ev) {
-                    is SttManager.SttEvent.Ready -> {
-                        _convUiState.value = _convUiState.value.copy(
-                            phase = ConversationPhase.LISTENING,
-                            errorMessage = null
-                        )
-                    }
-                    is SttManager.SttEvent.Partial -> {
-                        _convUiState.value = _convUiState.value.copy(partialAnswer = ev.text)
-                    }
-                    is SttManager.SttEvent.Final -> {
-                        _convUiState.value = _convUiState.value.copy(
-                            userAnswer = ev.text,
-                            partialAnswer = null
-                        )
-                        // 피드백은 현재 요구 범위에서 제외
-                    }
-                    is SttManager.SttEvent.Error -> {
-                        _convUiState.value = _convUiState.value.copy(
-                            errorMessage = "STT 오류(${ev.code}): ${ev.message}",
-                            phase = ConversationPhase.ASKING
-                        )
-                    }
-                    is SttManager.SttEvent.End -> Unit
-                }
+            stt.events.collect { event -> handleSttEvent(event) }
+        }
+    }
+
+    fun startConversation(req: StartRequest) {
+        Log.d("startConversation: ", "$req")
+        _conversationUiState.value = ConversationUiState.Loading
+
+        viewModelScope.launch {
+            try {
+                val res = repository.startConversation(req) // api 호출
+//                val res = dummyStart()
+
+                // 초기화
+                _conversationUiState.value = ConversationUiState.Success(
+                    sessionId = res.sessionId,
+                    nextStory = res.nextStory,
+                    questionData = QuestionData(messageId = -1, question = ""),
+                    answerData = AnswerData(userAnswer = "", partialAnswer = ""),
+                    feedbackData = FeedbackData(isPositive = false, text = ""),
+                    conversationStep = ConversationStep.START, // 대화 시작 단계
+                    loopStep = 1
+                )
+            } catch (e: Exception) {
+                _conversationUiState.value = ConversationUiState.Error(e.message ?: "Unknown error")
             }
         }
     }
 
-    // 캐릭터 선택 이후 대화 시작
-    fun startConversationDummy(req: StartConversationRequest) {
-        android.util.Log.d("ConversationStsrtScreen", "넘겨받은 req = $req")
+    // 다음 단계 진행
+    fun goToNextStep() {
+        // ConversationUiState.Success 상태 아니면 무시
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
-        // 로딩 시작
-        _convUiState.value = _convUiState.value.copy(isLoading = true)
+        when (state.conversationStep) {
+            ConversationStep.START -> {
+                // START > STORY (첫 이야기, api 요청)
+                viewModelScope.launch {  fetchNextStep(state) }
+            }
 
-        // 더미 데이터
-        // TODO: api 연결
-        val response = StartConversationResponse(
-            isSuccess = true,
-            code = "COMMON_200",
-            message = "성공입니다.",
-            result = StartConversationResult(
-                sessionId = 17,
-                nextStory = "우주의 끝자락에서 붉은 눈과 보라색 머리를 가진 테스트가 떠다니며 사랑과 건강을 찾기 위한 모험을 시작했어요.",
-                currentStep = "START"
-            )
-        )
+            ConversationStep.STORY -> {
+                // STORY > QUESTION (질문 표시, 단계만 바뀜)
+                _conversationUiState.value = state.copy(conversationStep = ConversationStep.QUESTION)
+            }
 
-        if (response.isSuccess) {
-            _convUiState.value = ConversationUiState(
-                sessionId = response.result.sessionId,
-                currentStep = response.result.currentStep,
-                nextStory = response.result.nextStory,
-                isLoading = false
+            ConversationStep.QUESTION -> {
+                // STORY > QUESTION (녹음 화면, 단계만 바뀜)
+                tts.stop() // tts 중지
+                _conversationUiState.value = state.copy(conversationStep = ConversationStep.ANSWER)
+            }
+
+            ConversationStep.ANSWER -> {
+                // ANSWER > FEEDBACK (피드백 표시)
+
+                viewModelScope.launch { fetchFeedback(state) }
+
+            }
+            else -> {}
+        }
+    }
+
+    // 피드백 분기 진행
+    fun goFromFeedback() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+        val feedback = state.feedbackData
+
+        if (!feedback.isPositive && feedback.tryNum < 3) {
+            // 부정 → 다시 녹음 단계로
+            tts.stop() // tts 중지
+            _conversationUiState.value = state.copy(
+                conversationStep = ConversationStep.ANSWER,
+                answerData = AnswerData("", "") // 답변 초기화
             )
         } else {
-            _convUiState.value = _convUiState.value.copy(
-                isLoading = false,
-                errorMessage = "대화 시작 실패"
-            )
+            // 긍정 → 다음 루프 or END
+            val nextLoop = state.loopStep + 1
+            if (nextLoop <= 4) {
+                viewModelScope.launch {
+                    fetchNextStep(
+                        state.copy(
+                            loopStep = nextLoop,
+                            answerData = AnswerData("", "") // 답변 초기화
+                        )
+                    )
+                }
+            } else {
+                // 대화 끝 > complete 호출
+                viewModelScope.launch { fetchEndStory(state.sessionId) }
+                _conversationUiState.value = state.copy(conversationStep = ConversationStep.END)
+            }
         }
     }
 
-    // 줄거리 및 질문 진행
-    fun processConversation(sessionId: Long, currentStep: String) {
-        stopAll()
+    // 다음 이야기 불러오기
+    private suspend fun fetchNextStep(state: ConversationUiState.Success) {
+        try {
+            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
+//            val res = dummyNextStep(state.loopStep)
 
-        // 현재 단계에 따른 다음 단계 준비
-        val next = when (currentStep.uppercase()) {
-            "START" -> "STEP_01"
-            "STEP_01" -> "STEP_02"
-            "STEP_02" -> "STEP_03"
-            else -> "END"
-        }
+            Log.d("ConversationAPI", "nextStory: ${res.nextStory},messageId:  ${res.messageId}, question: ${res.llmQuestion}")
 
-        if (next == "END") {}
-
-        // 로딩 시작
-        // llm 질문 텍스트는 유지해도 되지만 답변은 비우기
-        _convUiState.value = _convUiState.value.copy(
-            sessionId = sessionId,
-            currentStep = next,
-            isLoading = true,
-            phase = ConversationPhase.FETCHING_QUESTION,
-            userAnswer = null,
-            partialAnswer = null,
-            errorMessage = null
-        )
-
-        // 더미 실패 응답
-        val simulatePending = false
-        if (simulatePending) {
-            _convUiState.value = _convUiState.value.copy(
-                isLoading = false, phase = ConversationPhase.PENDING
+            _conversationUiState.value = state.copy(
+                nextStory = res.nextStory,
+                questionData = QuestionData(res.messageId, res.llmQuestion),
+                feedbackData = state.feedbackData.copy(tryNum = 0),
+                conversationStep = ConversationStep.STORY
             )
-            return
+        } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "Next API ${e.message}")
+            _conversationUiState.value =
+                ConversationUiState.Error(e.message ?: "Next step error")
         }
-
-        // 더미 성공 응답: next에 따라 다른 메시지
-        val (story, q) = when (next) {
-            "STEP_01" -> "테스트는 반짝이는 별들 사이에서 이상한 소리를 들었어요. 그곳엔 요정 길버트가 있었어요." to
-                    "길버트는 테스트에게 어떤 도움을 줄까요?"
-            "STEP_02" -> "길버트는 반짝이는 가루를 뿌리며 테스트의 마음을 들여다보았어요." to
-                    "테스트의 마음 속 가장 큰 소원은 무엇일까요?"
-            else      -> "하늘길이 열리고 새로운 행성이 모습을 드러났어요." to
-                    "그 행성에서 테스트는 무엇을 배울까요?"
-        }
-
-        _convUiState.value = _convUiState.value.copy(
-            nextStory = story, llmQuestion = q, isLoading = false, phase = ConversationPhase.ASKING
-        )
-
-        // 스토리 → 질문 읽기
-        if (story.isNotBlank()) tts.speak(story, flush = true)
-        if (q.isNotBlank())     tts.speak(q,     flush = false)
     }
 
+    // 뒤로 가기
+    fun goToPreviousStep() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
-    // tts 관련 제어
+        _conversationUiState.value = when (state.conversationStep) {
+            ConversationStep.QUESTION -> state.copy(conversationStep = ConversationStep.STORY)
+            ConversationStep.ANSWER   -> state.copy(conversationStep = ConversationStep.QUESTION)
+            ConversationStep.FEEDBACK -> state.copy(conversationStep = ConversationStep.QUESTION)
+            else -> state
+        }
+    }
+
+    // 피드백 불러오기
+    private suspend fun fetchFeedback(state: ConversationUiState.Success) {
+        try {
+            val res = repository.feedbackConversation( // api 호출
+                messageId = state.questionData.messageId,
+                userAnswer = state.answerData.userAnswer
+            )
+
+//            val res = dummyFeedback(
+//                step = state.loopStep,
+//                tryNum = state.feedbackData.tryNum + 1
+//            )
+
+            _conversationUiState.value = state.copy(
+                conversationStep = ConversationStep.FEEDBACK,
+                feedbackData = res
+            )
+        } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "FEEDBABK API ${e.message}")
+            _conversationUiState.value =
+                ConversationUiState.Error(e.message ?: "Feedback error")
+        }
+    }
+
+    // 스토리 끝내기
+    private suspend fun fetchEndStory(sessionId: Long) {
+        try {
+            repository.completeConversation(sessionId) // api 호출
+//            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
+        } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "Complete API ${e.message}")
+
+            _conversationUiState.value =
+                ConversationUiState.Error(e.message ?: "Complete error")
+        }
+    }
+
     // tts 시작
-    fun startTts(story: String) {
-        if (story.isNotBlank()) tts.speak(story, flush = true)
+    fun startTts() {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+
+        when (state.conversationStep) {
+            ConversationStep.START, ConversationStep.STORY -> tts.speak(state.nextStory, flush = true)
+            ConversationStep.QUESTION -> tts.speak(state.questionData.question, flush = true)
+            ConversationStep.FEEDBACK -> tts.speak(state.feedbackData.text, flush = true)
+            else -> return
+        }
     }
 
-    // tts 다시 시작
-    fun replayTts() {
-        val s = _convUiState.value.nextStory.orEmpty()
-        val q = _convUiState.value.llmQuestion.orEmpty()
-        if (s.isNotBlank()) tts.speak(s, flush = true)   // 끊고 시작
-        if (q.isNotBlank()) tts.speak(q, flush = false)  // 큐에 이어서
+    override fun onCleared() {
+        super.onCleared()
+        tts.stop()   // 화면 dispose 시 tts, stt 중지
+        stt.stop()
     }
 
-    // tts 중단
-    fun stopTts() {
-        tts.stop()
+    fun startStt(context: Context) {
+        stt.start(context)
     }
 
-    // stt 제어
-    // stt 시작
-    fun startStt(lang: Locale = Locale.KOREAN) {
-        tts.stop()
-        _convUiState.value = _convUiState.value.copy(
-            phase = ConversationPhase.LISTENING,
-            partialAnswer = null,
-            errorMessage = null
+    // stt event 처리
+    private fun handleSttEvent(event: SttManager.SttEvent) {
+        val state = _conversationUiState.value as? ConversationUiState.Success ?: return
+        when (event) {
+            is SttManager.SttEvent.Partial -> {
+                Log.d("STT test", "Partial: ${event.text}")
+
+                // 부분 답변 업데이트
+                _conversationUiState.value = state.copy(
+                    answerData = state.answerData.copy(
+                        partialAnswer = event.text
+                    )
+                )
+            }
+            is SttManager.SttEvent.Final -> {
+                Log.d("STT test", "Final: ${event.text}")
+
+                val updated = state.copy(
+                    answerData = state.answerData.copy(
+                        userAnswer = event.text
+                    )
+                )
+                _conversationUiState.value = updated
+            }
+            is SttManager.SttEvent.Error -> {
+                Log.e("STT test", "Error: code=${event.code}, message=${event.message}")
+                _conversationUiState.value = state.copy(
+                    answerData = state.answerData.copy(
+                        partialAnswer = "",
+                        userAnswer = ""
+                    )
+                )
+            }
+            else -> {}
+        }
+    }
+
+    fun stopStt() {
+        if (stt.isListening.value) {
+            stt.stop()
+        }
+    }
+
+
+    // 더미 테스트
+    fun dummyStart():StartResult {
+        return StartResult(
+            sessionId = 1L,
+            nextStory = "옛날옛날, 아주 넓은 사막 한가운데에\n " +
+                    "‘숙명’이라는 12살 소녀가 살고 있었어요.\n" +
+                    "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였지요.\n" +
+                    "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
+            currentStep = "STEP_01"
         )
-        // 메인에서 호출되는게 보장
-        stt.start(lang.toLanguageTag())
     }
 
-    fun stopAll() { tts.stop(); stt.stop() }
+    fun dummyNextStep(step: Int): NextStepResult {
+        return when (step) {
+            1 -> NextStepResult(
+                messageId = 101L,
+                nextStory = "용사는 깊은 숲 속에 들어갔습니다.",
+                llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?"
+            )
+            2 -> NextStepResult(
+                messageId = 102L,
+                nextStory = "긍정피드백 준비",
+                llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?"
+            )
+            3 -> NextStepResult(
+                messageId = 103L,
+                nextStory = "용사는 오래된 성에 도착했습니다.",
+                llmQuestion = "성문을 열까요, 아니면 다른 길을 찾을까요?"
+            )
+            else -> NextStepResult(
+                messageId = 104L,
+                nextStory = "이야기가 끝났습니다. 모험은 잠시 마무리되었어요.",
+                llmQuestion = "다시 모험을 시작하고 싶으신가요?"
+            )
+        }
+    }
+
+    fun dummyFeedback(step: Int, tryNum: Int): FeedbackData {
+        return when (step) {
+            1 -> when (tryNum) {
+                1 -> FeedbackData(
+                    isPositive = false,
+                    text = "여기 이야기 속 주인공은 ‘지민’이 아니라 ‘숙명’이야. 또, 지금은 사과보다는 반짝이는 빛에 대해 말해보는 건 어떨까?",
+                    tryNum = tryNum
+                )
+                2 -> FeedbackData(
+                    isPositive = false,
+                    text = "그건 예쁜 표현이 아니야. 숙명이는 욕을 하지 않아. 반짝이는 빛을 보고 숙명이가 어떤 행동을 했을지 상상해보는 건 어떨까?",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "맞아! 숙명이는 신기한 마음으로 반짝이는 빛을 따라갔어.",
+                    tryNum = tryNum
+                )
+            }
+
+            2 -> FeedbackData(
+                isPositive = true,
+                text = "맞아! 숙명이는 신기한 마음으로 반짝이는 빛을 따라갔어.",
+                tryNum = tryNum
+            )
+
+            3 -> when (tryNum) {
+                1 -> FeedbackData(
+                    isPositive = false,
+                    text = "조금 더 생각해볼까요?",
+                    tryNum = tryNum
+                )
+                2 -> FeedbackData(
+                    isPositive = false,
+                    text = "좋아요! 올바른 선택이에요.",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "잘했습니다!",
+                    tryNum = tryNum
+                )
+            }
+            else -> when (tryNum) {
+                1-> FeedbackData(
+                    isPositive = false,
+                    text = "부정",
+                    tryNum = tryNum
+                )
+                else -> FeedbackData(
+                    isPositive = true,
+                    text = "이야기의 마지막까지 잘 해냈습니다!",
+                    tryNum = tryNum
+                )
+            }
+        }
+    }
 }

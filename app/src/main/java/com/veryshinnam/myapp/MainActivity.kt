@@ -4,108 +4,67 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
-import androidx.navigation.NavType
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navArgument
-import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
-import com.veryshinnam.myapp.feature.creation.route.SelectRoutes
-import com.veryshinnam.myapp.feature.creation.route.selectNavGraph
-import com.veryshinnam.myapp.feature.home.ui.HomeScreen
-import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
-import com.veryshinnam.myapp.feature.storage.ui.StorageScreen
-import com.veryshinnam.myapp.feature.story.ui.StoryScreen
+import com.veryshinnam.myapp.core.navigation.NavGraphs
+import com.veryshinnam.myapp.core.navigation.creationNavGraph
+import com.veryshinnam.myapp.core.navigation.mainNavGraph
+import com.veryshinnam.myapp.core.navigation.permitNavGraph
+import com.veryshinnam.myapp.core.session.SessionManager
+import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
+    @Inject lateinit var sessionManager: SessionManager
+    @Inject lateinit var tts: TtsManager
+
+
     override fun onCreate(savedInstanceState: Bundle?) {
+        val splash = installSplashScreen()   // 시스템 스플래시
+
         super.onCreate(savedInstanceState)
+        splash.setKeepOnScreenCondition { false } // 시스템 스플래시 즉시 사라지도록
+
         enableEdgeToEdge()
 
         setContent {
-            val mainNavController = rememberNavController()
+            val navController = rememberNavController()
 
-            NavHost(
-                navController = mainNavController,
-                startDestination = "home"
-            ) {
-                // 홈 화면
-                composable("home") {
-                    HomeScreen(
-                        onSettingsClick = {
-                            // 환경 설정
-                            mainNavController.navigate("settings")
-                        },
-                        onCreationClick = {
-                            // 캐릭터 생성
-                            mainNavController.navigate(SelectRoutes.ROOT)
-                        },
-                        onStorageClick = {
-                            // 보관함
-                            mainNavController.navigate("storage")
-                        },
-                        onCharacterClick = { charId ->
-                            // 캐릭터 상세 보기
-                            mainNavController.navigate("character/$charId")
-                        }
-                    )
-                }
+            // 전역에서 401 감지
+            val requireLogin by sessionManager.requireLogin.collectAsStateWithLifecycle()
 
-                // 설정 화면
-                composable("settings") {
-                    SettingsScreen(
-                        onBack = { mainNavController.popBackStack() },
-                        onClickLogout = {    },
-                        onClickDelete = {    }
-                    )
-                }
-
-                // 생성 플로우
-                selectNavGraph(mainNavController)
-
-                // 보관함
-                composable("storage") {
-                    StorageScreen(
-                        onBack = { mainNavController.popBackStack() },
-                        onItemClick = { id -> mainNavController.navigate("character/$id") }
-                    )
-                }
-
-                // 캐릭터 상세 보기
-                composable("character/{id}",
-                    arguments = listOf(navArgument("id") { type = NavType.LongType })
-                ) { backStackEntry ->
-                    val characterId = backStackEntry.arguments?.getLong("id") ?: return@composable
-                    CharacterScreen(
-                        id = characterId,
-                        onBack = { mainNavController.popBackStack() },
-                        onStoryClick = { storyId ->
-                            mainNavController.navigate("story/$storyId")
-                        },
-                        onVideoClick = {}
-                    )
-                }
-
-                // 동화 상세 보기
-                composable("story/{id}",
-                    arguments = listOf(navArgument("id") { type = NavType.LongType })
-                ) { backStackEntry ->
-                    val storyId = backStackEntry.arguments?.getLong("id") ?: return@composable
-                    StoryScreen(
-                        storyId = storyId,
-                        onBack = { mainNavController.popBackStack() },
-                        onHome = {
-                            // 스택 다 비워서 홈으로 이동
-                            mainNavController.navigate("home") {
-                                popUpTo(0) { inclusive = true }
-                                launchSingleTop = true
-                            }
-                        }
-                    )
+            LaunchedEffect(requireLogin) {
+                if (requireLogin) {
+                    navController.navigate(NavGraphs.PERMIT) {
+                        popUpTo(0) { inclusive = true } // 스택 전체 비우기
+                    }
                 }
             }
+
+            NavHost(
+                navController = navController,
+                startDestination = NavGraphs.PERMIT
+            ) {
+                // 로그인 관련 그래프
+                permitNavGraph(navController)
+
+                // 메인 기능 관련 그래프
+                mainNavGraph(navController)
+
+                // 캐릭터 생성 그래프
+                creationNavGraph(navController)
+            }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        tts.stop()
     }
 }

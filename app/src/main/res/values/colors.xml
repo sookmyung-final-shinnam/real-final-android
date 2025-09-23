@@ -2,19 +2,44 @@
 <resources>
     <!-- 파레트 컬러 -->
     <color name="palette_red">#F44336</color>
-    <color name="palette_yellow">#FFEB3B</color>
-    <color name="palette_green">#4CAF50</color>
+    <color name="palette_orange">#FF720E</color>
+    <color name="palette_green">#44C664</color>
     <color name="palette_blue">#2196F3</color>
     <color name="palette_purple">#9C27B0</color>
+    <color name="palette_white">#FFFFFF</color>
+    <color name="palette_pink">#FF84BD</color>
+    <color name="palette_yellow">#FFF06F</color>
+    <color name="palette_lgreen">#99F0AF</color>
+    <color name="palette_sblue">#87C7FB</color>
+    <color name="palette_brown">#965A1E</color>
+    <color name="palette_black">#000000</color>
 
     <!-- 앱컬러 -->
     <color name="brand_orange">#F04400</color>
     <color name="main_orange">#F3A600</color>
     <color name="main_orange_shade">#7A570A</color>
+    <color name="main_orange_50">#F9D280</color>
     <color name="card_orange_90">#E5FFD579</color>
-    <color name="yellow_80">#ccfeefae</color>
-    <color name="background_yellow">#FFF5CE</color>
 
+    <!-- 앱컬러(생성) -->
+    <color name="background_yellow">#FFF5CE</color>
+    <color name="lemon_yellow">#FFFAE6</color>
+
+    <!-- 앱컬러(보관함) -->
     <color name="blue_gray">#549ACF</color>
     <color name="blue_sky">#96C4E7</color>
+
+    <!-- 앱컬러(대시보드) -->
+    <color name="deep_green">#99CB53</color>
+    <color name="light_green">#AFD37D</color>
+    <color name="light_orange">#FBC36A</color>
+
+
+    <!-- 앱컬러(출석체크) -->
+    <color name="deep_pink">#FEA17F</color>
+    <color name="light_pink">#FCBFA9</color>
+    <color name="clear_blue">#1AB3ED</color>
+
+    <!-- 카카오 -->
+
 </resources>

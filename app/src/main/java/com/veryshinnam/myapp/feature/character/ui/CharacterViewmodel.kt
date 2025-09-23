@@ -2,8 +2,10 @@ package com.veryshinnam.myapp.feature.character.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoryVideoData
+import com.veryshinnam.myapp.feature.character.model.StoriesData
+import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,120 +15,88 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CharacterViewModel @Inject constructor(
-
+    private val repository: CharacterRepository
 ) : ViewModel() {
 
     private val _charUiState = MutableStateFlow<CharacterUiState>(CharacterUiState.Loading)
     val charUiState = _charUiState.asStateFlow()
 
-    fun loadDummyCharacter(id: Long) = viewModelScope.launch {
-        _charUiState.value = CharacterUiState.Loading
-        delay(500) // 로딩 감주기
-
-        _charUiState.value = when (id) {
-            11L -> CharacterUiState.Success(
-                characterData = CharacterData(
-                    11,
-                    "유리",
-                    "FEMALE",
-                    11,
-                    "https://ifh.cc/g/QP5O4d.png",
-                    "상냥하고 친구들을 잘 챙김",
-                    "2025-06-01",
-                    false
-                ),
-                storyData = StoryVideoData(
-                    title = "숲속 마을의 친구들",
-                    storyId = 11,
-                    storyImage = "https://ifh.cc/g/QP5O4d.png",
-                    videoId = null,
-                    videoUrl = null
+    // 캐릭터 상세 불러오기
+    fun fetchCharacter(id: Long) {
+        viewModelScope.launch {
+            _charUiState.value = CharacterUiState.Loading
+            try {
+                val characterDetail = repository.getCharacterDetail(id) // api 호출
+                _charUiState.value = CharacterUiState.Success(
+                    characterData = characterDetail
                 )
-            )
-
-            12L -> CharacterUiState.Success(
-                characterData = CharacterData(
-                    12,
-                    "파워",
-                    "MALE",
-                    12,
-                    "https://i.ibb.co/PGs7r1M6/Kakao-Talk-20250707-183009989.jpg",
-                    "활발하고 모험을 좋아함",
-                    "2025-11-16",
-                    true
-                ),
-                storyData = StoryVideoData(
-                    title = "집에 가지마, 베이베",
-                    storyId = null,
-                    storyImage = null,
-                    videoId = 1,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
-                )
-            )
-
-            13L -> CharacterUiState.Success(
-                characterData = CharacterData(
-                    13,
-                    "파파워",
-                    "FEMALE",
-                    13,
-                    "https://ifh.cc/g/XTGSPy.png",
-                    "지혜롭고 용감함",
-                    "2025-01-13",
-                    false
-                ),
-                storyData = StoryVideoData(
-                    title = "빛과 그림자",
-                    storyId = 13,
-                    storyImage = "https://ifh.cc/g/XTGSPy.png",
-                    videoId = null,
-                    videoUrl = null
-                )
-            )
-
-            18L -> CharacterUiState.Success(
-                characterData = CharacterData(
-                    18,
-                    "민수",
-                    "MALE",
-                    11,
-                    "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png",
-                    "긍정적이고 모험심이 강함.",
-                    "2025-01-11",
-                    false
-                ),
-                storyData = StoryVideoData(
-                    title = "민수와 깜찍한 요정의 사랑 모험",
-                    storyId = 11,
-                    storyImage = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png",
-                    videoId = 18,
-                    videoUrl = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/2/page_2.png"
-                )
-            )
-
-            else -> CharacterUiState.Error("캐릭터($id)를 찾을 수 없습니다.")
+            } catch (e: Exception) {
+                _charUiState.value =
+                    CharacterUiState.Error("캐릭터($id) 불러오기 실패: ${e.message}")
+            }
         }
     }
 
     // 다시 조회
     fun reload(id: Long) {
-        loadDummyCharacter(id)
+        fetchCharacter(id)
     }
 
-    // 즐겨찾기 업데이트
-    fun updateFavorite(cId: Long) {
+    // 캐릭터 즐겨찾기 업데이트
+    fun updateFavorite(id: Long) {
         val currentState = _charUiState.value
         if (currentState is CharacterUiState.Success) {
             val character = currentState.characterData
-            // id 일치 > isFavorite 토글
-            if (character.id == cId) {
-                val updatedCharacter = character.copy(
-                    isFavorite = !character.isFavorite
-                )
-                _charUiState.value = currentState.copy(
-                    characterData = updatedCharacter
+            if (character.id == id) {
+
+                // ui 먼저 반영
+                val updatedCharacter = character.copy(isFavorite = !character.isFavorite)
+                _charUiState.value = currentState.copy(characterData = updatedCharacter)
+
+                // 서버 반영
+                viewModelScope.launch {
+                    try { // api 호출
+                        if (updatedCharacter.isFavorite) {
+                            repository.addFavorite(id)
+                        } else {
+                            repository.removeFavorite(id)
+                        }
+                    } catch (e: Exception) {
+                        // 실패 시 상태 복구
+                        _charUiState.value = currentState
+                    }
+                }
+            }
+        }
+    }
+
+    // 동화 영상 해제
+    fun fetchVideoStory(sId: Long) {
+        viewModelScope.launch {
+            try {
+                repository.generateVideo(sId)
+            } catch (e: Exception) {
+                _charUiState.value = CharacterUiState.Error(
+                    "동화 영상 해제 실패: ${e.message}"
                 )
             }
+        }
+    }
+
+    // 캐릭터 동화 정보 새로고침
+    fun refreshStories(id: Long) {
+        viewModelScope.launch {
+            try {
+                val newStory = repository.getStories(id)
+                val currentState = _charUiState.value
+                if (currentState is CharacterUiState.Success && currentState.characterData.id == id) {
+                    // CharacterData 안의 stories 필드만 갱신
+                    val updatedCharacter = currentState.characterData.copy(
+                        stories = newStory
+                    )
+                    _charUiState.value = currentState.copy(characterData = updatedCharacter)
+                }
+            } catch (e: Exception) { }
         }
     }
 }

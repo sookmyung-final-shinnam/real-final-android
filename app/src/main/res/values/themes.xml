@@ -1,5 +1,15 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-
     <style name="Theme.MyApp" parent="android:Theme.Material.Light.NoActionBar" />
+
+    <!-- 스플래시 화면 -->
+    <style name="Theme.MyApp.Launcher" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/background_yellow</item>
+
+        <!-- 작은 아이콘 -->
+        <item name="windowSplashScreenAnimatedIcon">@android:color/transparent</item>
+
+        <item name="android:windowNoTitle">true</item>
+        <item name="android:windowActionBar">false</item>
+    </style>
 </resources>
