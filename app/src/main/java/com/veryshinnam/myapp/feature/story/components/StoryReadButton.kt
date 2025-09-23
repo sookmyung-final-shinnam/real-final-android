@@ -73,7 +73,8 @@ fun StoryReadButton(
             Text(
                 text = text,
                 fontWeight = FontWeight.SemiBold,
-                style = MaterialTheme.typography.headlineSmall
+                style = MaterialTheme.typography.headlineSmall,
+                color = Color.White
             )
         }
     }

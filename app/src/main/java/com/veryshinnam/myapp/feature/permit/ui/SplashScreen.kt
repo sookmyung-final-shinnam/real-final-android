@@ -33,6 +33,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -89,7 +90,7 @@ fun SplashScreen(
                 tColor = colorResource(R.color.brand_orange),
                 oColor = Color.White,
                 oWidth = 8f,
-                fStyle = MaterialTheme.typography.displayLarge,
+                fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 70.sp),
                 fWeight = FontWeight.Bold,
                 modifier = Modifier
             )

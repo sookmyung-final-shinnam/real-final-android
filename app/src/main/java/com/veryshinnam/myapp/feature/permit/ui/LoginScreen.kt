@@ -31,6 +31,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
@@ -96,7 +97,7 @@ fun LoginScreen(
                     tColor = colorResource(R.color.brand_orange),
                     oColor = Color.White,
                     oWidth = 8f,
-                    fStyle = MaterialTheme.typography.displayLarge,
+                    fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
                     fWeight = FontWeight.Bold,
                     modifier = Modifier
                 )

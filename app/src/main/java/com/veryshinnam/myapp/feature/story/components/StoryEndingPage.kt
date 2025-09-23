@@ -34,6 +34,8 @@ fun StoryEndingPage(
             .background(colorResource(R.color.background_yellow)), // 배경 색상
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
+        Spacer(modifier = Modifier.weight(1f))
+
         // THE + 이미지 + END
         Row(
             modifier = Modifier
@@ -46,7 +48,7 @@ fun StoryEndingPage(
                 "THE",
                 Color.White,
                 colorResource(R.color.main_orange),
-                8f,
+                16f,
                 fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
                 FontWeight.Bold,
                 Modifier
@@ -66,7 +68,7 @@ fun StoryEndingPage(
                 "END",
                 Color.White,
                 colorResource(R.color.main_orange),
-                8f,
+                16f,
                 fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
                 FontWeight.Bold,
                 Modifier
@@ -100,8 +102,9 @@ fun StoryEndingPage(
             ) {
                 Text(
                     "첫 페이지로",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.headlineMedium,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
                 )
             }
 
@@ -123,10 +126,12 @@ fun StoryEndingPage(
             ) {
                 Text(
                     "홈 화면으로",
-                    style = MaterialTheme.typography.bodyLarge,
-                    fontWeight = FontWeight.SemiBold
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.SemiBold,
+                    color = Color.White
                 )
             }
         }
+        Spacer(modifier = Modifier.weight(1f))
     }
 }

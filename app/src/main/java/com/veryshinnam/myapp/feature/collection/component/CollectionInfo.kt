@@ -48,7 +48,7 @@ fun CollectionInfo(
 
             // 캐릭터 수
             HomeUserItem(
-                painter= painterResource(R.drawable.img_book),
+                painter= painterResource(R.drawable.img_character_yellow),
                 contentDescription = "모은 캐릭터 수",
                 value = "${characters}",
                 color = colorResource(R.color.blue_gray),
