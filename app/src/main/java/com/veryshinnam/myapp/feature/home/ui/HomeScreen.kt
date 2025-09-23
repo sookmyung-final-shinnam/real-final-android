@@ -1,207 +1,103 @@
-package com.veryshinnam.myapplication.feature.home.ui
+package com.veryshinnam.myapp.feature.home.ui
 
-import androidx.compose.foundation.background
+import android.app.Activity
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyRow
-import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Add
-import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import coil.compose.AsyncImage
-import com.veryshinnam.myapp.feature.home.ui.HomeViewModel
-import com.veryshinnam.myapplication.feature.home.data.dto.CharacterShortResult
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LoadErrorView
 
 @Composable
 fun HomeScreen(
-    onSettingsClick: () -> Unit = {},
-    onCreationClick: () -> Unit = {},
-    onStorageClick: () -> Unit = {},
+    onSettingsClick: () -> Unit,
+    onAttendanceClick: () -> Unit,
+    onDashboardClick: () -> Unit, // 바텀 버튼
+    onCreationClick: () -> Unit,  // 바텀 버튼
+    onCollectionClick: () -> Unit,   // 바텀 버튼
+    onCharacterClick: (Long) -> Unit,
     vm: HomeViewModel =  hiltViewModel()
 ) {
-    val uiState by vm.homeUiState.collectAsState()
+    // 홈화면 상태 관리
+    val uiState by vm.homeUiState.collectAsStateWithLifecycle()
 
-    if (uiState.isLoading) {
-        Box(
-            Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator()
+
+    // 동화책 상세 > 홈 화면: 세로 모드
+    val context = LocalContext.current
+    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+
+    // HomeScreen 진입할 때마다 실행
+    LaunchedEffect(Unit) {
+        vm.reload()        // 홈 데이터 다시 불러오기
+        vm.changeMessage() // 랜덤 메시지도 갱신
+    }
+
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = {
+                AppTopBar() // 상단 로고
+        },
+        bottomBar = {
+            // 네비게이션 바만큼 여백
+            Spacer(
+                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
+            )
         }
-    } else {
+    ) { innerPadding ->
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
         ) {
-            Column(
-                modifier = Modifier
-                    .fillMaxSize()
-            ) {
-                // 1. 사용자 정보 컨테이너
-                HomeUserInfo(
-                    nickname = uiState.nickname,
-                    points = uiState.points,
-                    cCnt = uiState.characterCnt,
-                    sCnt = uiState.storyCnt,
-                    onSettingsClick = onSettingsClick
-                )
-
-                Spacer(modifier = Modifier.height(12.dp))
-
-                // 2. 즐겨찾기 캐릭터 컨테이너
-                HomeFavoriteCharacter(
-                    characters = uiState.characters,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .weight(1f) // 남은 높이 모두 차지
-                )
-            }
-
-            // 3. 메뉴 버튼 그룹
-            HomeMenuGroup(
-                onCreationClick = onCreationClick,
-                onStorageClick = onStorageClick,
-                modifier = Modifier
-                    .align(Alignment.BottomEnd) // 우측 하단
-            )
-        }
-    }
-}
-
-@Composable
-fun HomeUserInfo(
-    nickname: String?,
-    points: Int,
-    cCnt: Int,
-    sCnt: Int,
-    onSettingsClick: () -> Unit
-) {
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color(0xFFEDEDED))
-            .padding(12.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        Text("마스코트 캐릭터", modifier = Modifier.padding(end = 12.dp))
-
-        Column(modifier = Modifier.weight(1f)) {
-            Text("안녕, ${nickname ?: "사용자"}!", style = MaterialTheme.typography.titleMedium)
-            Text("생성한 캐릭터: $cCnt, 동화: $sCnt")
-            Text("보유 포인트: $points")
-        }
-
-        Button(onClick = onSettingsClick) {
-            Text("환경설정")
-        }
-    }
-}
-
-@Composable
-fun HomeFavoriteCharacter(
-    characters: List<CharacterShortResult>,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .clip(RoundedCornerShape(12.dp))
-            .background(Color.Gray),
-        contentAlignment = Alignment.Center
-    ) {
-        if (characters.isEmpty()) {
-            Text("즐겨찾는 요정이 없습니다.")
-        } else {
-            LazyRow(
-                modifier = Modifier.fillMaxSize(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(horizontal = 16.dp, vertical = 8.dp)
-            ) {
-                items(characters) { character ->
-                    AsyncImage(
-                        model = character.firstImage,   // 이미지 URL
-                        contentDescription = "캐릭터 이미지",
-                        modifier = Modifier
-                            .size(120.dp)
-                            .clip(RoundedCornerShape(16.dp))
+            when (val state = uiState) {
+                // 조회 로딩 중
+                is HomeUiState.Loading -> {
+                    CircularProgressIndicator(
+                        color = colorResource(id = R.color.main_orange), // 주황색
+                        trackColor = Color.Gray.copy(alpha = 0.5f),
+                        strokeWidth = 4.dp
                     )
                 }
-            }
-        }
-    }
-}
 
-@Composable
-fun HomeMenuGroup(
-    onCreationClick: () -> Unit,
-    onStorageClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Column (
-        modifier = modifier
-            .padding(end = 16.dp, bottom = 60.dp),
-        horizontalAlignment = Alignment.CenterHorizontally, // 가운데 정렬
-        verticalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        SquareButton(
-            text = "생성",
-            desc = "생성 버튼",
-            icon = Icons.Default.Add,
-            onClick = onCreationClick
-        )
+                // 조회 오류
+                is HomeUiState.Error -> {
+                    if (state.message.contains("401")) {
 
-        SquareButton(
-            text = "보관함",
-            desc = "보관함 버튼",
-            icon = Icons.Default.Lock,
-            onClick = onStorageClick
-        )
-    }
-}
+                    } else {
+                    LoadErrorView(
+                        message = state.message,
+                        onRetry = { vm.reload() }
+                    )
+                    }
+                }
 
-
-// 정사각형 버튼
-@Composable
-fun SquareButton(
-    text: String,
-    desc: String,
-    icon: ImageVector,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    Box(
-        modifier = modifier
-            .fillMaxWidth(0.12f)  // 너비를 전체의 25%로 설정
-            .aspectRatio(1f)     // 정사각형 유지
-    ) {
-        Button(
-            onClick = onClick,
-            modifier = Modifier.fillMaxSize(),
-            contentPadding = PaddingValues(8.dp),
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally, // 가운데 정렬
-                verticalArrangement = Arrangement.spacedBy(4.dp)
-            ) {
-                Icon(
-                    imageVector = icon,
-                    contentDescription = desc,
-                    modifier = Modifier.size(24.dp)
-                )
-                Spacer(modifier = Modifier.height(4.dp))
-                Text(text)
+                // 조회 성공
+                is HomeUiState.Success -> {
+                    HomeMainScreen(
+                        homeData = state.homeData,
+                        lastSelectedId = state.lastSelectedCharacter,
+                        randomMessage = state.randomMessage,
+                        onSettingsClick = onSettingsClick,
+                        onAttendanceClick = onAttendanceClick,
+                        onDashboardClick = onDashboardClick,
+                        onCreationClick = onCreationClick,
+                        onCollectionClick = onCollectionClick,
+                        onCharacterClick = { id ->
+                            vm.updateLastSelected(id) // ViewModel에 저장
+                            onCharacterClick(id)
+                        }
+                    )
+                }
             }
         }
     }
