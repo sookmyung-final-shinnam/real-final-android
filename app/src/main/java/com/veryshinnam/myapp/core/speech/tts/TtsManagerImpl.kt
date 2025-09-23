@@ -29,6 +29,9 @@ class TtsManagerImpl @Inject constructor(
     private val _isSpeaking = MutableStateFlow(false)
     override val isSpeaking = _isSpeaking.asStateFlow()
 
+    // TTS 초기화 전에 들어온 speak 요청 저장
+    private var pendingText: Pair<String, Boolean>? = null
+
     // TTS 엔진 초기화
     override fun onInit(status: Int) {
         Log.d("storyTTS", "onInit 호출됨: status=$status")
@@ -57,6 +60,13 @@ class TtsManagerImpl @Inject constructor(
                     _isSpeaking.value = false
                 }
             })
+
+            // 대기 중인 텍스트 있으면 바로 재생
+            pendingText?.let { (text, flush) ->
+                Log.d("storyTTS", "pendingText 재생 실행")
+                speak(text, flush)
+                pendingText = null
+            }
         }
     }
 
@@ -75,9 +85,16 @@ class TtsManagerImpl @Inject constructor(
     @MainThread
     override fun speak(text: String, flush: Boolean) {
         Log.d("storyTTS", "speak 호출됨: ready=${_isReady.value}, text=$text")
-        // 아직 준비 완료 상태가 아니거나 빈 문자열이면 생략
-        if (!_isReady.value || text.isBlank()) {
-            Log.e("storyTTS", "speak 실행 안 함: ready=${_isReady.value}, text=$text")
+
+        //  빈 문자열이거나 아직 준비 완료 상태가 아니면 생략
+        if (text.isBlank()) {
+            Log.e("storyTTS", "speak 실행 안 함 > 빈 문자열")
+            return
+        }
+
+        if (!_isReady.value) {
+            Log.w("storyTTS", "엔진 준비 안됨 > pendingText 저장")
+            pendingText = text to flush
             return
         }
 

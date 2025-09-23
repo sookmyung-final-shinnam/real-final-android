@@ -30,7 +30,7 @@ import com.veryshinnam.myapp.feature.collection.model.CollectionData
 fun CollectionCharacterGrid(
     data: List<CollectionData>,
     onFavoriteClick: (Long) -> Unit,
-    onItemClick: (Long) -> Unit,
+    onItemClick: (CollectionData) -> Unit,
     modifier: Modifier = Modifier,
     listState: LazyGridState = rememberLazyGridState()
 ) {
@@ -65,7 +65,7 @@ fun CollectionCharacterGrid(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
-                            .clickable { onItemClick(item.id) }
+                            .clickable { onItemClick(item) }
                             .then(
                                 if (isLast) Modifier.padding(bottom = 8.dp) else Modifier
                             )

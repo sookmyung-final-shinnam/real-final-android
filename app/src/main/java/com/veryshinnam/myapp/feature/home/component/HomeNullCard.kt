@@ -12,6 +12,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
@@ -35,10 +36,12 @@ fun HomeNullCard(modifier: Modifier) {
 
         // 안내 문구
         Text(
-            text = "보관함에서 즐겨찾기 버튼으로 홈 화면에 캐릭터를 추가하세요!",
+            text = "보관함에서 즐겨찾기 버튼으로" +
+                    "홈 화면에 캐릭터를 추가하세요!",
             modifier = Modifier.fillMaxWidth().weight(3f),
             style = MaterialTheme.typography.headlineSmall,
-            textAlign = TextAlign.Center
+            textAlign = TextAlign.Center,
+            color = Color.White
         )
     }
 }

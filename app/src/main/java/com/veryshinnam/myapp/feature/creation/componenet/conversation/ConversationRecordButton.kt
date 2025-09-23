@@ -19,10 +19,12 @@ import com.veryshinnam.myapp.R
 @Composable
 fun ConversationRecordButton(
     onRecordClick: () -> Unit,
+    enabled: Boolean = true,
     modifier: Modifier
 ) {
     Button(
         onClick = { onRecordClick() },
+        enabled = enabled,
         modifier = modifier.fillMaxHeight().aspectRatio(1f),
         border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         colors = ButtonDefaults.buttonColors(
@@ -34,7 +36,8 @@ fun ConversationRecordButton(
             painter = painterResource(R.drawable.img_mike_on),
             contentDescription = "Record",
             modifier = Modifier.fillMaxSize(),
-            contentScale = ContentScale.Fit
+            contentScale = ContentScale.Fit,
+            alpha = if (enabled) 1f else 0.3f
         )
     }
 }

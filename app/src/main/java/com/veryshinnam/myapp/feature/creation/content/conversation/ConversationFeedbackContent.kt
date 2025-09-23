@@ -19,6 +19,7 @@ fun ConversationFeedbackContent(
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     onButtonClick: () -> Unit,
+    nextEnabled: Boolean,
     modifier: Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -39,11 +40,13 @@ fun ConversationFeedbackContent(
         if (feedback.isPositive) {
             ConversationNextButton(
                 onClick ={ onButtonClick() },
+                enabled = nextEnabled,
                 modifier = Modifier.weight(0.15f)
                 .align(Alignment.CenterHorizontally))
         } else { // 부정 - 먀이크 버튼
             ConversationRecordButton(
                 onRecordClick = {  onButtonClick() },
+                enabled = nextEnabled,
                 modifier = Modifier
                     .weight(0.15f)
                     .align(Alignment.CenterHorizontally)

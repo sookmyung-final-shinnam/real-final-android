@@ -54,6 +54,7 @@ import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 @Composable
 fun SettingsScreen(
     onHome: () -> Unit,
+    onLogoClick: () -> Unit,
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -81,7 +82,7 @@ fun SettingsScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(onLogoClick = onLogoClick) },
         contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
     ) { innerPadding ->
         Box(

@@ -7,4 +7,8 @@ object HomeRandomMessages {
         "캐릭터와 함께 성장해봐요!",
         "포인트를 모아보세요!"
     )
+
+    fun getRandomMessage(): String {
+        return messages.random()
+    }
 }

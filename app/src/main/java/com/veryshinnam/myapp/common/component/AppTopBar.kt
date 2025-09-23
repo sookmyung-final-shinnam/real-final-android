@@ -1,11 +1,14 @@
 package com.veryshinnam.myapp.common.component
 
 
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
@@ -24,7 +27,9 @@ import com.veryshinnam.myapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun AppTopBar() {
+fun AppTopBar(
+    onLogoClick: (() -> Unit)? = null
+) {
 
     // 화면 높이에 따라 폰트 사이즈 계산
     val configuration = LocalConfiguration.current       // 현재 기기 화면 정보
@@ -42,33 +47,44 @@ fun AppTopBar() {
                 color = colorResource(id = R.color.brand_orange),
                 fontSize = fontSize,
                 fontWeight = FontWeight.Bold,
-                modifier = Modifier.drawWithContent {
-
-                    // 현재 Text와 동일한 스타일로 측정
-                    val layout = textMeasurer.measure(
-                        AnnotatedString("Storicter"),
-                        style = TextStyle(
-                            fontSize = fontSize,
-                            fontWeight = FontWeight.Bold
+                modifier = Modifier
+                    .drawWithContent {
+                        val layout = textMeasurer.measure(
+                            AnnotatedString("Storicter"),
+                            style = TextStyle(
+                                fontSize = fontSize,
+                                fontWeight = FontWeight.Bold
+                            )
                         )
-                    )
 
-                    // 텍스트 그림자
-                    drawText(
-                        textLayoutResult = layout,
-                        color = Color.Black.copy(alpha = 0.5f),
-                        topLeft = Offset(4f, 8f)
-                    )
+                        // 텍스트 그림자
+                        drawText(
+                            textLayoutResult = layout,
+                            color = Color.Black.copy(alpha = 0.5f),
+                            topLeft = Offset(4f, 8f)
+                        )
 
-                    // 윤곽선 그린 후
-                    drawText(
-                        textLayoutResult = layout,
-                        color = Color.White,
-                        drawStyle = Stroke(width = 10f) // 두께
+                        // 윤곽선
+                        drawText(
+                            textLayoutResult = layout,
+                            color = Color.White,
+                            drawStyle = Stroke(width = 10f)
+                        )
+
+                        // 본문 채우기
+                        drawContent()
+                    }
+                    .then(
+                        if (onLogoClick != null) {
+                            Modifier.clickable(
+                                onClick = onLogoClick,
+                                indication = null,
+                                interactionSource = remember { MutableInteractionSource() }
+                            )
+                        } else {
+                            Modifier
+                        }
                     )
-                    // 윤곽선 안을 채움
-                    drawContent()
-                }
             )
         },
         colors = TopAppBarDefaults.topAppBarColors(

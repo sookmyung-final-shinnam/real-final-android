@@ -15,12 +15,14 @@ import com.veryshinnam.myapp.core.navigation.creationNavGraph
 import com.veryshinnam.myapp.core.navigation.mainNavGraph
 import com.veryshinnam.myapp.core.navigation.permitNavGraph
 import com.veryshinnam.myapp.core.session.SessionManager
+import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject lateinit var sessionManager: SessionManager
+    @Inject lateinit var tts: TtsManager
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -59,5 +61,10 @@ class MainActivity : ComponentActivity() {
                 creationNavGraph(navController)
             }
         }
+    }
+
+    override fun onStop() {
+        super.onStop()
+        tts.stop()
     }
 }

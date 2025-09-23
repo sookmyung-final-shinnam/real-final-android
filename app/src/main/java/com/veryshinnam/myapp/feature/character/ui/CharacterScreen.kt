@@ -52,6 +52,7 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 fun CharacterScreen(
     id: Long,
     onBack: () -> Unit,
+    onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     vm: CharacterViewModel = hiltViewModel()
 ) {
@@ -82,7 +83,7 @@ fun CharacterScreen(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
             Column (Modifier.fillMaxWidth()) {
-                AppTopBar() // 기존 바
+                AppTopBar(onLogoClick=onLogoClick) // 기존 바
                 Row(
                     modifier = Modifier
                         .clickable(onClick = {

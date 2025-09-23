@@ -35,6 +35,7 @@ import com.veryshinnam.myapp.feature.dashboard.component.DashboardLanguageInfo
 @Composable
 fun DashboardScreen(
     onBack: () -> Unit,
+    onLogoClick: () -> Unit,
     vm: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by vm.dashBoardUiState.collectAsStateWithLifecycle()
@@ -43,7 +44,7 @@ fun DashboardScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(onLogoClick = onLogoClick) },
         bottomBar = {
             // 네비게이션 바만큼 여백
             Spacer(

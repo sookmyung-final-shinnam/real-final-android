@@ -43,6 +43,7 @@ import com.veryshinnam.myapp.feature.creation.content.selection.SelectionThemeCo
 @Composable
 fun SelectionScreen(
     onHome: () -> Unit,
+    onLogoClick: () -> Unit,
     onFinish: (SelectionData) -> Unit,
     vm: SelectViewModel = hiltViewModel(),
     horizontalPadding: Dp = 16.dp
@@ -126,7 +127,7 @@ fun SelectionScreen(
     // ui 화면
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() }, // 상단 로고
+        topBar = { AppTopBar(onLogoClick = onLogoClick) }, // 상단 로고
         contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
     ) { innerPadding ->
         Box(

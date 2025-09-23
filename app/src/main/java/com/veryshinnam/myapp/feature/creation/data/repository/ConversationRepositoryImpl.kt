@@ -19,7 +19,7 @@ class ConversationRepositoryImpl @Inject constructor(
         val response: BaseResponse<StartResult> = api.startConversation(request)
 
         if (!response.isSuccess || response.result == null) {
-            throw Exception("대화 세션 시작 실패: ${response.message}")
+            throw Exception("대화 세션 시작 실패: ${response.result}")
         }
 
         return response.result
@@ -33,7 +33,7 @@ class ConversationRepositoryImpl @Inject constructor(
         val response: BaseResponse<NextStepResult> = api.getNextStep(sessionId,currentStep)
 
         if (!response.isSuccess || response.result == null) {
-            throw Exception("다음 스텝에서 메시지 조회 실패: ${response.message}")
+            throw Exception("다음 스텝에서 메시지 조회 실패: ${response.result}")
         }
 
         return response.result
@@ -47,7 +47,7 @@ class ConversationRepositoryImpl @Inject constructor(
         val response: BaseResponse<FeedbackResult> = api.feedbackConversation(messageId, userAnswer)
 
         if (!response.isSuccess || response.result == null) {
-            throw Exception("사용자 답변 피드백 실패: ${response.message}")
+            throw Exception("사용자 답변 피드백 실패: ${response.result}")
         }
 
         return response.result.toFeedbackData()
@@ -55,10 +55,10 @@ class ConversationRepositoryImpl @Inject constructor(
 
     // 동화 생성 완성
     override suspend fun completeConversation(sessionId: Long): Boolean {
-        val response: BaseResponse<String> = api.completeConversation(sessionId)
+        val response: BaseResponse<Unit> = api.completeConversation(sessionId)
 
-        if (!response.isSuccess || response.result == null) {
-            throw Exception("동화 생성 완성 실패: ${response.result}")
+        if (!response.isSuccess) {
+            throw Exception("동화 생성 완성 실패: ${response.message}")
         }
 
         return true

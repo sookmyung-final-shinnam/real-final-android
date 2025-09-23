@@ -11,6 +11,7 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -24,9 +25,7 @@ class HomeViewModel @Inject constructor(
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-    init {
-        fetchHome()
-    }
+    init { fetchHome() }
 
     // 홈 화면 불러오기
     private fun fetchHome() {
@@ -35,7 +34,7 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val homeData = repository.getHome() // api 호출
-                val randomMessage = HomeRandomMessages.messages.random()
+                val randomMessage = HomeRandomMessages.getRandomMessage()
 
                 _homeUiState.value = HomeUiState.Success(
                     homeData = homeData,
@@ -52,14 +51,29 @@ class HomeViewModel @Inject constructor(
 
     // 홈 화면 다시 조회
     fun reload() {
-        fetchHome()
+        val currentLast = (homeUiState.value as? HomeUiState.Success)?.lastSelectedCharacter
+        viewModelScope.launch {
+            try {
+                val data = repository.getHome()
+                val randomMessage = HomeRandomMessages.getRandomMessage()
+
+                _homeUiState.value = HomeUiState.Success(
+                    homeData = data,
+                    lastSelectedCharacter = currentLast, // 마지막 선택 캐릭터 유지
+                    randomMessage = randomMessage
+                )
+            } catch (e: Exception) {
+                _homeUiState.value = HomeUiState.Error(e.message ?: "에러")
+            }
+        }
     }
 
     // 마지막 선택 캐릭터 업데이트
-    fun updateLastSelectedCharacter(id: Long) {
-        val currentState = _homeUiState.value
-        if (currentState is HomeUiState.Success) {
-            _homeUiState.value = currentState.copy(lastSelectedCharacter = id)
+    fun updateLastSelected(id: Long) {
+        _homeUiState.update { state ->
+            if (state is HomeUiState.Success) {
+                state.copy(lastSelectedCharacter = id)
+            } else state
         }
     }
 

@@ -26,7 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import kotlinx.coroutines.delay
@@ -69,7 +74,7 @@ fun HomeFavoriteCarousel(
     val loopCount = Int.MAX_VALUE  // 무한 스크롤
 
     val baseIndex = (loopCount / 2) - ((loopCount / 2) % n) // 스크롤 상태 관리 (첫 인덱스에서 시작)
-    val listState = rememberLazyListState(initialFirstVisibleItemIndex = baseIndex)
+    val listState = rememberLazyListState()
 
 // 현재 중앙 아이템 인덱스 계산
     val layoutInfo = listState.layoutInfo           // 현재 리스트 레이아웃 정보
@@ -86,14 +91,16 @@ fun HomeFavoriteCarousel(
     val currentIndex = centerItem?.index?.rem(n)?.let { (it + n) % n } ?: 0
 
     LaunchedEffect(lastSelectedId) {
-        delay(100)
-        val targetIndex = if (lastSelectedId == null) {
-            baseIndex
-        } else {
+        if (lastSelectedId != null) {
             val selectedIndex = characters.indexOfFirst { it.id == lastSelectedId }
-            if (selectedIndex >= 0) baseIndex + selectedIndex else baseIndex
+            if (selectedIndex >= 0) {
+                val targetIndex = baseIndex + selectedIndex
+                listState.scrollToItem(targetIndex)
+            }
+        } else {
+            // 아무 선택 없으면 기본 가운데(baseIndex)로
+            listState.scrollToItem(baseIndex)
         }
-//        listState.scrollToItem(targetIndex, scrollOffset = -160)
     }
 
     Column(
@@ -147,9 +154,21 @@ fun HomeFavoriteCarousel(
         // 현재 캐릭터 인덱스 표시
         Spacer(modifier = Modifier.padding(top = 16.dp))
         Text(
-            text = "${currentIndex + 1} / $n",
-            color = Color.Black,
-            style = MaterialTheme.typography.headlineSmall
+            text = buildAnnotatedString {
+                // 현재 인덱스 부분 → Bold + 크게
+                withStyle(
+                    style = SpanStyle(
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 40.sp, // 원하는 크기
+                        color = colorResource(R.color.main_orange)
+                    )
+                ) {
+                    append("${currentIndex + 1}")
+                }
+                // 구분자 + 전체 개수 부분 → 기본 스타일
+                append(" / $n")
+            },
+            style = MaterialTheme.typography.headlineSmall.copy(color = colorResource(R.color.main_orange))
         )
     }
 }

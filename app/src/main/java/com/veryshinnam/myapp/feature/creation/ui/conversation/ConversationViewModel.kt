@@ -6,7 +6,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
-import com.veryshinnam.myapp.feature.creation.data.dto.FeedbackResult
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStepResult
 import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
 import com.veryshinnam.myapp.feature.creation.data.dto.StartResult
@@ -16,7 +15,6 @@ import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 import com.veryshinnam.myapp.feature.creation.model.FeedbackData
 import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -60,17 +58,18 @@ class ConversationViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-//                val res = repository.startConversation(req) // api 호출
-                val res = dummyStart()
+                val res = repository.startConversation(req) // api 호출
+//                val res = dummyStart()
 
+                // 초기화
                 _conversationUiState.value = ConversationUiState.Success(
                     sessionId = res.sessionId,
                     nextStory = res.nextStory,
-                )
-
-                _conversationUiState.value = ConversationUiState.Success(
-                    sessionId = res.sessionId,
-                    nextStory = res.nextStory,
+                    questionData = QuestionData(messageId = -1, question = ""),
+                    answerData = AnswerData(userAnswer = "", partialAnswer = ""),
+                    feedbackData = FeedbackData(isPositive = false, text = ""),
+                    conversationStep = ConversationStep.START, // 대화 시작 단계
+                    loopStep = 1
                 )
             } catch (e: Exception) {
                 _conversationUiState.value = ConversationUiState.Error(e.message ?: "Unknown error")
@@ -96,6 +95,7 @@ class ConversationViewModel @Inject constructor(
 
             ConversationStep.QUESTION -> {
                 // STORY > QUESTION (녹음 화면, 단계만 바뀜)
+                tts.stop() // tts 중지
                 _conversationUiState.value = state.copy(conversationStep = ConversationStep.ANSWER)
             }
 
@@ -116,6 +116,7 @@ class ConversationViewModel @Inject constructor(
 
         if (!feedback.isPositive && feedback.tryNum < 3) {
             // 부정 → 다시 녹음 단계로
+            tts.stop() // tts 중지
             _conversationUiState.value = state.copy(
                 conversationStep = ConversationStep.ANSWER,
                 answerData = AnswerData("", "") // 답변 초기화
@@ -143,19 +144,19 @@ class ConversationViewModel @Inject constructor(
     // 다음 이야기 불러오기
     private suspend fun fetchNextStep(state: ConversationUiState.Success) {
         try {
-//            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
-            val res = dummyNextStep(state.loopStep)
+            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
+//            val res = dummyNextStep(state.loopStep)
+
+            Log.d("ConversationAPI", "nextStory: ${res.nextStory},messageId:  ${res.messageId}, question: ${res.llmQuestion}")
 
             _conversationUiState.value = state.copy(
                 nextStory = res.nextStory,
-                conversationStep = ConversationStep.STORY,
-                questionData = QuestionData(
-                    messageId = res.messageId,
-                    question = res.llmQuestion
-                ),
-                feedbackData = state.feedbackData.copy(tryNum = 0)
+                questionData = QuestionData(res.messageId, res.llmQuestion),
+                feedbackData = state.feedbackData.copy(tryNum = 0),
+                conversationStep = ConversationStep.STORY
             )
         } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "Next API ${e.message}")
             _conversationUiState.value =
                 ConversationUiState.Error(e.message ?: "Next step error")
         }
@@ -165,47 +166,33 @@ class ConversationViewModel @Inject constructor(
     fun goToPreviousStep() {
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
-        val res = when (state.conversationStep) {
-            ConversationStep.QUESTION -> {
-                // 질문 → 스토리
-                _conversationUiState.value = state.copy(
-                    conversationStep = ConversationStep.STORY
-                )
-            }
-            ConversationStep.ANSWER -> {
-                // 답변 → 질문
-                _conversationUiState.value = state.copy(
-                    conversationStep = ConversationStep.QUESTION
-                )
-            }
-            ConversationStep.FEEDBACK -> {
-                // 피드백 → 질문
-                _conversationUiState.value = state.copy(
-                    conversationStep = ConversationStep.QUESTION
-                )
-            }
-            else -> { /* START, STORY, END는 뒤로가기 없음 */ }
+        _conversationUiState.value = when (state.conversationStep) {
+            ConversationStep.QUESTION -> state.copy(conversationStep = ConversationStep.STORY)
+            ConversationStep.ANSWER   -> state.copy(conversationStep = ConversationStep.QUESTION)
+            ConversationStep.FEEDBACK -> state.copy(conversationStep = ConversationStep.QUESTION)
+            else -> state
         }
     }
 
     // 피드백 불러오기
     private suspend fun fetchFeedback(state: ConversationUiState.Success) {
         try {
-//            val res = repository.feedbackConversation( // api 호출
-//                messageId = state.questionData.messageId,
-//                userAnswer = state.answerData.userAnswer
-//            )
-
-            val res = dummyFeedback(
-                step = state.loopStep,
-                tryNum = state.feedbackData.tryNum + 1
+            val res = repository.feedbackConversation( // api 호출
+                messageId = state.questionData.messageId,
+                userAnswer = state.answerData.userAnswer
             )
+
+//            val res = dummyFeedback(
+//                step = state.loopStep,
+//                tryNum = state.feedbackData.tryNum + 1
+//            )
 
             _conversationUiState.value = state.copy(
                 conversationStep = ConversationStep.FEEDBACK,
                 feedbackData = res
             )
         } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "FEEDBABK API ${e.message}")
             _conversationUiState.value =
                 ConversationUiState.Error(e.message ?: "Feedback error")
         }
@@ -215,8 +202,10 @@ class ConversationViewModel @Inject constructor(
     private suspend fun fetchEndStory(sessionId: Long) {
         try {
             repository.completeConversation(sessionId) // api 호출
-            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
+//            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
         } catch (e: Exception) {
+            Log.e("ConversationaAPIERROR", "Complete API ${e.message}")
+
             _conversationUiState.value =
                 ConversationUiState.Error(e.message ?: "Complete error")
         }
@@ -232,6 +221,12 @@ class ConversationViewModel @Inject constructor(
             ConversationStep.FEEDBACK -> tts.speak(state.feedbackData.text, flush = true)
             else -> return
         }
+    }
+
+    override fun onCleared() {
+        super.onCleared()
+        tts.stop()   // 화면 dispose 시 tts, stt 중지
+        stt.stop()
     }
 
     fun startStt(context: Context) {

@@ -44,6 +44,7 @@ fun StoryScreen(
     storyType: StoryType, // 동화 타입
     onBack: () -> Unit,
     onHome: () -> Unit,
+    onLogoClick: () -> Unit,
     vm: StoryViewModel = hiltViewModel()
 ) {
     val uiState by vm.storyUiState.collectAsStateWithLifecycle()
@@ -61,7 +62,7 @@ fun StoryScreen(
     Scaffold(
         topBar = {
             Column (Modifier.fillMaxWidth()) {
-                AppTopBar() // 기존 바
+                AppTopBar(onLogoClick=onLogoClick) // 기존 바
                 Row(
                     modifier = Modifier
                         .clickable{

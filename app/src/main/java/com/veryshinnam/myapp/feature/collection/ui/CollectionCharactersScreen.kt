@@ -22,7 +22,7 @@ fun CollectionCharactersScreen(
     selectedFilter: Gender,
     onFilterClick: (Gender) -> Unit,
     onFavoriteClick: (Long) -> Unit,
-    onItemClick: (Long) -> Unit
+    onItemClick: (CollectionData) -> Unit
 ) {
     val sectionSpacing = 16.dp // 컴포저블 사이 여백
 

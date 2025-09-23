@@ -17,6 +17,7 @@ fun ConversationQuestionContent(
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     onRecordClick: () -> Unit,
+    nextEnabled: Boolean,
     modifier: Modifier
 ) {
     Column(modifier = modifier.fillMaxSize()) {
@@ -35,6 +36,7 @@ fun ConversationQuestionContent(
         // 먀이크 버튼
         ConversationRecordButton(
             onRecordClick = {  onRecordClick() },
+            enabled = nextEnabled,
             modifier = Modifier
                 .weight(0.15f)
                 .align(Alignment.CenterHorizontally)

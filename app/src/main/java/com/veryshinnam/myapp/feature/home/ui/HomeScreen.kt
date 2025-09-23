@@ -30,6 +30,7 @@ fun HomeScreen(
     // 홈화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
 
+
     // 동화책 상세 > 홈 화면: 세로 모드
     val context = LocalContext.current
     SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
@@ -91,8 +92,10 @@ fun HomeScreen(
                         onDashboardClick = onDashboardClick,
                         onCreationClick = onCreationClick,
                         onCollectionClick = onCollectionClick,
-                        onCharacterClick = onCharacterClick,
-                        onUpdateLastSelected = { id -> vm.updateLastSelectedCharacter(id) }
+                        onCharacterClick = { id ->
+                            vm.updateLastSelected(id) // ViewModel에 저장
+                            onCharacterClick(id)
+                        }
                     )
                 }
             }

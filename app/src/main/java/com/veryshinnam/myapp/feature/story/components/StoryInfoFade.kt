@@ -56,7 +56,7 @@ fun StoryInfoFade(
             Column(
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(top = 20.dp, start = 16.dp, end = 16.dp)
+                    .padding(top = 60.dp, start = 40.dp, end = 20.dp)
             ) {
                 Text( // 제목
                     text = story.title,

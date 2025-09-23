@@ -15,6 +15,7 @@ fun ConversationStoryContent(
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit = {},
     onNextClick: () -> Unit,
+    nextEnabled: Boolean,
     modifier: Modifier
 ) {
     Column(
@@ -32,7 +33,8 @@ fun ConversationStoryContent(
         // 다음 버튼
         ConversationNextButton(
             modifier = Modifier.weight(0.15f).align(Alignment.CenterHorizontally),
-            onClick = onNextClick
+            onClick = onNextClick,
+            enabled = nextEnabled
         )
     }
 }

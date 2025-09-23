@@ -48,6 +48,7 @@ import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 @Composable
 fun ConversationScreen(
     onBack: () -> Unit,
+    onLogoClick: () -> Unit,
     vm: ConversationViewModel
 ) {
 
@@ -69,7 +70,7 @@ fun ConversationScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() }, // 상단 로고
+        topBar = { AppTopBar(onLogoClick=onLogoClick) }, // 상단 로고
         contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
     ) { innerPadding ->
         Box(
@@ -121,6 +122,7 @@ fun ConversationScreen(
                                     isTtsSpeaking = isTtsSpeaking,
                                     onReplayClick = { vm.startTts() },
                                     onNextClick = { vm.goToNextStep() },
+                                    nextEnabled = !isTtsSpeaking,
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }
@@ -132,6 +134,7 @@ fun ConversationScreen(
                                     isTtsSpeaking = isTtsSpeaking,
                                     onReplayClick = { vm.startTts() },
                                     onNextClick = { vm.goToNextStep() },
+                                    nextEnabled = !isTtsSpeaking,
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }
@@ -152,6 +155,7 @@ fun ConversationScreen(
                                             launcher.launch(recordAudioPermission)
                                         }
                                     },
+                                    nextEnabled = !isTtsSpeaking,
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }
@@ -183,6 +187,7 @@ fun ConversationScreen(
                                     isTtsSpeaking = isTtsSpeaking,
                                     onReplayClick = { vm.startTts() },
                                     onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
+                                    nextEnabled = !isTtsSpeaking,
                                     modifier = Modifier.weight(0.8f)
                                 )
                             }

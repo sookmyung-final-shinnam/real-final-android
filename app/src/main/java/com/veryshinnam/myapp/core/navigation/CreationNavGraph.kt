@@ -24,6 +24,12 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
         composable("selection") {
             SelectionScreen(
                 onHome = { navController.popBackStack() },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
                 onFinish = { data ->
                     val req = data.toStartRequest()
 
@@ -60,6 +66,13 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                     // 선택 화면 스택 정리 후 홈으로
                     navController.popBackStack("selection", inclusive = true)
                     navController.navigate("home") {
+                        launchSingleTop = true
+                    }
+                },
+                onLogoClick = {
+                    navController.popBackStack("selection", inclusive = true)
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
                 },

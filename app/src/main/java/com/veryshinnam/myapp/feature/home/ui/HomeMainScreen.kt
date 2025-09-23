@@ -33,8 +33,7 @@ fun HomeMainScreen (
     onDashboardClick: () -> Unit,   // bottom bar
     onCreationClick: () -> Unit,    // bottom bar
     onCollectionClick: () -> Unit,  // bottom bar
-    onCharacterClick: (Long) -> Unit, // 캐릭터 상세
-    onUpdateLastSelected: (Long) -> Unit
+    onCharacterClick: (Long) -> Unit // 캐릭터 상세
 ) {
     Box(
         modifier = Modifier
@@ -56,7 +55,6 @@ fun HomeMainScreen (
                 characters = homeData.favorites,
                 lastSelectedId = lastSelectedId,
                 onCharacterClick = { id ->
-                    onUpdateLastSelected(id)
                     onCharacterClick(id)
                 }
             )
@@ -71,7 +69,7 @@ fun HomeMainScreen (
             painter = painterResource(R.drawable.img_home_check),
             contentDescription = "출석체크",
             modifier = Modifier
-                .fillMaxHeight(0.06f)
+                .fillMaxHeight(0.1f)
                 .padding(horizontal = 16.dp)
                 .align(Alignment.TopEnd)
                 .clickable(

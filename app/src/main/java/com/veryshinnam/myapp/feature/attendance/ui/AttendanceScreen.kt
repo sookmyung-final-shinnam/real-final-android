@@ -37,6 +37,7 @@ import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
 @Composable
 fun AttendanceScreen(
     onBack: () -> Unit,
+    onLogoClick: () -> Unit,
     vm: AttendanceViewModel = hiltViewModel()
 ) {
     val uiState by vm.attendanceUiState.collectAsStateWithLifecycle()
@@ -54,7 +55,7 @@ fun AttendanceScreen(
             .background(colorResource(id = R.color.background_yellow))
     ) {
         // 상단 AppBar
-        AppTopBar()
+        AppTopBar(onLogoClick = onLogoClick)
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

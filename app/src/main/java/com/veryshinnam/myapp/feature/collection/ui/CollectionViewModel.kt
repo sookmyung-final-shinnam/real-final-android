@@ -42,6 +42,7 @@ class CollectionViewModel @Inject constructor(
                     Gender.FEMALE -> "FEMALE"
                 }
                 val characters = characterRepository.getCharacters(queryGender) // api 호출
+//                    .filter { !it.image.isNullOrBlank() } // 이미지 없는 캐릭터 제외
 
                 _uiState.value = CollectionUiState.Success(
                     collectionDataList = characters,
@@ -54,12 +55,18 @@ class CollectionViewModel @Inject constructor(
     }
 
     // 캐릭터 즐겨찾기 업데이트
-    fun updateFavorite(id: Long) {
+    fun updateFavorite(id: Long, onError: (String) -> Unit = {}) {
         val currentState = _uiState.value
         if (currentState is CollectionUiState.Success) {
             val character = currentState.collectionDataList.find { it.id == id }
             if (character != null) {
+                val favoritesCount = currentState.collectionDataList.count { it.isFavorite }
                 val newFavoriteState = !character.isFavorite
+
+                if (newFavoriteState && favoritesCount >= 5) {
+                    onError("관심 캐릭터는 최대 5개까지 등록할 수 있어요!.")
+                    return
+                }
 
                 // ui 먼저 반영
                 val updatedList = currentState.collectionDataList.map { item ->

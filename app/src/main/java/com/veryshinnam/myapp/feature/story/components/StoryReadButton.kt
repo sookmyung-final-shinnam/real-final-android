@@ -63,7 +63,7 @@ fun StoryReadButton(
             shape = RoundedCornerShape(16.dp),
             modifier = Modifier
                 .fillMaxHeight(0.6f)
-                .aspectRatio(9/5f)   // 1.8 비율
+                .aspectRatio(2f)   //2비율
                 .border(
                     width = 4.dp,
                     color = colorResource(id = R.color.blue_gray),

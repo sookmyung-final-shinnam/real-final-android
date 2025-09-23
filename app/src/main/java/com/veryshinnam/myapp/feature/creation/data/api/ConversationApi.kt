@@ -32,7 +32,7 @@ interface ConversationApi {
 
     // 동화 생성 완성 api
     @POST("api/conversations/complete")
-    suspend fun completeConversation(@Query("sessionId") sessionId: Long): BaseResponse<String>
+    suspend fun completeConversation(@Query("sessionId") sessionId: Long): BaseResponse<Unit>
 
     // 페이지별 동영상 생성 api
     @POST("api/conversations/video")

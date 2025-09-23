@@ -15,6 +15,9 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -27,11 +30,13 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.AppTopBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 
 @Composable
 fun CollectionScreen(
     onBack: () -> Unit,
     onItemClick: (Long) -> Unit,
+    onLogoClick: () -> Unit,
     vm: CollectionViewModel = hiltViewModel()
 ) {
     // ViewModel 상태 구독
@@ -41,11 +46,15 @@ fun CollectionScreen(
     val context = LocalContext.current
     SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
 
+    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
+    var SimpleWarningText by remember { mutableStateOf("") }
+
+
     BackHandler { onBack() }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar() },
+        topBar = { AppTopBar(onLogoClick=onLogoClick) },
         bottomBar = {
             // 네비게이션 바만큼 여백
             Spacer(
@@ -85,11 +94,30 @@ fun CollectionScreen(
                         data = state.collectionDataList,
                         selectedFilter = state.selectedFilter,
                         onFilterClick = { filter -> vm.selectFilter(filter) },
-                        onFavoriteClick = { id -> vm.updateFavorite(id) },
-                        onItemClick = onItemClick
+                        onFavoriteClick = { id ->
+                            vm.updateFavorite(id) { text ->
+                                isSimpleWarning = true
+                                SimpleWarningText = text
+                            }
+                        },
+                        onItemClick = { item ->
+                            if (item.image.isNullOrBlank()) {
+                                isSimpleWarning = true
+                                SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
+                            } else {
+                                onItemClick(item.id) // 원래 동작 실행
+                            }
+                        }
                     )
                 }
             }
         }
+    }
+
+    if (isSimpleWarning) {
+        WarningSimpleSheet(
+            warningText = SimpleWarningText,
+            onDismiss = { isSimpleWarning = false}
+        )
     }
 }

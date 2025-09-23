@@ -43,24 +43,52 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable("settings") {
             SettingsScreen(
                 onHome = { navController.popBackStack() },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
         // 출석체크 화면
         composable("attendance") {
-            AttendanceScreen(onBack = { navController.popBackStack() })
+            AttendanceScreen(
+                onBack = { navController.popBackStack() },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         // 대시보드 화면
         composable("dashboard") {
-            DashboardScreen(onBack = { navController.popBackStack() })
+            DashboardScreen(
+                onBack = { navController.popBackStack() },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
+            )
         }
 
         // 보관함 화면
         composable("collection") {
             CollectionScreen(
                 onBack = { navController.popBackStack() },
-                onItemClick = { id -> navController.navigate("character/$id") }
+                onItemClick = { id -> navController.navigate("character/$id") },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -76,6 +104,12 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 onStoryClick = { storyId, type ->
                     navController.navigate("story/$storyId/${type.name}")
                 },
+                onLogoClick = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
 
@@ -94,6 +128,12 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 storyType = storyType,
                 onBack = { navController.popBackStack() },
                 onHome = {
+                    navController.navigate("home") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onLogoClick = {
                     navController.navigate("home") {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true

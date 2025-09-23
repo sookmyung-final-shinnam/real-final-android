@@ -21,16 +21,20 @@ import com.veryshinnam.myapp.R
 @Composable
 fun ConversationNextButton(
     onClick: () -> Unit,
+    enabled: Boolean,
     modifier: Modifier
 ) {
     Row (
-        modifier = modifier.clickable(onClick = { onClick() }),
+        modifier = if (enabled) {
+            modifier.clickable { onClick() }
+        } else { modifier },
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text("다음",
             fontWeight = FontWeight.Medium,
-            color = colorResource(R.color.main_orange),
+            color = if (enabled) colorResource(R.color.main_orange)
+            else colorResource(R.color.main_orange).copy(alpha = 0.3f),
             style = MaterialTheme.typography.headlineSmall.copy(
                 fontWeight = FontWeight.SemiBold)
         )
@@ -38,7 +42,8 @@ fun ConversationNextButton(
         Spacer(Modifier.width(4.dp))
         Icon(Icons.AutoMirrored.Filled.ArrowForward,
             contentDescription = "다음",
-            tint = colorResource(R.color.main_orange)
+            tint = if (enabled) colorResource(R.color.main_orange)
+            else colorResource(R.color.main_orange).copy(alpha = 0.3f)
         )
     }
 }
