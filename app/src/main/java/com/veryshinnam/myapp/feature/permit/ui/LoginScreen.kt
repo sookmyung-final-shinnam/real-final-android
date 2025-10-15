@@ -40,7 +40,7 @@ import com.veryshinnam.myapp.common.component.StrokeText
 
 @Composable
 fun LoginScreen(
-    onSignup: () -> Unit,
+    onSignup: (String) -> Unit,
     onHome: () -> Unit,
     vm: PermitViewModel = hiltViewModel()
 ) {
@@ -63,7 +63,7 @@ fun LoginScreen(
         KakaoLoginWebView(
             onTempCodeReceived = { tempCode, isNewUser ->
                 if (isNewUser) {
-                    onSignup() // 신규 유저 > 회원가입
+                    onSignup(tempCode) // 신규 유저 > 회원가입
                 } else {
                     vm.login(tempCode) // 기존 유저 > 로그인
                 }
@@ -97,7 +97,7 @@ fun LoginScreen(
                     tColor = colorResource(R.color.brand_orange),
                     oColor = Color.White,
                     oWidth = 8f,
-                    fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
+                    fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 70.sp),
                     fWeight = FontWeight.Bold,
                     modifier = Modifier
                 )
