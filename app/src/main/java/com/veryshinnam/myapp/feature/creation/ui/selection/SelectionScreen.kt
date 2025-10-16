@@ -80,18 +80,18 @@ fun SelectionScreen(
     fun getInfoText(step: SelectionStep, isInputMode: Boolean): String {
         return if (isInputMode) {
             when (step) {
-                SelectionStep.THEME -> "원하는 주제를 입력해줘!"
-                SelectionStep.BACKGROUND -> "원하는 배경을 입력해줘!"
+                SelectionStep.THEME -> "원하는 주제를 입력해 주세요!"
+                SelectionStep.BACKGROUND -> "원하는 배경을 입력해 주세요!"
                 else -> ""
             }
         } else {
             when (step) {
-                SelectionStep.THEME -> "만들고 싶은 동화의 주제를 3개까지 골라봐!"
-                SelectionStep.BACKGROUND -> "만들고 싶은 동화의 배경을 골라봐!"
-                SelectionStep.GENDER -> "동화 속 주인공의 성별은 어떻게 할까?"
-                SelectionStep.AGE -> "동화 속 주인공의 나이는 어떻게 할까?"
-                SelectionStep.NAME -> "동화 속 주인공의 이름은 어떻게 할까?"
-                SelectionStep.FACE -> "동화 속 주인공의 모습은 어떻게 할까?"
+                SelectionStep.THEME -> "만들고 싶은 동화의 주제를 3개까지 골라 주세요!"
+                SelectionStep.BACKGROUND -> "만들고 싶은 동화의 배경을 골라 주세요!"
+                SelectionStep.GENDER -> "동화 속 주인공의 성별은 어떻게 할까요?"
+                SelectionStep.AGE -> "동화 속 주인공의 나이는 어떻게 할까요?"
+                SelectionStep.NAME -> "동화 속 주인공의 이름은 어떻게 할까요?"
+                SelectionStep.FACE -> "동화 속 주인공의 모습은 어떻게 할까요?"
             }
         }
     }

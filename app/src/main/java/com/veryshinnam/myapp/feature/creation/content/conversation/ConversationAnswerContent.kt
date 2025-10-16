@@ -85,7 +85,7 @@ fun ConversationAnswerContent(
 
         // 듣는 중 텍스트
         StrokeText(
-            text = "듣는 중 ...",
+            text = "듣고 있어요 ...",
             tColor = Color.White,
             oColor = colorResource(R.color.brand_orange),
             oWidth = 4f,
