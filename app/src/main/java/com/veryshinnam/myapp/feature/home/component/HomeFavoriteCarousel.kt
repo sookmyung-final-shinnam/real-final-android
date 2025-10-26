@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.home.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,7 +22,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
@@ -34,7 +32,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
-import kotlinx.coroutines.delay
 import kotlin.math.abs
 
 @Composable
@@ -52,8 +49,7 @@ fun HomeFavoriteCarousel(
         ) {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-                colors = CardDefaults.cardColors(colorResource(R.color.lemon_yellow)),
+                colors = CardDefaults.cardColors(colorResource(R.color.main_orange)),
                 modifier = Modifier
                     .fillMaxWidth(0.6f)   // 가로는 60% 정도
                     .aspectRatio(3f / 4f) // 비율 유지 (3:4)

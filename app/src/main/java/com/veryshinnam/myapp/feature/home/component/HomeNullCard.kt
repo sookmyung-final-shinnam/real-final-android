@@ -45,7 +45,7 @@ fun HomeNullCard(modifier: Modifier) {
             style = MaterialTheme.typography.headlineSmall,
             fontWeight = FontWeight.SemiBold,
             textAlign = TextAlign.Center,
-            color = colorResource(R.color.main_orange)
+            color = Color.White
         )
     }
 }
