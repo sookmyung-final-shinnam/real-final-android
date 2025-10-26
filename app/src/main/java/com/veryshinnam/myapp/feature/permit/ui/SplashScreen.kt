@@ -114,6 +114,5 @@ fun SplashScreen(
         )
 
         Spacer(modifier = Modifier.weight(3f))
-
     }
 }
