@@ -27,8 +27,10 @@ fun LogoTitle(
         // 로고 위 문구 텍스트
         Text(
             text = subText,
-            color = colorResource(R.color.brand_orange),
-            style = subTextStyle.copy(fontWeight = FontWeight.Bold)
+            style = subTextStyle.copy(
+                fontWeight = FontWeight.Bold,
+                color = colorResource(R.color.brand_orange)
+            )
         )
 
         // 로고

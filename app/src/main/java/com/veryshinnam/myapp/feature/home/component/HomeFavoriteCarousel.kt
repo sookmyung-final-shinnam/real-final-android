@@ -25,6 +25,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -40,7 +41,11 @@ fun HomeFavoriteCarousel(
     characters: List<FavoriteData>,
     lastSelectedId: Long?,
     onCharacterClick: (Long) -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
+
+
     // 즐찾 캐릭터가 없는 경우
     if (characters.isEmpty()) {
         Box(
@@ -151,9 +156,9 @@ fun HomeFavoriteCarousel(
         Spacer(modifier = Modifier.padding(top = 16.dp))
         Text(
             text = buildAnnotatedString {
-                // 현재 인덱스 부분 → Bold + 크게
+                // 현재 인덱스 부분 강조
                 withStyle(
-                    style = MaterialTheme.typography.displaySmall.toSpanStyle().copy(
+                    style = spanTextStyle.toSpanStyle().copy(
                         fontWeight = FontWeight.Bold,
                         color = colorResource(R.color.main_orange)
                     )
@@ -163,7 +168,7 @@ fun HomeFavoriteCarousel(
                 // 구분자 + 전체 개수 부분 → 기본 스타일
                 append(" / $n")
             },
-            style = MaterialTheme.typography.headlineSmall.copy(
+            style = textStyle.copy(
                 color = colorResource(R.color.main_orange)
             )
         )

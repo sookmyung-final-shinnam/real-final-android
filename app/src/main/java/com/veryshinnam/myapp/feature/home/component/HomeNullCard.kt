@@ -47,9 +47,11 @@ fun HomeNullCard(
         Text(
             text = nullText,
             modifier = Modifier.fillMaxWidth(),
-            style = nullTextStyle.copy(fontWeight = FontWeight.Bold),
+            style = nullTextStyle.copy(
+                fontWeight = FontWeight.Bold,
+                color = Color.White
+            ),
             textAlign = TextAlign.Center,
-            color = Color.White
         )
     }
 }

@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -26,9 +27,11 @@ import com.veryshinnam.myapp.R
 
 @Composable
 fun DashboardUserInfo(
+    modifier: Modifier,
     username: String,
     interest: String,
-    modifier: Modifier
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
     Column(
         modifier = modifier.fillMaxHeight()
@@ -56,8 +59,8 @@ fun DashboardUserInfo(
                     append("${username}의 최근 관심사는 ")
 
                     withStyle(
-                        style = MaterialTheme.typography.displaySmall
-                            .copy(fontWeight = FontWeight.SemiBold)
+                        style = spanTextStyle
+                            .copy(fontWeight = FontWeight.Bold)
                             .toSpanStyle()
                             .copy(color = colorResource(id = R.color.light_green))
                     ) {
@@ -67,7 +70,9 @@ fun DashboardUserInfo(
                     append("이야!")
                 },
                 modifier = Modifier.padding(20.dp),
-                style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.SemiBold)
+                style = textStyle.copy(
+                    fontWeight = FontWeight.Bold
+                )
             )
         }
     }

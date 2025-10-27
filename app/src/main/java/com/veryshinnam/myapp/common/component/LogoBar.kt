@@ -40,9 +40,9 @@ fun LogoBar(
         // 윤곽선 + 그림자
         Text(
             text = logoText,
-            color = Color.White,
             style = logoTextStyle.copy(
                 fontWeight = FontWeight.Black,
+                color = Color.White,
                 drawStyle = Stroke(width = 8f),
                 shadow = Shadow(
                     color = Color.Gray.copy(alpha = 0.6f),
@@ -55,9 +55,9 @@ fun LogoBar(
         // 실제 텍스트
         Text(
             text = logoText,
-            color = colorResource(R.color.brand_orange),
             style = logoTextStyle.copy(
-                fontWeight = FontWeight.Black
+                fontWeight = FontWeight.Black,
+                color = colorResource(R.color.brand_orange)
             ),
             modifier = if (onLogoClick != null) {
                 Modifier.clickable(

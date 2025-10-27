@@ -15,19 +15,22 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.dashboard.model.LanguageData
 
 @Composable
 fun DashboardLanguageInfo(
+    modifier: Modifier,
     username: String,
     languageData: LanguageData,
-    modifier: Modifier
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    verticalPadding: Dp = 20.dp,
+    horizontalPadding: Dp = 16.dp
 ) {
-    val vertical = 10.dp
-    val horizontal = 24.dp
 
     Column(modifier = modifier.fillMaxWidth()) {
 
@@ -39,12 +42,14 @@ fun DashboardLanguageInfo(
                     color = colorResource(id = R.color.main_orange),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp) // 위만 둥글게
                 )
-                .padding(vertical = vertical, horizontal = horizontal)
+                .padding(horizontalPadding)
         ) {
             Text(
                 text = "${username}의 언어 발달 정도",
-                color = Color.White,
-                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.SemiBold)
+                style =textStyle.copy(
+                    fontWeight = FontWeight.Bold,
+                    color = Color.White
+                )
             )
         }
 
@@ -63,8 +68,8 @@ fun DashboardLanguageInfo(
                 )
         ) {
             Column(
-                modifier = Modifier.fillMaxWidth().padding(vertical = vertical, horizontal = horizontal),
-                verticalArrangement = Arrangement.spacedBy(12.dp),
+                modifier = Modifier.fillMaxWidth().padding(vertical = verticalPadding, horizontal = horizontalPadding),
+                verticalArrangement = Arrangement.spacedBy(verticalPadding / 2),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 DashboardInfoRow("최근 가장 많이 말한 단어", languageData.recentSpokenWord, colorResource(R.color.light_orange))

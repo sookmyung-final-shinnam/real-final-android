@@ -18,6 +18,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -25,12 +26,13 @@ import com.veryshinnam.myapp.R
 
 @Composable
 fun HomeUserItem(
+    modifier: Modifier,
     painter: Painter,
     contentDescription: String,
     value: String,
     spacer: Dp = 8.dp,
-    color: Color,
-    modifier: Modifier
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    color: Color
 ) {
     Box(
         // 테두리
@@ -58,7 +60,7 @@ fun HomeUserItem(
             Text(
                 // 개수
                 text = value,
-                style = MaterialTheme.typography.titleLarge.copy(
+                style = textStyle.copy(
                     fontWeight = FontWeight.Bold)
             )
         }

@@ -8,19 +8,22 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
 @Composable
 fun BackButton(
+    modifier: Modifier,
     onBackClick: () -> Unit,
-    modifier: Modifier
+    textStyle: TextStyle = MaterialTheme.typography.bodyMedium
 ) {
     // 이전 버튼
     Row(
@@ -34,9 +37,11 @@ fun BackButton(
             tint = colorResource(R.color.main_orange)
         )
         Spacer(Modifier.width(4.dp))
-        Text("뒤로",
-            fontWeight = FontWeight.Medium,
-            color = colorResource(R.color.main_orange)
+        Text(
+            text = "뒤로",
+            style = textStyle.copy(
+                color = colorResource(id = R.color.main_orange)
+            )
         )
     }
 }

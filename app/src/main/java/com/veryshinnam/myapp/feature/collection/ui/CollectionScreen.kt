@@ -68,7 +68,11 @@ fun CollectionScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            BackButton(onBack, modifier = Modifier.align(Alignment.TopStart))
+            BackButton(
+                modifier = Modifier.align(Alignment.TopStart),
+                onBackClick = onBack
+            )
+
             when (val state = uiState) {
                 // 조회 로딩 중
                 is CollectionUiState.Loading -> {

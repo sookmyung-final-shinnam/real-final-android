@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.PaddingValues
@@ -78,39 +79,33 @@ fun DashboardScreen(
                 }
                 // 조회 성공
                 is DashboardUiState.Success -> {
-                    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
-                        val topSectionHeight = maxHeight * 0.25f
-
-                        LazyColumn(
-                            modifier = Modifier.fillMaxSize(),
-                            contentPadding = PaddingValues(horizontal = 16.dp),
-                        ) {
-                            item {
-                                DashboardUserInfo(
-                                    username = state.username,
-                                    interest = state.interest,
-                                    modifier = Modifier
-                                        .fillMaxWidth()
-                                        .height(topSectionHeight) // 화면 높이의 25%
-                                )
-                            }
-                            item {
-                                DashboardLanguageInfo(
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        verticalArrangement = Arrangement.spacedBy(20.dp),
+                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    ) {
+                        item {
+                            DashboardUserInfo(
+                                modifier = Modifier.fillMaxWidth(),
                                 username = state.username,
-                                playData = state.playData,
-                                modifier = Modifier.fillMaxWidth()
-                                )
-                            }
-                            item {
-                                Spacer(Modifier.height(40.dp))
-                            }
-                            item {
-                                DashboardLanguageInfo(
-                                    username = state.username,
-                                    languageData = state.languageData,
-                                    modifier = Modifier.fillMaxWidth()
-                                )
-                            }
+                                interest = state.interest
+                            )
+                        }
+
+                        item {
+                            DashboardLanguageInfo(
+                                modifier = Modifier.fillMaxWidth(),
+                                username = state.username,
+                                playData = state.playData
+                            )
+                        }
+
+                        item {
+                            DashboardLanguageInfo(
+                                modifier = Modifier.fillMaxWidth(),
+                                username = state.username,
+                                languageData = state.languageData
+                            )
                         }
                     }
                 }

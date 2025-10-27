@@ -103,7 +103,9 @@ fun HomeUserInfo(
                 ) {
                     Text(
                         text = "안녕 ${username}!",
-                        style = textStyle.copy(fontWeight = FontWeight.Bold)
+                        style = textStyle.copy(
+                            fontWeight = FontWeight.Bold
+                        )
                     )
 
                     Row(
@@ -133,7 +135,9 @@ fun HomeUserInfo(
                 // 랜덤 메시지
                 Text(
                     text = message,
-                    style = textStyle.copy(fontWeight = FontWeight.Bold),
+                    style = textStyle.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
                 )
             }
         }
