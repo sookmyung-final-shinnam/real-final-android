@@ -60,7 +60,7 @@ fun ShareSheet(
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange),
-        windowInsets = WindowInsets(0, 0, 0, 0),
+        contentWindowInsets = { WindowInsets(0.dp) },
     ) {
         Column(
             modifier = Modifier
