@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.home.component
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -9,9 +8,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.IntrinsicSize
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -21,13 +18,7 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
-import androidx.compose.material3.Button
-import androidx.compose.material3.Card
-import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
-import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -35,9 +26,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -45,11 +36,13 @@ import com.veryshinnam.myapp.R
 
 @Composable
 fun HomeUserInfo(
+    modifier: Modifier,
     username: String,
     stamps: Int,
     message: String,
     onSettingsClick: () -> Unit,
-    modifier: Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
     cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
     bottomPadding: Dp = 8.dp  // 나침반 아래 패딩
 
@@ -110,9 +103,7 @@ fun HomeUserInfo(
                 ) {
                     Text(
                         text = "안녕 ${username}!",
-                        style = MaterialTheme.typography.titleLarge.copy(
-                            fontWeight = FontWeight.Bold
-                        )
+                        style = textStyle.copy(fontWeight = FontWeight.Bold)
                     )
 
                     Row(
@@ -123,13 +114,14 @@ fun HomeUserInfo(
                     ) {
                         Text(
                             text = "환경설정",
-                            style = MaterialTheme.typography.labelSmall.copy(
+                            style = settingsTextStyle.copy(
                                 color = colorResource(id = R.color.main_orange)
                             )
                         )
+
                         Icon(
                             imageVector = Icons.Default.Settings,
-                            contentDescription = "환경설정",
+                            contentDescription = "환경설정 아이콘",
                             tint = colorResource(id = R.color.main_orange),
                             modifier = Modifier
                                 .padding(start = 2.dp)
@@ -141,9 +133,7 @@ fun HomeUserInfo(
                 // 랜덤 메시지
                 Text(
                     text = message,
-                    style = MaterialTheme.typography.titleLarge.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = textStyle.copy(fontWeight = FontWeight.Bold),
                 )
             }
         }

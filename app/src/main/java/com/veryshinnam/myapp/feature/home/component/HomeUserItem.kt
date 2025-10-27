@@ -40,11 +40,13 @@ fun HomeUserItem(
             .border(
                 width = 4.dp,
                 color = color,
-                shape =CircleShape),
+                shape = CircleShape),
         contentAlignment = Alignment.Center
     ) {
-        Row(modifier = Modifier.fillMaxHeight(),
-            verticalAlignment = Alignment.CenterVertically) {
+        Row(
+            modifier = Modifier.fillMaxHeight(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
             // 아이콘 이미지
             Image(
                 painter = painter,

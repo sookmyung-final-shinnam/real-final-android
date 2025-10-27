@@ -1,17 +1,13 @@
 package com.veryshinnam.myapp.common.component
 
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.geometry.Offset
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.Shadow
-import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -19,8 +15,10 @@ import com.veryshinnam.myapp.R
 @Composable
 fun LogoTitle(
     modifier: Modifier,
-    subTitle: String = "대화하며 나만의 동화 만들기",
-    mainTitle: String = "Storictor"
+    subText: String = "대화하며 나만의 동화 만들기",
+    mainText: String = "Storictor",
+    subTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    mainTextStyle: TextStyle = MaterialTheme.typography.displayLarge
 ) {
     Column(
         modifier = modifier,
@@ -28,17 +26,15 @@ fun LogoTitle(
     ) {
         // 로고 위 문구 텍스트
         Text(
-            text = subTitle,
+            text = subText,
             color = colorResource(R.color.brand_orange),
-            style = MaterialTheme.typography.titleMedium.copy(
-                fontWeight = FontWeight.Bold
-            )
+            style = subTextStyle.copy(fontWeight = FontWeight.Bold)
         )
 
         // 로고
         LogoBar(
-            logoText = mainTitle,
-            logoStyle = MaterialTheme.typography.displayLarge,
+            logoText = mainText,
+            logoTextStyle = mainTextStyle,
             verticalPadding = 0.dp
         )
     }

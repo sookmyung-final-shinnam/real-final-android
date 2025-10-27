@@ -5,8 +5,6 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.unit.sp
 
-// 폰트 관련 설정
-
 /**
  * 기기 크기별 폰트 스케일 반환
  * - 태블릿(600dp 이상): 1.5
