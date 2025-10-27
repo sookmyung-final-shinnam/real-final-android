@@ -14,7 +14,7 @@ import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
 import com.veryshinnam.myapp.feature.creation.data.dto.toStartRequest
 import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
 
-// 캐릭터 생성 플로우 네비게이션 그래프
+// 캐릭터 및 동화 생성 플로우 네비게이션 그래프
 fun NavGraphBuilder.creationNavGraph(navController: NavController) {
     navigation(
         route = NavGraphs.CREATION,

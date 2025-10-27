@@ -1,7 +1,9 @@
 package com.veryshinnam.myapp
 
+import android.graphics.Color
 import android.os.Bundle
 import androidx.activity.ComponentActivity
+import androidx.activity.SystemBarStyle
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.LaunchedEffect
@@ -32,7 +34,12 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         splash.setKeepOnScreenCondition { false } // 시스템 자체 스플래시 즉시 사라지도록
 
-        enableEdgeToEdge()
+        enableEdgeToEdge(
+            navigationBarStyle = SystemBarStyle.light(
+                scrim = Color.TRANSPARENT,
+                darkScrim = Color.TRANSPARENT
+            )
+        )
 
         setContent {
             MyTheme {
@@ -57,10 +64,10 @@ class MainActivity : ComponentActivity() {
                     permitNavGraph(navController)
 
                     // 메인 기능 관련 그래프
-//                    mainNavGraph(navController)
+                    mainNavGraph(navController)
 
                     // 캐릭터 생성 그래프
-//                    creationNavGraph(navController)
+                    creationNavGraph(navController)
                 }
             }
         }

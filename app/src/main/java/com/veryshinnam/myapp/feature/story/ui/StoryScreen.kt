@@ -34,7 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
@@ -62,7 +62,7 @@ fun StoryScreen(
     Scaffold(
         topBar = {
             Column (Modifier.fillMaxWidth()) {
-                AppTopBar(onLogoClick=onLogoClick) // 기존 바
+                LogoBar(onLogoClick=onLogoClick) // 기존 바
                 Row(
                     modifier = Modifier
                         .clickable{

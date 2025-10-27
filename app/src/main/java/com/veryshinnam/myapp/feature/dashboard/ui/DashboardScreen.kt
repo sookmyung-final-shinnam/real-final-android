@@ -26,7 +26,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.dashboard.component.DashboardUserInfo
@@ -44,7 +44,7 @@ fun DashboardScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { AppTopBar(onLogoClick = onLogoClick) },
+        topBar = { LogoBar(onLogoClick = onLogoClick) },
         bottomBar = {
             // 네비게이션 바만큼 여백
             Spacer(

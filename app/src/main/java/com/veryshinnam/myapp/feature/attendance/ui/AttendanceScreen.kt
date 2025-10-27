@@ -27,7 +27,7 @@ import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
@@ -55,7 +55,7 @@ fun AttendanceScreen(
             .background(colorResource(id = R.color.background_yellow))
     ) {
         // 상단 AppBar
-        AppTopBar(onLogoClick = onLogoClick)
+        LogoBar(onLogoClick = onLogoClick)
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center

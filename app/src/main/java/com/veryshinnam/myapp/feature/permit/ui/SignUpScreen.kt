@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.feature.permit.component.PermitTermText
 import com.veryshinnam.myapp.feature.permit.component.PermitTermTitle
 
@@ -64,7 +64,7 @@ fun SignUpScreen(
     ) {
         Column {
             // 상단 AppBar
-            AppTopBar()
+            LogoBar()
 
             Spacer(modifier = Modifier.height(16.dp))
             Text(

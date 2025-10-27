@@ -2,21 +2,32 @@ package com.veryshinnam.myapp.feature.home.component
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
+import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.FilledIconButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -24,6 +35,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -35,16 +47,18 @@ import com.veryshinnam.myapp.R
 fun HomeUserInfo(
     username: String,
     stamps: Int,
-    randomMessage: String,
+    message: String,
     onSettingsClick: () -> Unit,
     modifier: Modifier,
+    cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
     bottomPadding: Dp = 8.dp  // 나침반 아래 패딩
+
 ) {
     Column(modifier.fillMaxHeight()) {
         // 유저 정보 - 생성한 캐릭터 수, 포인트
         Box(
             modifier = Modifier
-                .weight(1f)
+                .weight(4f)
                 .fillMaxWidth()
         ) {
             // 다람쥐 이미지
@@ -54,16 +68,15 @@ fun HomeUserInfo(
                 modifier = Modifier
                     .fillMaxHeight()
                     .align(Alignment.BottomStart)  // start 정렬
-                    .padding(start = 40.dp),
+                    .padding(start = 26.dp),
                 contentScale = ContentScale.Fit
             )
-
 
             // 나침반 수
             HomeUserItem(
                 painter = painterResource(R.drawable.img_compass),
                 contentDescription = "모은 나침반 수",
-                value = "${stamps}",
+                value = "$stamps",
                 color = colorResource(R.color.main_orange),
                 modifier = Modifier
                     .padding(bottom = bottomPadding)
@@ -74,41 +87,64 @@ fun HomeUserInfo(
         }
 
         // 유저 정보 - 닉네임
-        Card(
-            modifier = Modifier.weight(1f),
-            colors = CardDefaults.cardColors(
-                containerColor = Color.White
-            ),
-            shape = RoundedCornerShape(16.dp),
-            border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
+        Box(
+            modifier = Modifier
+                .weight(6f)
+                .fillMaxWidth()
+                .background(Color.White, shape = RoundedCornerShape(16.dp))
+                .border(4.dp, colorResource(R.color.main_orange), RoundedCornerShape(16.dp))
+                .padding(cardPadding)
         ) {
-            Row(
-                modifier = Modifier.fillMaxSize(),
-                verticalAlignment = Alignment.CenterVertically
+            Column(
+                modifier = Modifier
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.SpaceEvenly
             ) {
-                Text(
-                    text = "안녕 ${username}! \n${randomMessage}",
-                    style = MaterialTheme.typography.displaySmall,
-                    fontWeight = FontWeight.Bold,
+                // 닉네임 + 환경설정 버튼
+                Row(
                     modifier = Modifier
-                        .weight(1f)
-                        .padding(20.dp)
-                )
-
-                // 환경 설정 버튼
-                IconButton(
-                    onClick = { onSettingsClick() },
-                    modifier = Modifier
-                        .fillMaxHeight(0.6f) // 버튼 높이 조절
-                        .aspectRatio(1f)
+                        .fillMaxWidth()
+                        .wrapContentHeight(),
+                    verticalAlignment = Alignment.Top,
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Icon(
-                        imageVector = Icons.Default.Settings,
-                        contentDescription = "환경설정",
-                        modifier = Modifier.fillMaxSize().padding(end = 20.dp),
-                        tint = colorResource(id = R.color.main_orange)
+                    Text(
+                        text = "안녕 ${username}!",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
                     )
+
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically,
+                        modifier = Modifier
+                            .height(IntrinsicSize.Min)
+                            .clickable(onClick = onSettingsClick)
+                    ) {
+                        Text(
+                            text = "환경설정",
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                color = colorResource(id = R.color.main_orange)
+                            )
+                        )
+                        Icon(
+                            imageVector = Icons.Default.Settings,
+                            contentDescription = "환경설정",
+                            tint = colorResource(id = R.color.main_orange),
+                            modifier = Modifier
+                                .padding(start = 2.dp)
+                                .fillMaxHeight()
+                        )
+                    }
                 }
+
+                // 랜덤 메시지
+                Text(
+                    text = message,
+                    style = MaterialTheme.typography.titleLarge.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                )
             }
         }
     }

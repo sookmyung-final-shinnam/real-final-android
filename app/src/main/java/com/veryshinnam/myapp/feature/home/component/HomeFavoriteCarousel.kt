@@ -153,9 +153,8 @@ fun HomeFavoriteCarousel(
             text = buildAnnotatedString {
                 // 현재 인덱스 부분 → Bold + 크게
                 withStyle(
-                    style = SpanStyle(
+                    style = MaterialTheme.typography.displaySmall.toSpanStyle().copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp, // 원하는 크기
                         color = colorResource(R.color.main_orange)
                     )
                 ) {
@@ -164,7 +163,9 @@ fun HomeFavoriteCarousel(
                 // 구분자 + 전체 개수 부분 → 기본 스타일
                 append(" / $n")
             },
-            style = MaterialTheme.typography.headlineSmall.copy(color = colorResource(R.color.main_orange))
+            style = MaterialTheme.typography.headlineSmall.copy(
+                color = colorResource(R.color.main_orange)
+            )
         )
     }
 }

@@ -56,7 +56,7 @@ fun HomeUserItem(
             Text(
                 // 개수
                 text = value,
-                style = MaterialTheme.typography.displaySmall.copy(
+                style = MaterialTheme.typography.titleLarge.copy(
                     fontWeight = FontWeight.Bold)
             )
         }

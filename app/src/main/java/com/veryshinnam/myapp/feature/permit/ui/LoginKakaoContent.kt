@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.common.component
+package com.veryshinnam.myapp.feature.permit.ui
 
 import android.view.ViewGroup
 import android.webkit.WebResourceRequest
@@ -9,8 +9,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.viewinterop.AndroidView
 import com.veryshinnam.myapp.core.network.BaseUrls
 
+/**
+ * 카카오 로그인
+ * : 웹뷰로 카카오 로그인 창 로드 후, 카카오 로그인 진행 및 스웨거 주소로 리다이렉트
+ *
+ * - onTempCodeReceived: 스웨거 주소에서 로그인 임시 코드와 신규 유저 여부를 추출하여 로그인 화면(LoginScreen)으로 전달
+ */
 @Composable
-fun KakaoLoginWebView(
+fun LoginKakaoContent(
     onTempCodeReceived: (String, Boolean) -> Unit,
     modifier: Modifier
 ) {
