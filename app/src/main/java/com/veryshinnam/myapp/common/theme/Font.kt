@@ -41,8 +41,8 @@ fun adaptiveTypography(): Typography {
         headlineSmall = typography.headlineSmall.copy(fontSize = 24.sp * fontScale),
 
         titleLarge = typography.titleLarge.copy(fontSize = 22.sp * fontScale),
-        titleMedium = typography.titleMedium.copy(fontSize = 16.sp * fontScale),
-        titleSmall = typography.titleSmall.copy(fontSize = 14.sp * fontScale),
+        titleMedium = typography.titleMedium.copy(fontSize = 20.sp * fontScale),
+        titleSmall = typography.titleSmall.copy(fontSize = 18.sp * fontScale),
 
         bodyLarge = typography.bodyLarge.copy(fontSize = 16.sp * fontScale),
         bodyMedium = typography.bodyMedium.copy(fontSize = 14.sp * fontScale),

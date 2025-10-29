@@ -48,8 +48,8 @@ fun CollectionCharacterGrid(
             columns = GridCells.Fixed(3),
             state = listState,
             modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(6.dp),
+            horizontalArrangement = Arrangement.spacedBy(6.dp),
             content = {
                 itemsIndexed(data) { index, item ->
 

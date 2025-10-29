@@ -2,16 +2,24 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -21,7 +29,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
-import com.veryshinnam.myapp.feature.home.component.HomeUserInfo
+import com.veryshinnam.myapp.feature.home.component.HomeUserItem
 
 /**
  * 홈 화면
@@ -43,6 +51,9 @@ fun HomeScreen(
     onCreationClick: () -> Unit,        // 바텀 버튼
     onCollectionClick: () -> Unit,      // 바텀 버튼
     horizontalPadding: Dp = 16.dp,
+    cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
     vm: HomeViewModel =  hiltViewModel()
 ) {
     // 홈 화면 상태 관리
@@ -99,43 +110,130 @@ fun HomeScreen(
 
                 // 조회 성공
                 is HomeUiState.Success -> {
-                    val (username, points, favorites) = state.homeData
+                    val (username, stamps, favorites) = state.homeData
+                    Column(modifier = Modifier.fillMaxSize()) {
+                        Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
+                            // 유저 정보 - 생성한 캐릭터 수, 포인트
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .fillMaxHeight(0.12f) // 화면의 40% 고정
+                            ) {
+                                // 다람쥐 이미지
+                                Image(
+                                    painter = painterResource(R.drawable.img_home_squirrel),
+                                    contentDescription = "다람쥐 이미지",
+                                    modifier = Modifier
+                                        .fillMaxHeight()
+                                        .align(Alignment.BottomStart)  // start 정렬
+                                        .padding(start = 26.dp),
+                                    contentScale = ContentScale.Fit
+                                )
 
-                    Column {
-                        // 유저 정보 (스탬프 및 문구 & 환경설정)
-                        HomeUserInfo(
-                            username = username,
-                            stamps = points,
-                            message = state.randomMessage,
-                            onSettingsClick = onSettingsClick,
-                            modifier = Modifier
-                                .padding(horizontal = horizontalPadding)
-                                .weight(0.28f)
-                                .fillMaxWidth()
-                        )
-
-                        // 즐찾 캐릭터 캐러셀
-                        HomeFavoriteCarousel(
-                            modifier = Modifier
-                                .weight(0.57f)
-                                .fillMaxWidth(),
-                            characters = favorites,
-                            lastSelectedId = state.lastSelectedCharacter,
-                            onCharacterClick = { id ->
-                                onCharacterClick(id)
+                                // 나침반 수
+                                HomeUserItem(
+                                    painter = painterResource(R.drawable.img_compass),
+                                    contentDescription = "모은 나침반 수",
+                                    value = "$stamps",
+                                    color = colorResource(R.color.main_orange),
+                                    modifier = Modifier
+                                        .padding(bottom = 8.dp)
+                                        .align(Alignment.BottomCenter)
+                                        .fillMaxWidth(0.3f)
+                                        .fillMaxHeight(0.6f)
+                                )
                             }
-                        )
 
-                        // 바텀 버튼 (대시보드, 생성, 보관함)
-                        HomeBottomButtons(
-                            onDashboardClick,
-                            onCreationClick,
-                            onCollectionClick,
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .wrapContentHeight()
+                                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+                                    .border(
+                                        4.dp,
+                                        colorResource(R.color.main_orange),
+                                        RoundedCornerShape(16.dp))
+                                    .padding(all = cardPadding),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Column(verticalArrangement = Arrangement.SpaceEvenly) {
+                                    // 닉네임 + 환경설정 버튼
+                                    Row(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .wrapContentHeight(),
+                                        verticalAlignment = Alignment.Top,
+                                        horizontalArrangement = Arrangement.SpaceBetween
+                                    ) {
+                                        Text(
+                                            text = "반가워요 ${username}!",
+                                            style = textStyle.copy(
+                                                fontWeight = FontWeight.Bold
+                                            )
+                                        )
+
+                                        Row(
+                                            verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier
+                                                .height(IntrinsicSize.Min)
+                                                .clickable(onClick = onSettingsClick)
+                                        ) {
+                                            Text(
+                                                text = "환경설정",
+                                                style = settingsTextStyle.copy(
+                                                    color = colorResource(id = R.color.main_orange)
+                                                )
+                                            )
+
+                                            Icon(
+                                                imageVector = Icons.Default.Settings,
+                                                contentDescription = "환경설정 아이콘",
+                                                tint = colorResource(id = R.color.main_orange),
+                                                modifier = Modifier
+                                                    .padding(start = 2.dp)
+                                                    .fillMaxHeight()
+                                            )
+                                        }
+                                    }
+
+                                    // 랜덤 메시지
+                                    Text(
+//                                    modifier = Modifier.padding(top = 2.dp),
+                                        text = state.randomMessage,
+                                        style = textStyle.copy(
+                                            fontWeight = FontWeight.Bold
+                                        )
+                                    )
+                                }
+                            }
+                        }
+
+                        Column(
                             modifier = Modifier
-                                .padding(horizontal = horizontalPadding)
-                                .weight(0.15f)
                                 .fillMaxWidth()
-                        )
+                                .weight(1f, fill = true)
+                        ) {
+                            // 캐러셀 (남은 공간 중 대부분)
+                            HomeFavoriteCarousel(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                .weight(8f),
+                                characters = favorites,
+                                lastSelectedId = state.lastSelectedCharacter,
+                                onCharacterClick = onCharacterClick
+                            )
+
+                            // 바텀 버튼 (남은 공간의 1.5 비율)
+                            HomeBottomButtons(
+                                onDashboardClick,
+                                onCreationClick,
+                                onCollectionClick,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .weight(2f)
+                                    .padding(vertical = 8.dp)
+                            )
+                        }
                     }
 
                     // 출석체크 버튼

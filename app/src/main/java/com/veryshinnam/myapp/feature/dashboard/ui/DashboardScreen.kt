@@ -4,6 +4,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
@@ -12,7 +13,9 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
@@ -45,12 +48,16 @@ fun DashboardScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { LogoBar(onLogoClick = onLogoClick) },
+        topBar = {
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = onLogoClick)
+            }
+        },
         bottomBar = {
-            // 네비게이션 바만큼 여백
-            Spacer(
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
-            )
+            // 네비게이션바 만큼 여백
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         }
     ) { innerPadding ->
         Box(
@@ -59,10 +66,13 @@ fun DashboardScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
-            BackButton(onBackClick = onBack, modifier = Modifier.align(Alignment.TopStart).zIndex(1f) )
+            BackButton(
+                modifier = Modifier.align(Alignment.TopStart).zIndex(1f),
+                onBackClick = onBack,
+            )
 
             when (val state = uiState) {
-                // 조회 로딩 중
+                // 조회 로딩
                 is DashboardUiState.Loading -> {
                     CircularProgressIndicator(
                         color = colorResource(id = R.color.main_orange), // 주황색
@@ -70,13 +80,15 @@ fun DashboardScreen(
                         strokeWidth = 4.dp
                     )
                 }
+
                 // 조회 오류
                 is DashboardUiState.Error -> {
                     LoadErrorView(
                         message = state.message,
-                        onRetry = {  }
+                        onRetry = { }
                     )
                 }
+
                 // 조회 성공
                 is DashboardUiState.Success -> {
                     LazyColumn(

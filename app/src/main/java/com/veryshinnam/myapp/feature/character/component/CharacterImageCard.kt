@@ -27,7 +27,6 @@ fun CharacterImageCard(
     modifier: Modifier = Modifier    // 부모가 넘겨준 크기
 ) {
     // 즐찾 아이콘
-    val iconRes = if (character.isFavorite) R.drawable.img_star_on else R.drawable.img_star_off
 
     Card(
         modifier = modifier,
@@ -46,17 +45,17 @@ fun CharacterImageCard(
                 contentScale = ContentScale.Crop
             )
 
-            // 즐찾 이미지
-            Image(
-                painter = painterResource(id = iconRes),
-                contentDescription = "즐겨찾기 아이콘",
-                modifier = Modifier
-                    .fillMaxWidth(0.3f)
-                    .aspectRatio(1f)
-                    .padding(16.dp)
-                    .clickable { onFavoriteClick(character.id) },
-                contentScale = ContentScale.Fit
-            )
+//            // 즐찾 이미지
+//            Image(
+//                painter = painterResource(id = iconRes),
+//                contentDescription = "즐겨찾기 아이콘",
+//                modifier = Modifier
+//                    .fillMaxWidth(0.3f)
+//                    .aspectRatio(1f)
+//                    .padding(16.dp)
+//                    .clickable { onFavoriteClick(character.id) },
+//                contentScale = ContentScale.Fit
+//            )
         }
     }
 }
