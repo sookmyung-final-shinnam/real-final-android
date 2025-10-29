@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.home.component
+package com.veryshinnam.myapp.common.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -17,15 +17,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.veryshinnam.myapp.R
 
 @Composable
-fun HomeUserItem(
+fun UserItem(
     modifier: Modifier,
     painter: Painter,
     contentDescription: String,

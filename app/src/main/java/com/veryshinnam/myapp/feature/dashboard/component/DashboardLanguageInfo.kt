@@ -27,12 +27,12 @@ fun DashboardLanguageInfo(
     modifier: Modifier,
     username: String,
     languageData: LanguageData,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     verticalPadding: Dp = 20.dp,
     horizontalPadding: Dp = 16.dp
 ) {
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(modifier = modifier) {
 
         // 상단 타이틀
         Box(
@@ -42,11 +42,11 @@ fun DashboardLanguageInfo(
                     color = colorResource(id = R.color.main_orange),
                     shape = RoundedCornerShape(topStart = 16.dp, topEnd = 16.dp) // 위만 둥글게
                 )
-                .padding(horizontalPadding)
+                .padding(horizontal = horizontalPadding, vertical = verticalPadding / 2)
         ) {
             Text(
                 text = "${username}의 언어 발달 정도",
-                style =textStyle.copy(
+                style = textStyle.copy(
                     fontWeight = FontWeight.Bold,
                     color = Color.White
                 )
@@ -72,10 +72,10 @@ fun DashboardLanguageInfo(
                 verticalArrangement = Arrangement.spacedBy(verticalPadding / 2),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                DashboardInfoRow("최근 가장 많이 말한 단어", languageData.recentSpokenWord, colorResource(R.color.light_orange))
-                DashboardInfoRow("최근 새롭게 사용한 단어", languageData.recentNewWord, colorResource(R.color.light_orange))
-                DashboardInfoRow("최근 사용한 비속어 정도", languageData.recentSlangLevel, colorResource(R.color.light_orange))
-                DashboardInfoRow("언어 맥락 이해도", languageData.contextUnderstanding, colorResource(R.color.light_orange))
+                DashboardInfoText("최근 가장 많이 말한 단어", languageData.recentSpokenWord, colorResource(R.color.light_orange))
+                DashboardInfoText("최근 새롭게 사용한 단어", languageData.recentNewWord, colorResource(R.color.light_orange))
+                DashboardInfoText("최근 사용한 비속어 정도", languageData.recentSlangLevel, colorResource(R.color.light_orange))
+                DashboardInfoText("언어 맥락 이해도", languageData.contextUnderstanding, colorResource(R.color.light_orange))
             }
         }
     }

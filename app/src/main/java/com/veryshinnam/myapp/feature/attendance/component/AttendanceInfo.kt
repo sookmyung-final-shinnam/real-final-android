@@ -22,7 +22,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.home.component.HomeUserItem
+import com.veryshinnam.myapp.common.component.UserItem
 import org.threeten.bp.YearMonth
 
 @Composable
@@ -53,7 +53,7 @@ fun AttendanceInfo(
             )
 
             // 스탬프 수
-            HomeUserItem(
+            UserItem(
                 painter= painterResource(R.drawable.img_stamp),
                 contentDescription = "모은 스탬프 수",
                 value = "${stamps}",

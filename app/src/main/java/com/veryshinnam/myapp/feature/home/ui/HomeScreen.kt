@@ -29,7 +29,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
-import com.veryshinnam.myapp.feature.home.component.HomeUserItem
+import com.veryshinnam.myapp.common.component.UserItem
 
 /**
  * 홈 화면
@@ -131,7 +131,7 @@ fun HomeScreen(
                                 )
 
                                 // 나침반 수
-                                HomeUserItem(
+                                UserItem(
                                     painter = painterResource(R.drawable.img_compass),
                                     contentDescription = "모은 나침반 수",
                                     value = "$stamps",

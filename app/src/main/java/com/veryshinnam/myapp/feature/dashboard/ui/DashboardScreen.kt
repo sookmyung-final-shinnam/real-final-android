@@ -1,23 +1,18 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -25,6 +20,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -33,13 +32,15 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.feature.dashboard.component.DashboardUserInfo
-import com.veryshinnam.myapp.feature.dashboard.component.DashboardLanguageInfo
+import com.veryshinnam.myapp.common.component.UserInfo
+import com.veryshinnam.myapp.feature.dashboard.component.DashboardTotalInfo
 
 @Composable
 fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
+    horizontalPadding: Dp = 16.dp,
+    spanTextStyle: TextStyle = MaterialTheme.typography.headlineMedium,
     vm: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by vm.dashBoardUiState.collectAsStateWithLifecycle()
@@ -67,8 +68,10 @@ fun DashboardScreen(
             contentAlignment = Alignment.Center
         ) {
             BackButton(
-                modifier = Modifier.align(Alignment.TopStart).zIndex(1f),
-                onBackClick = onBack,
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .zIndex(1f),
+                onBackClick = onBack
             )
 
             when (val state = uiState) {
@@ -91,34 +94,32 @@ fun DashboardScreen(
 
                 // 조회 성공
                 is DashboardUiState.Success -> {
-                    LazyColumn(
-                        modifier = Modifier.fillMaxSize(),
-                        verticalArrangement = Arrangement.spacedBy(20.dp),
-                        contentPadding = PaddingValues(horizontal = 16.dp)
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding)
                     ) {
-                        item {
-                            DashboardUserInfo(
-                                modifier = Modifier.fillMaxWidth(),
-                                username = state.username,
-                                interest = state.interest
+                        // 대시보드 상단 내용
+                        UserInfo(
+                            modifier = Modifier,
+                            animalImage = painterResource(R.drawable.img_fox_cut),
+                            animalDescription = "대시보드 설명 여우 이미지",
+                            cardColor = colorResource(R.color.deep_green),
+                            cardText = "${state.username}의 최근 관심사는 \"${state.interest}\"이야!",
+                            spanText = "\"${state.interest}\"",
+                            spanColor = colorResource(R.color.light_green),
+                            spanTextStyle = spanTextStyle.copy(
+                                fontWeight = FontWeight.Bold
                             )
-                        }
+                        )
 
-                        item {
-                            DashboardLanguageInfo(
-                                modifier = Modifier.fillMaxWidth(),
-                                username = state.username,
-                                playData = state.playData
-                            )
-                        }
-
-                        item {
-                            DashboardLanguageInfo(
-                                modifier = Modifier.fillMaxWidth(),
-                                username = state.username,
-                                languageData = state.languageData
-                            )
-                        }
+                        // 대시보드 스크롤 내용
+                        DashboardTotalInfo(
+                            modifier = Modifier,
+                            username = state.username,
+                            playData = state.playData,
+                            languageData = state.languageData
+                        )
                     }
                 }
             }

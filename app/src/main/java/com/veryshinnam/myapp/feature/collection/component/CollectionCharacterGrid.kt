@@ -37,9 +37,10 @@ fun CollectionCharacterGrid(
 
     // 스크롤이 맨 위가 아닌지 체크
     // 스크롤 시작 시 페이드 효과 시작
-    val showTopFade by remember {
+    val isTop by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
+//            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
         }
     }
 
@@ -74,7 +75,7 @@ fun CollectionCharacterGrid(
             }
         )
 
-        if (showTopFade) {
+        if (!isTop) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()

@@ -13,12 +13,12 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 
 @Composable
-fun DashboardInfoRow(
+fun DashboardInfoText(
     label: String,
     value: String,
     textColor: Color,
-    labelTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
-    valueTextStyle: TextStyle = MaterialTheme.typography.titleLarge
+    labelTextStyle: TextStyle = MaterialTheme.typography.titleSmall,
+    valueTextStyle: TextStyle = MaterialTheme.typography.titleMedium
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -27,8 +27,8 @@ fun DashboardInfoRow(
     ) {
         Text( // 라벨
             text = label,
-            style =labelTextStyle.copy(
-                fontWeight = FontWeight.SemiBold
+            style = labelTextStyle.copy(
+                fontWeight = FontWeight.Bold
             )
         )
         Text( // 값

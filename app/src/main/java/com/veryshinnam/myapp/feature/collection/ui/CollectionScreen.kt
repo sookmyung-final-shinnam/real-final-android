@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -38,14 +37,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.ParagraphStyle
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.intl.LocaleList
-import androidx.compose.ui.text.style.Hyphens
-import androidx.compose.ui.text.style.LineBreak
-import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -55,10 +48,11 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
-import com.veryshinnam.myapp.feature.home.component.HomeUserItem
+import com.veryshinnam.myapp.common.component.UserItem
 
 @Composable
 fun CollectionScreen(
@@ -66,8 +60,6 @@ fun CollectionScreen(
     onItemClick: (Long) -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
-    cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     vm: CollectionViewModel = hiltViewModel()
 ) {
     // ViewModel 상태 구독
@@ -139,79 +131,26 @@ fun CollectionScreen(
                             .padding(horizontal = horizontalPadding)
                     ) {
                         // 보관함 상단
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .fillMaxHeight(0.12f) // 화면의 40% 고정
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_rabbit_cut),
-                                contentDescription = "설명하는 토끼 이미지",
-                                modifier = Modifier
-                                    .fillMaxHeight()
-                                    .align(Alignment.BottomEnd)
-                                    .padding(end = 20.dp),
-                                contentScale = ContentScale.Fit
-                            )
+                        UserInfo(
+                            modifier = Modifier,
+                            isItem = true, // 아이템 설명 존재
+                            itemCount = state.collectionDataList.size,
+                            itemImage =  painterResource(R.drawable.img_character_yellow),
+                            itemDescription = "보관함 캐릭터 수",
+                            animalImage = painterResource(R.drawable.img_rabbit_cut),
+                            animalDescription = "보관함 설명 토끼 이미지",
+                            cardColor = colorResource(R.color.blue_gray),
+                            cardText =  "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
+                            spanText = "캐릭터 5명",
+                            spanColor = colorResource(R.color.blue_sky)
+                        )
 
-                            HomeUserItem(
-                                painter = painterResource(R.drawable.img_character_yellow),
-                                contentDescription = "모은 캐릭터 수",
-                                value = "${state.collectionDataList.size}",
-                                color = colorResource(R.color.blue_gray),
-                                modifier = Modifier
-                                    .padding(bottom = 8.dp)
-                                    .align(Alignment.BottomCenter)
-                                    .fillMaxWidth(0.3f)
-                                    .fillMaxHeight(0.6f)
-                            )
-                        }
-
-                        // 설명 텍스트
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                                .background(Color.White, shape = RoundedCornerShape(16.dp))
-                                .border(
-                                    4.dp,
-                                    colorResource(R.color.blue_gray),
-                                    RoundedCornerShape(16.dp))
-                                .padding(horizontal = cardPadding, vertical = 16.dp),
-                            contentAlignment = Alignment.Center
-                        ) {
-//                            Text(
-//                                text = "지금까지 만든 캐릭터들을 모아봤어요.\n 좋아하는 캐릭터 5명을 표시해주면 홈 화면에서도 만나 볼 수 있어요!",
-//                                style = textStyle.copy(
-//                                    fontWeight = FontWeight.Bold,
-//                                    lineBreak = LineBreak.Heading,
-//                                    hyphens = Hyphens.None,
-//                                    localeList = LocaleList("ko")
-//                                ),
-//                                softWrap = true
-//                            )
-                            Text(
-                                text = "지금까지 만든 캐릭터들을 모아봤어요.\n 좋아하는 캐릭터 5명을 표시해주면 홈 화면에서도 만나 볼 수 있어요!".replace("", "\u200B"),
-                                style = textStyle.copy(
-                                    fontWeight = FontWeight.Bold,
-                                ),
-                                softWrap = true
-                            )
-                        }
-
-                        Column(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .wrapContentHeight()
-                        ) {
                             // 캐릭터 성별 필터
-//                            Spacer(modifier = Modifier.height(sectionSpacing))
                             CollectionFilterButtons(
                                 selectedFilter = state.selectedFilter,
                                 onFilterClick = { filter -> vm.selectFilter(filter) },
                                 modifier = Modifier.fillMaxWidth()
                             )
-//                            Spacer(modifier = Modifier.height(sectionSpacing))
 
                             // 캐릭터 아이템 그리드 (3*3)
                             CollectionCharacterGrid(
@@ -232,7 +171,7 @@ fun CollectionScreen(
                                 },
                                 modifier = Modifier.fillMaxSize()
                             )
-                        }
+
                     }
                 }
             }
