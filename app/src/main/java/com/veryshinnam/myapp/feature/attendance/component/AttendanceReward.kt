@@ -34,7 +34,7 @@ fun AttendanceReward(
     onReceiveClick: () -> Unit,
     modifier: Modifier = Modifier,
     spacePadding: Dp = 30.dp, // 요소 간격 패딩
-    textPadding: Dp = 16.dp   // 텍스트 모든방향 패딩
+    textPadding: Dp = 16.dp   // 텍스트 모든 방향 패딩
 ) {
     Column(
         modifier = modifier.fillMaxSize()

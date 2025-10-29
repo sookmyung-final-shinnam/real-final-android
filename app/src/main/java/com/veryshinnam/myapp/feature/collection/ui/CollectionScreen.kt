@@ -61,7 +61,7 @@ fun CollectionScreen(
     onBack: () -> Unit,
     onItemClick: (Long) -> Unit,
     onLogoClick: () -> Unit,
-    spacerPadding: Dp = 20.dp,
+    spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: CollectionViewModel = hiltViewModel()
 ) {
@@ -75,7 +75,7 @@ fun CollectionScreen(
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
 
-
+    // 뒤로 가기
     BackHandler { onBack() }
 
     Scaffold(
@@ -98,6 +98,7 @@ fun CollectionScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            // 뒤로 가기 버튼
             BackButton(
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -174,6 +175,7 @@ fun CollectionScreen(
                                     onItemClick(item.id)
                                 }
                             },
+                            cellPadding = spacerPadding / 2,
                             modifier = Modifier.fillMaxSize()
                         )
 

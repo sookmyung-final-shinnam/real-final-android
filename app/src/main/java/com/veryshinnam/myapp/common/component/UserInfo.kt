@@ -42,6 +42,7 @@ fun UserInfo(
     animalImage: Painter,
     animalAlignment: Alignment = Alignment.BottomCenter,
     animalDescription: String,
+    bottomPadding: Dp = 10.dp,
     cardPadding: Dp = 20.dp,
     cardColor: Color,
     cardText: String,
@@ -79,7 +80,7 @@ fun UserInfo(
                     value = "$itemCount",
                     color = cardColor,
                     modifier = Modifier
-                        .padding(bottom = 8.dp)
+                        .padding(bottom = bottomPadding)
                         .align(animalAlignment)
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight(0.6f)

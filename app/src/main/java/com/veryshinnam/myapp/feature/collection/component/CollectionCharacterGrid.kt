@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
@@ -31,7 +32,8 @@ fun CollectionCharacterGrid(
     data: List<CollectionData>,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (CollectionData) -> Unit,
-    modifier: Modifier = Modifier,
+    cellPadding: Dp = 6.dp,
+    modifier: Modifier,
     listState: LazyGridState = rememberLazyGridState()
 ) {
 
@@ -48,8 +50,8 @@ fun CollectionCharacterGrid(
             columns = GridCells.Fixed(3),
             state = listState,
             modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(6.dp),
-            horizontalArrangement = Arrangement.spacedBy(6.dp),
+            verticalArrangement = Arrangement.spacedBy(cellPadding),
+            horizontalArrangement = Arrangement.spacedBy(cellPadding),
             content = {
                 itemsIndexed(data) { index, item ->
 
@@ -66,9 +68,6 @@ fun CollectionCharacterGrid(
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
                             .clickable { onItemClick(item) }
-                            .then(
-                                if (isLast) Modifier.padding(bottom = 8.dp) else Modifier
-                            )
                     )
                 }
             }

@@ -76,9 +76,8 @@ fun AttendanceInfo(
             border = BorderStroke(4.dp, colorResource(id = R.color.deep_pink)),
         ) {
             Text(
-                text = "오늘도 만나서 반가워\n" +
-                        "${monthLabel}은 총 ${attendances}번 출석했어!\n" +
-                        "도장 10개당 나침반 1개인걸 잊지마~!",
+                text = "${monthLabel}은 총 ${attendances}번 출석했어요!\n" +
+                        "도장 10개당 나침반 1개인걸 잊지마세요~!",
                 modifier = Modifier.padding(20.dp),
                 style = MaterialTheme.typography.headlineMedium,
                 fontWeight = FontWeight.SemiBold

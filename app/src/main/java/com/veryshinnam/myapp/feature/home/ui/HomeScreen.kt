@@ -51,6 +51,7 @@ fun HomeScreen(
     onCreationClick: () -> Unit,        // 바텀 버튼
     onCollectionClick: () -> Unit,      // 바텀 버튼
     horizontalPadding: Dp = 16.dp,
+    bottomPadding: Dp = 10.dp,
     cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
@@ -137,7 +138,7 @@ fun HomeScreen(
                                     value = "$stamps",
                                     color = colorResource(R.color.main_orange),
                                     modifier = Modifier
-                                        .padding(bottom = 8.dp)
+                                        .padding(bottom = bottomPadding)
                                         .align(Alignment.BottomCenter)
                                         .fillMaxWidth(0.3f)
                                         .fillMaxHeight(0.6f)

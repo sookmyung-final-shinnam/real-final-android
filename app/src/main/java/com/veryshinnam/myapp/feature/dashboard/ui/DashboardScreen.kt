@@ -47,6 +47,7 @@ fun DashboardScreen(
 ) {
     val uiState by vm.dashBoardUiState.collectAsStateWithLifecycle()
 
+    // 뒤로 가기
     BackHandler { onBack() }
 
     Scaffold(
@@ -69,6 +70,7 @@ fun DashboardScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            // 뒤로 가기 버튼
             BackButton(
                 modifier = Modifier
                     .align(Alignment.TopStart)
@@ -117,7 +119,7 @@ fun DashboardScreen(
 
                         Spacer(Modifier.height(spacerPadding))
 
-                        // 대시보드 전체제 내용
+                        // 대시보드 전체 내용
                         DashboardTotalInfo(
                             modifier = Modifier,
                             username = state.username,
