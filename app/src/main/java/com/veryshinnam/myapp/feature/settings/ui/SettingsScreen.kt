@@ -199,8 +199,8 @@ fun SettingsScreen(
     if (isWarning) {
         WarningSheet(
             warningText  = warningText,
+            warningTextStyle = warningStyle,
             confirmText = confirmText,
-            fStyle = warningStyle,
             onDismiss = { isWarning = false },
             onConfirm = { confirmAction() }
         )

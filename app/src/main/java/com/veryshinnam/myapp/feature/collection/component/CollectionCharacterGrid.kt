@@ -40,7 +40,6 @@ fun CollectionCharacterGrid(
     val isTop by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
-//            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
         }
     }
 

@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -13,6 +14,7 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -59,6 +61,7 @@ fun CollectionScreen(
     onBack: () -> Unit,
     onItemClick: (Long) -> Unit,
     onLogoClick: () -> Unit,
+    spacerPadding: Dp = 20.dp,
     horizontalPadding: Dp = 16.dp,
     vm: CollectionViewModel = hiltViewModel()
 ) {
@@ -145,32 +148,34 @@ fun CollectionScreen(
                             spanColor = colorResource(R.color.blue_sky)
                         )
 
-                            // 캐릭터 성별 필터
-                            CollectionFilterButtons(
-                                selectedFilter = state.selectedFilter,
-                                onFilterClick = { filter -> vm.selectFilter(filter) },
-                                modifier = Modifier.fillMaxWidth()
-                            )
+                        // 캐릭터 성별 필터 버튼
+                        Spacer(Modifier.height(spacerPadding))
+                        CollectionFilterButtons(
+                            selectedFilter = state.selectedFilter,
+                            onFilterClick = { filter -> vm.selectFilter(filter) },
+                            modifier = Modifier.fillMaxWidth()
+                        )
 
-                            // 캐릭터 아이템 그리드 (3*3)
-                            CollectionCharacterGrid(
-                                data = state.collectionDataList,
-                                onFavoriteClick = { id ->
-                                    vm.updateFavorite(id) { text ->
-                                        isSimpleWarning = true
-                                        SimpleWarningText = text
-                                    }
-                                },
-                                onItemClick = { item ->
-                                    if (item.image.isNullOrBlank()) {
-                                        isSimpleWarning = true
-                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
-                                    } else {
-                                        onItemClick(item.id)
-                                    }
-                                },
-                                modifier = Modifier.fillMaxSize()
-                            )
+                        // 캐릭터 아이템 그리드 (3*3)
+                        Spacer(Modifier.height(spacerPadding /2))
+                        CollectionCharacterGrid(
+                            data = state.collectionDataList,
+                            onFavoriteClick = { id ->
+                                vm.updateFavorite(id) { text ->
+                                    isSimpleWarning = true
+                                    SimpleWarningText = text
+                                }
+                            },
+                            onItemClick = { item ->
+                                if (item.image.isNullOrBlank()) {
+                                    isSimpleWarning = true
+                                    SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
+                                } else {
+                                    onItemClick(item.id)
+                                }
+                            },
+                            modifier = Modifier.fillMaxSize()
+                        )
 
                     }
                 }

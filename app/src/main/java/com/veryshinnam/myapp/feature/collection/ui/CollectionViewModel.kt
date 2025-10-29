@@ -64,7 +64,7 @@ class CollectionViewModel @Inject constructor(
                 val newFavoriteState = !character.isFavorite
 
                 if (newFavoriteState && favoritesCount >= 5) {
-                    onError("관심 캐릭터는 최대 5개까지 등록할 수 있어요!.")
+                    onError("좋아하는 캐릭터는 5명까지 등록할 수 있어요!")
                     return
                 }
 

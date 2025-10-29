@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -40,6 +41,7 @@ fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
+    spacerPadding: Dp = 20.dp,
     spanTextStyle: TextStyle = MaterialTheme.typography.headlineMedium,
     vm: DashboardViewModel = hiltViewModel()
 ) {
@@ -113,12 +115,15 @@ fun DashboardScreen(
                             )
                         )
 
-                        // 대시보드 스크롤 내용
+                        Spacer(Modifier.height(spacerPadding))
+
+                        // 대시보드 전체제 내용
                         DashboardTotalInfo(
                             modifier = Modifier,
                             username = state.username,
                             playData = state.playData,
-                            languageData = state.languageData
+                            languageData = state.languageData,
+                            spacerPadding = spacerPadding
                         )
                     }
                 }

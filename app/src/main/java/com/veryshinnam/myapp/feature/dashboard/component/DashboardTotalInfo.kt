@@ -30,8 +30,7 @@ fun DashboardTotalInfo(
     username: String,
     playData: PlayData,
     languageData: LanguageData,
-    horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 20.dp,
+    spacerPadding: Dp,
     listState: LazyListState = rememberLazyListState()
 ) {
     // 맨 위가 아닌지 체크
@@ -43,13 +42,13 @@ fun DashboardTotalInfo(
         }
     }
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(modifier = modifier) {
 
         // 스크롤 전체 구성
         LazyColumn(
             state = listState,
             modifier = Modifier.fillMaxSize(),
-            verticalArrangement = Arrangement.spacedBy(verticalPadding),
+            verticalArrangement = Arrangement.spacedBy(spacerPadding),
         ) {
             // 언어 분석 섹션
             item {

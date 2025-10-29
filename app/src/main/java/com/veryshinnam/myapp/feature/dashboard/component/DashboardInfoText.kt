@@ -14,11 +14,10 @@ import androidx.compose.ui.text.font.FontWeight
 
 @Composable
 fun DashboardInfoText(
-    label: String,
-    value: String,
+    labelText: String,
+    valueText: String,
     textColor: Color,
-    labelTextStyle: TextStyle = MaterialTheme.typography.titleSmall,
-    valueTextStyle: TextStyle = MaterialTheme.typography.titleMedium
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold)
 ) {
     Row(
         modifier = Modifier.fillMaxWidth(),
@@ -26,16 +25,14 @@ fun DashboardInfoText(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text( // 라벨
-            text = label,
-            style = labelTextStyle.copy(
-                fontWeight = FontWeight.Bold
-            )
+            text = labelText,
+            style = textStyle
         )
-        Text( // 값
-            text = value,
-            style = valueTextStyle.copy(
-                fontWeight = FontWeight.Bold,
-                color = textColor
+        Text( // 값 (라벨 폰트 크기의 1.2배)
+            text = valueText,
+            style = textStyle.copy(
+                color = textColor,
+                fontSize = textStyle.fontSize * 1.2f,
             )
         )
     }

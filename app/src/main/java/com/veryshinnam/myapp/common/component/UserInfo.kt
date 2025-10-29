@@ -52,8 +52,8 @@ fun UserInfo(
 ) {
     val cardFontSize = cardTextStyle.fontSize
     val spanFontSize = spanTextStyle.fontSize
-    val lineHeight = if (spanFontSize > cardFontSize) (spanFontSize.value / cardFontSize.value * 1.2).em
-                             else 1.2.em
+    val lineHeight = if (spanFontSize > cardFontSize) (spanFontSize.value / cardFontSize.value * 1.1).em
+                             else 1.1.em
 
     Column(modifier = modifier) {
         Box(
@@ -105,7 +105,7 @@ fun UserInfo(
                 if (spanText.isNullOrBlank()) {
                     AnnotatedString(
                         text = cardText.map { ch ->
-                            if (ch == '\n') ch.toString() else "$ch\u200B"
+                            if (ch == '\n') ch.toString() else "$ch\u200B" // 줄바꿈 문자 무시
                         }.joinToString("")
                     )
                 } else { // 강조 텍스트 있는 경우
@@ -117,11 +117,8 @@ fun UserInfo(
                             // 강조 텍스트 색상 및 크기 적용
                             if (remaining.startsWith(spanText)) {
                                 withStyle(
-                                    style = SpanStyle(
-                                        color = spanColor,
-                                        fontWeight = spanTextStyle.fontWeight,
-                                        fontSize = spanTextStyle.fontSize,
-                                        fontStyle = spanTextStyle.fontStyle
+                                    style = spanTextStyle.toSpanStyle().copy(
+                                        color = spanColor
                                     )
                                 ) { append(spanText) }
                                 append("\u200B")
