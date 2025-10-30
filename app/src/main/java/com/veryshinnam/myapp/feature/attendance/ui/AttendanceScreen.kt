@@ -2,6 +2,8 @@ package com.veryshinnam.myapp.feature.attendance.ui
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -36,7 +38,6 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
-import com.veryshinnam.myapp.feature.attendance.component.AttendanceInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
 import org.threeten.bp.YearMonth
 
@@ -113,13 +114,6 @@ fun AttendanceScreen(
                         // 오늘 출첵 여부 확인
                         if (!state.isTodayAttendance) { isTodayStamp = true }
 
-                        // 출첵 상단
-//                        AttendanceInfo(
-//                            month = state.month,
-//                            stamps = state.stamps,
-//                            attendances = state.attendances,
-//                            modifier = Modifier.weight(0.25f)    // 높이 비율 0.25
-//                        )
                         val month = if (state.month == YearMonth.now()) "이번 달"
                                     else "지난 ${state.month.monthValue}월"
 
@@ -159,22 +153,47 @@ fun AttendanceScreen(
 
     // 오늘 출첵 화면
     if (isTodayStamp) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    enabled = true,
+                    indication = null, // 터치 효과 제거
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { }
+        )
+
         AttendanceReward(
             painter = painterResource(R.drawable.img_stamp_shining_blue),
             text = "출석 완료",
             onReceiveClick = {
                 vm.fetchAttendance()
-                isTodayStamp = false // 닫기
+                isTodayStamp = false
             },
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f),
+                .zIndex(3f),
         )
     }
 
     // 출첵 보상 화면
     if (isReward) {
         val rewardCount = (uiState as? AttendanceUiState.Success)?.stamps?.div(10) ?: 0
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    enabled = true,
+                    indication = null, // 터치 효과 제거
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { }
+        )
+
         AttendanceReward(
             painter = painterResource(R.drawable.img_compass_shining),
             text = "나침반 ${rewardCount}개",
@@ -182,6 +201,7 @@ fun AttendanceScreen(
                 vm.fetchAttendanceReward()
                 isReward = false // 닫기
             },
+
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)

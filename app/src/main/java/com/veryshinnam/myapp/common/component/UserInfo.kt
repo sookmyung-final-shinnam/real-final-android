@@ -19,13 +19,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -43,7 +42,7 @@ fun UserInfo(
     animalAlignment: Alignment = Alignment.BottomCenter,
     animalDescription: String,
     bottomPadding: Dp = 10.dp,
-    cardPadding: Dp = 20.dp,
+    cardPadding: Dp = 16.dp,
     cardColor: Color,
     cardText: String,
     cardTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
@@ -119,7 +118,8 @@ fun UserInfo(
                             if (remaining.startsWith(spanText)) {
                                 withStyle(
                                     style = spanTextStyle.toSpanStyle().copy(
-                                        color = spanColor
+                                        color = spanColor,
+                                        textDecoration = TextDecoration.Underline
                                     )
                                 ) { append(spanText) }
                                 append("\u200B")
