@@ -59,7 +59,7 @@ fun AttendanceReward(
             titleText = text,
             titleColor = Color.White,
             strokeColor = colorResource(R.color.clear_blue),
-            strokeWidth = 6f,
+            strokeWidth = 12f,
             titleTextStyle = textStyle.copy(
                 fontSize = textStyle.fontSize * 1.5f
             )

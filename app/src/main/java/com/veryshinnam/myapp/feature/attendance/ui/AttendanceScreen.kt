@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.attendance.ui
 
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -36,6 +37,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
@@ -54,6 +56,8 @@ fun AttendanceScreen(
     var isTodayStamp by remember { mutableStateOf(false) }
     var isReward by remember { mutableStateOf(false) }
 
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     // 뒤로 가기
     BackHandler { onBack() }

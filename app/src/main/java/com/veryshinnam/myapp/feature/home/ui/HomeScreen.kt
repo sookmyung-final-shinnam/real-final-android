@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.home.ui
 
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
@@ -60,7 +62,8 @@ fun HomeScreen(
     // 홈 화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
 
-    // 동화책 상세 > 홈 화면: 세로 모드
+    // 세로 모드 고정
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 //    val context = LocalContext.current
 //    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
 

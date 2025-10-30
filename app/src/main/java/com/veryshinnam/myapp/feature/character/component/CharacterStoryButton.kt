@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.character.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -26,8 +27,10 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
@@ -41,9 +44,14 @@ fun CharacterStoryButton(
     storyType: StoryType, // 동화 타입
     storyUrl: String?,    // 동화 또는 영상 표지 이미지
     typeText: String,     // 동화 타입 텍스트
+    buttonSize: Float = 0.7f,
+    buttonRadius: Dp = 16.dp,
+    kakaoSize: Float = 0.35f,
+    kakaoRadius: Dp = 12.dp,
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit = {},
     onShareClick: (String) -> Unit,
+    infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
 ) {
     val isExist = !storyUrl.isNullOrBlank()
@@ -51,9 +59,13 @@ fun CharacterStoryButton(
     // 동화 버튼
     Column(
         modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(5.dp),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Box(modifier = Modifier.weight(0.3f)) {
+        Box(
+            modifier = Modifier.fillMaxHeight(buttonSize),
+            contentAlignment = Alignment.TopEnd
+        ) {
             Button(
                 onClick = {
                     if (isExist) {
@@ -62,18 +74,14 @@ fun CharacterStoryButton(
                         onLockerClick(storyId) // 자물쇠 > 동영상 제작
                     }
                 },
-                modifier = Modifier
-                    .aspectRatio(1f),
-                shape = RoundedCornerShape(40.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = Color.White
-                ),
+                modifier = Modifier.aspectRatio(1f),
+                shape = RoundedCornerShape(buttonRadius),
                 contentPadding = PaddingValues(0.dp) // 패딩 제거
             ) {
                 if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
                     AsyncImage(
                         model = storyUrl,
-                        contentDescription = "${typeText} 버튼",
+                        contentDescription = "$typeText 버튼",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
@@ -91,7 +99,7 @@ fun CharacterStoryButton(
                         ) {
                             Image(
                                 painter = painterResource(R.drawable.img_locker),
-                                contentDescription = "${typeText} 잠금",
+                                contentDescription = "$typeText 잠금",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Fit
                             )
@@ -105,9 +113,10 @@ fun CharacterStoryButton(
                     onClick = { onShareClick(storyUrl!!) },
                     modifier = Modifier
                         .align(Alignment.TopEnd) // 버튼 내부 우상단
-                        .size(60.dp)
+                        .fillMaxHeight(kakaoSize)
+                        .aspectRatio(1f)
                         .zIndex(1f),
-                    shape = RoundedCornerShape(12.dp),
+                    shape = RoundedCornerShape(kakaoRadius),
                     contentPadding = PaddingValues(0.dp),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = Color.Transparent
@@ -121,13 +130,10 @@ fun CharacterStoryButton(
                 }
             }
         }
-        Spacer(Modifier.height(4.dp))
 
         Text(
-            text = "${typeText} 보러 가기",
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.SemiBold,
-            ),
+            text = "$typeText 보러 가기",
+            style = infoTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )

@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -33,6 +34,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.feature.dashboard.component.DashboardTotalInfo
 
@@ -46,6 +48,9 @@ fun DashboardScreen(
     vm: DashboardViewModel = hiltViewModel()
 ) {
     val uiState by vm.dashBoardUiState.collectAsStateWithLifecycle()
+
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     // 뒤로 가기
     BackHandler { onBack() }

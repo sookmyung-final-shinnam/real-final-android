@@ -29,6 +29,7 @@ import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.em
+import androidx.compose.ui.unit.sp
 
 // 보관함 상단
 @Composable
@@ -52,8 +53,7 @@ fun UserInfo(
 ) {
     val cardFontSize = cardTextStyle.fontSize
     val spanFontSize = spanTextStyle.fontSize
-    val lineHeight = if (spanFontSize > cardFontSize) (spanFontSize.value / cardFontSize.value * 1.1).em
-                             else 1.1.em
+    val lineHeight = (spanTextStyle.fontSize.value * 1.1).sp
 
     Column(modifier = modifier) {
         Box(
@@ -119,6 +119,7 @@ fun UserInfo(
                                 withStyle(
                                     style = spanTextStyle.toSpanStyle().copy(
                                         color = spanColor,
+                                        fontSize = spanTextStyle.fontSize,
                                         textDecoration = TextDecoration.Underline
                                     )
                                 ) { append(spanText) }
@@ -140,7 +141,6 @@ fun UserInfo(
                 style = cardTextStyle.copy(
                     fontWeight = FontWeight.Bold,
                     lineBreak = LineBreak.Simple,
-                    lineHeight = lineHeight // 줄 사이 간격
                 ),
                 softWrap = true
             )

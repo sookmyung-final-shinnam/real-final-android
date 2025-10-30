@@ -162,7 +162,7 @@ fun AttendanceCalender(
                                 titleText = day,
                                 titleColor = Color.White,
                                 strokeColor = colorResource(R.color.deep_pink),
-                                strokeWidth = 4f,
+                                strokeWidth = 8f,
                                 titleTextStyle = textStyle
                             )
                         }

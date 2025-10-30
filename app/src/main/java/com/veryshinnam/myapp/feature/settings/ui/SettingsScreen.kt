@@ -55,6 +55,7 @@ import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 fun SettingsScreen(
     onHome: () -> Unit,
     onLogoClick: () -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.titleMedium,
     vm: SettingsViewModel = hiltViewModel()
 ) {
     val uiState by vm.uiState.collectAsStateWithLifecycle()

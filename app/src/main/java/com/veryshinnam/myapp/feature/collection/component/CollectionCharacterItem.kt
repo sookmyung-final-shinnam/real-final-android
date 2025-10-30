@@ -41,6 +41,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.FavoriteButton
 import com.veryshinnam.myapp.common.component.StrokeText
 import com.veryshinnam.myapp.common.component.StrokeTitle
 
@@ -72,42 +73,20 @@ fun CollectionCharacterItem(
                 model = cImage,
                 contentDescription = "캐릭터 이미지",
                 modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
+                contentScale = ContentScale.Crop,
             )
 
-            // 즐찾
-            Box(
+            // 즐찾 버튼
+            FavoriteButton (
                 modifier = Modifier
                     .fillMaxWidth(0.44f)
                     .aspectRatio(1f)
                     .align(Alignment.TopStart)
-                    .padding(4.dp)
-            ) {
-                // 보더
-                Icon(
-                    imageVector = Icons.Rounded.StarBorder,
-                    contentDescription = null,
-                    tint = colorResource(id = R.color.main_orange),
-                    modifier = Modifier
-                        .fillMaxSize()
-                )
-
-                // 내부
-                IconButton(
-                    onClick = { onFavoriteClick(cId) },
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .align(Alignment.Center)
-                ) {
-                    Icon(
-                        imageVector = Icons.Rounded.Star,
-                        contentDescription = "즐겨찾기 아이콘",
-                        tint = if (isFavorite) colorResource(id = R.color.main_orange) else Color.White,
-                        modifier = Modifier
-                            .fillMaxSize(0.92f)
-                    )
-                }
-            }
+                    .padding(4.dp),
+                characterId = cId,
+                isFavorite = isFavorite,
+                onFavoriteClick = onFavoriteClick,
+            )
 
             // 캐릭터 이름
             StrokeTitle(

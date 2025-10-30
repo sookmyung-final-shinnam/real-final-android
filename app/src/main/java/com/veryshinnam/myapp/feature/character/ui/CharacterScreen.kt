@@ -1,28 +1,24 @@
 package com.veryshinnam.myapp.feature.character.ui
 
-import android.app.Activity
 import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,15 +32,20 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
+import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
@@ -54,11 +55,16 @@ fun CharacterScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
+    xMoving: Dp = 60.dp,
+    bottomPadding: Dp = 10.dp,
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
-    val activity = LocalContext.current as? Activity
 
+    // 가로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+
+    // 공유 및 클립보드
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
 
@@ -68,40 +74,20 @@ fun CharacterScreen(
     var isSharing by remember { mutableStateOf(false) }
     var sharedStoryUrl by remember { mutableStateOf<String?>(null) }
 
-    // 가로모드 + id가 바뀌면 재로딩
-    LaunchedEffect(id) {
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        vm.fetchCharacter(id)
-    }
+    // 캐릭터 id 바뀌면 재로딩
+    LaunchedEffect(id) { vm.fetchCharacter(id) }
 
-    // 뒤로가기 세로모드
-    BackHandler {
-        onBack()
-    }
+    // 뒤로 가기
+    BackHandler { onBack() }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
-            Column (Modifier.fillMaxWidth()) {
-                LogoBar(onLogoClick=onLogoClick) // 기존 바
-                Row(
-                    modifier = Modifier
-                        .clickable(onClick = {
-                            onBack()
-                        })
-                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "이전")
-                    Spacer(Modifier.width(4.dp))
-                    Text("이전", fontWeight = FontWeight.Medium)
-                }
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = onLogoClick)
             }
-        },
-        bottomBar = {
-            Spacer( // 네비게이션 바만큼 여백
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
-            )
         }
     ) { innerPadding ->
         Box(
@@ -110,6 +96,14 @@ fun CharacterScreen(
                 .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            // 뒤로 가기 버튼
+            BackButton(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .zIndex(1f),
+                onBackClick = onBack
+            )
+
             when (val state = uiState) {
                 // 조회 로딩 중
                 is CharacterUiState.Loading -> {
@@ -119,6 +113,7 @@ fun CharacterScreen(
                         strokeWidth = 4.dp
                     )
                 }
+
                 // 조회 오류
                 is CharacterUiState.Error -> {
                     LoadErrorView(
@@ -126,26 +121,44 @@ fun CharacterScreen(
                         onRetry = { vm.reload(id) }
                     )
                 }
+
                 // 조회 성공
                 is CharacterUiState.Success -> {
-                    CharacterCardScreen(
-                        character = state.characterData,
-                        onFavoriteClick = { id -> vm.updateFavorite(id) },
-                        onStoryClick = onStoryClick,
-                        onLockerClick = { storyId ->
-                            isWarning = true
-                            warnedStoryId = storyId
-                        },
-                        onFlip = { isFront ->
-                            if (!isFront) {
-                                vm.refreshStories(state.characterData.id)
-                            }
-                        },
-                        onShareClick = { storyUrl ->
-                            isSharing = true
-                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8"
-                        }
-                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth(0.9f)
+                            .padding(bottom = bottomPadding),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.End // Row 안 가로 배치 방향
+                    ) {
+                        // 왼쪽 캐릭터 이미지 카드
+                        CharacterCardLeft(
+                            character = state.characterData,
+                            onFavoriteClick = { id -> vm.updateFavorite(id) },
+                            modifier = Modifier
+                                .aspectRatio(0.8f) // 카드 비율
+                                .offset(x = xMoving)       // 오른쪽 이동
+                        )
+
+                        // 오른쪽 캐릭터 정보 카드
+                        CharacterCardRight(
+                            character = state.characterData,
+                            onStoryClick = onStoryClick,
+                            onLockerClick = { storyId ->
+                                isWarning = true
+                                warnedStoryId = storyId },
+                            onFlip = { isFront ->
+                                if (!isFront) {
+                                    vm.refreshStories(state.characterData.id)
+                                } },
+                            onShareClick = { storyUrl ->
+                                isSharing = true
+                                sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
+                            modifier = Modifier
+                                .aspectRatio(2f) // 카드 비율
+                                .zIndex(1f)
+                        )
+                    }
                 }
             }
         }
