@@ -179,9 +179,9 @@ fun CharacterScreen(
 
     if (isSharing && sharedStoryUrl != null) {
         ShareSheet(
-            shareUrl = "https://youtu.be/cX2PU3aEBL8",
+            urlText = "https://youtu.be/cX2PU3aEBL8",
 //            shareUrl = sharedStoryUrl!!,
-            shareText = "카카오톡으로 공유하기",
+            confirmText = "카카오톡으로 공유하기",
             onDismiss = { isSharing = false },
             onShare = {
                 try {

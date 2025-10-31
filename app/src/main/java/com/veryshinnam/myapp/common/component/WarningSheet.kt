@@ -53,7 +53,8 @@ fun WarningSheet(
     warningText: String,
     warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.1.em),
     confirmText: String,
-    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge,
+    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
+    confirmWidth: Float = 0.8f,
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
     onDismiss: () -> Unit,
@@ -78,14 +79,17 @@ fun WarningSheet(
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange)
     ) {
+        // --- 닫기 버튼 + 경고 내용 + 확인 버튼
         Column(
             modifier = Modifier
                 .fillMaxWidth()
 //                .fillMaxHeight(.35f)
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
+                // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(.12f)
@@ -100,6 +104,7 @@ fun WarningSheet(
                     )
                 }
 
+                // --- 경고 내용 (경고 이미지 + 문구)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -107,6 +112,7 @@ fun WarningSheet(
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
                 ) {
+                    // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
                         contentDescription = "경고 이미지",
@@ -114,6 +120,7 @@ fun WarningSheet(
                         contentScale = ContentScale.Fit
                     )
 
+                    // 문구
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -128,9 +135,10 @@ fun WarningSheet(
                             ) { append("$warningText\n") }
                         },
                         style = warningTextStyle,
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth()
                     )
 
+                    // --- 확인 버튼
                     Button(
                         onClick = {
                             onConfirm()
@@ -142,10 +150,7 @@ fun WarningSheet(
                     ) {
                         Text(
                             text = confirmText,
-                            style = confirmTextStyle.copy(
-                                color = Color.Black,
-                                fontWeight = FontWeight.Bold
-                            ),
+                            style = confirmTextStyle,
                             modifier = Modifier.padding(4.dp)
                         )
                     }
