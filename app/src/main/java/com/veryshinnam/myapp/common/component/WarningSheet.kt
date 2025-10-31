@@ -54,7 +54,6 @@ fun WarningSheet(
     warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.1.em),
     confirmText: String,
     confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
-    confirmWidth: Float = 0.8f,
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
     onDismiss: () -> Unit,
@@ -69,7 +68,7 @@ fun WarningSheet(
 //    val heightDp = with(density) { heightPx.toDp() } // px > dp
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
+        skipPartiallyExpanded = true,
         confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
     )
 
