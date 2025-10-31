@@ -2,6 +2,7 @@
 
 package com.veryshinnam.myapp.feature.permit.ui
 
+import android.content.pm.ActivityInfo
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoTitle
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.VideoPlayer
 
 /**
@@ -39,6 +41,9 @@ fun SplashScreen(
     val state by vm.permitUiState.collectAsStateWithLifecycle()
     val context = LocalContext.current
     val splashVideo = "android.resource://${context.packageName}/${R.raw.splash}"
+
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     LaunchedEffect(Unit) {
         vm.checkAccessToken()

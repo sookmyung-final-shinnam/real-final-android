@@ -21,13 +21,14 @@ fun ScreenOrientation(
 
     DisposableEffect(orientation) {
         val activity = context as? Activity ?: return@DisposableEffect onDispose {}
+        val previous = activity.requestedOrientation
 
         // 진입 시 방향 고정
         activity.requestedOrientation = orientation
 
         onDispose {
             // 사라질 때 원래 방향 복구
-            activity.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
+            activity.requestedOrientation = previous
         }
     }
 }

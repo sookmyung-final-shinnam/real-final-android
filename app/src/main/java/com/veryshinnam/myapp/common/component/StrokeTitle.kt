@@ -26,9 +26,7 @@ fun StrokeTitle(
     verticalPadding: Dp = 4.dp,
 ) {
     Box(
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(vertical = verticalPadding),
+        modifier = modifier.padding(vertical = verticalPadding),
         contentAlignment = Alignment.Center
     ) {
         // 윤곽선

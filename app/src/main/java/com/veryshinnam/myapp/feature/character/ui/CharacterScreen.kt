@@ -4,12 +4,14 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -56,13 +58,10 @@ fun CharacterScreen(
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     xMoving: Dp = 60.dp,
-    bottomPadding: Dp = 10.dp,
+    verticalPadding: Dp = 10.dp,
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
-
-    // 가로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
     // 공유 및 클립보드
     val context = LocalContext.current
@@ -74,91 +73,95 @@ fun CharacterScreen(
     var isSharing by remember { mutableStateOf(false) }
     var sharedStoryUrl by remember { mutableStateOf<String?>(null) }
 
+    // 가로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+
     // 캐릭터 id 바뀌면 재로딩
     LaunchedEffect(id) { vm.fetchCharacter(id) }
 
     // 뒤로 가기
     BackHandler { onBack() }
 
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = {
-            // 상태바 만큼 여백 & 상단 로고
-            Column {
-                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar(onLogoClick = onLogoClick)
-            }
-        }
-    ) { innerPadding ->
-        Box(
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.background_yellow)),
+        contentAlignment = Alignment.Center
+    ) {
+        // 상단 로고
+        LogoBar(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            // 뒤로 가기 버튼
-            BackButton(
-                modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .zIndex(1f),
-                onBackClick = onBack
-            )
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                .zIndex(2f)
+                .align(Alignment.TopCenter),
+            onLogoClick = onLogoClick
+        )
 
-            when (val state = uiState) {
-                // 조회 로딩 중
-                is CharacterUiState.Loading -> {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.main_orange), // 주황색
-                        trackColor = Color.Gray.copy(alpha = 0.5f),
-                        strokeWidth = 4.dp
-                    )
-                }
+        // 뒤로 가기 버튼
+        BackButton(
+            modifier = Modifier
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                .zIndex(1f)
+                .align(Alignment.TopStart),
+            onBackClick = onBack
+        )
 
-                // 조회 오류
-                is CharacterUiState.Error -> {
-                    LoadErrorView(
-                        message = state.message,
-                        onRetry = { vm.reload(id) }
-                    )
-                }
+        when (val state = uiState) {
+            // 조회 로딩 중
+            is CharacterUiState.Loading -> {
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.main_orange), // 주황색
+                    trackColor = Color.Gray.copy(alpha = 0.5f),
+                    strokeWidth = 4.dp
+                )
+            }
 
-                // 조회 성공
-                is CharacterUiState.Success -> {
-                    Row(
+            // 조회 오류
+            is CharacterUiState.Error -> {
+                LoadErrorView(
+                    message = state.message,
+                    onRetry = { vm.reload(id) }
+                )
+            }
+
+            // 조회 성공
+            is CharacterUiState.Success -> {
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth(0.9f)
+                        .padding(vertical = verticalPadding),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End // Row 안 가로 배치 방향
+                ) {
+                    // 왼쪽 캐릭터 이미지 카드
+                    CharacterCardLeft(
+                        character = state.characterData,
+                        onFavoriteClick = { id -> vm.updateFavorite(id) },
                         modifier = Modifier
-                            .fillMaxWidth(0.9f)
-                            .padding(bottom = bottomPadding),
-                        verticalAlignment = Alignment.CenterVertically,
-                        horizontalArrangement = Arrangement.End // Row 안 가로 배치 방향
-                    ) {
-                        // 왼쪽 캐릭터 이미지 카드
-                        CharacterCardLeft(
-                            character = state.characterData,
-                            onFavoriteClick = { id -> vm.updateFavorite(id) },
-                            modifier = Modifier
-                                .aspectRatio(0.8f) // 카드 비율
-                                .offset(x = xMoving)       // 오른쪽 이동
-                        )
+                            .aspectRatio(0.8f) // 카드 비율
+                            .offset(x = xMoving)       // 오른쪽 이동
+                    )
 
-                        // 오른쪽 캐릭터 정보 카드
-                        CharacterCardRight(
-                            character = state.characterData,
-                            onStoryClick = onStoryClick,
-                            onLockerClick = { storyId ->
-                                isWarning = true
-                                warnedStoryId = storyId },
-                            onFlip = { isFront ->
-                                if (!isFront) {
-                                    vm.refreshStories(state.characterData.id)
-                                } },
-                            onShareClick = { storyUrl ->
-                                isSharing = true
-                                sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
-                            modifier = Modifier
-                                .aspectRatio(2f) // 카드 비율
-                                .zIndex(1f)
-                        )
-                    }
+                    // 오른쪽 캐릭터 정보 카드
+                    CharacterCardRight(
+                        character = state.characterData,
+                        onStoryClick = onStoryClick,
+                        onLockerClick = { storyId ->
+                            isWarning = true
+                            warnedStoryId = storyId },
+                        onFlip = { isFront ->
+                            if (!isFront) {
+                                vm.refreshStories(state.characterData.id)
+                            } },
+                        onShareClick = { storyUrl ->
+                            isSharing = true
+                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
+                        modifier = Modifier
+                            .aspectRatio(2f) // 카드 비율
+                            .zIndex(1f)
+                    )
                 }
             }
         }
@@ -171,8 +174,8 @@ fun CharacterScreen(
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {
-                    vm.fetchVideoStory(warnedStoryId!!)
-                    isWarning = false
+                vm.fetchVideoStory(warnedStoryId!!)
+                isWarning = false
             }
         )
     }

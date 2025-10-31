@@ -17,7 +17,9 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.StoryData
@@ -25,11 +27,13 @@ import com.veryshinnam.myapp.feature.story.model.StoryData
 @Composable
 fun StoryInfoFade(
     story: StoryData,
+    spacerPadding: Dp = 5.dp,
+    titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+    tagTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(color = colorResource(R.color.background_yellow), fontWeight = FontWeight.SemiBold),
+    descTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.SemiBold),
     modifier: Modifier // 부모에게서 받은 크기
 ) {
-    Row(
-        modifier = modifier.fillMaxSize(),
-    ) {
+    Row(modifier = modifier.fillMaxSize()) {
         // 페이드 부분
         Box(
             modifier = Modifier
@@ -45,7 +49,6 @@ fun StoryInfoFade(
                 )
         )
 
-
         // 동화 정보
         Box(
             modifier = Modifier
@@ -60,20 +63,17 @@ fun StoryInfoFade(
             ) {
                 Text( // 제목
                     text = story.title,
-                    style = MaterialTheme.typography.displayLarge.copy(
-                        fontWeight = FontWeight.Bold)
+                    style = titleTextStyle
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(spacerPadding * 4))
                 Text( // 태그
                     text = story.tags,
-                    color = colorResource(R.color.background_yellow),
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.SemiBold)
+                    style = tagTextStyle
                 )
-                Spacer(modifier = Modifier.height(20.dp))
+                Spacer(modifier = Modifier.height(spacerPadding))
                 Text( // 줄거리
-                    text = story.description,
-                    style = MaterialTheme.typography.headlineLarge
+                    text = story.description.replace("", "\u200B"),
+                    style = descTextStyle
                 )
             }
         }

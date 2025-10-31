@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.ui.selection
 
+import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
@@ -26,6 +27,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
@@ -59,6 +61,8 @@ fun SelectionScreen(
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
+
+
 
     // 뒤로 가기 로직
     fun handleBack() {
@@ -121,7 +125,10 @@ fun SelectionScreen(
         Log.d("SelectScreen", "현재 선택된 머리스탈: ${uiState.selectionData.hairStyle}")
     }
 
-    // 뒤로가기 동작 제어
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+
+    // 뒤로 가기
     BackHandler { handleBack() }
 
     // ui 화면

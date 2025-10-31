@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -27,6 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoTitle
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 
 /**
  * 로그인 화면
@@ -43,6 +45,9 @@ fun LoginScreen(
 ) {
     val state by vm.permitUiState.collectAsStateWithLifecycle()
     var isKakaoLogin by remember { mutableStateOf(false) } // 카카오 로그인 웹뷰 띄우기
+
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     LaunchedEffect(state) {
         when (state) {

@@ -50,6 +50,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
@@ -69,11 +70,14 @@ fun CollectionScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
 
     // 캐릭터 상세 > 보관함 화면: 세로 모드
-    val context = LocalContext.current
-    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+//    val context = LocalContext.current
+//    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
+
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
     // 뒤로 가기
     BackHandler { onBack() }
