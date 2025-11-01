@@ -3,10 +3,14 @@ package com.veryshinnam.myapp.common.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
@@ -28,14 +32,14 @@ fun UserItem(
     painter: Painter,
     contentDescription: String,
     value: String,
-    spacer: Dp = 8.dp,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    color: Color
+    color: Color,
+    verticalPadding: Dp = 4.dp
 ) {
     Box(
         // 테두리
         modifier = modifier
-            .fillMaxHeight()
+            .fillMaxSize()
             .background(Color.White, shape = CircleShape)
             .border(
                 width = 4.dp,
@@ -44,7 +48,12 @@ fun UserItem(
         contentAlignment = Alignment.Center
     ) {
         Row(
-            modifier = Modifier.fillMaxHeight(),
+            modifier = Modifier
+                .fillMaxWidth(0.65f)
+//            .fillMaxSize()
+                .padding( vertical = verticalPadding),
+//            .padding(horizontal = verticalPadding*4, vertical = verticalPadding),
+            horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 아이콘 이미지
@@ -54,7 +63,7 @@ fun UserItem(
                 modifier = Modifier.fillMaxHeight(0.8f),
                 contentScale = ContentScale.Fit
             )
-            Spacer(modifier = Modifier.width(spacer))
+
             Text(
                 // 개수
                 text = value,

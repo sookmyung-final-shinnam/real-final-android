@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -9,6 +10,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
@@ -24,8 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -36,74 +41,65 @@ fun ConversationNeedsText(
     painter: Painter,
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    verticalPadding: Dp = 24.dp,
+    spacePadding: Dp = 12.dp,
+    tryTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold, textAlign = TextAlign.Center),
 ) {
-    Box(
-        modifier = modifier.fillMaxWidth(0.9f).fillMaxHeight()
-    ) {
+    Box(modifier = modifier) {
         Column(
-            modifier = Modifier.fillMaxWidth().fillMaxHeight(0.3f)
+            modifier = Modifier.fillMaxWidth()
                 .align(Alignment.TopCenter),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             // 틀린 횟수
             Card(
                 modifier = Modifier
-                    .fillMaxWidth(0.3f)
-                    .wrapContentHeight()
-                    .padding(4.dp),
+                    .padding(bottom = 4.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(32.dp),
                 border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
             ) {
                 Box(
-                    modifier = Modifier.fillMaxWidth().padding(8.dp),
+                    modifier = Modifier
+                        .wrapContentWidth()
+                        .padding(vertical = 8.dp, horizontal = spacePadding),
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
-                        text = "시도 횟수: ${tryNum}",
-                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                        text = "시도 횟수: $tryNum",
+                        style = tryTextStyle
                     )
                 }
             }
 
             // 피드백 텍스트
             Card(
-                modifier = Modifier.fillMaxWidth().weight(1f),
+                modifier = Modifier.fillMaxWidth(),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(32.dp),
                 border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
             ) {
-                Box(
-                    modifier = Modifier.fillMaxSize().padding(16.dp),
-                    contentAlignment = Alignment.Center
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(verticalPadding),
+                    verticalArrangement = Arrangement.spacedBy(spacePadding),
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     // 피드백 텍스트
                     Text(
                         text = feedback,
-                        style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
-                        textAlign = TextAlign.Center,
-                        modifier = Modifier.fillMaxWidth()
+                        style = textStyle
                     )
 
                     // 다시듣기
-                    Button(
-                        onClick = { onReplayClick() },
-                        enabled = !isTtsSpeaking, // speaking 중이면 비활성화
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.lemon_yellow),
-                        ),
-                        shape = CircleShape,
-                        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-                        modifier = Modifier.align(Alignment.BottomEnd) // 오른쪽 아래
-                    ) {
-                        Text(
-                            "다시 듣기",
-                            color = Color.Black,
-                            modifier = Modifier.padding(8.dp),
-                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
-                        )
-                    }
+                    ConversationReplayButton(
+                        isTtsSpeaking = isTtsSpeaking,
+                        onReplayClick = onReplayClick,
+                        modifier = Modifier.align(Alignment.End)
+                    )
                 }
             }
         }
@@ -113,7 +109,7 @@ fun ConversationNeedsText(
             painter = painter,
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
-                .fillMaxHeight(0.8f)
+                .fillMaxHeight(0.75f)
                 .align(Alignment.BottomCenter), // Box 아래쪽
             contentScale = ContentScale.Fit
         )

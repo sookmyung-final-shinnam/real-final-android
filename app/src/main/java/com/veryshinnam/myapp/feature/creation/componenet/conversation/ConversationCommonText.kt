@@ -53,8 +53,11 @@ fun ConversationCommonText(
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
         ) {
             Column(
-                modifier = Modifier.padding(verticalPadding, verticalPadding),
-                verticalArrangement = Arrangement.spacedBy(spacePadding)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(verticalPadding),
+                verticalArrangement = Arrangement.spacedBy(spacePadding),
+                horizontalAlignment = Alignment.CenterHorizontally
             ){
                 // 질문 텍스트
                 Text(

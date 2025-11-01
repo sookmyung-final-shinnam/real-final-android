@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -46,14 +47,14 @@ fun SelectionStyleButtons(
 
         Row(
             modifier = Modifier.fillMaxSize().padding(top = topPadding),
-            horizontalArrangement = Arrangement.spacedBy(8.dp)
+            horizontalArrangement = Arrangement.spacedBy(4.dp)
         ) {
             styles.forEach { style ->
                 val isSelected = style == selected
 
                 Button(
                     onClick = { onSelect(style) },
-                    shape = RoundedCornerShape(20.dp),
+                    shape = CircleShape,
                     border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
                     colors = ButtonDefaults.buttonColors(
                         containerColor = if (isSelected) colorResource(R.color.main_orange)

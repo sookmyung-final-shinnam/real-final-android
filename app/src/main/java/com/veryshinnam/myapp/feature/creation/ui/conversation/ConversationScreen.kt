@@ -16,7 +16,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
@@ -30,7 +29,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
@@ -43,7 +41,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationEndContent
+import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationFeedbackContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationQuestionContent
@@ -201,7 +199,10 @@ fun ConversationScreen(
                             ConversationStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
 
                                 BackHandler { // 긍정 >  홈으로, 부정 > QUESTION 단계 이동 가능
-                                    if (state.feedbackData.isPositive) onBack()
+                                    if (state.feedbackData.isPositive) {
+                                        isWarning = true
+//                                        onBack()
+                                    }
                                     else vm.goToPreviousStep()
                                 }
 
