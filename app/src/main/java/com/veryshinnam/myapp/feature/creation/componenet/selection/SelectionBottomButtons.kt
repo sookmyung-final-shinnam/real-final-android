@@ -1,26 +1,41 @@
 package com.veryshinnam.myapp.feature.creation.componenet.selection
 
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.automirrored.filled.ArrowForward
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -33,74 +48,103 @@ fun SelectionTripleButtons(
     onLeftClick: () -> Unit = {},
     onCenterClick: () -> Unit = {},
     onRightClick: () -> Unit = {},
-    modifier: Modifier
+    modifier: Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = colorResource(R.color.main_orange), fontWeight = SemiBold),
+    centerTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = SemiBold, textAlign = Center)
 ) {
+    // --- 이전 버튼 + 직접 추가 버튼 + 다음 버튼
     Row(
-        modifier = modifier.padding(bottom = 16.dp),
+        modifier = modifier,
         verticalAlignment = Alignment.CenterVertically,
     ) {
+        // 이전 버튼
         if (isLeft) {
-            // 이전 버튼
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(onClick = {onLeftClick()}),
+                    .clickable(onClick = { onLeftClick() }),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Icon(Icons.AutoMirrored.Filled.ArrowBack,
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowBack,
                     contentDescription = "이전",
                     tint = colorResource(R.color.main_orange)
                 )
                 Spacer(Modifier.width(4.dp))
-                Text("이전",
-                    fontWeight = FontWeight.Medium,
-                    color = colorResource(R.color.main_orange),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.SemiBold)
+                Text(
+                    "이전",
+                    style = textStyle
                 )
             }
         } else {
             Spacer(Modifier.weight(1f))
         }
 
-        if (isCenter) {
-            BoxWithConstraints(
-                modifier = Modifier.weight(1f)
+        // 직접 추가 버튼
+        val containerColor = if (isCenter) colorResource(R.color.lemon_yellow) else Color.Transparent
+        val contentColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
+        val borderColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
+
+        // 직접 추가 버튼이 있을 때
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            // 버튼을 항상 렌더링하여 높이-공간 확보
+            Button(
+                onClick = { if (isCenter) onCenterClick() },
+                enabled = isCenter,
+                modifier = Modifier.fillMaxSize(),
+                shape = RoundedCornerShape(16.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = containerColor,
+                    contentColor = contentColor,
+                    disabledContainerColor = containerColor,
+                    disabledContentColor = contentColor
+                ),
+                border = BorderStroke(
+                    width = 2.dp,
+                    color = borderColor
+                ),
+                contentPadding = PaddingValues(horizontal = 4.dp, vertical = 2.dp),
             ) {
-                val side = minOf(maxWidth, maxHeight)  // 더 짧은 쪽
-                Box(
-                    modifier = Modifier
-                        .size(side) // 정사각형
-                        .align(Alignment.Center)
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    verticalArrangement = Arrangement.Center,
+                    horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    SelectionCustomButton(
-                        onButtonClick = onCenterClick,
-                        modifier = Modifier.fillMaxSize()
+                    Image(
+                        painter = painterResource(id = R.drawable.img_keyboard),
+                        contentDescription = if (isCenter) "직접 추가 이미지" else null, // 접근성 내용 제거
+                        contentScale = ContentScale.Fit,
+                        modifier = Modifier
+                            .fillMaxHeight(0.7f)
+                            .padding(16.dp),
+                        alpha = if (isCenter) 1.0f else 0.0f
                     )
+                    Text(text = "직접 추가하기", style = centerTextStyle)
                 }
             }
-        } else {
-            Spacer(Modifier.weight(1f))
         }
 
+        // 다음 버튼
         if (isRight) {
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(onClick = {onRightClick()}),
+                    .clickable(onClick = { onRightClick() }),
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("다음",
-                    fontWeight = FontWeight.Medium,
-                    color = colorResource(R.color.main_orange),
-                    style = MaterialTheme.typography.headlineSmall.copy(
-                        fontWeight = FontWeight.SemiBold)
+                Text(
+                    "다음",
+                    style = textStyle
                 )
 
                 Spacer(Modifier.width(4.dp))
-                Icon(Icons.AutoMirrored.Filled.ArrowForward,
+                Icon(
+                    Icons.AutoMirrored.Filled.ArrowForward,
                     contentDescription = "다음",
                     tint = colorResource(R.color.main_orange)
                 )

@@ -1,11 +1,19 @@
 package com.veryshinnam.myapp.feature.creation.content.selection
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionPaletteGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionStyleButtons
@@ -24,6 +32,8 @@ fun SelectionFaceContent(
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
     onWarning: (String, String) -> Unit,
     modifier: Modifier,
+    horizontalPadding: Dp = 5.dp,
+    spacePadding: Dp = 24.dp,
 ) {
     // 기본 팔레트 색상 및 머리 스타일
     val colors = listOf(
@@ -45,11 +55,12 @@ fun SelectionFaceContent(
     // 유효성 체크 (모두 선택)
     val isValid = eyeColor.isNotEmpty() && hairColor.isNotEmpty() && hairStyle.isNotEmpty()
 
-    Column(modifier = modifier) {
+    Column(modifier = modifier.padding(horizontal = horizontalPadding)) {
 
         // 파레트 및 스타일
         Column(
             modifier = Modifier.fillMaxWidth().weight(8f),
+            verticalArrangement = Arrangement.spacedBy(spacePadding),
             horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙
         ) {
             // 눈색 선택 파레트
@@ -60,7 +71,6 @@ fun SelectionFaceContent(
                 onSelect = { onSelectEyeColor(it) },
                 modifier = Modifier.weight(0.4f)
             )
-            Spacer(Modifier.weight(0.05f))
 
             // 머리색 선택 파레트
             SelectionPaletteGrid(
@@ -71,7 +81,6 @@ fun SelectionFaceContent(
                 modifier = Modifier.weight(0.4f)
             )
 
-            Spacer(Modifier.weight(0.05f))
 
             // 머리 모양 선택 버튼
             SelectionStyleButtons(
@@ -79,9 +88,11 @@ fun SelectionFaceContent(
                 styles = styles,
                 selected = hairStyle,
                 onSelect = { onSelectHairStyle(it)},
-                modifier = Modifier.weight(0.2f)
+                modifier = Modifier.weight(0.3f)
             )
         }
+
+        Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
         SelectionTripleButtons(

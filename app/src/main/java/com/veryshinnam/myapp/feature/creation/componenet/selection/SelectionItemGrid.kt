@@ -8,6 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -18,7 +19,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -29,6 +33,9 @@ fun SelectionItemGrid(
     customItem: String?,         // 직접 추가 아이템
     onItemClick: (String) -> Unit, // 선택 이벤트
     modifier: Modifier = Modifier,
+    textextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    rowPadding: Dp = 12.dp,
+    columnPadding: Dp = 10.dp
 ) {
 
     val totalSlots = 7 // 직접 추가 포함 7개
@@ -36,14 +43,15 @@ fun SelectionItemGrid(
 
     Column(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(16.dp) // 행 사이 간격
+        verticalArrangement = Arrangement.spacedBy(rowPadding) // 행 사이 간격
     ) {
         rows.forEachIndexed { rowIndex, row ->
             Row(
-                modifier = Modifier.fillMaxWidth(0.8f)
+                modifier = Modifier
+                    .fillMaxWidth(0.85f)
                     .align(Alignment.CenterHorizontally)
                     .weight(1f),
-                horizontalArrangement = Arrangement.spacedBy(10.dp) // 열 사이 간격
+                horizontalArrangement = Arrangement.spacedBy(columnPadding) // 열 사이 간격
             ) {
                 row.forEach { index ->
                     val isLastCell = index == totalSlots - 1
@@ -61,12 +69,11 @@ fun SelectionItemGrid(
                                                      else colorResource(R.color.lemon_yellow),
                                     contentColor = if (isSelected) Color.White else Color.Black),
                                 border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-                                modifier = Modifier.fillMaxHeight().weight(1f)
+                                modifier = Modifier
+                                    .fillMaxHeight()
+                                    .weight(1f)
                             ) {
-                                Text(customItem,
-                                    style = MaterialTheme.typography.headlineSmall.copy(
-                                        fontWeight = FontWeight.Bold)
-                                )
+                                Text(customItem, style = textextStyle)
                             }
                         } else {
                             // 없으면 그냥 빈자리
@@ -85,16 +92,17 @@ fun SelectionItemGrid(
                                                  else colorResource(R.color.lemon_yellow),
                                 contentColor = if (isSelected) Color.White else Color.Black),
                             border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-                            modifier = Modifier.fillMaxHeight().weight(1f)
+                            modifier = Modifier
+                                .fillMaxHeight()
+                                .weight(1f)
                         ) {
                             Text(item,
-                                style = MaterialTheme.typography.displaySmall.copy(fontWeight = FontWeight.Bold)
+                                style = textextStyle
                             )
                         }
                     }
                 }
             }
         }
-        Spacer(Modifier.weight(0.3f)) // 그리드 아래 공간
     }
 }

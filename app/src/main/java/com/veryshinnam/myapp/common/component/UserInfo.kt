@@ -24,6 +24,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.LineBreak
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.Dp
@@ -51,10 +52,6 @@ fun UserInfo(
     spanColor: Color = Color.Unspecified,   // 강조할 색상
     spanTextStyle: TextStyle = MaterialTheme.typography.titleMedium
 ) {
-    val cardFontSize = cardTextStyle.fontSize
-    val spanFontSize = spanTextStyle.fontSize
-    val lineHeight = (spanTextStyle.fontSize.value * 1.1).sp
-
     Column(modifier = modifier) {
         Box(
             modifier = Modifier
@@ -98,7 +95,7 @@ fun UserInfo(
                     color = cardColor,
                     shape = RoundedCornerShape(16.dp))
                 .padding(horizontal = cardPadding, vertical = 16.dp),
-            contentAlignment = Alignment.Center
+            contentAlignment = Alignment.TopStart
         ) {
             // 강조 텍스트 처리
             val annotatedText = remember(cardText, spanText, spanColor) {
@@ -140,6 +137,7 @@ fun UserInfo(
                 text = annotatedText,
                 style = cardTextStyle.copy(
                     fontWeight = FontWeight.Bold,
+                    textAlign = TextAlign.Left,
                     lineBreak = LineBreak.Simple,
                 ),
                 softWrap = true

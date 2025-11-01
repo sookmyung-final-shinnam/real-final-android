@@ -1,10 +1,14 @@
 package com.veryshinnam.myapp.feature.creation.content.selection
 
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionAgeScroll
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
 
@@ -16,7 +20,8 @@ fun SelectionAgeContent(
     onPrevClick: () -> Unit,
     onNextClick: () -> Unit,
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
-    modifier: Modifier
+    modifier: Modifier,
+    spacePadding: Dp = 24.dp
 ) {
     Column(modifier = modifier) {
 
@@ -27,6 +32,8 @@ fun SelectionAgeContent(
             onAgeConfirm = { onSelectAge(it) },
             modifier = Modifier.fillMaxWidth().weight(8f)
         )
+
+        Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
         SelectionTripleButtons(

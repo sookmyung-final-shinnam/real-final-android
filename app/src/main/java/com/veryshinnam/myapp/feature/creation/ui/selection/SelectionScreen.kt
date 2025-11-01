@@ -5,11 +5,17 @@ import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -21,18 +27,22 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.ScreenOrientation
+import com.veryshinnam.myapp.common.component.StepProgressBar
+import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
-import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionInfo
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionAgeContent
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionBackgroundContent
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionFaceContent
@@ -48,7 +58,8 @@ fun SelectionScreen(
     onLogoClick: () -> Unit,
     onFinish: (SelectionData) -> Unit,
     vm: SelectViewModel = hiltViewModel(),
-    horizontalPadding: Dp = 16.dp
+    horizontalPadding: Dp = 16.dp,
+    topPadding: Dp = 24.dp
 ) {
     val uiState by vm.selectUiState.collectAsState()             // 선택 화면 상태 관리
     val selectionStep = uiState.selectionStep                    // 현재 선택 단계
@@ -134,13 +145,25 @@ fun SelectionScreen(
     // ui 화면
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { LogoBar(onLogoClick = onLogoClick) }, // 상단 로고
-        contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
+        topBar = {
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = onLogoClick)
+            }
+        },
+        bottomBar = {
+            // 네비게이션바 만큼 여백
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
-            contentAlignment = Alignment.Center
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.TopStart
         ) {
+            // 뒤로 가기 버튼
             BackButton(
                 onBackClick = {
                     handleBack()
@@ -149,16 +172,39 @@ fun SelectionScreen(
             )
 
             Column(
-                Modifier.fillMaxSize().padding(horizontal = horizontalPadding),
-                horizontalAlignment = Alignment.CenterHorizontally
+                Modifier
+                    .fillMaxSize()
+                    .padding(horizontal = horizontalPadding),
             ) {
                 // 단계 화면 설명 (+ 진행바)
-                SelectionInfo(
-                    text = getInfoText(selectionStep, isInputMode),
-                    currentStep = uiState.currentStep,
-                    modifier = Modifier.fillMaxWidth()
-                        .weight(0.25f)
-                )
+//                SelectionInfo(
+//                    text = getInfoText(selectionStep, isInputMode),
+//                    currentStep = uiState.currentStep,
+//                    modifier = Modifier.fillMaxWidth()
+//                        .weight(0.25f)
+//                )
+
+                Box{
+                    // 진행바
+                    StepProgressBar(
+                        steps = 6,
+                        currentStep = uiState.currentStep,
+                        modifier = Modifier
+                            .align(Alignment.TopCenter)
+                            .fillMaxWidth(0.5f)
+                            .fillMaxHeight(0.08f)
+                            .padding(top = topPadding / 2)
+                            .zIndex(1f)
+                    )
+
+                    UserInfo(
+                        modifier = Modifier.align(Alignment.TopStart),
+                        animalImage = painterResource(R.drawable.img_squirrel_cut),
+                        animalDescription = "캐릭터 생성 설명 다람쥐 이미지",
+                        cardColor = colorResource(R.color.main_orange),
+                        cardText =  getInfoText(selectionStep, isInputMode),
+                    )
+                }
 
                 // 단계별 Content 분기
                 when (selectionStep) {
@@ -175,8 +221,10 @@ fun SelectionScreen(
                                 SimpleWarningText = text
                                 isSimpleWarning = true
                             },
-                            modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
 
@@ -195,7 +243,8 @@ fun SelectionScreen(
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
 
@@ -210,7 +259,8 @@ fun SelectionScreen(
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
 
@@ -226,7 +276,8 @@ fun SelectionScreen(
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
 
@@ -241,7 +292,8 @@ fun SelectionScreen(
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
 
@@ -265,7 +317,8 @@ fun SelectionScreen(
                                 isWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
-                                .weight(0.75f)
+                                .padding(top = topPadding)
+                                .weight(1f)
                         )
                     }
                 }

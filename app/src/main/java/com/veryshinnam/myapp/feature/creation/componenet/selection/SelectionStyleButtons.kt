@@ -1,8 +1,10 @@
 package com.veryshinnam.myapp.feature.creation.componenet.selection
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.gestures.snapping.SnapPosition
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
@@ -16,7 +18,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -26,15 +31,18 @@ fun SelectionStyleButtons(
     styles: List<String>,
     selected: String,
     onSelect: (String) -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    subTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = Bold, textAlign = TextAlign.Center)
 ) {
     val topPadding = 8.dp
 
     Column(modifier) {
         // 버튼 위 제목
-        Text(title,
-            modifier = Modifier,
-            style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold))
+        Text(
+            text = title,
+            style = titleTextStyle
+        )
 
         Row(
             modifier = Modifier.fillMaxSize().padding(top = topPadding),
@@ -52,10 +60,13 @@ fun SelectionStyleButtons(
                                          else colorResource(R.color.lemon_yellow),
                         contentColor = if (isSelected) Color.White
                                        else Color.Black ),
+                    contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.weight(1f).fillMaxHeight()
                 ) {
-                    Text(style,
-                        style = MaterialTheme.typography.titleMedium.copy(fontWeight = FontWeight.SemiBold))
+                    Text(
+                        text = style,
+                        style = subTextStyle
+                    )
                 }
             }
         }

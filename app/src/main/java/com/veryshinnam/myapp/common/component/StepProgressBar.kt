@@ -36,9 +36,7 @@ fun StepProgressBar(
         animationSpec = tween(durationMillis = 600) // 0.6초 동안 부드럽게 이동
     )
 
-    BoxWithConstraints(
-        modifier = modifier.fillMaxSize()
-    ) {
+    BoxWithConstraints(modifier = modifier) {
         val circle = maxWidth * 0.05f       // 숫자 원 (반지름)
         val edgePadding = maxWidth * 0.12f  // 양쪽 여백
         val imageSize = circle * 3f         // 이미지 크기
