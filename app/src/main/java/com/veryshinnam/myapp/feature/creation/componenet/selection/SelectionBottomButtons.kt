@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
@@ -86,7 +87,6 @@ fun SelectionTripleButtons(
         val contentColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
         val borderColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
 
-        // 직접 추가 버튼이 있을 때
         Box(
             modifier = Modifier.weight(1f),
             contentAlignment = Alignment.Center
@@ -95,7 +95,7 @@ fun SelectionTripleButtons(
             Button(
                 onClick = { if (isCenter) onCenterClick() },
                 enabled = isCenter,
-                modifier = Modifier.fillMaxSize(),
+                modifier = Modifier.fillMaxHeight().aspectRatio(1f),
                 shape = RoundedCornerShape(16.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = containerColor,

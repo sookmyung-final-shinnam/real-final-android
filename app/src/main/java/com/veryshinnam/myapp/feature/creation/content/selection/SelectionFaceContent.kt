@@ -55,11 +55,14 @@ fun SelectionFaceContent(
     // 유효성 체크 (모두 선택)
     val isValid = eyeColor.isNotEmpty() && hairColor.isNotEmpty() && hairStyle.isNotEmpty()
 
-    Column(modifier = modifier.padding(horizontal = horizontalPadding)) {
+    Column(modifier = modifier) {
 
         // 파레트 및 스타일
         Column(
-            modifier = Modifier.fillMaxWidth().weight(8f),
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(8f)
+                .padding(horizontal = horizontalPadding),
             verticalArrangement = Arrangement.spacedBy(spacePadding),
             horizontalAlignment = Alignment.CenterHorizontally // 가로 중앙
         ) {

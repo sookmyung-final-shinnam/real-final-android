@@ -79,8 +79,11 @@ fun SelectionThemeContent(
                 onCenterClick = {
                     if (customTheme.isBlank() && themes.size < 3) {
                         onInputModeChange(true) // 직접추가 입력창 열기
-                    } else {
+                    } else if (themes.size == 3) {
                         onSimpleWarning("주제는 3개까지 선택이 가능해요!")
+
+                    } else {
+                        onSimpleWarning("이미 원하는 주제를 입력했어요!\n\n다른 주제를 추가하려면 선택 해제 후 다시 입력해 주세요.")
                     }
                 },
                 onRightClick = {
