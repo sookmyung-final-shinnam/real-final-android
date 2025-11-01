@@ -1,8 +1,11 @@
 package com.veryshinnam.myapp.feature.creation.content.conversation
 
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -19,20 +22,26 @@ fun ConversationStoryContent(
     modifier: Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // 다음 이야기 텍스트
-        ConversationStoryText(
-            nextStory = nextStory,
-            isTtsSpeaking = isTtsSpeaking,
-            modifier = Modifier.weight(0.8f).align(Alignment.CenterHorizontally),
-            onReplayClick = onReplayClick
-        )
+        Box(
+            modifier.fillMaxSize().weight(1f),
+            Alignment.Center
+        ) {
+            ConversationStoryText(
+                nextStory = nextStory,
+                isTtsSpeaking = isTtsSpeaking,
+                modifier = Modifier,
+                onReplayClick = onReplayClick
+            )
+        }
 
-        Spacer(Modifier.weight(0.05f))
         // 다음 버튼
         ConversationNextButton(
-            modifier = Modifier.weight(0.15f).align(Alignment.CenterHorizontally),
+            modifier = Modifier,
             onClick = onNextClick,
             enabled = nextEnabled
         )

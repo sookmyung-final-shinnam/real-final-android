@@ -10,10 +10,15 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
@@ -25,9 +30,12 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
@@ -46,7 +54,7 @@ import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 @Composable
 fun ConversationScreen(
     onBack: () -> Unit,
-    onLogoClick: () -> Unit,
+    horizontalPadding: Dp = 16.dp,
     vm: ConversationViewModel
 ) {
 
@@ -68,11 +76,24 @@ fun ConversationScreen(
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
-        topBar = { LogoBar(onLogoClick=onLogoClick) }, // 상단 로고
-        contentWindowInsets = WindowInsets.navigationBars // 네비게이션 여백
+        topBar = {
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = {
+                    isWarning = true      // 경고창
+                })
+            }
+        },
+        bottomBar = {
+            // 네비게이션바 만큼 여백
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        }
     ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize().padding(innerPadding),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
             when (val state = uiState) {
@@ -98,20 +119,24 @@ fun ConversationScreen(
                         vm.startTts() // 자동 읽기
                     }
 
-                    Column(Modifier.fillMaxSize(),
-                        horizontalAlignment = Alignment.CenterHorizontally
-                    ) {
-                        // 진행바 (START, END 제외)
-                        if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
-                            StepProgressBar(
-                                steps = 4,                        // 총 반복 횟수
-                                currentStep = state.loopStep,     // 현재 진행 단계
-                                modifier = Modifier
-                                    .fillMaxWidth(0.7f)  // 진행 바 길이
-                                    .weight(0.2f),
-                            )
-                        } else Spacer(Modifier.weight(0.2f)) // 공간 차지
+                    // 진행바 (START, END 제외)
+                    if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
+                        StepProgressBar(
+                            steps = 4,                        // 총 반복 횟수
+                            currentStep = state.loopStep,     // 현재 진행 단계
+                            modifier = Modifier
+                                .fillMaxWidth(0.7f)  // 진행 바 길이
+                                .fillMaxHeight(0.15f)
+                                .zIndex(2f)
+                                .align(Alignment.TopCenter),
+                        )
+                    }
 
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding)
+                    )  {
                         when (state.conversationStep) {
                             ConversationStep.START -> { // 대화 시작 (다음 이야기)
                                 BackHandler {  isWarning = true } // 홈으로
@@ -121,7 +146,7 @@ fun ConversationScreen(
                                     onReplayClick = { vm.startTts() },
                                     onNextClick = { vm.goToNextStep() },
                                     nextEnabled = !isTtsSpeaking,
-                                    modifier = Modifier.weight(0.8f)
+                                    modifier = Modifier
                                 )
                             }
 
@@ -133,7 +158,7 @@ fun ConversationScreen(
                                     onReplayClick = { vm.startTts() },
                                     onNextClick = { vm.goToNextStep() },
                                     nextEnabled = !isTtsSpeaking,
-                                    modifier = Modifier.weight(0.8f)
+                                    modifier = Modifier
                                 )
                             }
 
@@ -154,7 +179,7 @@ fun ConversationScreen(
                                         }
                                     },
                                     nextEnabled = !isTtsSpeaking,
-                                    modifier = Modifier.weight(0.8f)
+                                    modifier = Modifier
                                 )
                             }
 
@@ -162,14 +187,14 @@ fun ConversationScreen(
                                 BackHandler { vm.goToPreviousStep() }
 
                                 LaunchedEffect(state.conversationStep) {
-                                        vm.startStt(context)
+                                    vm.startStt(context)
                                 }
 
                                 ConversationAnswerContent(
                                     answerData = state.answerData,
                                     onRecordStop = { vm.stopStt() },
                                     onFeedback = { vm.goToNextStep() },
-                                    modifier = Modifier.weight(0.8f)
+                                    modifier = Modifier
                                 )
                             }
 
@@ -186,7 +211,7 @@ fun ConversationScreen(
                                     onReplayClick = { vm.startTts() },
                                     onButtonClick = { vm.goFromFeedback() }, // 재녹음 → Answer 또는 성공 Story로
                                     nextEnabled = !isTtsSpeaking,
-                                    modifier = Modifier.weight(0.8f)
+                                    modifier = Modifier
                                 )
                             }
 

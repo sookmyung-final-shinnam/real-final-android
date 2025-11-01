@@ -5,6 +5,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 
@@ -12,7 +13,8 @@ import com.veryshinnam.myapp.feature.creation.model.AnswerData
 fun ConversationAnswerText(
     answerData: AnswerData,
     isFinal: Boolean,
-    modifier: Modifier
+    modifier: Modifier,
+    answerTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = colorResource(R.color.main_orange))
 ) {
     val answer = if (isFinal) {
         answerData.userAnswer // userAnswer 고정
@@ -27,8 +29,7 @@ fun ConversationAnswerText(
 
     Text(
         text = answer,
-        color = colorResource(R.color.main_orange),
-        style = MaterialTheme.typography.headlineSmall,
+        style = answerTextStyle,
         modifier = modifier
     )
 }

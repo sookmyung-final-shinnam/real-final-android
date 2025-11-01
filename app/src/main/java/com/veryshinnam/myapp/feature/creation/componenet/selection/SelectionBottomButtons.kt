@@ -96,7 +96,7 @@ fun SelectionTripleButtons(
                 onClick = { if (isCenter) onCenterClick() },
                 enabled = isCenter,
                 modifier = Modifier.fillMaxHeight().aspectRatio(1f),
-                shape = RoundedCornerShape(16.dp),
+                shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = containerColor,
                     contentColor = contentColor,

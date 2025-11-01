@@ -69,13 +69,13 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                         launchSingleTop = true
                     }
                 },
-                onLogoClick = {
-                    navController.popBackStack("selection", inclusive = true)
-                    navController.navigate("home") {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
+//                onLogoClick = {
+//                    navController.popBackStack("selection", inclusive = true)
+//                    navController.navigate("home") {
+//                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+//                        launchSingleTop = true
+//                    }
+//                },
                 vm = vm
             )
         }

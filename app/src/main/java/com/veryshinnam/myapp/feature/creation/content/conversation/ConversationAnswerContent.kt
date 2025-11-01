@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,10 +28,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationAnswerText
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 import kotlinx.coroutines.delay
@@ -40,7 +43,8 @@ fun ConversationAnswerContent(
     answerData: AnswerData,
     onRecordStop: () -> Unit,
     onFeedback: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    listenTextStyle: TextStyle = MaterialTheme.typography.titleLarge,
 ) {
     var progress by remember { mutableStateOf(0f) }
     var isFinal by remember { mutableStateOf(false) } // userText 고정 여부
@@ -67,11 +71,12 @@ fun ConversationAnswerContent(
         Log.d("UI Test", "partialUpdated: ${answerData.partialAnswer}")
     }
 
-    Column(modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.weight(0.1f))
+        Spacer(Modifier.fillMaxHeight(0.15f)) // 진행바 높이
 
         // 다람쥐 이미지
         Image(
@@ -84,14 +89,13 @@ fun ConversationAnswerContent(
         Spacer(Modifier.weight(0.12f))
 
         // 듣는 중 텍스트
-        StrokeText(
-            text = "듣고 있어요 ...",
-            tColor = Color.White,
-            oColor = colorResource(R.color.brand_orange),
-            oWidth = 4f,
-            fStyle = MaterialTheme.typography.displayLarge,
-            fWeight = FontWeight.Bold,
-            Modifier.weight(0.2f).align(Alignment.CenterHorizontally)
+        StrokeTitle(
+            titleText = "듣고 있어요 ...",
+            titleColor = Color.White,
+            strokeColor = colorResource(R.color.brand_orange),
+            titleTextStyle = listenTextStyle,
+            strokeWidth = 8f,
+            modifier = Modifier.align(Alignment.CenterHorizontally)
         )
 
         Spacer(Modifier.weight(0.02f))
