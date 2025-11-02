@@ -17,7 +17,7 @@ import com.veryshinnam.myapp.core.network.BaseUrls
  */
 @Composable
 fun LoginKakaoContent(
-    onTempCodeReceived: (String, Boolean) -> Unit,
+    onTempCodeReceived: (String, Boolean, Boolean) -> Unit,
     modifier: Modifier
 ) {
     AndroidView(
@@ -42,8 +42,10 @@ fun LoginKakaoContent(
                         if (uri.toString().contains(BaseUrls.REDIRECT_PATH)) {
                             val tempCode = uri.getQueryParameter("tempCode") // 임시 코드
                             val isNewUser = uri.getQueryParameter("isNewUser").toBoolean() // 기존 유저 여부
+                            val isAgreedToTerms = uri.getQueryParameter("isAgreedToTerms").toBoolean() // 약관 동의 여부
+
                             if (tempCode != null) {
-                                onTempCodeReceived(tempCode, isNewUser)
+                                onTempCodeReceived(tempCode, isNewUser, isAgreedToTerms)
                             }
                             return true
                         }

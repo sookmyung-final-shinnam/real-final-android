@@ -281,11 +281,11 @@ class ConversationViewModel @Inject constructor(
     fun dummyStart():StartResult {
         return StartResult(
             sessionId = 1L,
-            nextStory = "날",
-//            nextStory = "옛날옛날, 아주 넓은 사막 한 가운데에" +
-//                    "‘숙명’이라는 12살 소녀가 살고 있었어요." +
-//                    "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
-//                    "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
+//            nextStory = "날",
+            nextStory = "옛날옛날, 아주 넓은 사막 한 가운데에" +
+                    "‘숙명’이라는 12살 소녀가 살고 있었어요." +
+                    "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
+                    "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
             currentStep = "STEP_01"
         )
     }
@@ -294,9 +294,12 @@ class ConversationViewModel @Inject constructor(
         return when (step) {
             1 -> NextStepResult(
                 messageId = 101L,
-                nextStory = "사",
-                llmQuestion = "숙"
-//                        llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명"
+                nextStory = "옛날옛날, 아주 넓은 사막 한 가운데에" +
+                        "‘숙명’이라는 12살 소녀가 살고 있었어요." +
+                        "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
+                        "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
+//                llmQuestion = "숙"
+                        llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명"
             )
             2 -> NextStepResult(
                 messageId = 102L,
@@ -320,13 +323,13 @@ class ConversationViewModel @Inject constructor(
         return when (step) {
             1 -> when (tryNum) {
                 1 -> FeedbackData(
-                    isPositive = true,
-                    text = "기",
+                    isPositive = false,
+                    text = "기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기기",
                     tryNum = tryNum
                 )
                 2 -> FeedbackData(
                     isPositive = false,
-                    text = "건?",
+                    text = "건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?건?",
                     tryNum = tryNum
                 )
                 else -> FeedbackData(

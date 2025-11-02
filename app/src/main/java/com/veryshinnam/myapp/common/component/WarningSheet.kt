@@ -59,13 +59,16 @@ fun WarningSheet(
     onDismiss: () -> Unit,
     onConfirm: () -> Unit,
 ) {
-//    val configuration = LocalConfiguration.current // 가로-세로 모드 구분
-//    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+    val configuration = LocalConfiguration.current // 가로-세로 모드 구분
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
 //
 //    val windowInfo = LocalWindowInfo.current        // 현재 창
 //    val density = LocalDensity.current              // 현재 기기 밀도 값
 //    val heightPx = windowInfo.containerSize.height  // 현재 창의 컨테이너 높이 (px)
 //    val heightDp = with(density) { heightPx.toDp() } // px > dp
+
+    val iconSize = if (isPortrait) 0.12f else 0.06f
+    val imageSize = if (isPortrait) 0.2f else 0.1f // 세로 0.2, 가로 0.1
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
@@ -91,7 +94,7 @@ fun WarningSheet(
                 // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
-                    modifier = Modifier.fillMaxWidth(.12f)
+                    modifier = Modifier.fillMaxWidth(iconSize)
                         .align(Alignment.TopEnd)
                         .aspectRatio(1f)
                 ) {
@@ -115,7 +118,7 @@ fun WarningSheet(
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
                         contentDescription = "경고 이미지",
-                        modifier = Modifier.fillMaxWidth(0.2f),
+                        modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )
 

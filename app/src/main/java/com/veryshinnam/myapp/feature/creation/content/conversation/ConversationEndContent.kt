@@ -38,7 +38,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun ConversationEndContent(
     onHomeClick: () -> Unit,
-    textStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = Bold, textAlign = TextAlign.Center),
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold, textAlign = TextAlign.Center),
     spacePadding: Float = .12f,
     verticalPadding: Dp = 24.dp,
 ) {
@@ -98,7 +98,7 @@ fun ConversationEndContent(
                 modifier = Modifier.padding(8.dp),
                 style =textStyle.copy(
                     color = Color.White,
-                    fontSize = textStyle.fontSize * 1.2f
+                    fontSize = textStyle.fontSize * 1.4f
                 )
             )
         }

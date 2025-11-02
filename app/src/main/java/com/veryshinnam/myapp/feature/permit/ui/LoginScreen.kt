@@ -65,15 +65,17 @@ fun LoginScreen(
 
         LoginKakaoContent(
             modifier = Modifier.fillMaxSize(),
-            onTempCodeReceived = { tempCode, isNewUser ->
-                if (isNewUser) {
-                    onSignup(tempCode) // 신규 유저 > 회원가입
+            onTempCodeReceived = { tempCode, isNewUser, isAgreedToTerms ->
+                // 신규 유저 + 약관 미동의
+                if (isNewUser || !isAgreedToTerms) {
+                    onSignup(tempCode)
                 } else {
-                    vm.login(tempCode) // 기존 유저 > 로그인
+                    // 약관 동의한 기존 유저
+                    vm.login(tempCode)
                 }
             }
         )
-    } else { 
+    } else {
         // 카카오 로그인 진행 이전 UI
         Column(
             modifier = Modifier.fillMaxSize()
@@ -123,7 +125,7 @@ fun LoginScreen(
                     contentScale = ContentScale.None
                 )
             }
-            
+
             Spacer(modifier = Modifier.weight(1.5f))
         }
     }
