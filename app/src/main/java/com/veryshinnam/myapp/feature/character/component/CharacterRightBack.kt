@@ -15,6 +15,7 @@ import androidx.compose.ui.text.font.FontWeight
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.character.model.StoriesData
+import com.veryshinnam.myapp.feature.character.model.StoryStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
@@ -23,6 +24,7 @@ fun CharacterRightBack(
     stories: StoriesData,             // 동화 정보 (종이책+영상)
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
+    onMakingClick: () -> Unit,
     onShareClick: (String) -> Unit,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
 ) {
@@ -49,6 +51,7 @@ fun CharacterRightBack(
                 storyType = StoryType.IMAGE,
                 storyUrl = stories.imageUrl,
                 typeText = "동화",
+                storyStatus = StoryStatus.COMPLETED,
                 onStoryClick = onStoryClick,
                 onShareClick = onShareClick,
                 modifier = Modifier.weight(1f)
@@ -60,7 +63,9 @@ fun CharacterRightBack(
                 storyType = StoryType.VIDEO,
                 storyUrl = stories.videoUrl,
                 typeText = "움직이는 동화",
+                storyStatus = stories.storyStatus,
                 onStoryClick = onStoryClick,
+                onMakingClick = onMakingClick,
                 onLockerClick = onLockerClick,
                 onShareClick = onShareClick,
                 modifier = Modifier.weight(1f)

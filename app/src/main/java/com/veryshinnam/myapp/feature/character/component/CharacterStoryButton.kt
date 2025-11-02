@@ -6,13 +6,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,10 +18,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.autofill.ContentType
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.ModifierLocalBeyondBoundsLayout
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -36,6 +31,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.VideoPlayer
+import com.veryshinnam.myapp.feature.character.model.StoryStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
@@ -44,12 +40,14 @@ fun CharacterStoryButton(
     storyType: StoryType, // 동화 타입
     storyUrl: String?,    // 동화 또는 영상 표지 이미지
     typeText: String,     // 동화 타입 텍스트
+    storyStatus: StoryStatus,
     buttonSize: Float = 0.7f,
     buttonRadius: Dp = 16.dp,
     kakaoSize: Float = 0.35f,
     kakaoRadius: Dp = 12.dp,
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit = {},
+    onMakingClick: () -> Unit = {},
     onShareClick: (String) -> Unit,
     infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
@@ -68,10 +66,14 @@ fun CharacterStoryButton(
         ) {
             Button(
                 onClick = {
-                    if (isExist) {
-                        onStoryClick(storyId, storyType)
-                    } else {
-                        onLockerClick(storyId) // 자물쇠 > 동영상 제작
+                    when (storyStatus) {
+                        StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
+                        StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
+                        StoryStatus.COMPLETED -> {
+                            if (storyUrl.isNullOrBlank()) onMakingClick() // 서버에 비용 X
+                            else onStoryClick(storyId, storyType) // 완료 > 이동
+                        }
+
                     }
                 },
                 modifier = Modifier.aspectRatio(1f),
@@ -97,12 +99,14 @@ fun CharacterStoryButton(
                                 .fillMaxSize()
                                 .background(colorResource(R.color.main_orange_shade)),
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_locker),
-                                contentDescription = "$typeText 잠금",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Fit
-                            )
+                            if (storyStatus == StoryStatus.NONE) {
+                                Image(
+                                    painter = painterResource(R.drawable.img_locker),
+                                    contentDescription = "$typeText 잠금",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
                         }
                     }
                 }

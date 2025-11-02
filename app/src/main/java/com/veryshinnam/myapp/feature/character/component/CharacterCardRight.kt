@@ -29,9 +29,10 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 @Composable
 fun CharacterCardRight(
     character: CharacterData,     // 캐릭터 정보
+    onFlip: (Boolean) -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
-    onFlip: (Boolean) -> Unit,
+    onMakingClick: () -> Unit,
     onShareClick: (String) -> Unit,
     cardPadding: Dp = 24.dp,
     tabPadding: Dp = 12.dp,
@@ -104,6 +105,7 @@ fun CharacterCardRight(
                             stories = character.stories,
                             onStoryClick = onStoryClick,
                             onLockerClick = onLockerClick,
+                            onMakingClick = onMakingClick,
                             onShareClick = onShareClick
                         )
 

@@ -13,5 +13,6 @@ data class CharacterDetailResult (
     val storyId: Long,
     val storyTitle: String,
     val imageStoryUrl: String,
+    val videoStatus: String,
     val videoStoryUrl: String?
 )

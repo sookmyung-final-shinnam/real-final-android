@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.common.component
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -44,43 +45,43 @@ fun WarningSimpleSheet(
     warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.2.em),
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
+    dismissible: Boolean = true,
     onDismiss: () -> Unit,
-    dismissible: Boolean = true // 기본 값
 ) {
-//    val configuration = LocalConfiguration.current // 가로-세로 모드 구분
-//    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-//
-//    val windowInfo = LocalWindowInfo.current        // 현재 창
-//    val density = LocalDensity.current              // 현재 기기 밀도 값
-//    val heightPx = windowInfo.containerSize.height  // 현재 창의 컨테이너 높이 (px)
-//    val heightDp = with(density) { heightPx.toDp() } // px > dp
+    val configuration = LocalConfiguration.current // 가로-세로 모드 구분
+    val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+
+    val iconSize = if (isPortrait) 0.12f else 0.06f
+    val imageSize = if (isPortrait) 0.2f else 0.1f // 세로 0.2, 가로 0.1
 
     val sheetState = rememberModalBottomSheetState(
-        skipPartiallyExpanded = false,
-        confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
+        skipPartiallyExpanded = true,
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Expanded && (dismissible || newValue != SheetValue.Hidden)
+        }
     )
 
     ModalBottomSheet(
-        onDismissRequest = {  onDismiss() },
+        onDismissRequest = {
+            if (dismissible) { onDismiss() }
+        },
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange)
     ) {
+        BackHandler(enabled = !dismissible) { }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(.35f)
-//                .then(
-//                    if (isPortrait) Modifier.height(heightDp * 0.3f) //  화면 높이 30%
-//                    else Modifier.fillMaxSize()
-//                )
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
+            verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
                 IconButton(
                     onClick = { onDismiss() },
-                    modifier = Modifier.fillMaxWidth(.12f)
+                    modifier = Modifier.fillMaxWidth(iconSize)
                         .align(Alignment.TopEnd)
                         .aspectRatio(1f)
                 ) {
@@ -102,7 +103,7 @@ fun WarningSimpleSheet(
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
                         contentDescription = "경고 이미지",
-                        modifier = Modifier.fillMaxWidth(0.2f),
+                        modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )
 

@@ -46,6 +46,7 @@ import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -69,6 +70,8 @@ fun CharacterScreen(
 
     var isWarning by remember { mutableStateOf(false) }
     var warnedStoryId by remember { mutableStateOf<Long?>(null) }
+
+    var isMaking by remember { mutableStateOf(false) }
 
     var isSharing by remember { mutableStateOf(false) }
     var sharedStoryUrl by remember { mutableStateOf<String?>(null) }
@@ -147,14 +150,15 @@ fun CharacterScreen(
                     // 오른쪽 캐릭터 정보 카드
                     CharacterCardRight(
                         character = state.characterData,
+                        onFlip = { isFront ->
+                            if (!isFront) {
+                                vm.refreshStories(state.characterData.id) } },
                         onStoryClick = onStoryClick,
                         onLockerClick = { storyId ->
                             isWarning = true
                             warnedStoryId = storyId },
-                        onFlip = { isFront ->
-                            if (!isFront) {
-                                vm.refreshStories(state.characterData.id)
-                            } },
+                        onMakingClick = {
+                            isMaking = true },
                         onShareClick = { storyUrl ->
                             isSharing = true
                             sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
@@ -167,6 +171,7 @@ fun CharacterScreen(
         }
     }
 
+    // 잠금 해제
     if (isWarning && warnedStoryId != null) {
         WarningSheet(
             warningText = "동영상 동화의 잠금을 해제할까요?\n" +
@@ -180,6 +185,15 @@ fun CharacterScreen(
         )
     }
 
+    // 제작중
+    if (isMaking) {
+        WarningSimpleSheet(
+            warningText = "아직 영상을 만들고 있어요.\n조금만 더 기다려주세요!",
+            onDismiss = { isMaking = false },
+        )
+    }
+
+    // 카톡으로 공유
     if (isSharing && sharedStoryUrl != null) {
         ShareSheet(
             urlText = "https://youtu.be/cX2PU3aEBL8",

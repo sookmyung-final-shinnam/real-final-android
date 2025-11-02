@@ -56,6 +56,7 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -150,9 +151,7 @@ fun SettingsScreen(
                             confirmAction = {
                                 isWarning = false
                                 vm.logout() // 로그아웃
-
-                                SimpleWarningText = "로그아웃이 완료되었습니다.\n" +
-                                        "3초뒤 시작 화면으로 이동합니다. "
+                                SimpleWarningText = "로그아웃이 완료되었습니다.\n"
                                 isSimpleWarning = true
                             }
                         },
@@ -182,9 +181,7 @@ fun SettingsScreen(
                             confirmAction = {
                                 isWarning = false
                                 vm.withdraw() // 회원 탈퇴
-
-                                SimpleWarningText = "회원 탈퇴가 완료되었습니다.\n" +
-                                        "3초뒤 시작 화면으로 이동합니다. "
+                                SimpleWarningText = "회원 탈퇴가 완료되었습니다.\n"
                                 isSimpleWarning = true
                             }
                         },
@@ -222,7 +219,6 @@ fun SettingsScreen(
     if (isWarning) {
         WarningSheet(
             warningText  = warningText,
-//            warningTextStyle = warningStyle,
             confirmText = confirmText,
             onDismiss = { isWarning = false },
             onConfirm = { confirmAction() }
@@ -230,9 +226,20 @@ fun SettingsScreen(
     }
 
     if (isSimpleWarning) {
-        BackHandler(enabled = true) {
-            // 뒤로가기 무시
+        var countdown by remember { mutableStateOf(3) }
+
+        // 3초 카운트다운
+        LaunchedEffect(isSimpleWarning) {
+            if (isSimpleWarning) {
+                for (i in 3 downTo 1) {
+                    countdown = i
+                    delay(1000)
+                }
+            }
         }
+
+        // 뒤로가기 무시
+//        BackHandler(enabled = true) {}
 
         Box(
             modifier = Modifier.fillMaxSize()
@@ -240,7 +247,11 @@ fun SettingsScreen(
                 .clickable(enabled = true, onClick = { }) // 터치 불가
         ){
             WarningSimpleSheet(
-                warningText = SimpleWarningText,
+                warningText = buildString {
+                    append(SimpleWarningText)
+                    append("\n")
+                    append("${countdown}초 뒤 시작 화면으로 이동합니다.")
+                },
                 onDismiss = { },    // 닫기 금지
                 dismissible = false // 시트 닫힘 방지
             )
