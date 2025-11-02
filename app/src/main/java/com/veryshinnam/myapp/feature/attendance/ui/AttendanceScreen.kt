@@ -171,7 +171,7 @@ fun AttendanceScreen(
 
         AttendanceReward(
             painter = painterResource(R.drawable.img_stamp_shining_blue),
-            text = "출석 완료",
+            text = "오늘의\n출석 체크 완료",
             onReceiveClick = {
                 vm.fetchAttendance()
                 isTodayStamp = false
@@ -200,7 +200,7 @@ fun AttendanceScreen(
 
         AttendanceReward(
             painter = painterResource(R.drawable.img_compass_shining),
-            text = "나침반 ${rewardCount}개",
+            text = "출석 체크 보상\n나침반 ${rewardCount}개",
             onReceiveClick = {
                 vm.fetchAttendanceReward()
                 isReward = false // 닫기

@@ -38,8 +38,18 @@ class PermitViewModel @Inject constructor(
         }
     }
 
+    // 회원가입
+    fun signup(tempCode: String) {
+        saveToken(tempCode, isNewUser = true)
+    }
+
     // 로그인
     fun login(tempCode: String) {
+        saveToken(tempCode, isNewUser = false)
+    }
+
+    // 공통 로직
+    fun saveToken(tempCode: String, isNewUser: Boolean) {
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
             try {
@@ -51,6 +61,10 @@ class PermitViewModel @Inject constructor(
                     jwt.refreshToken,
                     jwt.accessTokenExpiredAt
                 )
+
+                // 신규 유저인 경우 플래그 설정
+                if (isNewUser) sessionManager.saveNewUser(true)
+
                 _permitUiState.value = PermitUiState.Success
             } catch (e: Exception) {
                 _permitUiState.value = PermitUiState.Error("로그인 실패: ${e.message}")

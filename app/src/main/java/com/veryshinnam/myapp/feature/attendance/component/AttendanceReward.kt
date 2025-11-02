@@ -23,6 +23,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -61,7 +62,9 @@ fun AttendanceReward(
             strokeColor = colorResource(R.color.clear_blue),
             strokeWidth = 12f,
             titleTextStyle = textStyle.copy(
-                fontSize = textStyle.fontSize * 1.5f
+                fontSize = textStyle.fontSize * 1.4f,
+                textAlign = Center,
+                lineHeight = textStyle.fontSize * 1.6f
             )
         )
 

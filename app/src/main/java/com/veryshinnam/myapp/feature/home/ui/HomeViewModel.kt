@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.home.ui
 import android.net.http.HttpException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
@@ -18,14 +19,37 @@ import javax.inject.Inject
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
-    private val repository: HomeRepository
+    private val repository: HomeRepository,
+    private val sessionManager: SessionManager
 ) : ViewModel() {
 
     // 홈 화면 상태 관리
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState: StateFlow<HomeUiState> = _homeUiState
 
-    init { fetchHome() }
+    private val _isNewUser = MutableStateFlow(false)
+    val isNewUser: StateFlow<Boolean> = _isNewUser
+
+    init {
+        fetchHome()
+        checkNewUser()
+    }
+
+    // 신규 유저 확인
+    private fun checkNewUser() {
+        viewModelScope.launch {
+            val newUser = sessionManager.isNewUser()
+            _isNewUser.value = newUser
+        }
+    }
+
+    // 신규 유저 업데이트
+    fun updateNewUser() {
+        viewModelScope.launch {
+            sessionManager.removeNewUser()
+            _isNewUser.value = false
+        }
+    }
 
     // 홈 화면 불러오기
     private fun fetchHome() {

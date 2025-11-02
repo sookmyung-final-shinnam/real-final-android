@@ -23,6 +23,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
@@ -32,6 +33,8 @@ import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
+import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
+import com.veryshinnam.myapp.feature.attendance.ui.AttendanceUiState
 
 /**
  * 홈 화면
@@ -61,6 +64,7 @@ fun HomeScreen(
 ) {
     // 홈 화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
+    val isNewUser by vm.isNewUser.collectAsStateWithLifecycle()
 
     // 세로 모드 고정
     ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
@@ -256,5 +260,32 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    // 신규 유저 보상 화면
+    if (isNewUser) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    enabled = true,
+                    indication = null, // 터치 효과 제거
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { }
+        )
+
+        AttendanceReward(
+            painter = painterResource(R.drawable.img_compass_shining),
+            text = "신규 유저 보상\n나침반 5개",
+            onReceiveClick = {
+//                vm.fetchAttendanceReward() // 보상 업데이트
+                vm.updateNewUser()
+            },
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+        )
     }
 }

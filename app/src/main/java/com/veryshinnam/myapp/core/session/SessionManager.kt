@@ -6,6 +6,7 @@ import android.webkit.CookieManager
 import android.webkit.WebStorage
 import androidx.datastore.core.DataStore
 import androidx.datastore.preferences.core.Preferences
+import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -26,6 +27,7 @@ class SessionManager @Inject constructor(
     private val accessToken = stringPreferencesKey("access_token")
     private val refreshToken = stringPreferencesKey("refresh_token")
     private val expiredAt = stringPreferencesKey("expired_at")
+    private val isNewUser = booleanPreferencesKey("is_new_user")
 
     // 로그인 필요 여부
     private val _requireLogin = MutableStateFlow(false)
@@ -61,14 +63,15 @@ class SessionManager @Inject constructor(
         return expiredAt.isBefore(LocalDateTime.now())
     }
 
-    // 토큰 삭제 (동기, Interceptor용)
-    fun clearTokenBlocking() {
-        runBlocking { dataStore.edit { it.clear() } } // DataStore 비우기
+    // 토큰 삭제 (비동기)
+    suspend fun clearToken() {
+        dataStore.edit { it.clear() } // DataStore 비우기
         _requireLogin.value = true
     }
 
-    suspend fun clearToken() {
-        dataStore.edit { it.clear() } // DataStore 비우기
+    // 토큰 삭제 (동기, Interceptor용)
+    fun clearTokenBlocking() {
+        runBlocking { dataStore.edit { it.clear() } } // DataStore 비우기
         _requireLogin.value = true
     }
 
@@ -78,5 +81,20 @@ class SessionManager @Inject constructor(
         cookieManager.removeAllCookies(null)
         cookieManager.flush()
         WebStorage.getInstance().deleteAllData()
+    }
+
+    // 신규 유저 플래그 저장
+    suspend fun saveNewUser(value: Boolean) {
+        dataStore.edit { pref -> pref[isNewUser] = value }
+    }
+
+    // 신규 유저 여부 조회 (비동기)
+    suspend fun isNewUser(): Boolean {
+        return dataStore.data.first()[isNewUser] ?: false
+    }
+
+    // 신규 유저 플래그 삭제
+    suspend fun removeNewUser() {
+        dataStore.edit { pref -> pref.remove(isNewUser) }
     }
 }
