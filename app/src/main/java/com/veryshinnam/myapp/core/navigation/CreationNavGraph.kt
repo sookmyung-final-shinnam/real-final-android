@@ -23,8 +23,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
         // 선택 화면
         composable("selection") {
             SelectionScreen(
-                onHome = { navController.popBackStack() },
-                onLogoClick = {
+                onHome = {
                     navController.navigate("home") {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true

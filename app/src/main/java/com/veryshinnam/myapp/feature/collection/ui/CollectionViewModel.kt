@@ -15,12 +15,14 @@ import javax.inject.Inject
 class CollectionViewModel @Inject constructor(
     private val characterRepository: CharacterRepository
 ) : ViewModel() {
+    private val _uiState = MutableStateFlow<CollectionUiState>(CollectionUiState.Loading)
+    val uiState: StateFlow<CollectionUiState> = _uiState.asStateFlow()
 
     private val _selectedFilter = MutableStateFlow(Gender.ALL)
     val selectedFilter = _selectedFilter.asStateFlow()
 
-    private val _uiState = MutableStateFlow<CollectionUiState>(CollectionUiState.Loading)
-    val uiState: StateFlow<CollectionUiState> = _uiState.asStateFlow()
+    private val _isEmpty = MutableStateFlow(false)
+    val isEmpty: StateFlow<Boolean> = _isEmpty
 
     init {
         fetchCollection(Gender.ALL)
@@ -42,12 +44,16 @@ class CollectionViewModel @Inject constructor(
                     Gender.FEMALE -> "FEMALE"
                 }
                 val characters = characterRepository.getCharacters(queryGender) // api 호출
-//                    .filter { !it.image.isNullOrBlank() } // 이미지 없는 캐릭터 제외
 
                 _uiState.value = CollectionUiState.Success(
                     collectionDataList = characters,
                     selectedFilter = gender
                 )
+
+                // 보관함 여부 확인
+                if (gender == Gender.ALL) {
+                    _isEmpty.value = characters.isEmpty()
+                }
             } catch (e: Exception) {
                 _uiState.value = CollectionUiState.Error("보관함 불러오기 실패: ${e.message}")
             }

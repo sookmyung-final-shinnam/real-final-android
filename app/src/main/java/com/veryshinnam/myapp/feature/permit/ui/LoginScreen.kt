@@ -114,15 +114,15 @@ fun LoginScreen(
                         interactionSource = remember { MutableInteractionSource() }
                     ) { isKakaoLogin = true } // 로그인 버튼 클릭시 활성화
                     .weight(.5f)
-                    .fillMaxWidth()
+                    .fillMaxWidth(0.8f)
                     .background(color = colorResource(R.color.kakao_yellow)),
                 contentAlignment = Alignment.Center // 중앙 정렬
             ) {
                 Image(
                     painter = painterResource(R.drawable.img_kakao_login),
                     contentDescription = "카카오 로그인",
-                    modifier = Modifier.wrapContentSize(),
-                    contentScale = ContentScale.None
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Fit
                 )
             }
 

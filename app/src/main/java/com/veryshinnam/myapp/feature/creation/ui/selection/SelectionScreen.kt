@@ -55,7 +55,6 @@ import com.veryshinnam.myapp.feature.creation.content.selection.SelectionThemeCo
 @Composable
 fun SelectionScreen(
     onHome: () -> Unit,
-    onLogoClick: () -> Unit,
     onFinish: (SelectionData) -> Unit,
     vm: SelectViewModel = hiltViewModel(),
     horizontalPadding: Dp = 16.dp,
@@ -149,7 +148,9 @@ fun SelectionScreen(
             // 상태바 만큼 여백 & 상단 로고
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar(onLogoClick = onLogoClick)
+                LogoBar(onLogoClick = {
+                    handleBack()
+                })
             }
         },
         bottomBar = {

@@ -54,10 +54,6 @@ fun CollectionCharacterGrid(
             horizontalArrangement = Arrangement.spacedBy(cellPadding),
             content = {
                 itemsIndexed(data) { index, item ->
-
-                    // 마지막 행에 바닥 여백 줌
-                    val isLast = isLastRow(index, data.size, 3)
-
                     CollectionCharacterItem(
                         cId = item.id,
                         cName = item.name,
@@ -90,15 +86,4 @@ fun CollectionCharacterGrid(
             )
         }
     }
-}
-
-// index가 마지막 행의 아이템인지 체크하는 함수
-fun isLastRow(
-    index: Int,      // 현재 아이템 index
-    totalItems: Int, // 전체 아이템 개수
-    columns: Int     // 한 행에 들어가는 열 수 
-): Boolean {
-    val totalRows = (totalItems + columns - 1) / columns // 전체 행(= 마지막 행) 수 계산
-    val currentRow = index / columns    // 현재 행수
-    return currentRow == totalRows - 1  // 0부터 시작 고려
 }
