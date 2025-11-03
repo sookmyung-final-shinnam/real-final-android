@@ -21,14 +21,11 @@ import com.veryshinnam.myapp.feature.home.model.FavoriteData
 fun HomeFavoriteCard(
     character: FavoriteData?,
     modifier: Modifier,
-    cornerRadius: Dp = 16.dp,
     isCenter: Boolean = false,
     onClick: (FavoriteData?) -> Unit
 ) {
-    val shape = RoundedCornerShape(cornerRadius)
 
     Card(
-        shape = RoundedCornerShape(cornerRadius),
         colors = CardDefaults.cardColors(colorResource(R.color.main_orange)),
         modifier = modifier.then(
             if (isCenter && character != null) {
@@ -46,7 +43,6 @@ fun HomeFavoriteCard(
                 contentDescription = character.name,
                 modifier = Modifier
                     .fillMaxSize()
-                    .clip(shape)
                     .graphicsLayer {
                         alpha = if (isCenter) 1f else 0.5f   // 중앙은 100%, 양옆은 50% 투명
                     },

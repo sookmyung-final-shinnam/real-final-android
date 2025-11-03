@@ -1,8 +1,11 @@
 package com.veryshinnam.myapp.feature.creation.content.conversation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -20,25 +23,30 @@ fun ConversationQuestionContent(
     nextEnabled: Boolean,
     modifier: Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Spacer(Modifier.fillMaxHeight(0.15f)) // 진행바 높이
+
         // 질문 텍스트
         ConversationCommonText(
             text = question,
             painter = painterResource(R.drawable.img_llm_question),
             modifier = Modifier
-                .weight(0.8f)
+                .weight(1f) 
                 .align(Alignment.CenterHorizontally),
             isTtsSpeaking = isTtsSpeaking,
             onReplayClick = onReplayClick
         )
 
-        Spacer(Modifier.weight(0.05f))
         // 먀이크 버튼
         ConversationRecordButton(
             onRecordClick = {  onRecordClick() },
             enabled = nextEnabled,
             modifier = Modifier
-                .weight(0.15f)
+                .fillMaxHeight(0.15f)
                 .align(Alignment.CenterHorizontally)
         )
     }

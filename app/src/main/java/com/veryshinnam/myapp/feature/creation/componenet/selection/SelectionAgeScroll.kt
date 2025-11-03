@@ -25,7 +25,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -39,6 +41,7 @@ fun SelectionAgeScroll(
     onAgeConfirm: (Int) -> Unit, // 나이 확정
     modifier: Modifier = Modifier,
     range: IntRange = 1..100,
+    textStyle: TextStyle = MaterialTheme.typography.displaySmall.copy(fontWeight = Bold)
 ) {
 
     val values = range.toList()
@@ -101,7 +104,7 @@ fun SelectionAgeScroll(
                 val rawFraction = (distance / (itemInfo?.size?.times(3) ?: 1)).coerceIn(0f, 1f)
                 val fraction = rawFraction.toDouble().pow(0.5).toFloat() // 부드럽게
 
-                val scale = 1.2f - 0.7f * fraction
+                val scale = 1.2f - 0.9f * fraction
                 val alpha = 1f - 0.7f * fraction
                 val color = lerp(
                     start = colorResource(R.color.main_orange),
@@ -111,7 +114,7 @@ fun SelectionAgeScroll(
 
                 Text(
                     text = itemValue.toString(),
-                    style = MaterialTheme.typography.displayMedium.copy(fontWeight = FontWeight.SemiBold),
+                    style = textStyle,
                     color = color,
                     textAlign = TextAlign.Center,
                     modifier = Modifier
@@ -130,7 +133,7 @@ fun SelectionAgeScroll(
         // 중앙 강조 박스
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.5f)
+                .fillMaxWidth(0.4f)
                 .height(72.dp)
         ) {
             // 위쪽 선

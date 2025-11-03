@@ -14,7 +14,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -22,7 +24,8 @@ import com.veryshinnam.myapp.R
 fun ConversationNextButton(
     onClick: () -> Unit,
     enabled: Boolean,
-    modifier: Modifier
+    modifier: Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = SemiBold),
 ) {
     Row (
         modifier = if (enabled) {
@@ -35,8 +38,7 @@ fun ConversationNextButton(
             fontWeight = FontWeight.Medium,
             color = if (enabled) colorResource(R.color.main_orange)
             else colorResource(R.color.main_orange).copy(alpha = 0.3f),
-            style = MaterialTheme.typography.headlineSmall.copy(
-                fontWeight = FontWeight.SemiBold)
+            style = textStyle
         )
 
         Spacer(Modifier.width(4.dp))

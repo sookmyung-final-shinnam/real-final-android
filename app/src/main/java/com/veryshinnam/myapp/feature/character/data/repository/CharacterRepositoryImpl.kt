@@ -25,7 +25,8 @@ class CharacterRepositoryImpl @Inject constructor(
         if (!response.isSuccess || response.result == null) {
             throw Exception("캐릭터 전체 조회 실패: ${response.message}")
         }
-        return response.result.characters.map { it.toCollectionData() }
+//        return response.result.characters.map { it.toCollectionData() }
+        return response.result.characters.mapNotNull  { it.toCollectionData() }
     }
 
     // 캐릭터 상세 조회

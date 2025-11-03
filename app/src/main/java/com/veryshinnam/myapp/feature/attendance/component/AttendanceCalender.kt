@@ -8,14 +8,17 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.shape.CircleShape
@@ -28,11 +31,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.StrokeTitle
 import org.threeten.bp.LocalDate
 import org.threeten.bp.YearMonth
 
@@ -45,12 +52,15 @@ fun AttendanceCalender(
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit,
     onStampClick: () -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
+    dateTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
+    sectionPadding:Dp = 5.dp,   // 섹션 패딩, 요일 행 패딩
+    calendarPadding: Dp = 16.dp, // 달력 패딩, 도장 아래 패딩
+    roundCorner: Dp = 16.dp,     // 둥근 모서리
     modifier: Modifier
 ) {
-    val sectionPadding = 8.dp   // 섹션 패딩, 요일 행 패딩
-    val calendarPadding = 24.dp // 달력 패딩, 도장 아래 패딩
-    val roundCorner = 16.dp     // 둥근 모서리
-    val buttonSize = 32.dp      // 월 이동 버튼 사이즈
+    val density = LocalDensity.current
+    val buttonSize = with(density) { textStyle.fontSize.toDp() * 1.2f }
 
     val days = month.lengthOfMonth()                                 // 이번 달 일 수
     val firstDay = month.atDay(1).dayOfWeek.value % 7   // 이번 달 1일의 요일
@@ -66,7 +76,7 @@ fun AttendanceCalender(
         if (attendanceDates.contains(today)) today else attendanceDates.maxOrNull()
     } else null
 
-    // 배경
+    // 배경 (테두리)
     Box(
         modifier = modifier
             .fillMaxSize()
@@ -76,40 +86,39 @@ fun AttendanceCalender(
                 color = colorResource(R.color.deep_pink),
                 shape = RoundedCornerShape(roundCorner)
             )
-            .padding(calendarPadding)
+            .padding(top = calendarPadding, start = calendarPadding / 2, end = calendarPadding / 2)
     ) {
+        // 연도 + 월 + 달력
         Column(
             modifier = Modifier.fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(sectionPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             // 연도
             Text(
                 text = "${month.year}",
                 color = colorResource(R.color.deep_pink),
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
+                style = textStyle
             )
 
-            Spacer(Modifier.height(sectionPadding))
-
-            // 월 + 이동 버튼
+            // 월 (이동 버튼)
             Row(
-                Modifier.fillMaxWidth(0.4f),
+                modifier = Modifier
+                    .wrapContentSize(),
                 verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.SpaceBetween
+                horizontalArrangement = Arrangement.spacedBy(calendarPadding)
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_calendar_left),
                     contentDescription = "이전 달",
                     modifier = Modifier
                         .size(buttonSize)
-                        .clickable {  onPrevMonth()  }
+                        .clickable { onPrevMonth() }
                 )
 
                 Text(
                     text = "${month.monthValue}월",
-                    style = MaterialTheme.typography.displayMedium,
-                    fontWeight = FontWeight.Bold
+                    style = textStyle.copy(fontSize = textStyle.fontSize * 1.8f)
                 )
 
                 Image(
@@ -124,46 +133,43 @@ fun AttendanceCalender(
                 )
             }
 
-            Spacer(Modifier.height(sectionPadding))
-
-            // 달력
+            // 달력 (요일 + 날짜)
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f) // 나머지 높이 차지
+                    .weight(1f), // 나머지 높이 차지
+                        verticalArrangement = Arrangement.spacedBy(sectionPadding * 2),
             ) {
-                // 요일 행
+                // 요일
                 Row(
                     modifier = Modifier
                         .fillMaxWidth()
                         .wrapContentHeight()
                         .background(
                             color = colorResource(R.color.light_pink),
-                            shape = CircleShape
-                        ),
+                            shape = CircleShape),
                     horizontalArrangement = Arrangement.SpaceEvenly,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     weekDays.forEach { day ->
                         Box(
                             modifier = Modifier
-                                .padding(vertical = sectionPadding)
                                 .weight(1f), // 날짜랑 동일 너비
                             contentAlignment = Alignment.Center
                         ) {
-                            Text(
-                                text = day,
-                                fontWeight = FontWeight.Bold,
-                                style = MaterialTheme.typography.headlineSmall,
-                                color = Color.White
+                            StrokeTitle(
+                                modifier = Modifier,
+                                titleText = day,
+                                titleColor = Color.White,
+                                strokeColor = colorResource(R.color.deep_pink),
+                                strokeWidth = 8f,
+                                titleTextStyle = textStyle
                             )
                         }
                     }
                 }
 
-                Spacer(Modifier.height(sectionPadding))
-
-                // 날짜 셀
+                // 날짜
                 BoxWithConstraints(
                     modifier = Modifier
                         .weight(1f) // 나머지 높이 차지
@@ -193,8 +199,7 @@ fun AttendanceCalender(
                             ) {
                                 Text( // 날짜
                                     text = "${index + 1}",
-                                    style = MaterialTheme.typography.headlineSmall,
-                                    fontWeight = FontWeight.SemiBold,
+                                    style = dateTextStyle,
                                 )
 
                                 if (attended) { // 도장
@@ -202,7 +207,7 @@ fun AttendanceCalender(
                                         // 아직 보상 안 받은 보상 도장
                                         date == rewardDate && !isRewarded -> {
                                             Image(
-                                                painter = painterResource(R.drawable.img_stamp_shining_blue),
+                                                painter = painterResource(R.drawable.img_stamp_shining_yellow),
                                                 contentDescription = "보상 도장",
                                                 modifier = Modifier
                                                     .weight(1f)

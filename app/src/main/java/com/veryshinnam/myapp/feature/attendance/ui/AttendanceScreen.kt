@@ -1,7 +1,10 @@
 package com.veryshinnam.myapp.feature.attendance.ui
 
+import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -10,8 +13,11 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -22,47 +28,66 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
+import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceCalender
-import com.veryshinnam.myapp.feature.attendance.component.AttendanceInfo
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
+import org.threeten.bp.YearMonth
 
 @Composable
 fun AttendanceScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
+    spacerPadding: Dp = 10.dp,
+    horizontalPadding: Dp = 16.dp,
     vm: AttendanceViewModel = hiltViewModel()
 ) {
     val uiState by vm.attendanceUiState.collectAsStateWithLifecycle()
+
     var isTodayStamp by remember { mutableStateOf(false) }
     var isReward by remember { mutableStateOf(false) }
 
-    BackHandler {
-        onBack() // 뒤로 가기 (홈 이동)
-    }
+    // 세로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
 
+    // 뒤로 가기
+    BackHandler { onBack() }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(colorResource(id = R.color.background_yellow))
-    ) {
-        // 상단 AppBar
-        AppTopBar(onLogoClick = onLogoClick)
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = {
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = onLogoClick)
+            }
+        },
+        bottomBar = {
+            // 네비게이션바 만큼 여백
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
+        }
+    ) { innerPadding ->
         Box(
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
             contentAlignment = Alignment.Center
         ) {
+            // 뒤로 가기 버튼
             BackButton(
-                onBackClick = onBack,
-                modifier = Modifier.align(Alignment.TopStart).zIndex(1f)
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .zIndex(1f),
+                onBackClick = onBack
             )
 
             when (val state = uiState) {
@@ -74,6 +99,7 @@ fun AttendanceScreen(
                         strokeWidth = 4.dp
                     )
                 }
+
                 // 조회 오류
                 is AttendanceUiState.Error -> {
                     LoadErrorView(
@@ -81,24 +107,36 @@ fun AttendanceScreen(
                         onRetry = { }
                     )
                 }
+
                 // 조회 성공
                 is AttendanceUiState.Success -> {
                     Column(
-                        Modifier.fillMaxSize().padding(16.dp)
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(horizontal = horizontalPadding)
                     ) {
-                        if (!state.isTodayAttendance) {
-                            isTodayStamp = true
-                        }
+                        // 오늘 출첵 여부 확인
+                        if (!state.isTodayAttendance) { isTodayStamp = true }
 
-                        // 출첵 설명 부분
-                        AttendanceInfo(
-                            month = state.month,
-                            stamps = state.stamps,
-                            attendances = state.attendances,
-                            modifier = Modifier.weight(0.25f)    // 높이 비율 0.25
+                        val month = if (state.month == YearMonth.now()) "이번 달"
+                                    else "지난 ${state.month.monthValue}월"
+
+                        UserInfo(
+                            modifier = Modifier,
+                            isItem = true, // 아이템 설명 존재
+                            itemCount = state.stamps,
+                            itemImage =  painterResource(R.drawable.img_stamp),
+                            itemDescription = "모은 스탬프 수",
+                            animalImage = painterResource(R.drawable.img_pig_cut),
+                            animalDescription = "출석체크 설명 돼지 이미지",
+                            cardColor = colorResource(R.color.deep_pink),
+                            cardText = "${month}은 총 ${state.attendances}번 출석했어요!\n" +
+                                    "도장 10 개당 나침반 1 개라는 걸 잊지 마세요~!",
+                            spanText = "${state.attendances}번",
+                            spanColor = colorResource(R.color.light_pink)
                         )
 
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(spacerPadding))
 
                         // 출첵 달력
                         AttendanceCalender(
@@ -111,38 +149,63 @@ fun AttendanceScreen(
                             onStampClick = { isReward = true },
                             modifier = Modifier.weight(0.75f),
                         )
-                        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                     }
-
-
                 }
             }
         }
     }
 
+    // 오늘 출첵 화면
     if (isTodayStamp) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    enabled = true,
+                    indication = null, // 터치 효과 제거
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { }
+        )
+
         AttendanceReward(
             painter = painterResource(R.drawable.img_stamp_shining_blue),
-            text = "출석 완료",
+            text = "오늘의\n출석 체크 완료",
             onReceiveClick = {
                 vm.fetchAttendance()
-                isTodayStamp = false // 닫기
+                isTodayStamp = false
             },
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f),
+                .zIndex(3f),
         )
     }
 
+    // 출첵 보상 화면
     if (isReward) {
         val rewardCount = (uiState as? AttendanceUiState.Success)?.stamps?.div(10) ?: 0
+
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .clickable(
+                    enabled = true,
+                    indication = null, // 터치 효과 제거
+                    interactionSource = remember { MutableInteractionSource() }
+                ) { }
+        )
+
         AttendanceReward(
             painter = painterResource(R.drawable.img_compass_shining),
-            text = "나침반 ${rewardCount}개",
+            text = "출석 체크 보상\n나침반 ${rewardCount}개",
             onReceiveClick = {
                 vm.fetchAttendanceReward()
                 isReward = false // 닫기
             },
+
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)

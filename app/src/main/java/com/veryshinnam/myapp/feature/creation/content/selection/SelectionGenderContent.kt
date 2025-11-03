@@ -1,11 +1,17 @@
 package com.veryshinnam.myapp.feature.creation.content.selection
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.common.enums.Gender
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionGenderButton
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
@@ -17,38 +23,46 @@ fun SelectionGenderContent(
     onPrevClick: () -> Unit,            // 이전 단계 이동
     onNextClick: () -> Unit,            // 다음 단계 이동
     onSimpleWarning: (String) -> Unit,  // 경고
-    modifier: Modifier
+    modifier: Modifier,
+    spacePadding: Dp = 24.dp
 ) {
     // 성별 버튼 체크 용도
     val isFemaleSelected = gender == Gender.FEMALE
     val isMaleSelected = gender == Gender.MALE
 
     // 성별 버튼
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
         Column(
             modifier = Modifier
                 .weight(8f)
-                .fillMaxWidth(0.4f)
+                .fillMaxSize()
                 .align(Alignment.CenterHorizontally),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.SpaceAround
         ) {
             // 여자 버튼
             SelectionGenderButton(
                 gender = Gender.FEMALE,
                 isSelected = isFemaleSelected,
                 onButtonClick = { onSelectGender(Gender.FEMALE) },
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier.fillMaxHeight().weight(1f)
             )
 
-            Spacer(Modifier.weight(0.2f))
+            Spacer(Modifier.height(spacePadding/2))
 
             // 남자 버튼
             SelectionGenderButton(
                 gender = Gender.MALE,
                 isSelected = isMaleSelected,
                 onButtonClick = { onSelectGender(Gender.MALE) },
-                modifier = Modifier.fillMaxWidth().weight(1f)
+                modifier = Modifier.fillMaxHeight().weight(1f)
             )
         }
+
+        Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
         SelectionTripleButtons(
@@ -63,7 +77,9 @@ fun SelectionGenderContent(
                     onSimpleWarning("아직 성별을 선택하지 않았어요!")
                 }
             },
-            modifier = Modifier.fillMaxWidth().weight(2f)
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(2f)
         )
     }
 }

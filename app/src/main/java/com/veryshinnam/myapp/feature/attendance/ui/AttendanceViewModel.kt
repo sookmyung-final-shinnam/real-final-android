@@ -63,26 +63,16 @@ class AttendanceViewModel @Inject constructor(
         val attendanceDays = setOf(1, 2, 5, 6, 8, 14)
 
         val attendanceDates = when {
-            month.year == currentYear && month.monthValue == 7 -> setOf(
-                1,
-                2,
-                3,
-                4,
-                5,
-                9,
-                21,
-                22
-            ).map { month.atDay(it) }.toSet()
+            month.year == currentYear && month.monthValue == 7 ->
+                setOf(1, 2, 3, 4, 5, 9, 21, 22).map { month.atDay(it) }.toSet()
 
-            month.year == currentYear && month.monthValue == 8 -> setOf(
-                10,
-                15,
-                16,
-                23,
-                27
-            ).map { month.atDay(it) }.toSet()
+            month.year == currentYear && month.monthValue == 8 ->
+                setOf(10, 15, 16, 23, 27).map { month.atDay(it) }.toSet()
 
             month.year == currentYear && month.monthValue == 9 ->
+                setOf(12, 19, 21, 24, 27, 29, 30).map { month.atDay(it) }.toSet()
+
+            month.year == currentYear && month.monthValue == 10 ->
                 attendanceDays.map { month.atDay(it) }.toSet()
 
             else -> emptySet()

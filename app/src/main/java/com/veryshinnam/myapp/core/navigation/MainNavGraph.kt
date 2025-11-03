@@ -88,6 +88,12 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
+                },
+                onCreateClick = {
+                    navController.navigate(NavGraphs.CREATION) {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+//                        launchSingleTop = true
+                    }
                 }
             )
         }

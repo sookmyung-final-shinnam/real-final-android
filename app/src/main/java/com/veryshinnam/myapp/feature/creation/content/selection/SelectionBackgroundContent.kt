@@ -1,14 +1,20 @@
 package com.veryshinnam.myapp.feature.creation.content.selection
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
@@ -24,12 +30,17 @@ fun SelectionBackgroundContent (
     onPrevClick: () -> Unit,                 // 이전 단계 이동 콜백
     onNextClick: () -> Unit,                 // 다음 단계 이동 콜백
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
-    modifier: Modifier
+    modifier: Modifier,
+    spacePadding: Dp = 24.dp
 ) {
     var customInput by remember { mutableStateOf("") }
     val initBackgrounds = listOf("숲 속","바다","왕국","학교","집","우주")
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween // 사이 간격
+    ) {
         if (isInputMode) { // 직접추가 버튼 누름에 따라 입력창 또는 그리드 셀 모드
             SelectionCustomInput(
                 value = customInput,
@@ -45,8 +56,8 @@ fun SelectionBackgroundContent (
                         }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
-            )
+                modifier = Modifier.fillMaxWidth(0.85f)
+             )
         } else {
             SelectionItemGrid(
                 items = initBackgrounds,
@@ -55,6 +66,8 @@ fun SelectionBackgroundContent (
                 onItemClick = { onBackgroundSelect(it) },
                 modifier = Modifier.fillMaxWidth().weight(8f)
             )
+
+            Spacer(Modifier.height(spacePadding))
 
             // 하단 버튼 영역
             SelectionTripleButtons(

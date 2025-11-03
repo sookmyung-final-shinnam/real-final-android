@@ -4,11 +4,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -21,11 +21,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeTitle
 
 @Composable
 fun AttendanceReward(
@@ -33,14 +35,13 @@ fun AttendanceReward(
     text: String,
     onReceiveClick: () -> Unit,
     modifier: Modifier = Modifier,
-    spacePadding: Dp = 30.dp, // 요소 간격 패딩
-    textPadding: Dp = 16.dp   // 텍스트 모든방향 패딩
+    textStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
+    spacePadding: Dp = 15.dp, // 요소 간격 패딩
+    textPadding: Dp = 10.dp   // 버튼 텍스트 모든 방향 패딩
 ) {
     Column(
-        modifier = modifier.fillMaxSize()
-            .background(Color.Black.copy(alpha = 0.5f)) // 배경색: 검정 알파 50
-            .windowInsetsPadding(WindowInsets(0, 0, 0, 0)),
-        verticalArrangement = Arrangement.spacedBy(spacePadding, Alignment.CenterVertically),
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
@@ -48,19 +49,26 @@ fun AttendanceReward(
             painter = painter,
             contentDescription = "보상 이미지",
             modifier = Modifier
-                .fillMaxWidth(0.8f),
+                .fillMaxWidth(0.7f),
             contentScale = ContentScale.Fit
         )
 
-        StrokeText(
-            text = text,
-            tColor = Color.White,
-            oColor = colorResource(R.color.clear_blue),
-            oWidth = 4f,
-            fStyle = MaterialTheme.typography.displayLarge,
-            fWeight = FontWeight.Bold,
-            Modifier.align(Alignment.CenterHorizontally)
+        Spacer(Modifier.height(spacePadding*2))
+
+        StrokeTitle(
+            modifier = Modifier,
+            titleText = text,
+            titleColor = Color.White,
+            strokeColor = colorResource(R.color.clear_blue),
+            strokeWidth = 12f,
+            titleTextStyle = textStyle.copy(
+                fontSize = textStyle.fontSize * 1.4f,
+                textAlign = Center,
+                lineHeight = textStyle.fontSize * 1.6f
+            )
         )
+
+        Spacer(Modifier.height(spacePadding))
 
         Button(
             onClick = onReceiveClick,
@@ -74,8 +82,7 @@ fun AttendanceReward(
             Text(
                 text = "받기",
                 modifier = Modifier.padding(textPadding),
-                style = MaterialTheme.typography.headlineMedium,
-                fontWeight = FontWeight.Bold
+                style = textStyle
             )
         }
     }

@@ -4,25 +4,23 @@ import android.content.Intent
 import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
-import androidx.activity.compose.LocalActivity
-import androidx.compose.foundation.clickable
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.windowInsetsBottomHeight
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
+import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Icon
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,15 +34,21 @@ import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.AnnotatedString
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.AppTopBar
+import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
+import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
@@ -54,103 +58,120 @@ fun CharacterScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
+    xMoving: Dp = 60.dp,
+    verticalPadding: Dp = 10.dp,
     vm: CharacterViewModel = hiltViewModel()
 ) {
     val uiState by vm.charUiState.collectAsStateWithLifecycle()
-    val activity = LocalActivity.current
 
+    // 공유 및 클립보드
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
 
     var isWarning by remember { mutableStateOf(false) }
     var warnedStoryId by remember { mutableStateOf<Long?>(null) }
 
+    var isMaking by remember { mutableStateOf(false) }
+
     var isSharing by remember { mutableStateOf(false) }
     var sharedStoryUrl by remember { mutableStateOf<String?>(null) }
 
-    // 가로모드 + id가 바뀌면 재로딩
-    LaunchedEffect(id) {
-        activity?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-        vm.fetchCharacter(id)
-    }
+    // 가로 모드
+    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
 
-    // 뒤로가기 세로모드
-    BackHandler {
-        onBack()
-    }
+    // 캐릭터 id 바뀌면 재로딩
+    LaunchedEffect(id) { vm.fetchCharacter(id) }
 
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = {
-            Column (Modifier.fillMaxWidth()) {
-                AppTopBar(onLogoClick=onLogoClick) // 기존 바
+    // 뒤로 가기
+    BackHandler { onBack() }
+
+
+
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.background_yellow)),
+        contentAlignment = Alignment.Center
+    ) {
+        // 상단 로고
+        LogoBar(
+            modifier = Modifier
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                .zIndex(2f)
+                .align(Alignment.TopCenter),
+            onLogoClick = onLogoClick
+        )
+
+        // 뒤로 가기 버튼
+        BackButton(
+            modifier = Modifier
+                .padding(WindowInsets.statusBars.asPaddingValues())
+                .zIndex(1f)
+                .align(Alignment.TopStart),
+            onBackClick = onBack
+        )
+
+        when (val state = uiState) {
+            // 조회 로딩 중
+            is CharacterUiState.Loading -> {
+                CircularProgressIndicator(
+                    color = colorResource(id = R.color.main_orange), // 주황색
+                    trackColor = Color.Gray.copy(alpha = 0.5f),
+                    strokeWidth = 4.dp
+                )
+            }
+
+            // 조회 오류
+            is CharacterUiState.Error -> {
+                LoadErrorView(
+                    message = state.message,
+                    onRetry = { vm.reload(id) }
+                )
+            }
+
+            // 조회 성공
+            is CharacterUiState.Success -> {
                 Row(
                     modifier = Modifier
-                        .clickable(onClick = {
-                            onBack()
-                        })
-                        .padding(start = 8.dp, top = 8.dp, bottom = 8.dp),
-                    verticalAlignment = Alignment.CenterVertically
+                        .fillMaxWidth(0.9f)
+                        .padding(vertical = verticalPadding),
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.End // Row 안 가로 배치 방향
                 ) {
-                    Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "이전")
-                    Spacer(Modifier.width(4.dp))
-                    Text("이전", fontWeight = FontWeight.Medium)
-                }
-            }
-        },
-        bottomBar = {
-            Spacer( // 네비게이션 바만큼 여백
-                modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars)
-            )
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            when (val state = uiState) {
-                // 조회 로딩 중
-                is CharacterUiState.Loading -> {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.main_orange), // 주황색
-                        trackColor = Color.Gray.copy(alpha = 0.5f),
-                        strokeWidth = 4.dp
-                    )
-                }
-                // 조회 오류
-                is CharacterUiState.Error -> {
-                    LoadErrorView(
-                        message = state.message,
-                        onRetry = { vm.reload(id) }
-                    )
-                }
-                // 조회 성공
-                is CharacterUiState.Success -> {
-                    CharacterCardScreen(
+                    // 왼쪽 캐릭터 이미지 카드
+                    CharacterCardLeft(
                         character = state.characterData,
                         onFavoriteClick = { id -> vm.updateFavorite(id) },
+                        modifier = Modifier
+                            .aspectRatio(0.8f) // 카드 비율
+                            .offset(x = xMoving)       // 오른쪽 이동
+                    )
+
+                    // 오른쪽 캐릭터 정보 카드
+                    CharacterCardRight(
+                        character = state.characterData,
+                        onFlip = { isFront ->
+                            if (!isFront) {
+                                vm.refreshStories(state.characterData.id) } },
                         onStoryClick = onStoryClick,
                         onLockerClick = { storyId ->
                             isWarning = true
-                            warnedStoryId = storyId
-                        },
-                        onFlip = { isFront ->
-                            if (!isFront) {
-                                vm.refreshStories(state.characterData.id)
-                            }
-                        },
+                            warnedStoryId = storyId },
+                        onMakingClick = {
+                            isMaking = true },
                         onShareClick = { storyUrl ->
                             isSharing = true
-                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8"
-                        }
+                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
+                        modifier = Modifier
+                            .aspectRatio(2f) // 카드 비율
+                            .zIndex(1f)
                     )
                 }
             }
         }
     }
 
+    // 잠금 해제
     if (isWarning && warnedStoryId != null) {
         WarningSheet(
             warningText = "동영상 동화의 잠금을 해제할까요?\n" +
@@ -158,17 +179,26 @@ fun CharacterScreen(
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {
-                    vm.fetchVideoStory(warnedStoryId!!)
-                    isWarning = false
+                vm.fetchVideoStory(warnedStoryId!!)
+                isWarning = false
             }
         )
     }
 
+    // 제작중
+    if (isMaking) {
+        WarningSimpleSheet(
+            warningText = "아직 영상을 만들고 있어요.\n조금만 더 기다려주세요!",
+            onDismiss = { isMaking = false },
+        )
+    }
+
+    // 카톡으로 공유
     if (isSharing && sharedStoryUrl != null) {
         ShareSheet(
-            shareUrl = "https://youtu.be/cX2PU3aEBL8",
+            urlText = "https://youtu.be/cX2PU3aEBL8",
 //            shareUrl = sharedStoryUrl!!,
-            shareText = "카카오톡으로 공유하기",
+            confirmText = "카카오톡으로 공유하기",
             onDismiss = { isSharing = false },
             onShare = {
                 try {

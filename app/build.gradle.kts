@@ -40,7 +40,6 @@ android {
     buildFeatures {
         compose = true
     }
-
     composeOptions {
         kotlinCompilerExtensionVersion = "1.5.15"
     }
@@ -68,6 +67,7 @@ dependencies {
     implementation(libs.androidx.compose.testing)
     implementation(libs.androidx.foundation)
     implementation(libs.androidx.lifecycle.runtime.compose)
+    implementation(libs.androidx.foundation.layout)
     ksp("com.google.dagger:hilt-compiler:2.51.1")
 
     // calender 날짜 계산

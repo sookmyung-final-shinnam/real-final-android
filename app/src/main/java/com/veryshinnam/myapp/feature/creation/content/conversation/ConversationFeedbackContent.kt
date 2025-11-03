@@ -1,7 +1,9 @@
 package com.veryshinnam.myapp.feature.creation.content.conversation
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -22,33 +24,38 @@ fun ConversationFeedbackContent(
     nextEnabled: Boolean,
     modifier: Modifier
 ) {
-    Column(modifier = modifier.fillMaxSize()) {
-            ConversationNeedsText(
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.SpaceBetween,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        // --- 진행바 높이
+        Spacer(Modifier.fillMaxHeight(0.15f))
+
+        ConversationNeedsText(
                 feedback = feedback.text,
                 tryNum = feedback.tryNum,
                 painter = if (feedback.isPositive) painterResource(R.drawable.img_feedback_positive)
                           else painterResource(R.drawable.img_feedback_negative),
                 modifier = Modifier
-                    .weight(0.8f)
+                    .weight(1f)
                     .align(Alignment.CenterHorizontally),
                 isTtsSpeaking = isTtsSpeaking,
                 onReplayClick = onReplayClick
             )
 
-        Spacer(Modifier.weight(0.05f))
-
         if (feedback.isPositive) {
             ConversationNextButton(
                 onClick ={ onButtonClick() },
                 enabled = nextEnabled,
-                modifier = Modifier.weight(0.15f)
-                .align(Alignment.CenterHorizontally))
+                modifier = Modifier
+                    .align(Alignment.CenterHorizontally))
         } else { // 부정 - 먀이크 버튼
             ConversationRecordButton(
                 onRecordClick = {  onButtonClick() },
                 enabled = nextEnabled,
                 modifier = Modifier
-                    .weight(0.15f)
+                    .fillMaxHeight(0.15f)
                     .align(Alignment.CenterHorizontally)
             )
         }

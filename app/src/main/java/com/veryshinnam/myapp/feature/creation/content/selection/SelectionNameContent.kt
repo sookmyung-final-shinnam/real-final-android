@@ -2,7 +2,9 @@ package com.veryshinnam.myapp.feature.creation.content.selection
 
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -10,6 +12,8 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.model.NameError
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionNameInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
@@ -22,7 +26,8 @@ fun SelectionNameContent(
     onPrevClick: () -> Unit,
     onNextClick: () -> Unit,
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
-    modifier: Modifier
+    modifier: Modifier,
+    spacePadding: Dp = 24.dp
 ) {
     var inputName by rememberSaveable(name) { mutableStateOf(name) }
 
@@ -48,24 +53,30 @@ fun SelectionNameContent(
 
     // 닉네임 유효성 검사
     val error = validateKoreanName(inputName)
-    val isValid = error == NameError.NONE && inputName.isNotBlank()
+//    val isValid = error == NameError.NONE && inputName.isNotBlank()
 
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally, // 가로 중앙
     ) {
         // 텍스트 필드
-        Box(Modifier.fillMaxWidth().weight(8f)) {
+        Box(
+            modifier = Modifier
+                .fillMaxWidth()
+                .weight(8f),
+            contentAlignment = Alignment.TopCenter
+        ) {
             SelectionNameInput(
                 name = inputName,
                 onNameChange = { new ->
                     if (new.length <= 10) inputName = new
                 },
                 error = error,
-                modifier = Modifier.fillMaxWidth(0.9f).align(Alignment.Center)
+                modifier = Modifier.fillMaxWidth(.85f)
             )
         }
 
+        Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
         SelectionTripleButtons(

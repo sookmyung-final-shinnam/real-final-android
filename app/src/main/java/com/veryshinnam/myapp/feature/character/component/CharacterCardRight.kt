@@ -20,18 +20,22 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
-fun CharacterInfoCard(
+fun CharacterCardRight(
     character: CharacterData,     // 캐릭터 정보
+    onFlip: (Boolean) -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
-    onFlip: (Boolean) -> Unit,
+    onMakingClick: () -> Unit,
     onShareClick: (String) -> Unit,
+    cardPadding: Dp = 24.dp,
+    tabPadding: Dp = 12.dp,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기
 ) {
     // 카드 앞뒷면 구분
@@ -52,7 +56,7 @@ fun CharacterInfoCard(
     Box(modifier = modifier) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .graphicsLayer {         // 카드 회전
                     rotationX = rotation // x축 기준
                     cameraDistance = cameraDistancePx
@@ -72,32 +76,44 @@ fun CharacterInfoCard(
                 if (rotation <= 90f) {
 
                     // 앞면: 캐릭터 이름 + 기본 정보
-                    CharacterCardFront(character)
+                    CharacterRightFront(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(vertical = cardPadding, horizontal = cardPadding / 2),
+                        character = character
+                    )
 
                     // 공통 탭버튼
                     CharacterTabButton(
-                        modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 12.dp, end = 12.dp),
+                        modifier = Modifier
+                            .align(Alignment.BottomEnd)
+                            .padding(bottom = tabPadding, end = tabPadding),
                         onClick = {
                             isFront = !isFront
                             onFlip(isFront) // 앞 > 뒤 새로고침
                         }
                     )
                 } else {
-
                     // 넘어가면 뒷면 표시 + 회전 다시 보정
                     Box(Modifier.graphicsLayer { rotationX = 180f }) {
 
                         // 뒷면: 동화 정보
-                        CharacterCardBack(
-                            character.stories,
+                        CharacterRightBack(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(vertical = cardPadding, horizontal = cardPadding / 2),
+                            stories = character.stories,
                             onStoryClick = onStoryClick,
                             onLockerClick = onLockerClick,
+                            onMakingClick = onMakingClick,
                             onShareClick = onShareClick
-                            )
+                        )
 
                         // 공통 탭버튼
                         CharacterTabButton(
-                            modifier = Modifier.align(Alignment.BottomEnd).padding(bottom = 12.dp, end = 12.dp),
+                            modifier = Modifier
+                                .align(Alignment.BottomEnd)
+                                .padding(bottom = tabPadding, end = tabPadding),
                             onClick = { isFront = !isFront })
                     }
                 }

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.creation.componenet.conversation
+package com.veryshinnam.myapp.feature.creation.content.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,8 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import kotlinx.coroutines.delay
@@ -34,54 +38,55 @@ import kotlinx.coroutines.delay
 @Composable
 fun ConversationEndContent(
     onHomeClick: () -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold, textAlign = TextAlign.Center),
+    spacePadding: Float = .12f,
+    verticalPadding: Dp = 24.dp,
 ) {
 
     LaunchedEffect(Unit) {
         delay(3000L) // 3초 뒤 자동 홈으로
         onHomeClick()
     }
-
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+        verticalArrangement = Arrangement.SpaceAround
     ){
-        Spacer(Modifier.weight(0.1f))
+        Spacer(Modifier.fillMaxHeight(spacePadding))
 
         Image(
             painter = painterResource(R.drawable.img_story_end),
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
-                .weight(0.6f),
+                .fillMaxHeight(0.5f),
             contentScale = ContentScale.Fit
         )
 
-        Spacer(Modifier.weight(0.04f))
-
         // 완료 텍스트
         Card(
-            modifier = Modifier.fillMaxWidth(0.8f).weight(0.3f),
+            modifier = Modifier.fillMaxWidth(),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(32.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
         ) {
-            Box(modifier = Modifier.fillMaxSize().padding(16.dp)) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(verticalPadding, verticalPadding),
+                contentAlignment = Alignment.Center
+            ) {
                 // 질문 텍스트
                 Text(
-                    text = "다 끝났어! 이제 동화가 생성 중이야.\n" +
+                    text = "다 끝났어!\n\n이제 동화가 생성 중이야.\n" +
                             "5분 뒤에 보관함에서 보자!",
-                    modifier = Modifier.align(Alignment.Center), // 가로+세로 중앙
-                    textAlign = TextAlign.Center, // 줄바꿈 고려 가운데 정렬
-                    style = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold)
+                    style = textStyle
                 )
             }
         }
-        Spacer(Modifier.weight(0.04f))
 
-
-        // 홈버튼
+        // 홈 버튼
         Button(
-            modifier = Modifier.fillMaxWidth(0.5f).weight(0.1f),
+            modifier = Modifier.fillMaxWidth(0.7f),
             onClick = { onHomeClick() },
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.main_orange)
@@ -90,12 +95,14 @@ fun ConversationEndContent(
         ) {
             Text(
                 text = "홈으로",
-                color = Color.Black,
                 modifier = Modifier.padding(8.dp),
-                style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
+                style =textStyle.copy(
+                    color = Color.White,
+                    fontSize = textStyle.fontSize * 1.4f
+                )
             )
         }
 
-        Spacer(Modifier.weight(0.1f))
+        Spacer(Modifier.fillMaxHeight(spacePadding*2))
     }
 }

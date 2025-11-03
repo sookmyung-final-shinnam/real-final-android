@@ -17,70 +17,74 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeTitle
 
 @Composable
 fun StoryEndingPage(
     onRestart: () -> Unit,   // 첫 페이지로 버튼 클릭
-    onHome: () -> Unit  // 홈 화면으로 버튼 클릭
+    onHome: () -> Unit,  // 홈 화면으로 버튼 클릭
+    spacePadding: Dp = 20.dp,
+    endingTextStyle: TextStyle = MaterialTheme.typography.displayLarge,
+    buttonVertical: Dp = 16.dp,
+    buttonHorizontal:  Dp = 24.dp,
+    buttonTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.White, fontWeight = FontWeight.Bold),
 ) {
     Column(
         modifier = Modifier
             .fillMaxSize()
             .background(colorResource(R.color.background_yellow)), // 배경 색상
-        horizontalAlignment = Alignment.CenterHorizontally
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.Center
     ) {
-        Spacer(modifier = Modifier.weight(1f))
 
         // THE + 이미지 + END
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(4f),
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.Center
+            horizontalArrangement = Arrangement.spacedBy(spacePadding)
         ) {
-            StrokeText(
-                "THE",
-                Color.White,
-                colorResource(R.color.main_orange),
-                16f,
-                fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
-                FontWeight.Bold,
-                Modifier
+            StrokeTitle(
+                modifier = Modifier,
+                titleText = "THE",
+                titleColor = Color.White,
+                strokeColor = colorResource(R.color.main_orange),
+                strokeWidth = 20f,
+                titleTextStyle = endingTextStyle.copy(
+                    fontSize = endingTextStyle.fontSize * 1.4f
+                )
             )
 
             Image(
                 painter = painterResource(R.drawable.img_story_ending),
                 contentDescription = "마지막 페이지 이미지",
                 modifier = Modifier
-                    .fillMaxWidth(0.4f)
-                    .aspectRatio(1f)
-                    .offset(y=40.dp),
+                    .fillMaxWidth(0.35f),
                 contentScale = ContentScale.Fit
             )
 
-            StrokeText(
-                "END",
-                Color.White,
-                colorResource(R.color.main_orange),
-                16f,
-                fStyle = MaterialTheme.typography.displayLarge.copy(fontSize = 120.sp),
-                FontWeight.Bold,
-                Modifier
+            StrokeTitle(
+                modifier = Modifier,
+                titleText = "END",
+                titleColor = Color.White,
+                strokeColor = colorResource(R.color.main_orange),
+                strokeWidth = 20f,
+                titleTextStyle = endingTextStyle.copy(
+                    fontSize = endingTextStyle.fontSize * 1.4f
+                )
             )
         }
 
+        Spacer(Modifier.height(spacePadding/2))
+
         // 버튼 영역
         Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .weight(1f)
-                .offset(y=(-20).dp),
+            modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.SpaceEvenly,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -91,9 +95,8 @@ fun StoryEndingPage(
                     contentColor = Color.Black
                 ),
                 shape = CircleShape,
+                contentPadding = PaddingValues(horizontal = buttonHorizontal, vertical = buttonVertical),
                 modifier = Modifier
-                    .fillMaxHeight(0.7f)
-                    .aspectRatio(3f)
                     .border(
                         width = 4.dp,
                         color = colorResource(id = R.color.blue_gray),
@@ -102,9 +105,7 @@ fun StoryEndingPage(
             ) {
                 Text(
                     "첫 페이지로",
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    style = buttonTextStyle
                 )
             }
 
@@ -115,9 +116,8 @@ fun StoryEndingPage(
                     contentColor = Color.Black
                 ),
                 shape = CircleShape,
+                contentPadding = PaddingValues(horizontal = buttonHorizontal, vertical = buttonVertical),
                 modifier = Modifier
-                    .fillMaxHeight(0.7f)
-                    .aspectRatio(3f)
                     .border(
                         width = 4.dp,
                         color = colorResource(id = R.color.blue_gray),
@@ -126,12 +126,9 @@ fun StoryEndingPage(
             ) {
                 Text(
                     "홈 화면으로",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold,
-                    color = Color.White
+                    style = buttonTextStyle
                 )
             }
         }
-        Spacer(modifier = Modifier.weight(1f))
     }
 }

@@ -1,14 +1,21 @@
 package com.veryshinnam.myapp.feature.creation.content.selection
 
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
@@ -17,6 +24,7 @@ import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTrip
 // 캐릭터 생성 > 선택 진입점
 @Composable
 fun SelectionThemeContent(
+    modifier: Modifier,
     themes: List<String>,              // 선택된 테마들
     customTheme: String,               // 직접 추가된 테마
     isInputMode: Boolean,                   // 입력 모드
@@ -25,12 +33,16 @@ fun SelectionThemeContent(
     onThemeSelect: (String) -> Unit,        // 테마 선택 콜백
     onNextClick: () -> Unit,                // 다음 단계 이동 콜백
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
-    modifier: Modifier
+    spacePadding: Dp = 24.dp
 ) {
     var customInput by remember { mutableStateOf("") }
     val initThemes = listOf("로맨스", "모험", "일상", "공포", "우정", "추리")
 
-    Column(modifier = modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+        verticalArrangement = Arrangement.SpaceBetween
+    ) {
         if (isInputMode) { // 직접추가 버튼 누름에 따라 입력창 또는 그리드 셀 모드
             SelectionCustomInput(
                 value = customInput,
@@ -46,7 +58,7 @@ fun SelectionThemeContent(
                         }
                     }
                 },
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxWidth(0.85f)
             )
         } else {
             SelectionItemGrid(
@@ -57,6 +69,8 @@ fun SelectionThemeContent(
                 modifier = Modifier.fillMaxWidth().weight(8f)
             )
 
+            Spacer(Modifier.height(spacePadding))
+
             // 하단 버튼 영역
             SelectionTripleButtons(
                 isLeft = false,    // 첫 화면이니 이전 버튼 없음
@@ -65,8 +79,11 @@ fun SelectionThemeContent(
                 onCenterClick = {
                     if (customTheme.isBlank() && themes.size < 3) {
                         onInputModeChange(true) // 직접추가 입력창 열기
-                    } else {
+                    } else if (themes.size == 3) {
                         onSimpleWarning("주제는 3개까지 선택이 가능해요!")
+
+                    } else {
+                        onSimpleWarning("이미 원하는 주제를 입력했어요!\n\n다른 주제를 추가하려면 선택 해제 후 다시 입력해 주세요.")
                     }
                 },
                 onRightClick = {
@@ -76,7 +93,9 @@ fun SelectionThemeContent(
                         onSimpleWarning("아직 주제를 선택하지 않았어요!")
                     }
                 },
-                modifier = Modifier.fillMaxWidth().weight(2f)
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .weight(2f)
             )
         }
     }

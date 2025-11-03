@@ -19,7 +19,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.enums.Gender
@@ -29,7 +31,8 @@ fun SelectionGenderButton(
     gender: Gender,
     isSelected: Boolean,
     onButtonClick: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
 ) {
     Button(
         onClick = { onButtonClick() },
@@ -56,9 +59,7 @@ fun SelectionGenderButton(
                 )
                 Text(
                     text = "여자",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = textStyle,
                     color = selectColor
                 )
             } else {
@@ -70,9 +71,7 @@ fun SelectionGenderButton(
                 )
                 Text(
                     text = "남자",
-                    style = MaterialTheme.typography.headlineMedium.copy(
-                        fontWeight = FontWeight.Bold
-                    ),
+                    style = textStyle,
                     color = selectColor
                 )
             }

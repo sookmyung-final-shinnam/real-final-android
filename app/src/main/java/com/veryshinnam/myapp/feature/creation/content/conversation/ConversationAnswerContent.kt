@@ -11,6 +11,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -27,10 +30,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeText
+import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationAnswerText
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 import kotlinx.coroutines.delay
@@ -40,7 +46,10 @@ fun ConversationAnswerContent(
     answerData: AnswerData,
     onRecordStop: () -> Unit,
     onFeedback: () -> Unit,
-    modifier: Modifier
+    modifier: Modifier,
+    listenTextStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    spacerPadding: Dp = 10.dp,
+    verticalPadding: Dp = 20.dp,
 ) {
     var progress by remember { mutableStateOf(0f) }
     var isFinal by remember { mutableStateOf(false) } // userText 고정 여부
@@ -67,67 +76,72 @@ fun ConversationAnswerContent(
         Log.d("UI Test", "partialUpdated: ${answerData.partialAnswer}")
     }
 
-    Column(modifier = modifier.fillMaxSize(),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
+    Column(
+        modifier = modifier.fillMaxSize(),
+        verticalArrangement = Arrangement.spacedBy(verticalPadding),
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Spacer(Modifier.weight(0.1f))
+        // --- 진행바 높이
+        Spacer(Modifier.fillMaxHeight(0.15f))
 
-        // 다람쥐 이미지
+        // --- 다람쥐 이미지
         Image(
             painter = painterResource(R.drawable.img_llm_question),
             contentDescription = "다람쥐 이미지",
-            modifier = Modifier
-                .weight(1f),
+            modifier = Modifier.fillMaxHeight(0.5f),
             contentScale = ContentScale.Fit
         )
-        Spacer(Modifier.weight(0.12f))
 
-        // 듣는 중 텍스트
-        StrokeText(
-            text = "듣고 있어요 ...",
-            tColor = Color.White,
-            oColor = colorResource(R.color.brand_orange),
-            oWidth = 4f,
-            fStyle = MaterialTheme.typography.displayLarge,
-            fWeight = FontWeight.Bold,
-            Modifier.weight(0.2f).align(Alignment.CenterHorizontally)
-        )
-
-        Spacer(Modifier.weight(0.02f))
-
-        // 사용자 실시간 대답
-        ConversationAnswerText(
-            answerData = answerData,
-            isFinal = isFinal,
-            modifier = Modifier.weight(0.15f)
-        )
-
-        Spacer(Modifier.weight(0.1f))
-
-        // 시간 3초 바
-        Box(
-            modifier = Modifier
-                .fillMaxWidth(0.8f)
-                .weight(0.1f)
-                .clip(RoundedCornerShape(50)) // 둥근 모서리
-                .border(2.dp, colorResource(R.color.main_orange), RoundedCornerShape(50))
+        //  텍스트 + 진행바
+        Column(
+            modifier = modifier
+                .weight(1f)
+                .padding(bottom = verticalPadding),
+            verticalArrangement = Arrangement.SpaceAround,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // 배경
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(colorResource(R.color.lemon_yellow), RoundedCornerShape(50))
-            )
-            // 진행 부분
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .fillMaxWidth(progress.coerceIn(0f, 1f))
-                    .background(colorResource(R.color.main_orange), RoundedCornerShape(50))
-            )
-        }
+            Column {
+                StrokeTitle(
+                    titleText = "듣고 있어요 ...",
+                    titleColor = Color.White,
+                    strokeColor = colorResource(R.color.brand_orange),
+                    titleTextStyle = listenTextStyle.copy(fontSize = listenTextStyle.fontSize * 1.4f),
+                    strokeWidth = 12f,
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
 
-        Spacer(Modifier.weight(0.2f))
+                Spacer(Modifier.height(spacerPadding))
+
+                // 사용자 실시간 대답
+                ConversationAnswerText(
+                    answerData = answerData,
+                    isFinal = isFinal,
+                    modifier = Modifier.fillMaxWidth()
+                )
+            }
+
+            // 시간 3초 바
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(0.15f)
+                    .clip(CircleShape)
+                    .border(2.dp, colorResource(R.color.main_orange), CircleShape),
+            ) {
+                // 배경
+                Box(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .background(colorResource(R.color.lemon_yellow), RoundedCornerShape(50))
+                )
+                // 진행 부분
+                Box(
+                    modifier = Modifier
+                        .align(Alignment.CenterStart)
+                        .fillMaxHeight()
+                        .fillMaxWidth(progress.coerceIn(0f, 1f))
+                        .background(colorResource(R.color.main_orange), RoundedCornerShape(50))
+                )
+            }
+        }
     }
 }

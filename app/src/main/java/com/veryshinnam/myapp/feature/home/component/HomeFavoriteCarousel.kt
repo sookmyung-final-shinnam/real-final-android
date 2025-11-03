@@ -1,5 +1,7 @@
 package com.veryshinnam.myapp.feature.home.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -13,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,9 +25,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.withStyle
@@ -40,7 +45,11 @@ fun HomeFavoriteCarousel(
     characters: List<FavoriteData>,
     lastSelectedId: Long?,
     onCharacterClick: (Long) -> Unit,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
+
+
     // 즐찾 캐릭터가 없는 경우
     if (characters.isEmpty()) {
         Box(
@@ -139,8 +148,12 @@ fun HomeFavoriteCarousel(
                         .graphicsLayer { // 중앙 강조 효과
                             scaleX = scale
                             scaleY = scale
-                            this.alpha = alpha
-                        },
+                            this.alpha = alpha }
+                        .border(
+                            width = 2.dp,
+                            color = colorResource(id = R.color.main_orange),
+                            shape = RoundedCornerShape(16.dp))
+                        .clip(RoundedCornerShape(16.dp)),
                     isCenter = isCenter,
                     onClick = { c -> c?.let { onCharacterClick(it.id) } }
                 )
@@ -151,11 +164,10 @@ fun HomeFavoriteCarousel(
         Spacer(modifier = Modifier.padding(top = 16.dp))
         Text(
             text = buildAnnotatedString {
-                // 현재 인덱스 부분 → Bold + 크게
+                // 현재 인덱스 부분 강조
                 withStyle(
-                    style = SpanStyle(
+                    style = spanTextStyle.toSpanStyle().copy(
                         fontWeight = FontWeight.Bold,
-                        fontSize = 40.sp, // 원하는 크기
                         color = colorResource(R.color.main_orange)
                     )
                 ) {
@@ -164,7 +176,9 @@ fun HomeFavoriteCarousel(
                 // 구분자 + 전체 개수 부분 → 기본 스타일
                 append(" / $n")
             },
-            style = MaterialTheme.typography.headlineSmall.copy(color = colorResource(R.color.main_orange))
+            style = textStyle.copy(
+                color = colorResource(R.color.main_orange)
+            )
         )
     }
 }

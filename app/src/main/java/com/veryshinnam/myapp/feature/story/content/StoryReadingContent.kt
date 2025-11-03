@@ -1,12 +1,15 @@
-package com.veryshinnam.myapp.feature.story.ui
+package com.veryshinnam.myapp.feature.story.content
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
 import androidx.compose.runtime.Composable
@@ -16,17 +19,15 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.components.StoryEndingPage
-import com.veryshinnam.myapp.feature.story.components.StoryPageButtons
 import com.veryshinnam.myapp.feature.story.components.StoryReaderPage
 import kotlinx.coroutines.launch
 
 @Composable
-fun StoryReadingScreen(
+fun StoryReadingContent(
     pages: List<PageData>,
     storyType: StoryType,
     isTtsMode: Boolean,
@@ -58,6 +59,7 @@ fun StoryReadingScreen(
     }
 
     BackHandler { onPrologue() }
+
     Box(Modifier.fillMaxSize()) {
         // 동화 페이지
         HorizontalPager(
@@ -65,7 +67,18 @@ fun StoryReadingScreen(
             modifier = Modifier.matchParentSize()
         ) { page ->
             if (page < pages.size) {
-                StoryReaderPage(page = pages[page], storyType = storyType)
+                StoryReaderPage(
+                    page = pages[page],
+                    storyType = storyType,
+                    pagerState = pagerState,
+                    coroutineScope = coroutineScope,
+                    pageCount = pages.size,
+                    onEndingPage = {
+                        coroutineScope.launch {
+                            pagerState.animateScrollToPage(pages.size)
+                        }
+                    }
+                )
             } else {
                 StoryEndingPage(
                     onRestart = {
@@ -79,26 +92,27 @@ fun StoryReadingScreen(
         }
 
         if (pagerState.currentPage < pages.size) {
+
             // TTS 재생 버튼
             Image(
                 painter = if (isTtsMode) { painterResource(R.drawable.img_speak_on) }
-                        else { painterResource(R.drawable.img_speak_off) },
-                contentDescription = "읽어주기 버튼",
-                modifier = Modifier.align(Alignment.TopEnd)
-                    .fillMaxHeight(0.2f)
-                    .padding(16.dp)
+                else { painterResource(R.drawable.img_speak_off) },
+                contentDescription = "읽어 주기 버튼",
+                modifier = Modifier
+                    .fillMaxHeight(0.24f)
+                    .padding(WindowInsets.systemBars.asPaddingValues())
+                    .align(Alignment.TopEnd)
                     .clickable { onTtsModeChange() },
                 contentScale = ContentScale.Fit
             )
 
             // 양옆 페이지 버튼
-            StoryPageButtons(
-                pagerState = pagerState,
-                coroutineScope = coroutineScope,
-                pageCount = pages.size,
-                modifier = Modifier.align(Alignment.BottomCenter)
-            )
+//                StoryPageButtons(
+//                    pagerState = pagerState,
+//                    coroutineScope = coroutineScope,
+//                    pageCount = pages.size,
+//                    modifier = Modifier.align(Alignment.BottomCenter)
+//                )
         }
-
     }
 }

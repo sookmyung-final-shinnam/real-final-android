@@ -7,12 +7,15 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -34,25 +37,33 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.veryshinnam.myapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ShareSheet(
-    shareUrl: String,
-    shareText: String,
+    urlText: String,
+    urlTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(color = Color.White, fontWeight = FontWeight.SemiBold),
+    shareText: String = "동화를 친구들에게도 보여줄까요?",
+    shareTextStyle: TextStyle =  MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.1.em),
+    confirmText: String,
+    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
+    verticalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = 20.dp,
     onDismiss: () -> Unit,
     onShare: () -> Unit,
     onCopy: () -> Unit
 ) {
     val sheetState = rememberModalBottomSheetState(
-        confirmValueChange = { value ->
-            value != SheetValue.Expanded // 전체 높이 허용 x
-        }
+        skipPartiallyExpanded = true,
+        confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
     )
 
     ModalBottomSheet(
@@ -60,97 +71,102 @@ fun ShareSheet(
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange),
-        windowInsets = WindowInsets(0, 0, 0, 0),
     ) {
+        // --- 닫기 버튼 + 공유 내용 + 공유하기 버튼
         Column(
             modifier = Modifier
-                .fillMaxSize()
-                .padding(vertical = 8.dp, horizontal = 20.dp),
+                .fillMaxWidth()
+                .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Spacer(Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
-                    modifier = Modifier.align(Alignment.TopEnd)
+                    modifier = Modifier.fillMaxWidth(.06f)
+                        .align(Alignment.TopEnd)
+                        .aspectRatio(1f)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
                         contentDescription = "닫기",
                         tint = colorResource(R.color.main_orange_50),
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
-            }
 
-            Image(
-                painter = painterResource(R.drawable.img_speak_on),
-                contentDescription = "공유 안내 이미지",
-                modifier = Modifier.fillMaxWidth(0.2f),
-                contentScale = ContentScale.Fit
-            )
-
-            Text(
-                text = "동화를 친구들에게도 보여줄까요?",
-                color = Color.White,
-                style = MaterialTheme.typography.headlineSmall.copy(fontWeight = FontWeight.Bold),
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(0.8f)
-            )
-            Spacer(Modifier.height(4.dp))
-
-            Row(
-                modifier = Modifier.fillMaxWidth(0.8f),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center
-            ) {
-
-                Text(
-                    // 길이 알아서 자르기
-                    text = shareUrl,
-                    color = Color.White,
-                    style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                    modifier = Modifier.wrapContentWidth(),
-                    textAlign = TextAlign.Center,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                Spacer(Modifier.width(20.dp))
-
-                Button(
-                    onClick = { onCopy() },
-                    colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
-                    shape = RoundedCornerShape(16.dp),
+                // --- 공유 내용 (공유 이미지 + 문구 + 공유 url)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = verticalPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(verticalPadding / 2)
                 ) {
-                    Text(
-                        text = "복사",
-                        style = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.SemiBold),
-                        color = Color.Black,
+                    // 이미지
+                    Image(
+                        painter = painterResource(R.drawable.img_speak_on),
+                        contentDescription = "공유 안내 이미지",
+                        modifier = Modifier.fillMaxWidth(0.1f),
+                        contentScale = ContentScale.Fit
                     )
+
+                    // 문구
+                    Text(
+                        text = shareText,
+                        style = shareTextStyle,
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    )
+
+                    // --- url (url + 복사 버튼)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.8f),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.Center
+                    ) {
+
+                        // url
+                        Text(
+                            // 길이 알아서 자르기
+                            text = urlText,
+                            style = urlTextStyle,
+                            modifier = Modifier.wrapContentWidth(),
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        Spacer(Modifier.width(20.dp))
+
+                        // 복사 버튼
+                        Button(
+                            onClick = { onCopy() },
+                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
+                            shape = RoundedCornerShape(16.dp),
+                        ) {
+                            Text(
+                                text = "복사",
+                                style = urlTextStyle.copy(color = Color.Black),
+                            )
+                        }
+                    }
+
+                    // --- 공유하기 버튼
+                    Button(
+                        onClick = {
+                            onShare()
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth(0.8f)
+                    ) {
+                        Text(
+                            text = confirmText,
+                            style = confirmTextStyle,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
                 }
-            }
-
-            Spacer(Modifier.height(20.dp))
-
-            Button(
-                onClick = {
-                    onShare()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text(
-                    text = shareText,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color.Black,
-                    modifier = Modifier.padding(4.dp)
-                )
             }
         }
     }

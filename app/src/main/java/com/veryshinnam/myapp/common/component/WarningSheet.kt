@@ -2,10 +2,13 @@ package com.veryshinnam.myapp.common.component
 
 import android.content.res.Configuration
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -35,103 +38,125 @@ import androidx.compose.ui.platform.LocalWindowInfo
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.withStyle
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.em
 import com.veryshinnam.myapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun WarningSheet(
     warningText: String,
+    warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.1.em),
     confirmText: String,
-    onDismiss: () -> Unit = {},
+    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
+    verticalPadding: Dp = 16.dp,
+    horizontalPadding: Dp = 20.dp,
+    onDismiss: () -> Unit,
     onConfirm: () -> Unit,
-    fStyle: TextStyle = MaterialTheme.typography.headlineSmall,
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
+//
+//    val windowInfo = LocalWindowInfo.current        // 현재 창
+//    val density = LocalDensity.current              // 현재 기기 밀도 값
+//    val heightPx = windowInfo.containerSize.height  // 현재 창의 컨테이너 높이 (px)
+//    val heightDp = with(density) { heightPx.toDp() } // px > dp
 
-    val windowInfo = LocalWindowInfo.current        // 현재 창
-    val density = LocalDensity.current              // 현재 기기 밀도 값
-    val heightPx = windowInfo.containerSize.height  // 현재 창의 컨테이너 높이 (px)
-    val heightDp = with(density) { heightPx.toDp() } // px > dp
+    val iconSize = if (isPortrait) 0.12f else 0.06f
+    val imageSize = if (isPortrait) 0.2f else 0.1f // 세로 0.2, 가로 0.1
 
     val sheetState = rememberModalBottomSheetState(
-        confirmValueChange = { value ->
-            value != SheetValue.Expanded // 전체 높이 허용 x
-        }
+        skipPartiallyExpanded = true,
+        confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
     )
 
     ModalBottomSheet(
         onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
-        containerColor = colorResource(R.color.main_orange),
-        windowInsets = WindowInsets(0, 0, 0, 0),
+        containerColor = colorResource(R.color.main_orange)
     ) {
+        // --- 닫기 버튼 + 경고 내용 + 확인 버튼
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .then(
-                    if (isPortrait) Modifier.height(heightDp * 0.34f) //  화면 높이 30%
-                    else Modifier.fillMaxSize()
-                )
-                .padding(vertical = 8.dp, horizontal = 20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally,
+//                .fillMaxHeight(.35f)
+                .padding(vertical = verticalPadding, horizontal = horizontalPadding),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(Modifier.height(10.dp))
-
-            Box(
-                modifier = Modifier.fillMaxWidth()
-            ) {
+            Box(modifier = Modifier.fillMaxWidth()) {
+                // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
-                    modifier = Modifier.align(Alignment.TopEnd)
+                    modifier = Modifier.fillMaxWidth(iconSize)
+                        .align(Alignment.TopEnd)
+                        .aspectRatio(1f)
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
                         contentDescription = "닫기",
                         tint = colorResource(R.color.main_orange_50),
-                        modifier = Modifier.size(60.dp)
+                        modifier = Modifier.fillMaxSize()
                     )
                 }
-            }
 
-            Image(
-                painter = painterResource(R.drawable.img_speak_on),
-                contentDescription = "경고 이미지",
-                modifier = Modifier.fillMaxWidth(0.2f),
-                contentScale = ContentScale.Fit
-            )
-            Spacer(Modifier.height(20.dp))
+                // --- 경고 내용 (경고 이미지 + 문구)
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(top = verticalPadding),
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
+                ) {
+                    // 이미지
+                    Image(
+                        painter = painterResource(R.drawable.img_speak_on),
+                        contentDescription = "경고 이미지",
+                        modifier = Modifier.fillMaxWidth(imageSize),
+                        contentScale = ContentScale.Fit
+                    )
 
-            Text(
-                text = warningText,
-                color = Color.White,
-                style = fStyle,
-                fontWeight = FontWeight.Bold,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(1f)
-            )
+                    // 문구
+                    Text(
+                        text = buildAnnotatedString {
+                            withStyle(
+                                style = warningTextStyle.toSpanStyle().copy(
+                                    fontSize = warningTextStyle.fontSize * 1.2f,
+                                    fontWeight = FontWeight.Bold,
+                                )
+                            ) { append("앗!\n\n") }
+                            // 경고 문구
+                            withStyle(
+                                style = warningTextStyle.toSpanStyle()
+                            ) { append("$warningText\n") }
+                        },
+                        style = warningTextStyle,
+                        modifier = Modifier.fillMaxWidth()
+                    )
 
-            Spacer(Modifier.height(36.dp))
-
-            Button(
-                onClick = {
-                    onConfirm()
-                    onDismiss()
-                },
-                colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
-                shape = RoundedCornerShape(16.dp),
-                modifier = Modifier.fillMaxWidth(0.8f)
-            ) {
-                Text(
-                    text = confirmText,
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold),
-                    color = Color.Black,
-                    modifier = Modifier.padding(4.dp)
-                )
+                    // --- 확인 버튼
+                    Button(
+                        onClick = {
+                            onConfirm()
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = confirmText,
+                            style = confirmTextStyle,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
+                }
             }
         }
     }

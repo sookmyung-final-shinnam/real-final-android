@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
@@ -31,15 +32,16 @@ fun CollectionCharacterGrid(
     data: List<CollectionData>,
     onFavoriteClick: (Long) -> Unit,
     onItemClick: (CollectionData) -> Unit,
-    modifier: Modifier = Modifier,
+    cellPadding: Dp = 6.dp,
+    modifier: Modifier,
     listState: LazyGridState = rememberLazyGridState()
 ) {
 
     // 스크롤이 맨 위가 아닌지 체크
     // 스크롤 시작 시 페이드 효과 시작
-    val showTopFade by remember {
+    val isTop by remember {
         derivedStateOf {
-            listState.firstVisibleItemIndex > 0 || listState.firstVisibleItemScrollOffset > 0
+            listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
         }
     }
 
@@ -48,14 +50,10 @@ fun CollectionCharacterGrid(
             columns = GridCells.Fixed(3),
             state = listState,
             modifier = modifier,
-            verticalArrangement = Arrangement.spacedBy(8.dp),
-            horizontalArrangement = Arrangement.spacedBy(8.dp),
+            verticalArrangement = Arrangement.spacedBy(cellPadding),
+            horizontalArrangement = Arrangement.spacedBy(cellPadding),
             content = {
                 itemsIndexed(data) { index, item ->
-
-                    // 마지막 행에 바닥 여백 줌
-                    val isLast = isLastRow(index, data.size, 3)
-
                     CollectionCharacterItem(
                         cId = item.id,
                         cName = item.name,
@@ -66,15 +64,12 @@ fun CollectionCharacterGrid(
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
                             .clickable { onItemClick(item) }
-                            .then(
-                                if (isLast) Modifier.padding(bottom = 8.dp) else Modifier
-                            )
                     )
                 }
             }
         )
 
-        if (showTopFade) {
+        if (!isTop) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -91,15 +86,4 @@ fun CollectionCharacterGrid(
             )
         }
     }
-}
-
-// index가 마지막 행의 아이템인지 체크하는 함수
-fun isLastRow(
-    index: Int,      // 현재 아이템 index
-    totalItems: Int, // 전체 아이템 개수
-    columns: Int     // 한 행에 들어가는 열 수 
-): Boolean {
-    val totalRows = (totalItems + columns - 1) / columns // 전체 행(= 마지막 행) 수 계산
-    val currentRow = index / columns    // 현재 행수
-    return currentRow == totalRows - 1  // 0부터 시작 고려
 }
