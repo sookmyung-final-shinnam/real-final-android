@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.character.data.repository
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
-import retrofit2.http.GET
 
 interface CharacterRepository {
 
