@@ -26,6 +26,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.navigation.NavController
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
@@ -33,9 +34,8 @@ import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.feature.admin.ui.AdminStoryScreen
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
-import com.veryshinnam.myapp.feature.attendance.ui.AttendanceUiState
 
 /**
  * 홈 화면
@@ -61,13 +61,40 @@ fun HomeScreen(
     cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
-    vm: HomeViewModel =  hiltViewModel()
+    vm: HomeViewModel =  hiltViewModel(),
+    navController: NavController
 ) {
     // 홈 화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
     val isNewUser by vm.isNewUser.collectAsStateWithLifecycle()
 
-    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
+    // 관리자 여부 ViewModel에서 가져오기
+    val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()
+
+    // 관리자 여부 확인
+    LaunchedEffect(Unit) {
+        vm.checkAdminStatus()
+    }
+
+    if (isAdmin == true) {
+        AdminStoryScreen(navController = navController)
+        return
+    }
+
+    if (isAdmin == null) {
+        // 관리자 여부 로딩 중일 때 로딩 표시
+        Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(
+                color = colorResource(id = R.color.main_orange),
+                trackColor = Color.Gray.copy(alpha = 0.5f),
+                strokeWidth = 4.dp
+            )
+        }
+        return
+    }
 
     // 세로 모드 고정
     ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)

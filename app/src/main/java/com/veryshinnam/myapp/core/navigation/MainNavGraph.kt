@@ -28,6 +28,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         // 홈 화면
         composable("home") {
             HomeScreen(
+                navController = navController,
                 onSettingsClick = { navController.navigate("settings") },
                 onAttendanceClick = { navController.navigate("attendance") },
                 onDashboardClick = { navController.navigate("dashboard") },

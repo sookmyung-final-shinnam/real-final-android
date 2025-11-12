@@ -20,7 +20,8 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val adminRepository: com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 ) : ViewModel() {
 
     // 홈 화면 상태 관리
@@ -48,6 +49,25 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             sessionManager.removeNewUser()
             _isNewUser.value = false
+        }
+    }
+
+    // 관리자 여부 상태 관리
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin: StateFlow<Boolean?> = _isAdmin
+
+    fun checkAdminStatus() {
+        viewModelScope.launch {
+            try {
+                val response = adminRepository.checkIsAdmin()
+                if (response.isSuccess) {
+                    _isAdmin.value = response.result
+                } else {
+                    _isAdmin.value = false
+                }
+            } catch (e: Exception) {
+                _isAdmin.value = false
+            }
         }
     }
 
