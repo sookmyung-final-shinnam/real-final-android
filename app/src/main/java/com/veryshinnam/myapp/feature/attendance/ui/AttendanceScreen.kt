@@ -5,10 +5,12 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
@@ -19,6 +21,7 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,9 +55,10 @@ fun AttendanceScreen(
     vm: AttendanceViewModel = hiltViewModel()
 ) {
     val uiState by vm.attendanceUiState.collectAsStateWithLifecycle()
+    val isLoading by vm.isLoading.collectAsStateWithLifecycle()
 
     var isTodayStamp by remember { mutableStateOf(false) }
-    var isReward by remember { mutableStateOf(false) }
+    var isExchangeable by remember { mutableStateOf(false) }
 
     // 세로 모드
     ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
@@ -92,7 +96,7 @@ fun AttendanceScreen(
 
             when (val state = uiState) {
                 // 조회 로딩 중
-                is AttendanceUiState.Loading -> {
+                is AttendanceUiState.Idle -> {
                     CircularProgressIndicator(
                         color = colorResource(id = R.color.main_orange), // 주황색
                         trackColor = Color.Gray.copy(alpha = 0.5f),
@@ -116,39 +120,63 @@ fun AttendanceScreen(
                             .padding(horizontal = horizontalPadding)
                     ) {
                         // 오늘 출첵 여부 확인
-                        if (!state.isTodayAttendance) { isTodayStamp = true }
+                        LaunchedEffect(state.attendanceData.isTodayAttendance) {
+                            isTodayStamp = !state.attendanceData.isTodayAttendance
+                        }
 
-                        val month = if (state.month == YearMonth.now()) "이번 달"
-                                    else "지난 ${state.month.monthValue}월"
+                        // 스탬프 수 확인
+                        LaunchedEffect(state.attendanceData.stamps, isTodayStamp) {
+                            if (!isTodayStamp && state.attendanceData.stamps == 10 && !isExchangeable) {
+                                vm.exchangeAttendance()
+                                isExchangeable = true
+                            }
+                        }
+
+                        val month = if (state.yearMonth == YearMonth.now()) "이번 달"
+                                    else "지난 ${state.yearMonth.monthValue}월"
 
                         UserInfo(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
-                            itemCount = state.stamps,
+                            itemCount = state.attendanceData.stamps,
                             itemImage =  painterResource(R.drawable.img_stamp),
                             itemDescription = "모은 스탬프 수",
                             animalImage = painterResource(R.drawable.img_pig_cut),
                             animalDescription = "출석체크 설명 돼지 이미지",
                             cardColor = colorResource(R.color.deep_pink),
-                            cardText = "${month}은 총 ${state.attendances}번 출석했어요!\n" +
+                            cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
                                     "도장 10 개당 나침반 1 개라는 걸 잊지 마세요~!",
-                            spanText = "${state.attendances}번",
+                            spanText = "${state.attendanceData.attendanceCounts}번",
                             spanColor = colorResource(R.color.light_pink)
                         )
 
                         Spacer(Modifier.height(spacerPadding))
 
                         // 출첵 달력
-                        AttendanceCalender(
-                            month = state.month,
-                            attendanceDates = state.attendanceDates,
-                            usedDate = state.usedDate,
-                            stamps = state.stamps,
-                            onPrevMonth = { vm.fetchPreviousMonth() },
-                            onNextMonth = { vm.fetchNextMonth() },
-                            onStampClick = { isReward = true },
-                            modifier = Modifier.weight(0.75f),
-                        )
+                        Box(
+                            modifier = Modifier
+                                .weight(1f)
+                                .fillMaxSize()
+                                .zIndex(2f),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            AttendanceCalender(
+                                attendances = state.attendanceData.attendanceDates,
+                                yearMonth = state.yearMonth,
+                                lastExchangeDate = state.attendanceData.lastExchangeDate,
+                                onPrevMonth = { vm.fetchPreviousMonth() },
+                                onNextMonth = { vm.fetchNextMonth() },
+                                modifier = Modifier.fillMaxSize(),
+                            )
+
+                            if (isLoading) {
+                                CircularProgressIndicator(
+                                    color = colorResource(id = R.color.deep_pink),
+                                    trackColor = Color.Gray.copy(alpha = 0.5f),
+                                    strokeWidth = 4.dp
+                                )
+                            }
+                        }
                     }
                 }
             }
@@ -172,8 +200,9 @@ fun AttendanceScreen(
         AttendanceReward(
             painter = painterResource(R.drawable.img_stamp_shining_blue),
             text = "오늘의\n출석 체크 완료",
+            buttonText = "확인",
             onReceiveClick = {
-                vm.fetchAttendance()
+                vm.addAttendance()
                 isTodayStamp = false
             },
             modifier = Modifier
@@ -182,10 +211,8 @@ fun AttendanceScreen(
         )
     }
 
-    // 출첵 보상 화면
-    if (isReward) {
-        val rewardCount = (uiState as? AttendanceUiState.Success)?.stamps?.div(10) ?: 0
-
+    // 출첵 보상 완료 화면
+    if (isExchangeable) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -200,12 +227,10 @@ fun AttendanceScreen(
 
         AttendanceReward(
             painter = painterResource(R.drawable.img_compass_shining),
-            text = "출석 체크 보상\n나침반 ${rewardCount}개",
+            text = "출석 체크 보상\n나침반 1개",
             onReceiveClick = {
-                vm.fetchAttendanceReward()
-                isReward = false // 닫기
+                isExchangeable = false // 닫기
             },
-
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)

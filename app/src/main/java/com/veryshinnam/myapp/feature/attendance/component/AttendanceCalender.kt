@@ -8,13 +8,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
@@ -45,13 +42,11 @@ import org.threeten.bp.YearMonth
 
 @Composable
 fun AttendanceCalender(
-    month: YearMonth,
-    attendanceDates: Set<LocalDate>,
-    usedDate: LocalDate?,
-    stamps: Int,
+    yearMonth: YearMonth,
+    attendances: List<LocalDate>,
+    lastExchangeDate: LocalDate?,
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit,
-    onStampClick: () -> Unit,
     textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
     dateTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     sectionPadding:Dp = 5.dp,   // 섹션 패딩, 요일 행 패딩
@@ -62,24 +57,17 @@ fun AttendanceCalender(
     val density = LocalDensity.current
     val buttonSize = with(density) { textStyle.fontSize.toDp() * 1.2f }
 
-    val days = month.lengthOfMonth()                                 // 이번 달 일 수
-    val firstDay = month.atDay(1).dayOfWeek.value % 7   // 이번 달 1일의 요일
+    val days = yearMonth.lengthOfMonth()                                 // 이번 달 일 수
+    val firstDay = yearMonth.atDay(1).dayOfWeek.value % 7   // 이번 달 1일의 요일
     val weeks = (firstDay + days + 6) / 7                            // 달력 그리기에 필요한 행 수
     val weekDays = listOf("일", "월", "화", "수", "목", "금", "토")    // 요일
 
     val currentMonth = YearMonth.now() // 현재 달
-    val isNextEnabled = month.isBefore(currentMonth) // 미래 시점 이동 불가
-
-    // 보상 날짜 > 10개 찍은 순간의 마지막 날짜 (오늘 포함)
-    val today = LocalDate.now()
-    val rewardDate = if (stamps >= 10) {
-        if (attendanceDates.contains(today)) today else attendanceDates.maxOrNull()
-    } else null
+    val isNextEnabled = yearMonth.isBefore(currentMonth) // 미래 시점 이동 불가
 
     // 배경 (테두리)
     Box(
         modifier = modifier
-            .fillMaxSize()
             .background(color = Color.White, shape = RoundedCornerShape(roundCorner))
             .border(
                 width = 4.dp,
@@ -96,7 +84,7 @@ fun AttendanceCalender(
         ) {
             // 연도
             Text(
-                text = "${month.year}",
+                text = "${yearMonth.year}",
                 color = colorResource(R.color.deep_pink),
                 style = textStyle
             )
@@ -117,7 +105,7 @@ fun AttendanceCalender(
                 )
 
                 Text(
-                    text = "${month.monthValue}월",
+                    text = "${yearMonth.monthValue}월",
                     style = textStyle.copy(fontSize = textStyle.fontSize * 1.8f)
                 )
 
@@ -189,9 +177,8 @@ fun AttendanceCalender(
 
                         // 날짜 시작
                         items(days) { index ->
-                            val date = month.atDay(index + 1)
-                            val attended = date in attendanceDates
-                            val isRewarded = usedDate != null && date.isBefore(usedDate.plusDays(1))
+                            val date = yearMonth.atDay(index + 1)
+                            val attendance = date in attendances // 출석한 날짜
 
                             Column(
                                 modifier = Modifier.size(cellWidth, cellHeight),
@@ -202,37 +189,22 @@ fun AttendanceCalender(
                                     style = dateTextStyle,
                                 )
 
-                                if (attended) { // 도장
-                                    when {
-                                        // 아직 보상 안 받은 보상 도장
-                                        date == rewardDate && !isRewarded -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.img_stamp_shining_yellow),
-                                                contentDescription = "보상 도장",
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .padding(bottom = calendarPadding)
-                                                    .fillMaxSize()
-                                                    .clickable { onStampClick() },
-                                                contentScale = ContentScale.Fit
-                                            )
-                                        }
-                                        // 일반 도장 (보상 받은 건 반투명)
-                                        else -> {
-                                            Image(
-                                                painter = painterResource(R.drawable.img_stamp_shining_no),
-                                                contentDescription = "출석 도장",
-                                                modifier = Modifier
-                                                    .weight(1f)
-                                                    .padding(bottom = calendarPadding)
-                                                    .fillMaxSize()
-                                                    .alpha(if (isRewarded) 0.5f else 1f),
-                                                contentScale = ContentScale.Fit
-                                            )
-                                        }
-                                    }
-                                }
+                                if (attendance) { // 도장
+                                    val isToday = date == LocalDate.now()
 
+                                    Image(
+                                        painter = if (isToday) painterResource(R.drawable.img_stamp_shining_yellow)
+                                        else painterResource(R.drawable.img_stamp_shining_no),
+                                        contentDescription = if (isToday) "오늘 출석 도장" else "출석 도장",
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .padding(bottom = calendarPadding)
+                                            .alpha(
+                                                if (lastExchangeDate != null && date <= lastExchangeDate) 0.5f else 1f
+                                            ),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
                             }
                         }
                     }

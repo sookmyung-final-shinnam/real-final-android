@@ -33,6 +33,7 @@ import com.veryshinnam.myapp.common.component.StrokeTitle
 fun AttendanceReward(
     painter: Painter,
     text: String,
+    buttonText: String = "받기",
     onReceiveClick: () -> Unit,
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
@@ -80,7 +81,7 @@ fun AttendanceReward(
             modifier = Modifier.fillMaxWidth(0.6f)
         ) {
             Text(
-                text = "받기",
+                text = buttonText,
                 modifier = Modifier.padding(textPadding),
                 style = textStyle
             )
