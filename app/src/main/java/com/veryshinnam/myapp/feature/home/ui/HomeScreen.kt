@@ -33,6 +33,7 @@ import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
 import com.veryshinnam.myapp.feature.attendance.ui.AttendanceUiState
 
@@ -65,6 +66,8 @@ fun HomeScreen(
     // 홈 화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
     val isNewUser by vm.isNewUser.collectAsStateWithLifecycle()
+
+    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
 
     // 세로 모드 고정
     ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
@@ -118,7 +121,7 @@ fun HomeScreen(
 
                 // 조회 성공
                 is HomeUiState.Success -> {
-                    val (username, stamps, favorites) = state.homeData
+                    val (username, points, favorites) = state.homeData
                     Column(modifier = Modifier.fillMaxSize()) {
                         Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                             // 유저 정보 - 생성한 캐릭터 수, 포인트
@@ -142,7 +145,7 @@ fun HomeScreen(
                                 UserItem(
                                     painter = painterResource(R.drawable.img_compass),
                                     contentDescription = "모은 나침반 수",
-                                    value = "$stamps",
+                                    value = "$points",
                                     color = colorResource(R.color.main_orange),
                                     modifier = Modifier
                                         .padding(bottom = bottomPadding)
@@ -233,9 +236,12 @@ fun HomeScreen(
 
                             // 바텀 버튼 (남은 공간의 1.5 비율)
                             HomeBottomButtons(
-                                onDashboardClick,
-                                onCreationClick,
-                                onCollectionClick,
+                                onDashboardClick = onDashboardClick,
+                                onCreationClick = {
+                                    if (points > 0) onCreationClick()
+                                    else isSimpleWarning = true
+                                },
+                                onCollectionClick = onCollectionClick,
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(2f)
@@ -260,6 +266,13 @@ fun HomeScreen(
                 }
             }
         }
+    }
+
+    if (isSimpleWarning) {
+        WarningSimpleSheet(
+            warningText = "포인트가 부족해요.\n출석을 통해 포인트를 모아 볼까요?",
+            onDismiss = { isSimpleWarning = false}
+        )
     }
 
     // 신규 유저 보상 화면

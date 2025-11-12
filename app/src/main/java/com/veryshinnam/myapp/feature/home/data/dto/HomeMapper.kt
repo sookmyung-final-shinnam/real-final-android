@@ -7,7 +7,7 @@ fun HomeResult.toHomeData(): HomeData =
     HomeData(
         username = username,
 //        username = "짱신남",
-        points = 5, // 기본값
+        points = points, // 기본값
         favorites = favorites.map { it.toFavoriteData() }
     )
 

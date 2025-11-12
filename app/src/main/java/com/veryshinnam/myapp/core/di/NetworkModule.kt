@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.core.di
 
 import com.veryshinnam.myapp.core.network.AuthInterceptor
 import com.veryshinnam.myapp.core.network.BaseUrls
+import com.veryshinnam.myapp.feature.attendance.data.api.AttendanceApi
 import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
 import com.veryshinnam.myapp.feature.creation.data.api.ConversationApi
 import com.veryshinnam.myapp.feature.home.data.api.HomeApi
@@ -76,4 +77,9 @@ object NetworkModule  {
     @Singleton
     fun provideUserApi(retrofit: Retrofit): UserApi =
         retrofit.create(UserApi::class.java)
+
+    @Provides
+    @Singleton
+    fun provideAttendanceApi(retrofit: Retrofit): AttendanceApi =
+        retrofit.create(AttendanceApi::class.java)
 }

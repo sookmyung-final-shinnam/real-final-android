@@ -1,5 +1,7 @@
 package com.veryshinnam.myapp.core.di
 
+import com.veryshinnam.myapp.feature.attendance.data.repository.AttendanceRepository
+import com.veryshinnam.myapp.feature.attendance.data.repository.AttendanceRepositoryImpl
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepositoryImpl
 import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepository
@@ -45,4 +47,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindUserRepository(impl: UserRepositoryImpl): UserRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindAttendanceRepository(impl: AttendanceRepositoryImpl): AttendanceRepository
 }
