@@ -4,7 +4,7 @@ package com.veryshinnam.myapp.feature.home.data.dto
 data class HomeResult(
     val userId: Long,
     val username: String,
-//    val userPoint: Int,
+    val points: Int,
     val profileImageUrl: String,
     val favorites: List<FavoriteResult>
 )
