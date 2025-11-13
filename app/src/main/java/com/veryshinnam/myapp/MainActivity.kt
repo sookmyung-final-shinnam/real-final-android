@@ -17,6 +17,7 @@ import com.veryshinnam.myapp.core.navigation.NavGraphs
 import com.veryshinnam.myapp.core.navigation.creationNavGraph
 import com.veryshinnam.myapp.core.navigation.mainNavGraph
 import com.veryshinnam.myapp.core.navigation.permitNavGraph
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import dagger.hilt.android.AndroidEntryPoint
@@ -26,7 +27,6 @@ import javax.inject.Inject
 class MainActivity : ComponentActivity() {
     @Inject lateinit var sessionManager: SessionManager
     @Inject lateinit var tts: TtsManager
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()        // 시스템 자체 스플래시
@@ -40,6 +40,11 @@ class MainActivity : ComponentActivity() {
                 darkScrim = Color.TRANSPARENT
             )
         )
+
+        // 스크린 방향 설정
+        OrientationManager.setOrientation = { orientation ->
+            requestedOrientation = orientation
+        }
 
         setContent {
             MyTheme {

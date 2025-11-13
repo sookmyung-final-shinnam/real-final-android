@@ -1,9 +1,5 @@
 package com.veryshinnam.myapp.core.navigation
 
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
 import androidx.navigation.NavType
@@ -15,7 +11,6 @@ import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
 import com.veryshinnam.myapp.feature.dashboard.ui.DashboardScreen
 import com.veryshinnam.myapp.feature.home.ui.HomeScreen
-import com.veryshinnam.myapp.feature.home.ui.HomeViewModel
 import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
@@ -104,7 +99,6 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
-
             CharacterScreen(
                 id = id,
                 onBack = { navController.popBackStack() },

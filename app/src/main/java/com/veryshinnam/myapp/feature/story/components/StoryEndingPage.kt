@@ -21,9 +21,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.StrokeText
 import com.veryshinnam.myapp.common.component.StrokeTitle
 
 @Composable

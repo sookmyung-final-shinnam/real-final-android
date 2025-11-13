@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.core.network
 
 import android.util.Log
 import com.veryshinnam.myapp.core.session.SessionManager
-import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject

@@ -12,9 +12,9 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.wrapContentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -28,7 +28,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoTitle
-import com.veryshinnam.myapp.common.component.ScreenOrientation
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 
 /**
  * 로그인 화면
@@ -46,8 +46,12 @@ fun LoginScreen(
     val state by vm.permitUiState.collectAsStateWithLifecycle()
     var isKakaoLogin by remember { mutableStateOf(false) } // 카카오 로그인 웹뷰 띄우기
 
-    // 세로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     LaunchedEffect(state) {
         when (state) {
