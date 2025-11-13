@@ -44,7 +44,6 @@ import com.veryshinnam.myapp.R
 @Composable
 fun WarningSheet(
     warningText: String,
-    warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.1.em),
     confirmText: String,
     confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
     verticalPadding: Dp = 16.dp,
@@ -54,14 +53,21 @@ fun WarningSheet(
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
-//
-//    val windowInfo = LocalWindowInfo.current        // 현재 창
-//    val density = LocalDensity.current              // 현재 기기 밀도 값
-//    val heightPx = windowInfo.containerSize.height  // 현재 창의 컨테이너 높이 (px)
-//    val heightDp = with(density) { heightPx.toDp() } // px > dp
 
     val iconSize = if (isPortrait) 0.12f else 0.06f
     val imageSize = if (isPortrait) 0.2f else 0.1f // 세로 0.2, 가로 0.1
+    val warningTextStyle = if (isPortrait) {
+        MaterialTheme.typography.titleSmall.copy(
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            lineHeight = 1.2.em)
+    } else {
+        MaterialTheme.typography.bodyLarge.copy(
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            lineHeight = 1.2.em
+        )
+    }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,

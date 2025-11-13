@@ -58,8 +58,8 @@ class ConversationViewModel @Inject constructor(
 
         viewModelScope.launch {
             try {
-//                val res = repository.startConversation(req) // api 호출
-                val res = dummyStart()
+                val res = repository.startConversation(req) // api 호출
+//                val res = dummyStart()
 
                 // 초기화
                 _conversationUiState.value = ConversationUiState.Success(
@@ -144,8 +144,8 @@ class ConversationViewModel @Inject constructor(
     // 다음 이야기 불러오기
     private suspend fun fetchNextStep(state: ConversationUiState.Success) {
         try {
-//            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
-            val res = dummyNextStep(state.loopStep)
+            val res = repository.getNextStep(state.sessionId, changeLoopStep(state.loopStep))
+//            val res = dummyNextStep(state.loopStep)
 
             Log.d("ConversationAPI", "nextStory: ${res.nextStory},messageId:  ${res.messageId}, question: ${res.llmQuestion}")
 
@@ -177,15 +177,15 @@ class ConversationViewModel @Inject constructor(
     // 피드백 불러오기
     private suspend fun fetchFeedback(state: ConversationUiState.Success) {
         try {
-//            val res = repository.feedbackConversation( // api 호출
-//                messageId = state.questionData.messageId,
-//                userAnswer = state.answerData.userAnswer
-//            )
-
-            val res = dummyFeedback(
-                step = state.loopStep,
-                tryNum = state.feedbackData.tryNum + 1
+            val res = repository.feedbackConversation( // api 호출
+                messageId = state.questionData.messageId,
+                userAnswer = state.answerData.userAnswer
             )
+
+//            val res = dummyFeedback(
+//                step = state.loopStep,
+//                tryNum = state.feedbackData.tryNum + 1
+//            )
 
             _conversationUiState.value = state.copy(
                 conversationStep = ConversationStep.FEEDBACK,
@@ -201,7 +201,7 @@ class ConversationViewModel @Inject constructor(
     // 스토리 끝내기
     private suspend fun fetchEndStory(sessionId: Long) {
         try {
-//            repository.completeConversation(sessionId) // api 호출
+            repository.completeConversation(sessionId) // api 호출
 //            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
         } catch (e: Exception) {
             Log.e("ConversationaAPIERROR", "Complete API ${e.message}")

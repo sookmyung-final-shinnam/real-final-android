@@ -32,7 +32,7 @@ fun CharacterCardRight(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String) -> Unit,
+    onShareClick: (String?) -> Unit,
     cardPadding: Dp = 24.dp,
     tabPadding: Dp = 12.dp,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기

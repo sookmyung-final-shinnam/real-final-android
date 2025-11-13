@@ -42,7 +42,6 @@ import com.veryshinnam.myapp.R
 @Composable
 fun WarningSimpleSheet(
     warningText: String,
-    warningTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = Color.White, textAlign = TextAlign.Center, lineHeight = 1.2.em),
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
     dismissible: Boolean = true,
@@ -53,6 +52,21 @@ fun WarningSimpleSheet(
 
     val iconSize = if (isPortrait) 0.12f else 0.06f
     val imageSize = if (isPortrait) 0.2f else 0.1f // 세로 0.2, 가로 0.1
+    val warningTextStyle = if (isPortrait) {
+        MaterialTheme.typography.titleSmall.copy(
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            lineHeight = 1.2.em
+        )
+    } else {
+        MaterialTheme.typography.bodyLarge.copy(
+            color = Color.White,
+            textAlign = TextAlign.Center,
+            fontWeight = FontWeight.Bold,
+            lineHeight = 1.2.em
+        )
+    }
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,

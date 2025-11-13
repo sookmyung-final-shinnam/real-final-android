@@ -36,10 +36,11 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterStoryButton(
-    storyId: Long,       // 동화 아이디
-    storyType: StoryType, // 동화 타입
-    storyUrl: String?,    // 동화 또는 영상 표지 이미지
-    typeText: String,     // 동화 타입 텍스트
+    storyId: Long,          // 동화 아이디
+    storyType: StoryType,   // 동화 타입
+    storyTypeText: String,  // 동화 타입 텍스트
+    storyUrl: String?,      // 동화 표지 이미지
+    storyYLink: String?,    // 동화 유튜브 링크
     storyStatus: StoryStatus,
     buttonSize: Float = 0.7f,
     buttonRadius: Dp = 16.dp,
@@ -48,7 +49,7 @@ fun CharacterStoryButton(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit = {},
     onMakingClick: () -> Unit = {},
-    onShareClick: (String) -> Unit,
+    onShareClick: (String?) -> Unit,
     infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
 ) {
@@ -83,7 +84,7 @@ fun CharacterStoryButton(
                 if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
                     AsyncImage(
                         model = storyUrl,
-                        contentDescription = "$typeText 버튼",
+                        contentDescription = "$storyTypeText 버튼",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
@@ -102,7 +103,7 @@ fun CharacterStoryButton(
                             if (storyStatus == StoryStatus.NONE) {
                                 Image(
                                     painter = painterResource(R.drawable.img_locker),
-                                    contentDescription = "$typeText 잠금",
+                                    contentDescription = "$storyTypeText 잠금",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Fit
                                 )
@@ -114,7 +115,7 @@ fun CharacterStoryButton(
 
             if (isExist) {
                 Button(
-                    onClick = { onShareClick(storyUrl!!) },
+                    onClick = { onShareClick(storyYLink) },
                     modifier = Modifier
                         .align(Alignment.TopEnd) // 버튼 내부 우상단
                         .fillMaxHeight(kakaoSize)
@@ -136,7 +137,7 @@ fun CharacterStoryButton(
         }
 
         Text(
-            text = "$typeText 보러 가기",
+            text = "$storyTypeText 보러 가기",
             style = infoTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()

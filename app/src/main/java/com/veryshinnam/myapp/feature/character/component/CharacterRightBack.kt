@@ -25,7 +25,7 @@ fun CharacterRightBack(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String) -> Unit,
+    onShareClick: (String?) -> Unit,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
 ) {
     Column(modifier = modifier) {
@@ -49,8 +49,9 @@ fun CharacterRightBack(
             CharacterStoryButton(
                 storyId = stories.storyId,
                 storyType = StoryType.IMAGE,
+                storyTypeText = "동화",
                 storyUrl = stories.imageUrl,
-                typeText = "동화",
+                storyYLink = stories.imageYLink,
                 storyStatus = StoryStatus.COMPLETED,
                 onStoryClick = onStoryClick,
                 onShareClick = onShareClick,
@@ -61,8 +62,9 @@ fun CharacterRightBack(
             CharacterStoryButton(
                 storyId = stories.storyId,
                 storyType = StoryType.VIDEO,
+                storyTypeText = "움직이는 동화",
                 storyUrl = stories.videoUrl,
-                typeText = "움직이는 동화",
+                storyYLink = stories.videoYLink,
                 storyStatus = stories.storyStatus,
                 onStoryClick = onStoryClick,
                 onMakingClick = onMakingClick,
