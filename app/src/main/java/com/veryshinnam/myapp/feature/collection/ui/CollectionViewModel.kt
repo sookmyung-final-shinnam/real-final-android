@@ -3,7 +3,7 @@ package com.veryshinnam.myapp.feature.collection.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

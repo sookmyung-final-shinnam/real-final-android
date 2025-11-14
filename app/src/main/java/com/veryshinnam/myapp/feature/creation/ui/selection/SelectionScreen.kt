@@ -37,8 +37,8 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.UserInfo
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
@@ -329,7 +329,7 @@ fun SelectionScreen(
     }
 
     if (isWarning) {
-        WarningSheet(
+        WarningConfirmSheet(
             warningText  = warningText,
             confirmText = confirmText,
             onDismiss = { isWarning = false },
@@ -341,7 +341,7 @@ fun SelectionScreen(
     }
 
     if (isSimpleWarning) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = SimpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )

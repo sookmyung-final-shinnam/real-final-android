@@ -33,7 +33,7 @@ import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.admin.ui.AdminStoryScreen
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
@@ -65,7 +65,7 @@ fun HomeScreen(
     vm: HomeViewModel =  hiltViewModel(),
     navController: NavController
 ) {
-    // 홈 화면 상태 관리
+    // 상태 구독
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
     val isNewUser by vm.isNewUser.collectAsStateWithLifecycle() // 신규 유저 여부
     val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
@@ -299,7 +299,7 @@ fun HomeScreen(
     }
 
     if (isSimpleWarning) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = "포인트가 부족해요.\n출석을 통해 포인트를 모아 볼까요?",
             onDismiss = { isSimpleWarning = false}
         )

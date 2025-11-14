@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.character.component
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -17,7 +16,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeTitle
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 
 @Composable

@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.collection.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -17,7 +16,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -49,7 +47,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.UserInfo
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
@@ -232,7 +230,7 @@ fun CollectionScreen(
     }
 
     if (isSimpleWarning) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = SimpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )

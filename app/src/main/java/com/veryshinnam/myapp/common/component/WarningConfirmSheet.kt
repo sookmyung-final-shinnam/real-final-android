@@ -1,7 +1,6 @@
 package com.veryshinnam.myapp.common.component
 
 import android.content.res.Configuration
-import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -10,8 +9,11 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -40,12 +42,14 @@ import com.veryshinnam.myapp.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun WarningSimpleSheet(
+fun WarningConfirmSheet(
     warningText: String,
+    confirmText: String,
+    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
-    dismissible: Boolean = true,
     onDismiss: () -> Unit,
+    onConfirm: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -57,8 +61,7 @@ fun WarningSimpleSheet(
             color = Color.White,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            lineHeight = 1.2.em
-        )
+            lineHeight = 1.2.em)
     } else {
         MaterialTheme.typography.bodyLarge.copy(
             color = Color.White,
@@ -70,29 +73,26 @@ fun WarningSimpleSheet(
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { newValue ->
-            newValue != SheetValue.Expanded && (dismissible || newValue != SheetValue.Hidden)
-        }
+        confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
     )
 
     ModalBottomSheet(
-        onDismissRequest = {
-            if (dismissible) { onDismiss() }
-        },
+        onDismissRequest = { onDismiss() },
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange)
     ) {
-        BackHandler(enabled = !dismissible) { }
-
+        // --- 닫기 버튼 + 경고 내용 + 확인 버튼
         Column(
             modifier = Modifier
                 .fillMaxWidth()
+//                .fillMaxHeight(.35f)
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
+                // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(iconSize)
@@ -107,13 +107,15 @@ fun WarningSimpleSheet(
                     )
                 }
 
+                // --- 경고 내용 (경고 이미지 + 문구)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = verticalPadding),
+                        .padding(top = verticalPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
                 ) {
+                    // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
                         contentDescription = "경고 이미지",
@@ -121,6 +123,7 @@ fun WarningSimpleSheet(
                         contentScale = ContentScale.Fit
                     )
 
+                    // 문구
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -132,11 +135,28 @@ fun WarningSimpleSheet(
                             // 경고 문구
                             withStyle(
                                 style = warningTextStyle.toSpanStyle()
-                            ) { append(warningText) }
+                            ) { append("$warningText\n") }
                         },
                         style = warningTextStyle,
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier.fillMaxWidth()
                     )
+
+                    // --- 확인 버튼
+                    Button(
+                        onClick = {
+                            onConfirm()
+                            onDismiss()
+                        },
+                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
+                        shape = RoundedCornerShape(16.dp),
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = confirmText,
+                            style = confirmTextStyle,
+                            modifier = Modifier.padding(4.dp)
+                        )
+                    }
                 }
             }
         }

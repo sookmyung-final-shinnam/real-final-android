@@ -38,7 +38,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         // 환경설정 화면
         composable("settings") {
             SettingsScreen(
-                onHome = { navController.popBackStack() },
+                onBack = { navController.popBackStack() },
                 onLogoClick = {
                     navController.navigate("home") {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
@@ -88,7 +88,6 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 onCreateClick = {
                     navController.navigate(NavGraphs.CREATION) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
-//                        launchSingleTop = true
                     }
                 }
             )

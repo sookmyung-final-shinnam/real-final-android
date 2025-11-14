@@ -111,8 +111,7 @@ fun CharacterStoryButton(
                             else { // 제작 중이거나 제작 완료했으나 mp4 url 반영 안된 경우
                                 CircularProgressIndicator(
                                     color = colorResource(id = R.color.main_orange),
-                                    trackColor = Color.Gray.copy(alpha = 0.5f),
-//                                    trackColor = Color.White.copy(alpha = 0.5f),
+                                    trackColor = Color.White.copy(alpha = 0.5f),
                                     strokeWidth = 6.dp,
                                     modifier = Modifier.zIndex(1f).fillMaxSize(0.7f)
                                 )

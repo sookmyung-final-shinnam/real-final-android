@@ -41,8 +41,8 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
@@ -178,7 +178,7 @@ fun CharacterScreen(
 
     // 움직이는 동화 잠금 해제
     if (isWarning && warnedStoryId != null) {
-        WarningSheet(
+        WarningConfirmSheet(
             warningText = "동영상 동화의 잠금을 해제할까요?\n" +
                     "아이템 1개가 소진돼요!",
             confirmText = "해제하기",
@@ -192,7 +192,7 @@ fun CharacterScreen(
 
     // 움직이는 동화 제작중
     if (isVideoMaking) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = "아직 움직이는 동화를 만들고 있는 중이에요.\n조금만 더 기다려주세요!\n\n" +
                     "혹시 오래 기다렸는데도 동화가 안 뜨면,\n저희에게 알려주세요!",
             onDismiss = { isVideoMaking = false },
@@ -201,7 +201,7 @@ fun CharacterScreen(
 
     // 동화 유튜브 링크 없음
     if (isLinkNotExisting) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = "아직 카카오톡 링크를 만들고 있는 중이에요.\n조금만 더 기다려주세요!\n\n" +
                     "혹시 오래 기다렸는데도 링크가 안 뜨면,\n저희에게 알려주세요!",
             onDismiss = { isLinkNotExisting = false },

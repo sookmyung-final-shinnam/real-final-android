@@ -14,7 +14,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -35,7 +34,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -45,7 +44,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -54,29 +53,33 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import kotlinx.coroutines.delay
 
+/**
+ * 설정 화면
+ * : 로그아웃, 회원탈퇴, 앱 사용 매뉴얼 제공
+ *
+ * - onBack: 단순 뒤로 가기
+ * - onLogoClick: 버튼 클릭 시, 홈 화면(HomeScreen)으로 이동
+ * - horizontalPadding: 화면 가로 패딩
+ * - buttonTextStyle: 버튼 공통 텍스트 스타일
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onHome: () -> Unit,
+    onBack: () -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+    buttonTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     vm: SettingsViewModel = hiltViewModel()
 ) {
+    // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-
-    var isWarning by remember { mutableStateOf(false) }   // 경고창
-    var warningText by remember { mutableStateOf("") }
-    var confirmText by remember { mutableStateOf("") }
-    var confirmAction by remember { mutableStateOf({}) }
-
-    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
-    var SimpleWarningText by remember { mutableStateOf("") }
+    val confirmWarning by vm.confirmWarning.collectAsStateWithLifecycle()
+    val warningState by vm.warning.collectAsStateWithLifecycle()
 
     // 세로 모드 고정
     SideEffect {
@@ -86,17 +89,13 @@ fun SettingsScreen(
     }
 
     LaunchedEffect(uiState) {
-        when (uiState) {
-            is SettingsUiState.Error -> {
-                SimpleWarningText = "요청에 실패하셨습니다"
-                isSimpleWarning = true
-            }
-            else -> Unit
+        if (uiState is SettingsUiState.Error) {
+            vm.showWarning("요청에 실패하셨습니다.")
         }
     }
 
     // 뒤로 가기
-    BackHandler { onHome() }
+    BackHandler { onBack() }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -122,7 +121,7 @@ fun SettingsScreen(
             // 뒤로 가기 버튼
             BackButton(
                 modifier = Modifier.zIndex(1f),
-                onBackClick = onHome
+                onBackClick = onBack
             )
 
             // --- 버튼 영역
@@ -146,16 +145,14 @@ fun SettingsScreen(
                     // 로그아웃 버튼
                     Button(
                         onClick = {
-                            warningText = "정말 로그아웃 하시겠어요?\n"
-                            confirmText = "로그아웃 하기"
-                            isWarning = true
-//                            warningStyle = titleStyle2
-                            confirmAction = {
-                                isWarning = false
-                                vm.logout() // 로그아웃
-                                SimpleWarningText = "로그아웃이 완료되었습니다.\n"
-                                isSimpleWarning = true
-                            }
+                            vm.showConfirmWarning(
+                                warningText = "정말 로그아웃 하시겠어요?",
+                                confirmText = "로그아웃 하기",
+                                onConfirm = {
+                                    vm.logout()
+                                    vm.showWarning("로그아웃이 완료되었습니다.")
+                                }
+                            )
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.main_orange),
@@ -166,7 +163,7 @@ fun SettingsScreen(
                     ) {
                         Text(
                             text = "로그아웃",
-                            style = textStyle,
+                            style = buttonTextStyle,
                             modifier = Modifier.padding(vertical = horizontalPadding / 2)
                         )
                     }
@@ -174,18 +171,17 @@ fun SettingsScreen(
                     // 회원 탈퇴 버튼
                     Button(
                         onClick = {
-                            warningText = "정말 탈퇴하시겠어요?\n" +
-                                    "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제됩니다.\n" +
-                                    "(탈퇴 후 24시간 내에 재로그인시 회원 탈퇴가 취소됩니다.)"
-                            confirmText = "회원 탈퇴하기"
-                            isWarning = true
-//                            warningStyle = titleStyle
-                            confirmAction = {
-                                isWarning = false
-                                vm.withdraw() // 회원 탈퇴
-                                SimpleWarningText = "회원 탈퇴가 완료되었습니다.\n"
-                                isSimpleWarning = true
-                            }
+                            vm.showConfirmWarning(
+                                warningText =
+                                    "정말 탈퇴하시겠어요?\n" +
+                                            "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제됩니다.\n" +
+                                            "(탈퇴 후 24시간 내에 재로그인시 회원 탈퇴가 취소됩니다.)",
+                                confirmText = "회원 탈퇴하기",
+                                onConfirm = {
+                                    vm.withdraw()
+                                    vm.showWarning("회원 탈퇴가 완료되었습니다.")
+                                }
+                            )
                         },
                         colors = ButtonDefaults.buttonColors(
                             containerColor = colorResource(R.color.main_orange),
@@ -196,7 +192,7 @@ fun SettingsScreen(
                     ) {
                         Text(
                             text = "회원 탈퇴",
-                            style = textStyle,
+                            style = buttonTextStyle,
                             modifier = Modifier.padding(vertical = horizontalPadding / 2)
                         )
                     }
@@ -218,43 +214,45 @@ fun SettingsScreen(
 
     }
 
-    if (isWarning) {
-        WarningSheet(
-            warningText  = warningText,
-            confirmText = confirmText,
-            onDismiss = { isWarning = false },
-            onConfirm = { confirmAction() }
+    // 확인 버튼이 있는 경고창
+    if (confirmWarning.isVisible) {
+        WarningConfirmSheet(
+            warningText = confirmWarning.warningText,
+            confirmText = confirmWarning.confirmText,
+            onDismiss = { vm.hideConfirmWarning() },
+            onConfirm = {
+                confirmWarning.onConfirm()
+                vm.hideConfirmWarning()
+            }
         )
     }
 
-    if (isSimpleWarning) {
-        var countdown by remember { mutableStateOf(3) }
+    // 단순 경고창
+    if (warningState.isVisible) {
 
         // 3초 카운트다운
-        LaunchedEffect(isSimpleWarning) {
-            if (isSimpleWarning) {
+        var countdown by remember { mutableIntStateOf(3) }
+        LaunchedEffect(warningState.isVisible) {
+            if (warningState.isVisible) {
                 for (i in 3 downTo 1) {
                     countdown = i
                     delay(1000)
                 }
+                vm.hideWarning()
             }
         }
 
-        // 뒤로가기 무시
-//        BackHandler(enabled = true) {}
-
+        // 검은색 오버레이 + 경고창
         Box(
             modifier = Modifier.fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(enabled = true, onClick = { }) // 터치 불가
         ){
-            WarningSimpleSheet(
+            WarningSheet(
                 warningText = buildString {
-                    append(SimpleWarningText)
-                    append("\n")
-                    append("${countdown}초 뒤 시작 화면으로 이동합니다.")
+                    append(warningState.warningText)
+                    append("\n${countdown}초 뒤 시작 화면으로 이동합니다.")
                 },
-                onDismiss = { },    // 닫기 금지
+                onDismiss = { },    // 닫기 방지
                 dismissible = false // 시트 닫힘 방지
             )
         }

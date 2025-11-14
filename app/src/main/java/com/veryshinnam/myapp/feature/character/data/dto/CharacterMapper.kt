@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.character.data.dto
 
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
 import com.veryshinnam.myapp.feature.character.model.StoryStatus

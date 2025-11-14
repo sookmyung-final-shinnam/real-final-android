@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.collection.model
 
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 
 data class CollectionData(
     val id: Long,       // 캐릭터 아이디

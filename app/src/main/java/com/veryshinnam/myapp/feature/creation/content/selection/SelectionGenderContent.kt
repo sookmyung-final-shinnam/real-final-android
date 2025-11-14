@@ -12,7 +12,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionGenderButton
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
 

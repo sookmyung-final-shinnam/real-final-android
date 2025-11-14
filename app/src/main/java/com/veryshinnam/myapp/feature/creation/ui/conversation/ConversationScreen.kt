@@ -42,7 +42,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StepProgressBar
-import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
@@ -240,7 +240,7 @@ fun ConversationScreen(
     }
 
     if (isWarning) {
-        WarningSheet(
+        WarningConfirmSheet(
             warningText  = "대화를 그만 진행할까요?\n지금까지 이야기한 내용은 저장되지 않아요!",
             confirmText = "그만하기",
             onDismiss = { isWarning = false },
