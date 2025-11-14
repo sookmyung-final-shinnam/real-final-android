@@ -33,6 +33,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -53,9 +54,9 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
-import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import kotlinx.coroutines.delay
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -73,15 +74,16 @@ fun SettingsScreen(
     var warningText by remember { mutableStateOf("") }
     var confirmText by remember { mutableStateOf("") }
     var confirmAction by remember { mutableStateOf({}) }
-//    var warningStyle by remember { mutableStateOf(TextStyle()) }
-//    val titleStyle = MaterialTheme.typography.titleLarge
-//    val titleStyle2 =  MaterialTheme.typography.headlineSmall
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
 
-    // 세로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     LaunchedEffect(uiState) {
         when (uiState) {

@@ -6,7 +6,6 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -33,7 +32,7 @@ fun CharacterCardRight(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String) -> Unit,
+    onShareClick: (String?) -> Unit,
     cardPadding: Dp = 24.dp,
     tabPadding: Dp = 12.dp,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기

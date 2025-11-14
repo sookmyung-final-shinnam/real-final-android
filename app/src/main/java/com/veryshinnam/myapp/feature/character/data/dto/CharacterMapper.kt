@@ -24,5 +24,7 @@ fun CharacterDetailResult.toStoriesData(): StoriesData =
         title = storyTitle,
         imageUrl = imageStoryUrl,   // 기본값
         storyStatus = StoryStatus.valueOf(videoStatus),
-        videoUrl = videoStoryUrl
+        videoUrl = videoStoryUrl,
+        imageYLink = imageYoutubeLink,
+        videoYLink = videoYoutubeLink
     )

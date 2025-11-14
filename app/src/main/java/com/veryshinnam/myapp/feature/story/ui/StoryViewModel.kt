@@ -4,13 +4,11 @@ import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
-import com.veryshinnam.myapp.feature.character.ui.CharacterUiState
 import com.veryshinnam.myapp.feature.story.data.repository.StoryRepository
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryData
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

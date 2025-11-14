@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
-import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.session.SessionManager

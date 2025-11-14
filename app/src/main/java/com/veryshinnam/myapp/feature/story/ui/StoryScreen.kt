@@ -11,11 +11,11 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -25,7 +25,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.common.component.ScreenOrientation
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.story.content.StoryPrologueContent
 import com.veryshinnam.myapp.feature.story.content.StoryReadingContent
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -42,8 +42,12 @@ fun StoryScreen(
     val uiState by vm.storyUiState.collectAsStateWithLifecycle()
     val isTtsReady by vm.isTtsReady.collectAsStateWithLifecycle()
 
-    // 가로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    // 가로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        )
+    }
 
     // storyId 바뀔 때마다 데이터 로드
     LaunchedEffect(storyId, storyType) {

@@ -7,9 +7,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,11 +16,10 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
-import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -43,10 +40,10 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -68,24 +65,27 @@ fun CharacterScreen(
     val context = LocalContext.current
     val clipboardManager = LocalClipboardManager.current
 
-    var isWarning by remember { mutableStateOf(false) }
     var warnedStoryId by remember { mutableStateOf<Long?>(null) }
+    var isWarning by remember { mutableStateOf(false) }
 
-    var isMaking by remember { mutableStateOf(false) }
+    var isVideoMaking by remember { mutableStateOf(false) }
+    var isLinkNotExisting by remember { mutableStateOf(false) }
+    var isLinkSharing by remember { mutableStateOf(false) }
 
-    var isSharing by remember { mutableStateOf(false) }
-    var sharedStoryUrl by remember { mutableStateOf<String?>(null) }
+    var youtubeLink by remember { mutableStateOf<String?>(null) }
 
-    // 가로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE)
+    // 가로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
+        )
+    }
 
     // 캐릭터 id 바뀌면 재로딩
     LaunchedEffect(id) { vm.fetchCharacter(id) }
 
     // 뒤로 가기
     BackHandler { onBack() }
-
-
 
     Box(
         modifier = Modifier
@@ -157,11 +157,16 @@ fun CharacterScreen(
                         onLockerClick = { storyId ->
                             isWarning = true
                             warnedStoryId = storyId },
-                        onMakingClick = {
-                            isMaking = true },
-                        onShareClick = { storyUrl ->
-                            isSharing = true
-                            sharedStoryUrl = "https://youtu.be/cX2PU3aEBL8" },
+                        onMakingClick = { isVideoMaking = true },
+                        onShareClick = { storyYLink ->
+                            if (!storyYLink.isNullOrBlank()) {
+                                isLinkSharing = true
+                                youtubeLink = storyYLink
+                            } else {
+                                // 링크 없음 처리
+                                isLinkNotExisting = true
+                            }
+                        },
                         modifier = Modifier
                             .aspectRatio(2f) // 카드 비율
                             .zIndex(1f)
@@ -171,7 +176,7 @@ fun CharacterScreen(
         }
     }
 
-    // 잠금 해제
+    // 움직이는 동화 잠금 해제
     if (isWarning && warnedStoryId != null) {
         WarningSheet(
             warningText = "동영상 동화의 잠금을 해제할까요?\n" +
@@ -185,36 +190,44 @@ fun CharacterScreen(
         )
     }
 
-    // 제작중
-    if (isMaking) {
+    // 움직이는 동화 제작중
+    if (isVideoMaking) {
         WarningSimpleSheet(
-            warningText = "아직 영상을 만들고 있어요.\n조금만 더 기다려주세요!",
-            onDismiss = { isMaking = false },
+            warningText = "아직 움직이는 동화를 만들고 있는 중이에요.\n조금만 더 기다려주세요!\n\n" +
+                    "혹시 오래 기다렸는데도 동화가 안 뜨면,\n저희에게 알려주세요!",
+            onDismiss = { isVideoMaking = false },
+        )
+    }
+
+    // 동화 유튜브 링크 없음
+    if (isLinkNotExisting) {
+        WarningSimpleSheet(
+            warningText = "아직 카카오톡 링크를 만들고 있는 중이에요.\n조금만 더 기다려주세요!\n\n" +
+                    "혹시 오래 기다렸는데도 링크가 안 뜨면,\n저희에게 알려주세요!",
+            onDismiss = { isLinkNotExisting = false },
         )
     }
 
     // 카톡으로 공유
-    if (isSharing && sharedStoryUrl != null) {
+    if (isLinkSharing && !youtubeLink.isNullOrBlank()) {
         ShareSheet(
-            urlText = "https://youtu.be/cX2PU3aEBL8",
-//            shareUrl = sharedStoryUrl!!,
+            urlText = youtubeLink!!,
             confirmText = "카카오톡으로 공유하기",
-            onDismiss = { isSharing = false },
+            onDismiss = { isLinkSharing = false },
             onShare = {
                 try {
                     val intent = Intent(Intent.ACTION_SEND).apply {
                         type = "text/plain"
-                        putExtra(Intent.EXTRA_TEXT, "https://youtu.be/cX2PU3aEBL8")
+                        putExtra(Intent.EXTRA_TEXT, youtubeLink)
                         setPackage("com.kakao.talk") // 카톡 패키지 지정
                     }
                     context.startActivity(intent)
-                } catch (e: Exception) {
+                } catch (_: Exception) {
                     Toast.makeText(context, "카카오톡이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
                 }
             },
             onCopy = {
-                clipboardManager.setText(AnnotatedString(sharedStoryUrl!!))
-//                Toast.makeText(context, "링크가 클립보드에 복사되었습니다.", Toast.LENGTH_SHORT).show()
+                clipboardManager.setText(AnnotatedString(youtubeLink!!))
             }
         )
     }

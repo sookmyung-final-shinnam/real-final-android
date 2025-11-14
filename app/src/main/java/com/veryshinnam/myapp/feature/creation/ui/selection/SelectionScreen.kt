@@ -15,10 +15,10 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -28,7 +28,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -36,11 +35,11 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
-import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionAgeContent
@@ -71,8 +70,6 @@ fun SelectionScreen(
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
-
-
 
     // 뒤로 가기 로직
     fun handleBack() {
@@ -132,11 +129,15 @@ fun SelectionScreen(
         Log.d("SelectScreen", "현재 선택된 머리색: ${uiState.selectionData.hairColor}")
     }
     LaunchedEffect(uiState.selectionData.hairStyle) {
-        Log.d("SelectScreen", "현재 선택된 머리스탈: ${uiState.selectionData.hairStyle}")
+        Log.d("SelectScreen", "현재 선택된 머리 스타일: ${uiState.selectionData.hairStyle}")
     }
 
     // 세로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     // 뒤로 가기
     BackHandler { handleBack() }

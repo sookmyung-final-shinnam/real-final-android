@@ -13,6 +13,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -36,10 +37,11 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterStoryButton(
-    storyId: Long,       // 동화 아이디
-    storyType: StoryType, // 동화 타입
-    storyUrl: String?,    // 동화 또는 영상 표지 이미지
-    typeText: String,     // 동화 타입 텍스트
+    storyId: Long,          // 동화 아이디
+    storyType: StoryType,   // 동화 타입
+    storyTypeText: String,  // 동화 타입 텍스트
+    storyUrl: String?,      // 동화 표지 이미지
+    storyYLink: String?,    // 동화 유튜브 링크
     storyStatus: StoryStatus,
     buttonSize: Float = 0.7f,
     buttonRadius: Dp = 16.dp,
@@ -48,7 +50,7 @@ fun CharacterStoryButton(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit = {},
     onMakingClick: () -> Unit = {},
-    onShareClick: (String) -> Unit,
+    onShareClick: (String?) -> Unit,
     infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
 ) {
@@ -70,8 +72,8 @@ fun CharacterStoryButton(
                         StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
                         StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
                         StoryStatus.COMPLETED -> {
-                            if (storyUrl.isNullOrBlank()) onMakingClick() // 서버에 비용 X
-                            else onStoryClick(storyId, storyType) // 완료 > 이동
+                            if (storyUrl.isNullOrBlank()) onMakingClick() // 서버 문의
+                            else onStoryClick(storyId, storyType)         // 완료 > 이동
                         }
 
                     }
@@ -83,26 +85,41 @@ fun CharacterStoryButton(
                 if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
                     AsyncImage(
                         model = storyUrl,
-                        contentDescription = "$typeText 버튼",
+                        contentDescription = "$storyTypeText 버튼",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
-                } else { // 동화가 비디오일 경우 > 버튼 또는 잠금
+                } else { // 동화가 비디오일 경우
                     if (!storyUrl.isNullOrBlank()) {
                         VideoPlayer(
                             videoUrl = storyUrl,
                             modifier = Modifier.fillMaxSize()
                         )
-                    } else { // 비디오 링크 없으면 잠금 이미지
+                    } else { // 비디오 링크 없으면
                         Box(
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .background(colorResource(R.color.main_orange_shade)),
-                        ) {
+                            modifier = Modifier.fillMaxSize(),
+                            contentAlignment = Alignment.Center
+                        ) { //  원래 없어서 잠금 이미지
                             if (storyStatus == StoryStatus.NONE) {
                                 Image(
                                     painter = painterResource(R.drawable.img_locker),
-                                    contentDescription = "$typeText 잠금",
+                                    contentDescription = "$storyTypeText 잠금",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                            else { // 제작 중이거나 제작 완료했으나 mp4 url 반영 안된 경우
+                                CircularProgressIndicator(
+                                    color = colorResource(id = R.color.main_orange),
+                                    trackColor = Color.Gray.copy(alpha = 0.5f),
+//                                    trackColor = Color.White.copy(alpha = 0.5f),
+                                    strokeWidth = 6.dp,
+                                    modifier = Modifier.zIndex(1f).fillMaxSize(0.7f)
+                                )
+
+                                Image(
+                                    painter = painterResource(R.drawable.img_locker_empty),
+                                    contentDescription = "$storyTypeText 제작 중",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Fit
                                 )
@@ -114,7 +131,7 @@ fun CharacterStoryButton(
 
             if (isExist) {
                 Button(
-                    onClick = { onShareClick(storyUrl!!) },
+                    onClick = { onShareClick(storyYLink) },
                     modifier = Modifier
                         .align(Alignment.TopEnd) // 버튼 내부 우상단
                         .fillMaxHeight(kakaoSize)
@@ -136,7 +153,7 @@ fun CharacterStoryButton(
         }
 
         Text(
-            text = "$typeText 보러 가기",
+            text = "$storyTypeText 보러 가기",
             style = infoTextStyle,
             textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()

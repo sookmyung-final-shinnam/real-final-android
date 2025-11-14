@@ -3,11 +3,7 @@ package com.veryshinnam.myapp.feature.character.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
-import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch

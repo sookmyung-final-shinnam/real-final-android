@@ -30,10 +30,11 @@ import androidx.navigation.NavController
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
-import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
+import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.admin.ui.AdminStoryScreen
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
 
@@ -66,10 +67,10 @@ fun HomeScreen(
 ) {
     // 홈 화면 상태 관리
     val uiState by vm.homeUiState.collectAsStateWithLifecycle()
-    val isNewUser by vm.isNewUser.collectAsStateWithLifecycle()
+    val isNewUser by vm.isNewUser.collectAsStateWithLifecycle() // 신규 유저 여부
+    val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
 
-    // 관리자 여부 ViewModel에서 가져오기
-    val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()
+    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
 
     // 관리자 여부 확인
     LaunchedEffect(Unit) {
@@ -97,9 +98,11 @@ fun HomeScreen(
     }
 
     // 세로 모드 고정
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
-//    val context = LocalContext.current
-//    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     // HomeScreen 진입할 때마다 실행
     LaunchedEffect(Unit) {
@@ -170,7 +173,7 @@ fun HomeScreen(
 
                                 // 나침반 수
                                 UserItem(
-                                    painter = painterResource(R.drawable.img_compass),
+                                    painter = painterResource(R.drawable.img_dotory),
                                     contentDescription = "모은 나침반 수",
                                     value = "$points",
                                     color = colorResource(R.color.main_orange),
@@ -317,7 +320,7 @@ fun HomeScreen(
         )
 
         AttendanceReward(
-            painter = painterResource(R.drawable.img_compass_shining),
+            painter = painterResource(R.drawable.img_dotory_shining),
             text = "신규 유저 보상\n나침반 5개",
             onReceiveClick = {
 //                vm.fetchAttendanceReward() // 보상 업데이트

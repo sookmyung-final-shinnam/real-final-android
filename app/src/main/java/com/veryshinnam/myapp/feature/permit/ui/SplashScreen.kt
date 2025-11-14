@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,8 +23,8 @@ import androidx.media3.common.util.UnstableApi
 import androidx.media3.ui.AspectRatioFrameLayout
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoTitle
-import com.veryshinnam.myapp.common.component.ScreenOrientation
 import com.veryshinnam.myapp.common.component.VideoPlayer
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 
 /**
  * 스플래시 화면
@@ -42,8 +43,12 @@ fun SplashScreen(
     val context = LocalContext.current
     val splashVideo = "android.resource://${context.packageName}/${R.raw.splash}"
 
-    // 세로 모드
-    ScreenOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT)
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     LaunchedEffect(Unit) {
         vm.checkAccessToken()

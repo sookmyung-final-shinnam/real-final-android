@@ -1,7 +1,6 @@
 package com.veryshinnam.myapp.feature.attendance.data.repository
 
 import com.veryshinnam.myapp.feature.attendance.model.AttendanceData
-import retrofit2.http.Query
 
 interface AttendanceRepository {
 

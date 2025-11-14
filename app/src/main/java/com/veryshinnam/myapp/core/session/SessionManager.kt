@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.core.session
 
-import android.content.Context
 import android.util.Log
 import android.webkit.CookieManager
 import android.webkit.WebStorage
@@ -9,7 +8,6 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import dagger.hilt.android.qualifiers.ApplicationContext
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first

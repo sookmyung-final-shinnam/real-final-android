@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import com.veryshinnam.myapp.feature.home.model.HomeData
 
 sealed interface HomeUiState {

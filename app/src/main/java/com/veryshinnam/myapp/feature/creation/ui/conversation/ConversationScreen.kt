@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.creation.ui.conversation
 
 import android.Manifest
+import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
@@ -22,6 +23,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -41,6 +43,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationFeedbackContent
@@ -71,6 +74,13 @@ fun ConversationScreen(
     val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
 
     var isWarning by remember { mutableStateOf(false) }   // 경고창
+
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),

@@ -1,15 +1,11 @@
 package com.veryshinnam.myapp.feature.home.ui
 
-import android.net.http.HttpException
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
-import com.veryshinnam.myapp.feature.home.model.FavoriteData
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
-import com.veryshinnam.myapp.feature.permit.ui.PermitUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
