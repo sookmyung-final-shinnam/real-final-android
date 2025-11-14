@@ -61,7 +61,7 @@ fun HomeScreen(
     bottomPadding: Dp = 10.dp,
     cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
+    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange)),
     vm: HomeViewModel =  hiltViewModel(),
     navController: NavController
 ) {
@@ -221,9 +221,7 @@ fun HomeScreen(
                                         ) {
                                             Text(
                                                 text = "환경설정",
-                                                style = settingsTextStyle.copy(
-                                                    color = colorResource(id = R.color.main_orange)
-                                                )
+                                                style = settingsTextStyle
                                             )
 
                                             Icon(

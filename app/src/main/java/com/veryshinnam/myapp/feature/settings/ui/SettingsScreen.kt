@@ -5,7 +5,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -45,6 +44,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -73,7 +73,9 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
+    verticalPadding: Dp = 20.dp,
     buttonTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
     vm: SettingsViewModel = hiltViewModel()
 ) {
     // 상태 구독
@@ -88,6 +90,7 @@ fun SettingsScreen(
         )
     }
 
+    // 에러 처리
     LaunchedEffect(uiState) {
         if (uiState is SettingsUiState.Error) {
             vm.showWarning("요청에 실패하셨습니다.")
@@ -97,6 +100,7 @@ fun SettingsScreen(
     // 뒤로 가기
     BackHandler { onBack() }
 
+    // 설정 화면 UI
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -139,7 +143,7 @@ fun SettingsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = horizontalPadding * 2, horizontal = horizontalPadding),
+                        .padding(verticalPadding),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     // 로그아웃 버튼
@@ -173,10 +177,10 @@ fun SettingsScreen(
                         onClick = {
                             vm.showConfirmWarning(
                                 warningText =
-                                    "정말 탈퇴하시겠어요?\n" +
-                                            "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제됩니다.\n" +
-                                            "(탈퇴 후 24시간 내에 재로그인시 회원 탈퇴가 취소됩니다.)",
-                                confirmText = "회원 탈퇴하기",
+                                    "정말 탈퇴하시겠어요?\n\n" +
+                                            "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제되며,\n" +
+                                            "탈퇴 후 24시간 내에 재로그인시\n회원 탈퇴가 취소됩니다.",
+                                confirmText = "회원 탈퇴 하기",
                                 onConfirm = {
                                     vm.withdraw()
                                     vm.showWarning("회원 탈퇴가 완료되었습니다.")
@@ -196,6 +200,23 @@ fun SettingsScreen(
                             modifier = Modifier.padding(vertical = horizontalPadding / 2)
                         )
                     }
+
+                    // 앱 사용 매뉴얼 버튼
+                    Button(
+                        onClick = {},
+                        colors = ButtonDefaults.buttonColors(
+                            containerColor = colorResource(R.color.main_orange),
+                            contentColor = Color.White
+                        ),
+                        shape = CircleShape,
+                        modifier = Modifier.fillMaxWidth()
+                    ) {
+                        Text(
+                            text = "사용 설명 다시 보기",
+                            style = buttonTextStyle,
+                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
+                        )
+                    }
                 }
             }
 
@@ -205,13 +226,20 @@ fun SettingsScreen(
                 contentDescription = "다람쥐 이미지",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(1f)
-                    .offset(y = (-80).dp)
+                    .weight(1f) // 남은 공간 차지
+                    .offset(y = (-50).dp)
                     .align(Alignment.CenterHorizontally), // 가로 정렬
                 contentScale = ContentScale.Fit
             )
-        }
 
+            Text(
+                text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!\n\nveryshinnam@gmail.com",
+                style = footerTextStyle,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = horizontalPadding / 2)
+            )
+        }
     }
 
     // 확인 버튼이 있는 경고창
