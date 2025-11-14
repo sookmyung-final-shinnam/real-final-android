@@ -143,12 +143,12 @@ fun AttendanceScreen(
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.attendanceData.stamps,
                             itemImage =  painterResource(R.drawable.img_stamp),
-                            itemDescription = "모은 스탬프 수",
+                            itemDescription = "모은 도장 수",
                             animalImage = painterResource(R.drawable.img_pig_cut),
                             animalDescription = "출석체크 설명 돼지 이미지",
                             cardColor = colorResource(R.color.deep_pink),
                             cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
-                                    "도장 10 개당 나침반 1 개라는 걸 잊지 마세요~!",
+                                    "도장 10 개당 도토리 1 개라는 걸 잊지 마세요~!",
                             spanText = "${state.attendanceData.attendanceCounts}번",
                             spanColor = colorResource(R.color.light_pink)
                         )
@@ -229,8 +229,8 @@ fun AttendanceScreen(
         )
 
         AttendanceReward(
-            painter = painterResource(R.drawable.img_compass_shining),
-            text = "출석 체크 보상\n나침반 1개",
+            painter = painterResource(R.drawable.img_dotory_shining),
+            text = "출석 체크 보상\n도토리 1개",
             onReceiveClick = {
                 isExchangeable = false // 닫기
             },

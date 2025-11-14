@@ -173,7 +173,7 @@ fun HomeScreen(
 
                                 // 나침반 수
                                 UserItem(
-                                    painter = painterResource(R.drawable.img_compass),
+                                    painter = painterResource(R.drawable.img_dotory),
                                     contentDescription = "모은 나침반 수",
                                     value = "$points",
                                     color = colorResource(R.color.main_orange),
@@ -320,7 +320,7 @@ fun HomeScreen(
         )
 
         AttendanceReward(
-            painter = painterResource(R.drawable.img_compass_shining),
+            painter = painterResource(R.drawable.img_dotory_shining),
             text = "신규 유저 보상\n나침반 5개",
             onReceiveClick = {
 //                vm.fetchAttendanceReward() // 보상 업데이트
