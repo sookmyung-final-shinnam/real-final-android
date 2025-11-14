@@ -55,15 +55,15 @@ fun WarningSimpleSheet(
     val warningTextStyle = if (isPortrait) {
         MaterialTheme.typography.titleSmall.copy(
             color = Color.White,
-            textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             lineHeight = 1.2.em
         )
     } else {
         MaterialTheme.typography.bodyLarge.copy(
             color = Color.White,
-            textAlign = TextAlign.Center,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             lineHeight = 1.2.em
         )
     }
