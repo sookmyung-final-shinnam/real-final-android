@@ -1,12 +1,5 @@
 package com.veryshinnam.myapp.feature.dashboard.model
 
-data class DashboardResponse(
-    val isSuccess: Boolean,
-    val code: String,
-    val message: String,
-    val result: DashboardResult?
-)
-
 data class DashboardResult(
     val dashboardId: Long,
     val backgroundStats: List<StatItem>,
