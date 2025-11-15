@@ -85,6 +85,8 @@ fun HomeScreen(
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val username by vm.username.collectAsStateWithLifecycle()
+    val userManualMessage = manualMessage.replace("{username}", username)
 
     // 매뉴얼 > 강조할 좌표
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
@@ -94,9 +96,24 @@ fun HomeScreen(
     var dashboardRect by remember { mutableStateOf<Rect?>(null) }  // 대시보드
     var attendanceRect by remember { mutableStateOf<Rect?>(null) }  // 출석체크
 
-    // 관리자 여부 확인
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
+
+    // HomeScreen 진입 시 한번만  실행
     LaunchedEffect(Unit) {
-        vm.checkAdminStatus()
+        vm.checkAdminStatus() // 관리자 여부 확인
+        vm.reload()        // 홈 데이터 다시 불러오기
+        vm.changeMessage() // 랜덤 메시지도 갱신
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            onCreationClick()
+        }
     }
 
     if (isAdmin == true) {
@@ -119,20 +136,6 @@ fun HomeScreen(
         return
     }
 
-    // 세로 모드 고정
-    SideEffect {
-        OrientationManager.setOrientation?.invoke(
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        )
-    }
-
-    // HomeScreen 진입할 때마다 실행
-    LaunchedEffect(Unit) {
-        vm.reload()        // 홈 데이터 다시 불러오기
-        vm.changeMessage() // 랜덤 메시지도 갱신
-    }
-
-    // 홈 UI
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -411,7 +414,7 @@ fun HomeScreen(
             messageRect?.let { rect ->
                 TargetMessage(
                     rect = rect,
-                    message = manualMessage
+                    message = userManualMessage
                 )
             }
 
@@ -422,17 +425,17 @@ fun HomeScreen(
                 ){
                     Spacer(modifier = Modifier.fillMaxHeight(0.7f))
                     Row(
-                        modifier = Modifier.fillMaxWidth(0.8f),
+                        modifier = Modifier.fillMaxWidth(0.85f),
                         Arrangement.SpaceBetween
                     ) {
                         CircleButton(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(7f),
                             onClick = { vm.startManual() },
                             text = "좋아요!"
                         )
-
+                        Spacer(modifier = Modifier.weight(1f))
                         CircleButton(
-                            modifier = Modifier.weight(1f),
+                            modifier = Modifier.weight(7f),
                             onClick = { vm.stopManual() },
                             text = "괜찮아요."
                         )

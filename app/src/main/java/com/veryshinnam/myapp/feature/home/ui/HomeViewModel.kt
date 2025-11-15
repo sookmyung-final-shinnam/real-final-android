@@ -50,6 +50,10 @@ class HomeViewModel @Inject constructor(
     private val _manualStep = MutableStateFlow(0)
     val manualStep = _manualStep.asStateFlow()
 
+    //
+    private val _username = MutableStateFlow<String>("")
+    val username: StateFlow<String> = _username
+
     // vm 초기화
     init {
         fetchHome()
@@ -118,6 +122,7 @@ class HomeViewModel @Inject constructor(
                     randomMessage = randomMessage
                 )
 
+                _username.value = homeData.username
                 // 에러 케이스 테스트 용도
 //             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
             } catch (e: Exception) {
@@ -199,11 +204,11 @@ class HomeViewModel @Inject constructor(
 
     // Home 사용 매뉴얼
     val manuals = listOf(
-        ManualData("스토릭터에 온 걸 환영해요!", ManualTarget.NONE),
-        ManualData("여긴 캐릭터 생성!", ManualTarget.IMAGE),
-        ManualData("보관함 버튼이에요!", ManualTarget.IMAGE),
-        ManualData("대시보드 버튼이에요!", ManualTarget.IMAGE),
-        ManualData("출첵 버튼이에요!", ManualTarget.IMAGE)
+        ManualData("반가워요 {username}! 스토릭터에 온 걸 환영해요.", ManualTarget.NONE),
+        ManualData("여기 캐릭터 생성 버튼에서 직접 동화의 내용을 하나씩 만들어가며 나만의 동화와 캐릭터를 만들 수 있어요!", ManualTarget.IMAGE),
+        ManualData("보관함에서는 만든 동화와 캐릭터를 다시 볼 수 있어요!", ManualTarget.IMAGE),
+        ManualData("대시보드에선 동화를 만들며 발견되었던 {username}만의 특징을 확인할 수 있고", ManualTarget.IMAGE),
+        ManualData("출석 체크를 통해 스토릭터를 사용하며 다양한 도움이 되는 포인트를 얻을 수 있어요.", ManualTarget.IMAGE)
     )
 
     fun showManual() = manualManager.request()
@@ -215,17 +220,18 @@ class HomeViewModel @Inject constructor(
     }
 
     fun nextManual() {
-        val next = _manualStep.value + 1
-        if (next >= manuals.size) {
-//            manualManager.finish()
-        } else {
+        val current = _manualStep.value
+
+        if (current < manuals.lastIndex) {
+            val next = current + 1
             _manualStep.value = next
-            val nextMessage = manuals[next].message
-            manualManager.update(nextMessage)
+            manualManager.update(manuals[next].message)
+        } else if (current == manuals.lastIndex) {
+            _manualStep.value = manuals.size
         }
     }
 
     fun stopManual() = manualManager.stop()
-    fun hideManual() = manualManager.clear()
 
+    fun hideManual() = manualManager.clear()
 }
