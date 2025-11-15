@@ -26,12 +26,12 @@ class SettingsViewModel @Inject constructor(
     val uiState = _uiState.asStateFlow()
 
     // 확인 버튼이 있는 경고창 상태
-    private val _confirmWarning = MutableStateFlow(WarningConfirmState())
-    val confirmWarning = _confirmWarning.asStateFlow()
+    private val _confirmWarningState = MutableStateFlow(WarningConfirmState())
+    val confirmWarningState = _confirmWarningState.asStateFlow()
 
     // 단순 경고창 상태
-    private val _warning = MutableStateFlow(WarningState())
-    val warning = _warning.asStateFlow()
+    private val _warningState = MutableStateFlow(WarningState())
+    val warningState = _warningState.asStateFlow()
 
     // --- ui 이벤트 관련 ---
     // 확인 버튼이 있는 경고창 열기
@@ -40,7 +40,7 @@ class SettingsViewModel @Inject constructor(
         confirmText: String,
         onConfirm: () -> Unit
     ) {
-        _confirmWarning.value = WarningConfirmState(
+        _confirmWarningState.value = WarningConfirmState(
             isVisible = true,
             warningText = warningText,
             confirmText = confirmText,
@@ -50,12 +50,12 @@ class SettingsViewModel @Inject constructor(
 
     // 확인 버튼이 있는 경고창 닫기
     fun hideConfirmWarning() {
-        _confirmWarning.value = WarningConfirmState()
+        _confirmWarningState.value = WarningConfirmState()
     }
 
     // 단순 경고창 열기
     fun showWarning(warningText: String) {
-        _warning.value = WarningState(
+        _warningState.value = WarningState(
             isVisible = true,
             warningText = warningText
         )
@@ -63,7 +63,7 @@ class SettingsViewModel @Inject constructor(
 
     // 단순 경고창 닫기
     fun hideWarning() {
-        _warning.value = WarningState()
+        _warningState.value = WarningState()
     }
 
     // --- api 호출 관련 ---

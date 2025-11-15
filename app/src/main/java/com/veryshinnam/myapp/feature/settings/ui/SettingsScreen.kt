@@ -39,6 +39,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -80,8 +81,8 @@ fun SettingsScreen(
 ) {
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-    val confirmWarning by vm.confirmWarning.collectAsStateWithLifecycle()
-    val warningState by vm.warning.collectAsStateWithLifecycle()
+    val confirmWarningState by vm.confirmWarningState.collectAsStateWithLifecycle()
+    val warningState by vm.warningState.collectAsStateWithLifecycle()
 
     // 세로 모드 고정
     SideEffect {
@@ -243,13 +244,13 @@ fun SettingsScreen(
     }
 
     // 확인 버튼이 있는 경고창
-    if (confirmWarning.isVisible) {
+    if (confirmWarningState.isVisible) {
         WarningConfirmSheet(
-            warningText = confirmWarning.warningText,
-            confirmText = confirmWarning.confirmText,
+            warningText = confirmWarningState.warningText,
+            confirmText = confirmWarningState.confirmText,
             onDismiss = { vm.hideConfirmWarning() },
             onConfirm = {
-                confirmWarning.onConfirm()
+                confirmWarningState.onConfirm()
                 vm.hideConfirmWarning()
             }
         )
@@ -272,8 +273,10 @@ fun SettingsScreen(
 
         // 검은색 오버레이 + 경고창
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
+                .pointerInput(Unit) {}
         ){
             WarningSheet(
                 warningText = buildString {

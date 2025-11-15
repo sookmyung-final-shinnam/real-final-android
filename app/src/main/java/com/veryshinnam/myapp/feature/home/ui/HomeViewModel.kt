@@ -2,12 +2,14 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -20,24 +22,41 @@ class HomeViewModel @Inject constructor(
     private val adminRepository: com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 ) : ViewModel() {
 
-    // 홈 화면 상태 관리
+    // 화면 전체 ui 상태
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
-    val homeUiState: StateFlow<HomeUiState> = _homeUiState
-
+    val homeUiState = _homeUiState.asStateFlow()
+   
+    // 신규 유저 여부 상태
     private val _isNewUser = MutableStateFlow(false)
-    val isNewUser: StateFlow<Boolean> = _isNewUser
+    val isNewUser = _isNewUser.asStateFlow()
 
+    // 매뉴얼 진행 결정 여부 상태
+    private val _isManual = MutableStateFlow(false)
+    val isManual = _isManual.asStateFlow()
+
+    // 관리자 여부 상태 관리
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin: StateFlow<Boolean?> = _isAdmin
+
+    // 단순 경고창 상태
+    private val _warningState = MutableStateFlow(WarningState())
+    val warningState = _warningState.asStateFlow()
+
+
+    // vm 초기화
     init {
         fetchHome()
         checkNewUser()
     }
 
+    // --- ui 이벤트 관련 ---
     // 신규 유저 확인
     private fun checkNewUser() {
-        viewModelScope.launch {
-            val newUser = sessionManager.isNewUser()
-            _isNewUser.value = newUser
-        }
+//        viewModelScope.launch {
+//            val newUser = sessionManager.isNewUser()
+//            _isNewUser.value = newUser
+//        }
+        _isNewUser.value = true
     }
 
     // 신규 유저 업데이트
@@ -48,9 +67,15 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    // 관리자 여부 상태 관리
-    private val _isAdmin = MutableStateFlow<Boolean?>(null)
-    val isAdmin: StateFlow<Boolean?> = _isAdmin
+    // 매뉴얼 진행 요청창 열기
+    fun showManual() {
+        _isManual.value = true  // 진행
+    }
+
+    // 매뉴얼 진행 요청창 닫기
+    fun hideManual() {
+        _isManual.value = false // 진행 X
+    }
 
     fun checkAdminStatus() {
         viewModelScope.launch {
@@ -67,6 +92,21 @@ class HomeViewModel @Inject constructor(
         }
     }
 
+    // 단순 경고창 열기
+    fun showWarning(warningText: String) {
+        _warningState.value = WarningState(
+            isVisible = true,
+            warningText = warningText
+        )
+    }
+
+    // 단순 경고창 닫기
+    fun hideWarning() {
+        _warningState.value = WarningState()
+    }
+
+
+    // --- api 호출 관련 ---
     // 홈 화면 불러오기
     private fun fetchHome() {
         _homeUiState.value = HomeUiState.Loading

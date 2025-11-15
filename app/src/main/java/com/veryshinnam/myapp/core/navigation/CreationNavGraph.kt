@@ -18,13 +18,13 @@ import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
 fun NavGraphBuilder.creationNavGraph(navController: NavController) {
     navigation(
         route = NavGraphs.CREATION,
-        startDestination = "selection"
+        startDestination = CreationRoutes.SELECTION
     ) {
         // 선택 화면
-        composable("selection") {
+        composable(CreationRoutes.SELECTION) {
             SelectionScreen(
                 onHome = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -36,7 +36,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                         ?.savedStateHandle
                         ?.set("request", req)
 
-                    navController.navigate("conversation") {
+                    navController.navigate(CreationRoutes.CONVERSATION) {
                         launchSingleTop = true
                     }
                 }
@@ -44,11 +44,11 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
         }
 
         // llm 대화 화면
-        composable("conversation") { backStackEntry ->
+        composable(CreationRoutes.CONVERSATION) { backStackEntry ->
             val vm: ConversationViewModel = hiltViewModel()
 
             val req = remember(backStackEntry) {
-                navController.getBackStackEntry("selection")
+                navController.getBackStackEntry(CreationRoutes.SELECTION)
                     .savedStateHandle
                     .get<StartRequest>("request")
             }
@@ -63,8 +63,8 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
             ConversationScreen(
                 onBack = {
                     // 선택 화면 스택 정리 후 홈으로
-                    navController.popBackStack("selection", inclusive = true)
-                    navController.navigate("home") {
+                    navController.popBackStack(CreationRoutes.SELECTION, inclusive = true)
+                    navController.navigate(MainRoutes.HOME) {
                         launchSingleTop = true
                     }
                 },

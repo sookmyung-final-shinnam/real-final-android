@@ -17,18 +17,18 @@ import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 
 fun NavGraphBuilder.mainNavGraph(navController: NavController) {
     navigation(
-        startDestination = "home",
+        startDestination = MainRoutes.HOME,
         route = NavGraphs.MAIN
     ) {
         // 홈 화면
-        composable("home") {
+        composable(MainRoutes.HOME) {
             HomeScreen(
                 navController = navController,
-                onSettingsClick = { navController.navigate("settings") },
-                onAttendanceClick = { navController.navigate("attendance") },
-                onDashboardClick = { navController.navigate("dashboard") },
+                onSettingsClick = { navController.navigate(MainRoutes.SETTINGS) },
+                onAttendanceClick = { navController.navigate(MainRoutes.ATTENDANCE) },
+                onDashboardClick = { navController.navigate(MainRoutes.DASHBOARD) },
                 onCreationClick = { navController.navigate(NavGraphs.CREATION) },
-                onCollectionClick = { navController.navigate("collection") },
+                onCollectionClick = { navController.navigate(MainRoutes.COLLECTION) },
                 onCharacterClick = { charId ->
                     navController.navigate("character/$charId")
                 }
@@ -36,11 +36,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 환경설정 화면
-        composable("settings") {
+        composable(MainRoutes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -49,11 +49,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 출석체크 화면
-        composable("attendance") {
+        composable(MainRoutes.ATTENDANCE) {
             AttendanceScreen(
                 onBack = { navController.popBackStack() },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -62,11 +62,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 대시보드 화면
-        composable("dashboard") {
+        composable(MainRoutes.DASHBOARD) {
             DashboardScreen(
                 onBack = { navController.popBackStack() },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -75,12 +75,12 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 보관함 화면
-        composable("collection") {
+        composable(MainRoutes.COLLECTION) {
             CollectionScreen(
                 onBack = { navController.popBackStack() },
                 onItemClick = { id -> navController.navigate("character/$id") },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -94,7 +94,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 캐릭터 상세 화면
-        composable("character/{id}",
+        composable(MainRoutes.CHARACTER,
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
@@ -105,7 +105,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                     navController.navigate("story/$storyId/${type.name}")
                 },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
@@ -114,7 +114,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         }
 
         // 동화 보기 화면
-        composable("story/{id}/{type}",
+        composable(MainRoutes.STORY,
             arguments = listOf(
                 navArgument("id") { type = NavType.LongType },
                 navArgument("type") { type = NavType.StringType }
@@ -128,13 +128,13 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 storyType = storyType,
                 onBack = { navController.popBackStack() },
                 onHome = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
                 },
                 onLogoClick = {
-                    navController.navigate("home") {
+                    navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }

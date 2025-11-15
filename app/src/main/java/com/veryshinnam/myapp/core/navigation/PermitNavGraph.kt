@@ -12,14 +12,14 @@ import com.veryshinnam.myapp.feature.permit.ui.SplashScreen
 
 fun NavGraphBuilder.permitNavGraph(navController: NavController) {
     navigation(
-        startDestination = "splash",
+        startDestination = PermitRoutes.SPLASH,
         route = NavGraphs.PERMIT
     ) {
         // 스플래시 화면
-        composable("splash") {
+        composable(PermitRoutes.SPLASH) {
             SplashScreen(
                 onLogin = {
-                    navController.navigate("login") {
+                    navController.navigate(PermitRoutes.LOGIN) {
                         popUpTo(NavGraphs.PERMIT) { inclusive = true } // 스플래시 백스택 제거
                         launchSingleTop = true // 이미 login 있으면 재사용
                     }
@@ -34,7 +34,7 @@ fun NavGraphBuilder.permitNavGraph(navController: NavController) {
         }
 
         // 로그인 화면
-        composable("login") {
+        composable(PermitRoutes.LOGIN) {
             LoginScreen(
                 onSignup = { tempCode ->
                     navController.navigate("signUp/$tempCode") },
@@ -49,7 +49,7 @@ fun NavGraphBuilder.permitNavGraph(navController: NavController) {
 
         // 회원가입 화면
         composable(
-            route = "signUp/{tempCode}",
+            route = PermitRoutes.SIGNUP,
             arguments = listOf(navArgument("tempCode") { type = NavType.StringType })
         ) { backStackEntry ->
             val tempCode = backStackEntry.arguments?.getString("tempCode") ?: ""
