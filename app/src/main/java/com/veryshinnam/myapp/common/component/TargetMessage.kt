@@ -56,9 +56,8 @@ fun TargetMessage(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            text = message,
+            text = message.replace("", "\u200B" ),
             style = messageStyle,
-            textAlign = TextAlign.Center,
             modifier = Modifier.fillMaxWidth()
         )
     }

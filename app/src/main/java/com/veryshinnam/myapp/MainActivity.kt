@@ -20,13 +20,14 @@ import com.veryshinnam.myapp.core.navigation.permitNavGraph
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
+import com.veryshinnam.myapp.core.manual.ManualManager
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
 @AndroidEntryPoint
 class MainActivity : ComponentActivity() {
     @Inject lateinit var sessionManager: SessionManager
-    @Inject lateinit var tts: TtsManager
+    @Inject lateinit var ttsManager: TtsManager
 
     override fun onCreate(savedInstanceState: Bundle?) {
         val splash = installSplashScreen()        // 시스템 자체 스플래시
@@ -80,6 +81,6 @@ class MainActivity : ComponentActivity() {
 
     override fun onStop() {
         super.onStop()
-        tts.stop()
+        ttsManager.stop()
     }
 }

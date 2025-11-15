@@ -13,6 +13,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -22,6 +25,9 @@ fun HomeBottomButtons(
     onDashboardClick: () -> Unit, // 대시보드
     onCreationClick: () -> Unit,  // 캐릭터 생성
     onCollectionClick: () -> Unit,   // 보관함
+    onDashboardRect: (Rect) -> Unit = {},
+    onCreationRect: (Rect) -> Unit = {},
+    onCollectionRect: (Rect) -> Unit = {},
     modifier: Modifier
 ) {
     Row(
@@ -35,7 +41,9 @@ fun HomeBottomButtons(
             contentDescription = "대시보드",
             modifier = Modifier
                 .weight(1f)
-                    .clip(RoundedCornerShape(16.dp))
+                .clip(RoundedCornerShape(16.dp))
+                .onGloballyPositioned {
+                    onDashboardRect(it.boundsInRoot()) }
                 .clickable(
                     indication = LocalIndication.current,
                     interactionSource = remember { MutableInteractionSource() }
@@ -47,6 +55,7 @@ fun HomeBottomButtons(
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(16.dp))
+                .onGloballyPositioned { onCreationRect(it.boundsInRoot()) }
                 .clickable(
                     indication = LocalIndication.current,
                     interactionSource = remember { MutableInteractionSource() }
@@ -58,6 +67,7 @@ fun HomeBottomButtons(
             modifier = Modifier
                 .weight(1f)
                 .clip(RoundedCornerShape(16.dp))
+                .onGloballyPositioned { onCollectionRect(it.boundsInRoot()) }
                 .clickable(
                     indication = LocalIndication.current,
                     interactionSource = remember { MutableInteractionSource() }

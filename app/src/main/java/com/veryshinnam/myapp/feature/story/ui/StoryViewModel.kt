@@ -16,15 +16,15 @@ import javax.inject.Inject
 
 @HiltViewModel
 class StoryViewModel @Inject constructor(
-    private val tts: TtsManager,
+    private val ttsManager: TtsManager,
     private val repository: StoryRepository
 ) : ViewModel() {
 
     private val _storyUiState = MutableStateFlow<StoryUiState>(StoryUiState.Loading)
     val storyUiState = _storyUiState.asStateFlow()
 
-    val isTtsReady = tts.isReady
-    val isTtsSpeaking = tts.isSpeaking
+    val isTtsReady = ttsManager.isReady
+    val isTtsSpeaking = ttsManager.isSpeaking
 
     // 동화 프롤로그 + 페이지 불러오기
     fun fetchStory(storyId: Long, storyType: StoryType) {
@@ -83,16 +83,16 @@ class StoryViewModel @Inject constructor(
 
     fun speakPage(text: String) {
         Log.d("storyTTS", "speakPage 호출됨: $text")
-        tts.speak(text, flush = true)
+        ttsManager.speak(text, flush = true)
     }
 
     fun stopSpeaking() {
-        tts.stop()
+        ttsManager.stop()
     }
 
     override fun onCleared() {
         super.onCleared()
-        tts.stop()
+        ttsManager.stop()
     }
 
 

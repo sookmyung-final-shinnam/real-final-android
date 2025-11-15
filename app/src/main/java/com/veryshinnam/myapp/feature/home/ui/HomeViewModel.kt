@@ -2,8 +2,15 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import androidx.navigation.NavController
+import com.veryshinnam.myapp.common.model.ManualData
+import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.common.model.WarningState
+import com.veryshinnam.myapp.core.manual.ManualManager
+import com.veryshinnam.myapp.core.navigation.CreationRoutes
+import com.veryshinnam.myapp.core.navigation.MainRoutes
 import com.veryshinnam.myapp.core.session.SessionManager
+import com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,21 +25,18 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
+    private val adminRepository: AdminStoryRepository,
     private val sessionManager: SessionManager,
-    private val adminRepository: com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
+    private val manualManager: ManualManager
 ) : ViewModel() {
 
     // 화면 전체 ui 상태
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState = _homeUiState.asStateFlow()
-   
+
     // 신규 유저 여부 상태
     private val _isNewUser = MutableStateFlow(false)
     val isNewUser = _isNewUser.asStateFlow()
-
-    // 매뉴얼 진행 결정 여부 상태
-    private val _isManual = MutableStateFlow(false)
-    val isManual = _isManual.asStateFlow()
 
     // 관리자 여부 상태 관리
     private val _isAdmin = MutableStateFlow<Boolean?>(null)
@@ -42,6 +46,9 @@ class HomeViewModel @Inject constructor(
     private val _warningState = MutableStateFlow(WarningState())
     val warningState = _warningState.asStateFlow()
 
+    // 매뉴얼 진행 단계
+    private val _manualStep = MutableStateFlow(0)
+    val manualStep = _manualStep.asStateFlow()
 
     // vm 초기화
     init {
@@ -65,16 +72,6 @@ class HomeViewModel @Inject constructor(
             sessionManager.removeNewUser()
             _isNewUser.value = false
         }
-    }
-
-    // 매뉴얼 진행 요청창 열기
-    fun showManual() {
-        _isManual.value = true  // 진행
-    }
-
-    // 매뉴얼 진행 요청창 닫기
-    fun hideManual() {
-        _isManual.value = false // 진행 X
     }
 
     fun checkAdminStatus() {
@@ -124,7 +121,7 @@ class HomeViewModel @Inject constructor(
                 // 에러 케이스 테스트 용도
 //             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
             } catch (e: Exception) {
-                    _homeUiState.value = HomeUiState.Error("홈 화면 불러오기 실패: ${e.message}")
+                _homeUiState.value = HomeUiState.Error("홈 화면 불러오기 실패: ${e.message}")
             }
         }
     }
@@ -194,4 +191,41 @@ class HomeViewModel @Inject constructor(
 //            FavoriteData(id = 18,  name = "민수", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")
 //        )
 //    }
+
+    // --- 매뉴얼 관련 ---
+    // ManualManager 상태 구독
+    val manualState = manualManager.state
+    val manualMessage = manualManager.message
+
+    // Home 사용 매뉴얼
+    val manuals = listOf(
+        ManualData("스토릭터에 온 걸 환영해요!", ManualTarget.NONE),
+        ManualData("여긴 캐릭터 생성!", ManualTarget.IMAGE),
+        ManualData("보관함 버튼이에요!", ManualTarget.IMAGE),
+        ManualData("대시보드 버튼이에요!", ManualTarget.IMAGE),
+        ManualData("출첵 버튼이에요!", ManualTarget.IMAGE)
+    )
+
+    fun showManual() = manualManager.request()
+
+    fun startManual() {
+        _manualStep.value = 0
+        manualManager.start()
+        manualManager.update(manuals[0].message)
+    }
+
+    fun nextManual() {
+        val next = _manualStep.value + 1
+        if (next >= manuals.size) {
+//            manualManager.finish()
+        } else {
+            _manualStep.value = next
+            val nextMessage = manuals[next].message
+            manualManager.update(nextMessage)
+        }
+    }
+
+    fun stopManual() = manualManager.stop()
+    fun hideManual() = manualManager.clear()
+
 }

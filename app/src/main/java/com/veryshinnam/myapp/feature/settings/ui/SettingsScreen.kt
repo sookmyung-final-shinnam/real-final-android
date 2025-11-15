@@ -54,6 +54,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.CircleButton
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
@@ -148,8 +149,9 @@ fun SettingsScreen(
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     // 로그아웃 버튼
-                    Button(
-                        onClick = {
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick =  {
                             vm.showConfirmWarning(
                                 warningText = "정말 로그아웃 하시겠어요?",
                                 confirmText = "로그아웃 하기",
@@ -159,23 +161,13 @@ fun SettingsScreen(
                                 }
                             )
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.main_orange),
-                            contentColor = Color.White
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "로그아웃",
-                            style = buttonTextStyle,
-                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
-                        )
-                    }
+                        text = "로그아웃"
+                    )
 
                     // 회원 탈퇴 버튼
-                    Button(
-                        onClick = {
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick =  {
                             vm.showConfirmWarning(
                                 warningText =
                                     "정말 탈퇴하시겠어요?\n\n" +
@@ -188,36 +180,15 @@ fun SettingsScreen(
                                 }
                             )
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.main_orange),
-                            contentColor = Color.White
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "회원 탈퇴",
-                            style = buttonTextStyle,
-                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
-                        )
-                    }
+                        text = "회원 탈퇴"
+                    )
 
                     // 앱 사용 매뉴얼 버튼
-                    Button(
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {},
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.main_orange),
-                            contentColor = Color.White
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "사용 설명 다시 보기",
-                            style = buttonTextStyle,
-                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
-                        )
-                    }
+                        text = "사용 설명 다시 보기"
+                    )
                 }
             }
 
