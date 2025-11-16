@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation
+package com.veryshinnam.myapp.core.navigation.grapghs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.veryshinnam.myapp.core.navigation.routes.MainRoutes
 import com.veryshinnam.myapp.feature.attendance.ui.AttendanceScreen
 import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
@@ -57,6 +58,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
+                },
+                goToNextManual = {
+                    navController.navigate(MainRoutes.DASHBOARD) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -89,12 +95,18 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                     navController.navigate(NavGraphs.CREATION) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                     }
+                },
+                goToNextManual = {
+                    navController.navigate("character/-1") {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                    }
                 }
             )
         }
 
         // 캐릭터 상세 화면
-        composable(MainRoutes.CHARACTER,
+        composable(
+            MainRoutes.CHARACTER,
             arguments = listOf(navArgument("id") { type = NavType.LongType })
         ) { backStackEntry ->
             val id = backStackEntry.arguments?.getLong("id") ?: return@composable
@@ -109,12 +121,18 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
+                },
+                goToNextManual = {
+                    navController.navigate(MainRoutes.ATTENDANCE) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
 
         // 동화 보기 화면
-        composable(MainRoutes.STORY,
+        composable(
+            MainRoutes.STORY,
             arguments = listOf(
                 navArgument("id") { type = NavType.LongType },
                 navArgument("type") { type = NavType.StringType }

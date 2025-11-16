@@ -5,6 +5,8 @@ import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -17,6 +19,8 @@ import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -27,9 +31,11 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -41,8 +47,11 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
+import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
@@ -55,11 +64,15 @@ fun CharacterScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
+    goToNextManual: () -> Unit,
     xMoving: Dp = 60.dp,
     verticalPadding: Dp = 10.dp,
     vm: CharacterViewModel = hiltViewModel()
 ) {
-    val uiState by vm.charUiState.collectAsStateWithLifecycle()
+    // 상태 구독
+    val uiState by vm.uiState.collectAsStateWithLifecycle()
+    val manualState by vm.manualState.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
 
     // 공유 및 클립보드
     val context = LocalContext.current
@@ -82,7 +95,19 @@ fun CharacterScreen(
     }
 
     // 캐릭터 id 바뀌면 재로딩
-    LaunchedEffect(id) { vm.fetchCharacter(id) }
+    LaunchedEffect(id, manualState) {
+        if (manualState != ManualState.NONE || id == -1L) {
+            vm.startManual()
+        } else {
+            vm.fetchCharacter(id)
+        }
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            goToNextManual()
+        }
+    }
 
     // 뒤로 가기
     BackHandler { onBack() }
@@ -230,5 +255,44 @@ fun CharacterScreen(
                 clipboardManager.setText(AnnotatedString(youtubeLink!!))
             }
         )
+    }
+
+    if (manualState != ManualState.NONE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .then(
+                    when (manualState) {
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+        ) {
+            Text(
+                text = "그만 들을래요.",
+                color = colorResource(R.color.main_orange),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(30.dp)
+                    .clickable {
+                        when (manualState) {
+                            ManualState.START -> vm.stopManual()
+                            ManualState.STOP -> vm.hideManual()
+                            else -> {}
+                        }
+                    }
+                    .zIndex(11f)
+            )
+
+        }
     }
 }

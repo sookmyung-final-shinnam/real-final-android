@@ -63,7 +63,7 @@ fun CharacterRightBack(
                 storyId = stories.storyId,
                 storyType = StoryType.VIDEO,
                 storyTypeText = "움직이는 동화",
-                storyUrl = stories.videoUrl,
+                videoUrl = stories.videoUrl,
                 storyYLink = stories.videoYLink,
                 storyStatus = stories.storyStatus,
                 onStoryClick = onStoryClick,

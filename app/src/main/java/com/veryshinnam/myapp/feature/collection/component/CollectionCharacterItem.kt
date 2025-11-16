@@ -5,7 +5,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -25,12 +24,13 @@ import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.FavoriteButton
 import com.veryshinnam.myapp.common.component.StrokeTitle
+import com.veryshinnam.myapp.common.model.ImageType
 
 @Composable
 fun CollectionCharacterItem(
     cId: Long,       // 캐릭터 아이디
     cName: String,   // 캐릭터 이름
-    cImage: String?, // 캐릭터 이미지
+    cImage: ImageType, // 캐릭터 이미지
     isFavorite: Boolean, // 캐릭터 즐찾 여부
     onFavoriteClick: (cId: Long) -> Unit,   // 클릭 시 외부 처리
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
@@ -47,76 +47,90 @@ fun CollectionCharacterItem(
                 RoundedCornerShape(16.dp))
     ) {
         // 1. 동화 완성인 경우
-        if (!cImage.isNullOrEmpty()) {
+//        if (!cImage.isNullOrEmpty()) {
 
-            // 캐릭터 이미지
-            AsyncImage(
-                model = cImage,
-                contentDescription = "캐릭터 이미지",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop,
-            )
+        // 캐릭터 이미지
+        when (cImage) {
+            is ImageType.Url -> {
+                AsyncImage(
+                    model = cImage.url,
+                    contentDescription = "캐릭터 이미지",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop,
+                )
+            }
 
-            // 즐찾 버튼
-            FavoriteButton (
-                modifier = Modifier
-                    .fillMaxWidth(0.44f)
-                    .aspectRatio(1f)
-                    .align(Alignment.TopStart)
-                    .padding(4.dp),
-                characterId = cId,
-                isFavorite = isFavorite,
-                onFavoriteClick = onFavoriteClick,
-            )
-
-            // 캐릭터 이름
-            StrokeTitle(
-                titleText = cName,
-                titleColor = Color.White,
-                strokeColor = Color.Black,
-                titleTextStyle = textStyle,
-                strokeWidth = 4f,
-                modifier = Modifier.align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp) // 아래 패딩
-            )
-        } else {
-            // 2. 동화 미완인 경우
-
-            // 기본 마네킹 이미지
-            Image(
-                painter = painterResource(id = R.drawable.img_character),
-                contentDescription = "기본 이미지",
-                modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.Center),
-                contentScale = ContentScale.Fit
-            )
-
-            // 오버레이 (검정 50% 투명)
-            Box(
-                modifier = Modifier
-                    .matchParentSize()
-                    .background(Color.Black.copy(alpha = 0.5f))
-            )
-
-            // 물음표 이미지
-            Image(
-                modifier = Modifier
-                    .fillMaxHeight(0.5f)
-                    .align(Alignment.TopCenter)
-                    .padding(top = 16.dp), // 아래 패딩
-                painter = painterResource(id = R.drawable.img_question),
-                contentDescription = "미완성 아이콘",
-            )
-
-            // 캐릭터 이름
-            StrokeTitle(
-                modifier = Modifier.align(Alignment.BottomCenter)
-                    .padding(bottom = 8.dp), // 아래 패딩
-                titleText = cName,
-                titleColor = Color.White,
-                strokeColor = Color.Black,
-                strokeWidth = 4f,
-                titleTextStyle = textStyle
-            )
+            is ImageType.Resource -> {
+                Image(
+                    painter = painterResource(id = cImage.resId),
+                    contentDescription = "매뉴얼 캐릭터 이미지",
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+            }
         }
+
+        // 즐찾 버튼
+        FavoriteButton (
+            modifier = Modifier
+                .fillMaxWidth(0.44f)
+                .aspectRatio(1f)
+                .align(Alignment.TopStart)
+                .padding(4.dp),
+            characterId = cId,
+            isFavorite = isFavorite,
+            onFavoriteClick = onFavoriteClick,
+        )
+
+        // 캐릭터 이름
+        StrokeTitle(
+            titleText = cName,
+            titleColor = Color.White,
+            strokeColor = Color.Black,
+            titleTextStyle = textStyle,
+            strokeWidth = 4f,
+            modifier = Modifier.align(Alignment.BottomCenter)
+                .padding(bottom = 8.dp) // 아래 패딩
+        )
     }
+//    else {
+//            // 2. 동화 미완인 경우
+//
+//            // 기본 마네킹 이미지
+//            Image(
+//                painter = painterResource(id = R.drawable.img_character),
+//                contentDescription = "기본 이미지",
+//                modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.Center),
+//                contentScale = ContentScale.Fit
+//            )
+//
+//            // 오버레이 (검정 50% 투명)
+//            Box(
+//                modifier = Modifier
+//                    .matchParentSize()
+//                    .background(Color.Black.copy(alpha = 0.5f))
+//            )
+//
+//            // 물음표 이미지
+//            Image(
+//                modifier = Modifier
+//                    .fillMaxHeight(0.5f)
+//                    .align(Alignment.TopCenter)
+//                    .padding(top = 16.dp), // 아래 패딩
+//                painter = painterResource(id = R.drawable.img_question),
+//                contentDescription = "미완성 아이콘",
+//            )
+//
+//            // 캐릭터 이름
+//            StrokeTitle(
+//                modifier = Modifier.align(Alignment.BottomCenter)
+//                    .padding(bottom = 8.dp), // 아래 패딩
+//                titleText = cName,
+//                titleColor = Color.White,
+//                strokeColor = Color.Black,
+//                strokeWidth = 4f,
+//                titleTextStyle = textStyle
+//            )
+//        }
+//    }
 }

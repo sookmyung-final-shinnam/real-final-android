@@ -2,8 +2,14 @@ package com.veryshinnam.myapp.feature.collection.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.common.model.Gender
+import com.veryshinnam.myapp.common.model.ImageType
+import com.veryshinnam.myapp.common.model.ManualData
+import com.veryshinnam.myapp.common.model.ManualTarget
+import com.veryshinnam.myapp.core.manual.ManualManager
+import com.veryshinnam.myapp.feature.collection.model.CollectionData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -13,7 +19,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class CollectionViewModel @Inject constructor(
-    private val characterRepository: CharacterRepository
+    private val characterRepository: CharacterRepository,
+    private val manualManager: ManualManager
 ) : ViewModel() {
     private val _uiState = MutableStateFlow<CollectionUiState>(CollectionUiState.Loading)
     val uiState: StateFlow<CollectionUiState> = _uiState.asStateFlow()
@@ -24,9 +31,14 @@ class CollectionViewModel @Inject constructor(
     private val _isEmpty = MutableStateFlow(false)
     val isEmpty: StateFlow<Boolean> = _isEmpty
 
-    init {
-        fetchCollection(Gender.ALL)
-    }
+
+    // ManualManager 구독
+    val manualState = manualManager.state
+    val manualMessage = manualManager.message
+
+    // 매뉴얼 진행 단계 상태
+    private val _manualStep = MutableStateFlow(0)
+    val manualStep = _manualStep.asStateFlow()
 
     // 성별 필터 선택
     fun selectFilter(gender: Gender) {
@@ -35,7 +47,7 @@ class CollectionViewModel @Inject constructor(
     }
 
     // 보관함 불러오기
-    private fun fetchCollection(gender: Gender) {
+    fun fetchCollection(gender: Gender) {
         viewModelScope.launch {
             try {
                 val queryGender = when (gender) {
@@ -95,4 +107,78 @@ class CollectionViewModel @Inject constructor(
             }
         }
     }
+
+    // --- 매뉴얼 관련 ---
+    // 생성 전 선택 화면 사용 매뉴얼
+    val manuals = listOf(
+        ManualData("동화가 완성되면 여기 보관함에서 확인할 수 있어요.", ManualTarget.NONE),
+        ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.NONE),
+        ManualData("같이 만들었던 동화가 여기 있네요. 해당 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.NONE),
+    )
+
+    fun startManual() {
+        _manualStep.value = 0
+        manualManager.update(manuals[0].message)
+
+        val dummyList = listOf(
+            CollectionData(
+                id = -1,
+                name = "미니니",
+                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                gender = Gender.FEMALE,
+                isFavorite = false
+            ),
+            CollectionData(
+                id = -1,
+                name = "유니니",
+                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                gender = Gender.FEMALE,
+                isFavorite = false
+            ),
+            CollectionData(
+                id = -1,
+                name = "혀미미",
+                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                gender = Gender.FEMALE,
+                isFavorite = false
+            ),
+            CollectionData(
+                id = -1,
+                name = "여니니",
+                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                gender = Gender.FEMALE,
+                isFavorite = false
+            ),
+            CollectionData(
+                id = -2,
+                name = "카리나",
+                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                gender = Gender.MALE,
+                isFavorite = true
+            )
+        )
+
+        // 스크린에서 매뉴얼 UI로 전환
+        _isEmpty.value = false
+        _uiState.value = CollectionUiState.Success(
+            selectedFilter = Gender.ALL,
+            collectionDataList = dummyList
+        )
+    }
+
+    fun nextManual() {
+        val current = _manualStep.value
+
+        if (current < manuals.lastIndex) {
+            val next = current + 1
+            _manualStep.value = next
+            manualManager.update(manuals[next].message)
+        } else if (current == manuals.lastIndex) {
+            _manualStep.value = manuals.size
+        }
+    }
+
+    fun stopManual() = manualManager.stop()
+
+    fun hideManual() = manualManager.clear()
 }

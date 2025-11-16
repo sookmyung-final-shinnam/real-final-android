@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation
+package com.veryshinnam.myapp.core.navigation.grapghs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -6,6 +6,7 @@ import androidx.navigation.NavType
 import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
+import com.veryshinnam.myapp.core.navigation.routes.PermitRoutes
 import com.veryshinnam.myapp.feature.permit.ui.LoginScreen
 import com.veryshinnam.myapp.feature.permit.ui.SignUpScreen
 import com.veryshinnam.myapp.feature.permit.ui.SplashScreen

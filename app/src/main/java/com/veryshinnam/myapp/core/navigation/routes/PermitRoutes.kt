@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation
+package com.veryshinnam.myapp.core.navigation.routes
 
 object PermitRoutes {
     const val SPLASH = "splash"

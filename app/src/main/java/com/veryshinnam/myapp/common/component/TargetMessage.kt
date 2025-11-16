@@ -6,6 +6,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -30,6 +31,7 @@ fun TargetMessage(
     rect: Rect,
     message: String,
     messageStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    boxColor: Color = colorResource(R.color.main_orange),
     messageBorder: Dp = 4.dp,
     messageCorner: Dp = 16.dp,
     messagePadding: Dp = 20.dp,
@@ -42,12 +44,16 @@ fun TargetMessage(
                 x = with(density) { rect.left.toDp() },
                 y = with(density) { rect.top.toDp() }
             )
-            .width(with(density) { rect.width.toDp() })
-            .wrapContentHeight()
+            .size(
+                with(density) { rect.width.toDp() },
+                with(density) { rect.height.toDp() }
+            )
+//            .width(with(density) { rect.width.toDp() })
+//            .wrapContentHeight()
             .background(Color.White, shape = RoundedCornerShape(messageCorner))
             .border(
                 messageBorder,
-                colorResource(id = R.color.main_orange),
+                boxColor,
                 RoundedCornerShape(messageCorner)
             )
             .padding(messagePadding)

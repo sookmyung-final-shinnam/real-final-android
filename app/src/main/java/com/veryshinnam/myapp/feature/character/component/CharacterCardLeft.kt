@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.character.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,9 +12,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.common.component.FavoriteButton
+import com.veryshinnam.myapp.common.model.ImageType
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 
 @Composable
@@ -27,13 +30,27 @@ fun CharacterCardLeft(
         shape = RoundedCornerShape(16.dp)
     ) {
         Box(modifier = Modifier.fillMaxSize()) {
+
             // 캐릭터 이미지
-            AsyncImage(
-                model = character.image,
-                contentDescription = "캐릭터 이미지",
-                modifier = Modifier.fillMaxSize(),
-                contentScale = ContentScale.Crop
-            )
+            when (character.image) {
+                is ImageType.Url -> {
+                    AsyncImage(
+                        model = character.image.url,
+                        contentDescription = "캐릭터 이미지",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
+
+                is ImageType.Resource -> {
+                    Image(
+                        painter = painterResource(id = character.image.resId),
+                        contentDescription = "매뉴얼 캐릭터 이미지",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
+            }
 
             // 즐찾 버튼
             FavoriteButton (

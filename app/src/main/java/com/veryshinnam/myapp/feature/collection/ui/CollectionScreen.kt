@@ -2,6 +2,9 @@ package com.veryshinnam.myapp.feature.collection.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -23,6 +26,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -30,7 +34,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -46,8 +52,12 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.model.Gender
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
@@ -58,19 +68,27 @@ fun CollectionScreen(
     onItemClick: (Long) -> Unit,
     onLogoClick: () -> Unit,
     onCreateClick: () -> Unit,
+    goToNextManual: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: CollectionViewModel = hiltViewModel(),
     emptyText: String = "보관함이 비어 있네요!\n같이 보관함을 채우러 가볼까요?",
     emptyTextStyle: TextStyle = MaterialTheme.typography.titleSmall
 ) {
-    // ViewModel 상태 구독
+    // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val isEmpty by vm.isEmpty.collectAsStateWithLifecycle()
+    val manualState by vm.manualState.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 캐릭터 상세 > 보관함 화면: 세로 모드
 //    val context = LocalContext.current
 //    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
+
+    // 매뉴얼 > 강조할 좌표
+    var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
@@ -80,6 +98,20 @@ fun CollectionScreen(
         OrientationManager.setOrientation?.invoke(
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         )
+    }
+
+    LaunchedEffect(manualState) {
+        if (manualState != ManualState.NONE) {
+            vm.startManual()               // 매뉴얼용 더미 데이터
+        } else {
+            vm.fetchCollection(Gender.ALL) // 실제 데이터
+        }
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            goToNextManual()
+        }
     }
 
     // 뒤로 가기
@@ -153,7 +185,17 @@ fun CollectionScreen(
                             cardColor = colorResource(R.color.blue_gray),
                             cardText =  "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
                             spanText = "캐릭터 5명",
-                            spanColor = colorResource(R.color.blue_sky)
+                            spanColor = colorResource(R.color.blue_sky),
+                            onAnimalRect = { rect ->
+                                if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && rabbitRect == null) {
+                                    rabbitRect = rect
+                                }
+                            },
+                            onMessageRect = { rect ->
+                                if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && messageRect == null) {
+                                    messageRect = rect
+                                }
+                            }
                         )
 
                         // 캐릭터 성별 필터 버튼
@@ -212,12 +254,12 @@ fun CollectionScreen(
                                     }
                                 },
                                 onItemClick = { item ->
-                                    if (item.image.isNullOrBlank()) {
-                                        isSimpleWarning = true
-                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
-                                    } else {
+//                                    if (item.image.isNullOrBlank()) {
+//                                        isSimpleWarning = true
+//                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
+//                                    } else {
                                         onItemClick(item.id)
-                                    }
+//                                    }
                                 },
                                 cellPadding = spacerPadding / 2,
                                 modifier = Modifier.fillMaxSize()
@@ -234,5 +276,61 @@ fun CollectionScreen(
             warningText = SimpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )
+    }
+
+
+    if (manualState != ManualState.NONE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .then(
+                    when (manualState) {
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+        ) {
+            Text(
+                text = "그만 들을래요.",
+                color = colorResource(R.color.main_orange),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(30.dp)
+                    .clickable {
+                        when (manualState) {
+                            ManualState.START -> vm.stopManual()
+                            ManualState.STOP -> vm.hideManual()
+                            else -> {}
+                        }
+                    }
+                    .zIndex(11f)
+            )
+
+            rabbitRect?.let { rect ->
+                TargetImage(
+                    rect,
+                    painterResource(R.drawable.img_rabbit_cut)
+                )
+            }
+
+            messageRect?.let { rect ->
+                TargetMessage(
+                    rect = rect,
+                    message = manualMessage,
+                    messageStyle = MaterialTheme.typography.titleMedium,
+                    messagePadding = 16.dp,
+                    boxColor = colorResource(R.color.blue_gray),
+                )
+            }
+        }
     }
 }

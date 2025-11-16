@@ -32,6 +32,7 @@ import androidx.compose.ui.zIndex
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.VideoPlayer
+import com.veryshinnam.myapp.common.model.ImageType
 import com.veryshinnam.myapp.feature.character.model.StoryStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
@@ -40,7 +41,8 @@ fun CharacterStoryButton(
     storyId: Long,          // 동화 아이디
     storyType: StoryType,   // 동화 타입
     storyTypeText: String,  // 동화 타입 텍스트
-    storyUrl: String?,      // 동화 표지 이미지
+    storyUrl: ImageType? = null, // 종이 동화 표지
+    videoUrl: String? = null,    // 영상 동화 표지
     storyYLink: String?,    // 동화 유튜브 링크
     storyStatus: StoryStatus,
     buttonSize: Float = 0.7f,
@@ -54,7 +56,10 @@ fun CharacterStoryButton(
     infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
 ) {
-    val isExist = !storyUrl.isNullOrBlank()
+    val isShareEnabled = when (storyType) {
+        StoryType.IMAGE -> storyUrl != null      // 이미지 표지 있으면 공유 가능
+        StoryType.VIDEO -> !videoUrl.isNullOrBlank()   // mp4 표지 있으면 공유 가능
+    }
 
     // 동화 버튼
     Column(
@@ -72,7 +77,7 @@ fun CharacterStoryButton(
                         StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
                         StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
                         StoryStatus.COMPLETED -> {
-                            if (storyUrl.isNullOrBlank()) onMakingClick() // 서버 문의
+                            if (videoUrl.isNullOrBlank()) onMakingClick() // 서버 문의
                             else onStoryClick(storyId, storyType)         // 완료 > 이동
                         }
 
@@ -82,25 +87,42 @@ fun CharacterStoryButton(
                 shape = RoundedCornerShape(buttonRadius),
                 contentPadding = PaddingValues(0.dp) // 패딩 제거
             ) {
-                if (storyType == StoryType.IMAGE) { // 동화가 이미지일 경우
-                    AsyncImage(
-                        model = storyUrl,
-                        contentDescription = "$storyTypeText 버튼",
-                        modifier = Modifier.fillMaxSize(),
-                        contentScale = ContentScale.Crop
-                    )
-                } else { // 동화가 비디오일 경우
-                    if (!storyUrl.isNullOrBlank()) {
-                        VideoPlayer(
-                            videoUrl = storyUrl,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else { // 비디오 링크 없으면
-                        Box(
-                            modifier = Modifier.fillMaxSize(),
-                            contentAlignment = Alignment.Center
-                        ) { //  원래 없어서 잠금 이미지
-                            if (storyStatus == StoryStatus.NONE) {
+                when (storyType) {
+                    StoryType.IMAGE -> {
+                        when (storyUrl) {
+                            is ImageType.Url -> {
+                                AsyncImage(
+                                    model = storyUrl,
+                                    contentDescription = "$storyTypeText 버튼",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            is ImageType.Resource -> {
+                                Image(
+                                    painter = painterResource(id = storyUrl.resId),
+                                    contentDescription = "$storyTypeText 버튼",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Crop
+                                )
+                            }
+
+                            else -> {
+                                Image(
+                                    painter = painterResource(R.drawable.img_locker),
+                                    contentDescription = null,
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
+
+                    // 동화가 비디오일 경우
+                    StoryType.VIDEO -> {
+                        when (storyStatus) {
+                            StoryStatus.NONE -> {
                                 Image(
                                     painter = painterResource(R.drawable.img_locker),
                                     contentDescription = "$storyTypeText 잠금",
@@ -108,31 +130,69 @@ fun CharacterStoryButton(
                                     contentScale = ContentScale.Fit
                                 )
                             }
-                            else { // 제작 중이거나 제작 완료했으나 mp4 url 반영 안된 경우
-                                CircularProgressIndicator(
-                                    color = colorResource(id = R.color.main_orange),
-                                    trackColor = Color.White.copy(alpha = 0.5f),
-                                    strokeWidth = 6.dp,
-                                    modifier = Modifier.zIndex(1f).fillMaxSize(0.7f)
-                                )
 
-                                Image(
-                                    painter = painterResource(R.drawable.img_locker_empty),
-                                    contentDescription = "$storyTypeText 제작 중",
+                            StoryStatus.MAKING -> {
+                                Box(
                                     modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    CircularProgressIndicator(
+                                        color = colorResource(id = R.color.main_orange),
+                                        trackColor = Color.White.copy(alpha = 0.5f),
+                                        strokeWidth = 6.dp,
+                                        modifier = Modifier
+                                            .zIndex(1f)
+                                            .fillMaxSize(0.7f)
+                                    )
+
+                                    Image(
+                                        painter = painterResource(R.drawable.img_locker_empty),
+                                        contentDescription = "$storyTypeText 제작 중",
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentScale = ContentScale.Fit
+                                    )
+                                }
+                            }
+
+                            StoryStatus.COMPLETED -> {
+                                if (videoUrl != null)
+                                    VideoPlayer(
+                                        videoUrl = videoUrl,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                else {
+                                    Box(
+                                        modifier = Modifier.fillMaxSize(),
+                                        contentAlignment = Alignment.Center
+                                    ) {
+                                        CircularProgressIndicator(
+                                            color = colorResource(id = R.color.main_orange),
+                                            trackColor = Color.White.copy(alpha = 0.5f),
+                                            strokeWidth = 6.dp,
+                                            modifier = Modifier
+                                                .zIndex(1f)
+                                                .fillMaxSize(0.7f)
+                                        )
+
+                                        Image(
+                                            painter = painterResource(R.drawable.img_locker_empty),
+                                            contentDescription = "$storyTypeText 제작 중",
+                                            modifier = Modifier.fillMaxSize(),
+                                            contentScale = ContentScale.Fit
+                                        )
+                                    }
+                                }
                             }
                         }
                     }
                 }
             }
 
-            if (isExist) {
+            if (isShareEnabled) {
                 Button(
                     onClick = { onShareClick(storyYLink) },
                     modifier = Modifier
-                        .align(Alignment.TopEnd) // 버튼 내부 우상단
+                        .align(Alignment.TopEnd)
                         .fillMaxHeight(kakaoSize)
                         .aspectRatio(1f)
                         .zIndex(1f),
