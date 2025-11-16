@@ -2,20 +2,16 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.navigation.NavController
 import com.veryshinnam.myapp.common.model.ManualData
 import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
-import com.veryshinnam.myapp.core.navigation.CreationRoutes
-import com.veryshinnam.myapp.core.navigation.MainRoutes
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -34,25 +30,30 @@ class HomeViewModel @Inject constructor(
     private val _homeUiState = MutableStateFlow<HomeUiState>(HomeUiState.Loading)
     val homeUiState = _homeUiState.asStateFlow()
 
+    // 관리자 여부 상태 관리
+    private val _isAdmin = MutableStateFlow<Boolean?>(null)
+    val isAdmin = _isAdmin.asStateFlow()
+
     // 신규 유저 여부 상태
     private val _isNewUser = MutableStateFlow(false)
     val isNewUser = _isNewUser.asStateFlow()
 
-    // 관리자 여부 상태 관리
-    private val _isAdmin = MutableStateFlow<Boolean?>(null)
-    val isAdmin: StateFlow<Boolean?> = _isAdmin
+    //
+    private val _username = MutableStateFlow("")
+    val username = _username.asStateFlow()
 
     // 단순 경고창 상태
     private val _warningState = MutableStateFlow(WarningState())
     val warningState = _warningState.asStateFlow()
 
-    // 매뉴얼 진행 단계
+    // ManualManager 구독
+    val manualState = manualManager.state
+    val manualMessage = manualManager.message
+
+    // 매뉴얼 진행 단계 상태
     private val _manualStep = MutableStateFlow(0)
     val manualStep = _manualStep.asStateFlow()
 
-    //
-    private val _username = MutableStateFlow<String>("")
-    val username: StateFlow<String> = _username
 
     // vm 초기화
     init {
@@ -198,13 +199,9 @@ class HomeViewModel @Inject constructor(
 //    }
 
     // --- 매뉴얼 관련 ---
-    // ManualManager 상태 구독
-    val manualState = manualManager.state
-    val manualMessage = manualManager.message
-
-    // Home 사용 매뉴얼
+    // 홈 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("반가워요 {username}! 스토릭터에 온 걸 환영해요.", ManualTarget.NONE),
+        ManualData("반가워요 {username}!\n스토릭터에 온 걸 환영해요.", ManualTarget.NONE),
         ManualData("여기 캐릭터 생성 버튼에서 직접 동화의 내용을 하나씩 만들어가며 나만의 동화와 캐릭터를 만들 수 있어요!", ManualTarget.IMAGE),
         ManualData("보관함에서는 만든 동화와 캐릭터를 다시 볼 수 있어요!", ManualTarget.IMAGE),
         ManualData("대시보드에선 동화를 만들며 발견되었던 {username}만의 특징을 확인할 수 있고", ManualTarget.IMAGE),

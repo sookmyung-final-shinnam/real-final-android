@@ -39,6 +39,11 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                     navController.navigate(CreationRoutes.CONVERSATION) {
                         launchSingleTop = true
                     }
+                },
+                goToNextManual = {
+                    navController.navigate(CreationRoutes.CONVERSATION) {
+                        launchSingleTop = true
+                    }
                 }
             )
         }
@@ -58,6 +63,9 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                 if (req != null) {
                     vm.startConversation(req) // api 호출, 동화 세선 시작
                 }
+                else {
+                    vm.startManual()            // ← 매뉴얼 모드 시작
+                }
             }
 
             ConversationScreen(
@@ -70,11 +78,16 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                 },
 //                onLogoClick = {
 //                    navController.popBackStack("selection", inclusive = true)
-//                    navController.navigate("home") {
+//                    navController.navigate(MainRoutes.HOME) {
 //                        popUpTo(NavGraphs.MAIN) { inclusive = false }
 //                        launchSingleTop = true
 //                    }
 //                },
+                goToNextManual = {
+                    navController.navigate(MainRoutes.COLLECTION) {
+                        launchSingleTop = true
+                    }
+                },
                 vm = vm
             )
         }

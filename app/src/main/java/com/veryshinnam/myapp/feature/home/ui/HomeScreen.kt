@@ -83,10 +83,9 @@ fun HomeScreen(
     val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
     val warningState by vm.warningState.collectAsStateWithLifecycle() // 단순 경고
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
     val username by vm.username.collectAsStateWithLifecycle()
-    val userManualMessage = manualMessage.replace("{username}", username)
 
     // 매뉴얼 > 강조할 좌표
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
@@ -380,29 +379,26 @@ fun HomeScreen(
 
     // 매뉴얼 진행
     if (manualState != ManualState.NONE) {
-
-        val pointerInput =
-            when (manualState) {
-                ManualState.REQUEST ->
-                    Modifier.pointerInput(Unit) {}
-
-                ManualState.START ->
-                    Modifier.pointerInput(Unit) {
-                        detectTapGestures { vm.nextManual() }
-                    }
-
-                else ->
-                    Modifier.pointerInput(Unit) {
-                        detectTapGestures { vm.hideManual() }
-                    }
-            }
-
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(Color.Black.copy(alpha = 0.5f))
-                .then(pointerInput)
+                .then(
+                    when (manualState) {
+                        ManualState.REQUEST -> Modifier.pointerInput(Unit) {}
+
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
         ) {
             squirrelRect?.let { rect ->
                 TargetImage(
@@ -414,7 +410,12 @@ fun HomeScreen(
             messageRect?.let { rect ->
                 TargetMessage(
                     rect = rect,
-                    message = userManualMessage
+                    message = manualMessage.replace("{username}", username),
+                    messageStyle =
+                        if (manualState == ManualState.START)
+                            MaterialTheme.typography.titleMedium
+                        else
+                            MaterialTheme.typography.titleLarge
                 )
             }
 

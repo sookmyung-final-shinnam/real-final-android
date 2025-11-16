@@ -7,6 +7,9 @@ import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -21,6 +24,7 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -31,6 +35,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
@@ -43,6 +48,7 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationEndContent
 import com.veryshinnam.myapp.feature.creation.content.conversation.ConversationAnswerContent
@@ -55,6 +61,7 @@ import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 @Composable
 fun ConversationScreen(
     onBack: () -> Unit,
+    goToNextManual: () -> Unit,
     horizontalPadding: Dp = 16.dp,
     vm: ConversationViewModel
 ) {
@@ -70,8 +77,11 @@ fun ConversationScreen(
         }
     }
 
+    // 상태 구독
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
     val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
+    val manualState by vm.manualState.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
 
     var isWarning by remember { mutableStateOf(false) }   // 경고창
 
@@ -80,6 +90,12 @@ fun ConversationScreen(
         OrientationManager.setOrientation?.invoke(
             ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
         )
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            goToNextManual()
+        }
     }
 
     Scaffold(
@@ -124,7 +140,9 @@ fun ConversationScreen(
                 // 조회 성공
                 is ConversationUiState.Success -> {
                     LaunchedEffect(state.conversationStep) {
-                        vm.startTts() // 자동 읽기
+                        if (manualState == ManualState.NONE) {
+                            vm.startTts()
+                        }
                     }
 
                     // 진행바 (START, END 제외)
@@ -147,7 +165,9 @@ fun ConversationScreen(
                     )  {
                         when (state.conversationStep) {
                             ConversationStep.START -> { // 대화 시작 (다음 이야기)
-                                BackHandler {  isWarning = true } // 홈으로
+                                BackHandler(
+                                    enabled = manualState == ManualState.NONE
+                                ) {  isWarning = true } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     isTtsSpeaking = isTtsSpeaking,
@@ -159,7 +179,9 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.STORY -> { // 다음 이야기
-                                BackHandler { isWarning = true } // 홈으로
+                                BackHandler(
+                                    enabled = manualState == ManualState.NONE
+                                ) { isWarning = true } // 홈으로
                                 ConversationStoryContent(
                                     nextStory = state.nextStory,
                                     isTtsSpeaking = isTtsSpeaking,
@@ -171,7 +193,9 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.QUESTION -> { // llm 질문 (STORY 단계 이동 가능)
-                                BackHandler { vm.goToPreviousStep() }
+                                BackHandler(
+                                    enabled = manualState == ManualState.NONE
+                                ) { vm.goToPreviousStep() }
                                 ConversationQuestionContent(
                                     question = state.questionData.question,
                                     isTtsSpeaking = isTtsSpeaking,
@@ -192,7 +216,9 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
-                                BackHandler { vm.goToPreviousStep() }
+                                BackHandler(
+                                    enabled = manualState == ManualState.NONE
+                                ) { vm.goToPreviousStep() }
 
                                 LaunchedEffect(state.conversationStep) {
                                     vm.startStt(context)
@@ -207,11 +233,11 @@ fun ConversationScreen(
                             }
 
                             ConversationStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
-
-                                BackHandler { // 긍정 >  홈으로, 부정 > QUESTION 단계 이동 가능
+                                BackHandler(
+                                    enabled = manualState == ManualState.NONE
+                                ) { // 긍정 >  홈으로, 부정 > QUESTION 단계 이동 가능
                                     if (state.feedbackData.isPositive) {
                                         isWarning = true
-//                                        onBack()
                                     }
                                     else vm.goToPreviousStep()
                                 }
@@ -249,5 +275,49 @@ fun ConversationScreen(
                 onBack()
             }
         )
+    }
+
+    if (manualState != ManualState.NONE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(
+                    if (manualStep == 0 || manualStep == 4)
+                        Color.Black.copy(alpha = 0.5f)
+                    else
+                        Color.Transparent
+                )
+                .then(
+                    when (manualState) {
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+        ) {
+
+            Text(
+                text = "그만 들을래요.",
+                color = colorResource(R.color.main_orange),
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .padding(30.dp)
+                    .clickable {
+                        when (manualState) {
+                            ManualState.START -> vm.stopManual()
+                            ManualState.STOP -> vm.hideManual()
+                            else -> {}
+                        }
+                    }
+                    .zIndex(11f)
+            )
+        }
     }
 }

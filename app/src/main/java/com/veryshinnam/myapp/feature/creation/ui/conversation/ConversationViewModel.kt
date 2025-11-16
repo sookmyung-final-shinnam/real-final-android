@@ -4,6 +4,8 @@ import android.content.Context
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.common.model.ManualState
+import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.core.speech.stt.SttManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import com.veryshinnam.myapp.feature.creation.data.dto.NextStepResult
@@ -13,6 +15,7 @@ import com.veryshinnam.myapp.feature.creation.data.repository.ConversationReposi
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 import com.veryshinnam.myapp.feature.creation.model.FeedbackData
+import com.veryshinnam.myapp.feature.creation.model.ManualScriptData
 import com.veryshinnam.myapp.feature.creation.model.QuestionData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -33,22 +36,41 @@ private fun changeLoopStep(loopStep: Int): String {
 @HiltViewModel
 class ConversationViewModel @Inject constructor(
     private val repository: ConversationRepository,
-    private val tts: TtsManager,
-    private val stt: SttManager
+    private val ttsManger: TtsManager,
+    private val sttManager: SttManager,
+    private val manualManager: ManualManager
 ) : ViewModel() {
 
-    // 대화 화면 상태 관리
+    // 화면 전체 ui 상태
     private val _conversationUiState = MutableStateFlow<ConversationUiState>(ConversationUiState.Loading)
     val conversationUiState: StateFlow<ConversationUiState> = _conversationUiState.asStateFlow()
 
-    // isSpeaking 추가
-    val isTtsSpeaking = tts.isSpeaking
+    // ttsManger 구독
+    val isTtsSpeaking = ttsManger.isSpeaking
+
+    // ManualManager 구독
+    val manualState = manualManager.state
+
+    // 매뉴얼 진행 단계 상태
+    private val _manualStep = MutableStateFlow(0)
+    val manualStep = _manualStep.asStateFlow()
 
     init {
-        // ViewModel 생성 > 기본 Loading + stt event collector 한 번만 실행
+        // ViewModel 생성 > 기본 Loading
         _conversationUiState.value = ConversationUiState.Loading
+
+        // STT 이벤트 처리
         viewModelScope.launch {
-            stt.events.collect { event -> handleSttEvent(event) }
+            sttManager.events.collect { event -> handleSttEvent(event) }
+        }
+
+        // 매뉴얼에선 tts X
+        viewModelScope.launch {
+            manualManager.state.collect { state ->
+                if (state != ManualState.NONE) {
+                    ttsManger.stop()
+                }
+            }
         }
     }
 
@@ -95,7 +117,7 @@ class ConversationViewModel @Inject constructor(
 
             ConversationStep.QUESTION -> {
                 // STORY > QUESTION (녹음 화면, 단계만 바뀜)
-                tts.stop() // tts 중지
+                ttsManger.stop() // tts 중지
                 _conversationUiState.value = state.copy(conversationStep = ConversationStep.ANSWER)
             }
 
@@ -116,7 +138,7 @@ class ConversationViewModel @Inject constructor(
 
         if (!feedback.isPositive && feedback.tryNum < 3) {
             // 부정 → 다시 녹음 단계로
-            tts.stop() // tts 중지
+            ttsManger.stop() // tts 중지
             _conversationUiState.value = state.copy(
                 conversationStep = ConversationStep.ANSWER,
                 answerData = AnswerData("", "") // 답변 초기화
@@ -216,21 +238,21 @@ class ConversationViewModel @Inject constructor(
         val state = _conversationUiState.value as? ConversationUiState.Success ?: return
 
         when (state.conversationStep) {
-            ConversationStep.START, ConversationStep.STORY -> tts.speak(state.nextStory, flush = true)
-            ConversationStep.QUESTION -> tts.speak(state.questionData.question, flush = true)
-            ConversationStep.FEEDBACK -> tts.speak(state.feedbackData.text, flush = true)
+            ConversationStep.START, ConversationStep.STORY -> ttsManger.speak(state.nextStory, flush = true)
+            ConversationStep.QUESTION -> ttsManger.speak(state.questionData.question, flush = true)
+            ConversationStep.FEEDBACK -> ttsManger.speak(state.feedbackData.text, flush = true)
             else -> return
         }
     }
 
     override fun onCleared() {
         super.onCleared()
-        tts.stop()   // 화면 dispose 시 tts, stt 중지
-        stt.stop()
+        ttsManger.stop()   // 화면 dispose 시 tts, stt 중지
+        sttManager.stop()
     }
 
     fun startStt(context: Context) {
-        stt.start(context)
+        sttManager.start(context)
     }
 
     // stt event 처리
@@ -271,8 +293,8 @@ class ConversationViewModel @Inject constructor(
     }
 
     fun stopStt() {
-        if (stt.isListening.value) {
-            stt.stop()
+        if (sttManager.isListening.value) {
+            sttManager.stop()
         }
     }
 
@@ -376,4 +398,58 @@ class ConversationViewModel @Inject constructor(
             }
         }
     }
+
+    // --- 매뉴얼 관련 ---
+    // 생성 전 선택 화면 사용 매뉴얼
+    val manuals = listOf(
+        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 끝나면 제가 이전에 고른 내용들을 바탕으로 이야기를 만들어 제 질문에 답을 하며 저희 함께 동화를 만들어나가자!"),
+        ManualScriptData(step = ConversationStep.START, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "루미는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있엇요. 거기서 죽은 진우를 닯은 사람을 발견했어요."),
+        ManualScriptData(step = ConversationStep.QUESTION,  question = "루미는 그 사람을 보고 어떻게 행동했을까?"),
+        ManualScriptData(step = ConversationStep.QUESTION, question = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
+        ManualScriptData(step = ConversationStep.ANSWER),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아, 앞으로도 그렇게 대답 해주면 돼.", 1)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 안맞는 답변이나 나쁜 말을 사용하면 다시 답변해야해.", 2)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "답변은 총 세번이니 잘 생각해보고 답변하자!", 3)),
+    )
+
+    private fun updateManual(index: Int) {
+
+        val script = manuals[index]
+
+        _conversationUiState.value = ConversationUiState.Success(
+            sessionId = -1L,
+            nextStory = script.nextStory,
+            questionData = QuestionData(
+                messageId = -1,
+                question = script.question
+            ),
+            answerData = AnswerData("", ""),
+            feedbackData = script.feedback,
+            conversationStep = script.step,
+            loopStep = 1
+        )
+    }
+
+
+    fun startManual() {
+        _manualStep.value = 0
+        updateManual(0)
+    }
+
+    fun nextManual() {
+        val current = _manualStep.value
+
+        if (current < manuals.lastIndex) {
+            val next = current + 1
+            _manualStep.value = next
+            updateManual(next)
+        } else if (current == manuals.lastIndex) {
+            _manualStep.value = manuals.size
+        }
+    }
+
+    fun stopManual() = manualManager.stop()
+
+    fun hideManual() = manualManager.clear()
 }

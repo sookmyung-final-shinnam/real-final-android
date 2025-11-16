@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -30,7 +29,7 @@ import com.veryshinnam.myapp.R
 fun TargetMessage(
     rect: Rect,
     message: String,
-    messageStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    messageStyle: TextStyle = MaterialTheme.typography.titleLarge,
     messageBorder: Dp = 4.dp,
     messageCorner: Dp = 16.dp,
     messagePadding: Dp = 20.dp,
@@ -57,7 +56,7 @@ fun TargetMessage(
     ) {
         Text(
             text = message.replace("", "\u200B" ),
-            style = messageStyle,
+            style = messageStyle.copy(fontWeight = Bold),
             modifier = Modifier.fillMaxWidth()
         )
     }
