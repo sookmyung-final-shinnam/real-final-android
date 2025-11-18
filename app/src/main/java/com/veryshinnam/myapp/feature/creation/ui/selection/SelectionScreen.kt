@@ -10,11 +10,14 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -34,6 +37,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -45,8 +50,11 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
+import com.veryshinnam.myapp.common.component.TargetButton
+import com.veryshinnam.myapp.common.component.TargetCustom
 import com.veryshinnam.myapp.common.component.TargetImage
 import com.veryshinnam.myapp.common.component.TargetMessage
+import com.veryshinnam.myapp.common.component.TargetProgressBar
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
@@ -91,6 +99,9 @@ fun SelectionScreen(
     // 매뉴얼 > 강조할 좌표
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
+    var progressRect by remember { mutableStateOf<Rect?>(null) } // 진행바
+    var firstBRect by remember { mutableStateOf<Rect?>(null) } // 첫 테마 버튼
+    var customBRect by remember { mutableStateOf<Rect?>(null) } // 직접 추가 버튼
 
     // 뒤로 가기 로직
     fun handleBack() {
@@ -211,24 +222,21 @@ fun SelectionScreen(
                     .fillMaxSize()
                     .padding(horizontal = horizontalPadding),
             ) {
-                // 단계 화면 설명 (+ 진행바)
-//                SelectionInfo(
-//                    text = getInfoText(selectionStep, isInputMode),
-//                    currentStep = uiState.currentStep,
-//                    modifier = Modifier.fillMaxWidth()
-//                        .weight(0.25f)
-//                )
-
                 Box{
                     // 진행바
                     StepProgressBar(
                         steps = 6,
                         currentStep = uiState.currentStep,
                         modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .fillMaxWidth(0.5f)
-                            .fillMaxHeight(0.08f)
-                            .padding(top = topPadding / 2)
+                            .align(Alignment.CenterStart)
+                            .fillMaxWidth(0.7f)
+                            .fillMaxHeight(0.2f)
+                            .offset(x = 12.dp, y = (-20).dp)
+                            .onGloballyPositioned {
+                                if (manualState == ManualState.START  && progressRect == null) {
+                                    progressRect = it.boundsInRoot()
+                                }
+                            }
                             .zIndex(1f)
                     )
 
@@ -239,12 +247,12 @@ fun SelectionScreen(
                         cardColor = colorResource(R.color.main_orange),
                         cardText =  getInfoText(selectionStep, isInputMode),
                         onAnimalRect = { rect ->
-                            if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && squirrelRect == null) {
+                            if (manualState == ManualState.START && squirrelRect == null) {
                                 squirrelRect = rect
                             }
                         },
                         onMessageRect = { rect ->
-                            if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && messageRect == null) {
+                            if (manualState == ManualState.START && messageRect == null) {
                                 messageRect = rect
                             }
                         }
@@ -265,6 +273,16 @@ fun SelectionScreen(
                             onSimpleWarning = { text ->  // 경고 문구
                                 SimpleWarningText = text
                                 isSimpleWarning = true
+                            },
+                            onFirstBRect = { rect ->
+                                if (manualState == ManualState.START && firstBRect == null) {
+                                    firstBRect = rect
+                                }
+                            },
+                            onCustomBRect = { rect ->
+                                if (manualState == ManualState.START && customBRect == null) {
+                                    customBRect = rect
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -442,8 +460,17 @@ fun SelectionScreen(
                     messagePadding = 16.dp
                 )
             }
+
+            if (manualState == ManualState.START) {
+                when (manualStep) {
+                    0 -> {}
+                    1 -> progressRect?.let { TargetProgressBar(it, 6) }
+                    2 -> firstBRect?.let { TargetButton(it) }
+                    3 -> customBRect?.let { TargetCustom(it) }
+                }
+            }
+
         }
     }
-
 }
 

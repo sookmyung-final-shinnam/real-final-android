@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.creation.content.selection
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -17,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
-import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
+import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
 
 @Composable
 fun SelectionBackgroundContent (
@@ -70,7 +69,7 @@ fun SelectionBackgroundContent (
             Spacer(Modifier.height(spacePadding))
 
             // 하단 버튼 영역
-            SelectionTripleButtons(
+            SelectionBottomButtons(
                 isLeft = true,     // 이전 버튼
                 isCenter = true,   // 직접추가 버튼
                 isRight = true,    // 다음 버튼

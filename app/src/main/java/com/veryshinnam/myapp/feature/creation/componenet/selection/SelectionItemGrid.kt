@@ -17,7 +17,10 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -32,7 +35,8 @@ fun SelectionItemGrid(
     selectedItems: List<String>, // 선택된 아이템 리스트
     customItem: String?,         // 직접 추가 아이템
     onItemClick: (String) -> Unit, // 선택 이벤트
-    modifier: Modifier = Modifier,
+    onFirstBRect: (Rect) -> Unit = { },
+    modifier: Modifier,
     textextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     rowPadding: Dp = 12.dp,
     columnPadding: Dp = 10.dp
@@ -95,6 +99,13 @@ fun SelectionItemGrid(
                             modifier = Modifier
                                 .fillMaxHeight()
                                 .weight(1f)
+                                .then(
+                                    if (index == 0) {
+                                        Modifier.onGloballyPositioned {
+                                            onFirstBRect(it.boundsInRoot())
+                                        }
+                                    } else Modifier
+                                )
                         ) {
                             Text(item,
                                 style = textextStyle

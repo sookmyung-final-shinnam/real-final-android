@@ -2,18 +2,11 @@ package com.veryshinnam.myapp.feature.attendance.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.model.Gender
-import com.veryshinnam.myapp.common.model.ImageType
 import com.veryshinnam.myapp.common.model.ManualData
 import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.attendance.data.repository.AttendanceRepository
 import com.veryshinnam.myapp.feature.attendance.model.AttendanceData
-import com.veryshinnam.myapp.feature.character.model.CharacterData
-import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.StoryStatus
-import com.veryshinnam.myapp.feature.character.ui.CharacterUiState
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow

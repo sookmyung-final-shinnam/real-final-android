@@ -3,8 +3,6 @@ package com.veryshinnam.myapp.feature.creation.content.selection
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
@@ -14,11 +12,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
-import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
+import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
 
 
 // 캐릭터 생성 > 선택 진입점
@@ -33,10 +32,12 @@ fun SelectionThemeContent(
     onThemeSelect: (String) -> Unit,        // 테마 선택 콜백
     onNextClick: () -> Unit,                // 다음 단계 이동 콜백
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
+    onFirstBRect: (Rect) -> Unit,
+    onCustomBRect: (Rect) -> Unit,
     spacePadding: Dp = 24.dp
 ) {
     var customInput by remember { mutableStateOf("") }
-    val initThemes = listOf("로맨스", "모험", "일상", "공포", "우정", "추리")
+    val initThemes = listOf("모험", "일상", "사랑", "우정", "공포", "추리")
 
     Column(
         modifier = modifier,
@@ -66,13 +67,14 @@ fun SelectionThemeContent(
                 selectedItems = themes,
                 customItem = customTheme, // read
                 onItemClick = { onThemeSelect(it) }, // write
+                onFirstBRect = onFirstBRect,
                 modifier = Modifier.fillMaxWidth().weight(8f)
             )
 
             Spacer(Modifier.height(spacePadding))
 
             // 하단 버튼 영역
-            SelectionTripleButtons(
+            SelectionBottomButtons(
                 isLeft = false,    // 첫 화면이니 이전 버튼 없음
                 isCenter = true,   // 직접추가 버튼
                 isRight = true,    // 다음 버튼
@@ -93,6 +95,7 @@ fun SelectionThemeContent(
                         onSimpleWarning("아직 주제를 선택하지 않았어요!")
                     }
                 },
+                onCustomBRect = onCustomBRect,
                 modifier = Modifier
                     .fillMaxWidth()
                     .weight(2f)
