@@ -52,6 +52,7 @@ fun UserInfo(
     spanText: String? = null,               // 강조할 텍스트
     spanColor: Color = Color.Unspecified,   // 강조할 색상
     spanTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    onItemRect: (Rect) -> Unit = {},
     onAnimalRect: (Rect) -> Unit = {},
     onMessageRect: (Rect) -> Unit = {},
 ) {
@@ -84,6 +85,7 @@ fun UserInfo(
                         .align(animalAlignment)
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight(0.6f)
+                        .onGloballyPositioned { onItemRect(it.boundsInRoot()) }
                 )
             }
         }

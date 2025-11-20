@@ -1,6 +1,9 @@
 package com.veryshinnam.myapp.feature.settings.ui
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
@@ -41,6 +44,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -80,6 +84,12 @@ fun SettingsScreen(
     footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
     vm: SettingsViewModel = hiltViewModel()
 ) {
+    // 메일 관련 변수
+    val context = LocalContext.current
+    val email = "veryshinnam@gmail.com"
+    val subjectText = "[문의합니다]"
+    val bodyText = "문의합니다"
+
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val confirmWarningState by vm.confirmWarningState.collectAsStateWithLifecycle()
@@ -134,7 +144,7 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.45f)
+                    .fillMaxHeight(0.52f)
                     .padding(horizontalPadding),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -188,6 +198,29 @@ fun SettingsScreen(
                         modifier = Modifier.fillMaxWidth(),
                         onClick = {},
                         text = "사용 설명 다시 보기"
+                    )
+
+                    // 문의하기
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {
+                            try {
+                                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = Uri.parse("mailto:")
+                                    putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+                                    putExtra(Intent.EXTRA_SUBJECT, subjectText)
+                                    putExtra(Intent.EXTRA_TEXT, bodyText)
+                                }
+
+                                // resolveActivity: 사용 가능한 메일 앱 체크
+                                if (intent.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(Intent.createChooser(intent, "문의 메일 보내기"))
+                                }
+                            } catch (_: Exception) {
+                                Toast.makeText(context, "문의를 보낼 수 있는 메일 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+                            }
+                        },
+                        text = "문의하기"
                     )
                 }
             }

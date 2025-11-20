@@ -2,7 +2,9 @@ package com.veryshinnam.myapp.feature.collection.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
@@ -10,15 +12,19 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
@@ -34,9 +40,12 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -48,11 +57,15 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.FavoriteButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetItem
 import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.component.WarningSheet
@@ -75,6 +88,8 @@ fun CollectionScreen(
     emptyText: String = "보관함이 비어 있네요!\n같이 보관함을 채우러 가볼까요?",
     emptyTextStyle: TextStyle = MaterialTheme.typography.titleSmall
 ) {
+    val density = LocalDensity.current
+
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val isEmpty by vm.isEmpty.collectAsStateWithLifecycle()
@@ -89,6 +104,8 @@ fun CollectionScreen(
     // 매뉴얼 > 강조할 좌표
     var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
+    var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
+    var characterRect by remember { mutableStateOf<Rect?>(null) } // 캐릭터 박스
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
@@ -186,13 +203,18 @@ fun CollectionScreen(
                             cardText =  "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
                             spanText = "캐릭터 5명",
                             spanColor = colorResource(R.color.blue_sky),
+                            onItemRect = { rect ->
+                                if (manualState == ManualState.START && itemRect == null) {
+                                    itemRect = rect
+                                }
+                            },
                             onAnimalRect = { rect ->
-                                if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && rabbitRect == null) {
+                                if (manualState == ManualState.START  && rabbitRect == null) {
                                     rabbitRect = rect
                                 }
                             },
                             onMessageRect = { rect ->
-                                if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && messageRect == null) {
+                                if (manualState == ManualState.START && messageRect == null) {
                                     messageRect = rect
                                 }
                             }
@@ -258,11 +280,16 @@ fun CollectionScreen(
 //                                        isSimpleWarning = true
 //                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
 //                                    } else {
-                                        onItemClick(item.id)
+                                    onItemClick(item.id)
 //                                    }
                                 },
                                 cellPadding = spacerPadding / 2,
-                                modifier = Modifier.fillMaxSize()
+                                modifier = Modifier.fillMaxSize(),
+                                onCharacterRect = { rect ->
+                                    if (manualState == ManualState.START && characterRect == null) {
+                                        characterRect = rect
+                                    }
+                                },
                             )
                         }
                     }
@@ -330,6 +357,72 @@ fun CollectionScreen(
                     messagePadding = 16.dp,
                     boxColor = colorResource(R.color.blue_gray),
                 )
+            }
+
+            when (manualStep) {
+                1 -> {
+                    itemRect?.let {
+                        TargetItem(
+                            it, density,
+                            image = painterResource(R.drawable.img_character_yellow),
+                            imageDescription = "캐릭터 수",
+                            value = 5,
+                            boxColor = colorResource(R.color.blue_gray)
+                        )
+                    }
+                }
+                2 -> {
+                    characterRect?.let { it ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { it.left.toDp() },
+                                    y = with(density) { it.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { it.width.toDp() },
+                                    with(density) { it.height.toDp() }
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                                .border(
+                                    2.dp,
+                                    colorResource(id = R.color.blue_gray),
+                                    RoundedCornerShape(16.dp)
+                                )
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.img_dummy_character_1),
+                                contentDescription = "캐릭터 이미지",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop,
+                            )
+
+                            // 즐찾 버튼
+                            FavoriteButton (
+                                modifier = Modifier
+                                    .fillMaxWidth(0.44f)
+                                    .aspectRatio(1f)
+                                    .align(Alignment.TopStart)
+                                    .padding(4.dp),
+                                characterId = -1,
+                                isFavorite = false,
+                                onFavoriteClick = {  }
+                            )
+
+                            // 캐릭터 이름
+                            StrokeTitle(
+                                titleText = "카리나",
+                                titleColor = Color.White,
+                                strokeColor = Color.Black,
+                                titleTextStyle = MaterialTheme.typography.titleLarge,
+                                strokeWidth = 4f,
+                                modifier = Modifier
+                                    .align(Alignment.BottomCenter)
+                                    .padding(bottom = 8.dp) // 아래 패딩
+                            )
+                        }
+                    }
+                }
             }
         }
     }

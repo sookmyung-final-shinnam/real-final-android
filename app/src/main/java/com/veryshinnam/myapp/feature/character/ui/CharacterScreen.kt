@@ -5,19 +5,23 @@ import android.content.pm.ActivityInfo
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -37,6 +41,7 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -292,7 +297,33 @@ fun CharacterScreen(
                     }
                     .zIndex(11f)
             )
-
         }
+
+//        Box(
+//            modifier = Modifier
+//                .absoluteOffset(
+//                    x = with(density) { rect.left.toDp() },
+//                    y = with(density) { rect.top.toDp() }
+//                )
+//                .size(
+//                    with(density) { rect.width.toDp() },
+//                    with(density) { rect.height.toDp() }
+//                )
+//                .background(Color.White, shape = RoundedCornerShape(messageCorner))
+//                .border(
+//                    messageBorder,
+//                    boxColor,
+//                    RoundedCornerShape(messageCorner)
+//                )
+//                .padding(messagePadding)
+//                .zIndex(50f),
+//            contentAlignment = Alignment.Center
+//        ) {
+//            Text(
+//                text = message.replace("", "\u200B" ),
+//                style = messageStyle.copy(fontWeight = Bold),
+//                modifier = Modifier.fillMaxWidth()
+//            )
+//        }
     }
 }

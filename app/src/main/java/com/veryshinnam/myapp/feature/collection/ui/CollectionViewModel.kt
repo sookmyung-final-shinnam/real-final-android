@@ -112,8 +112,8 @@ class CollectionViewModel @Inject constructor(
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
         ManualData("동화가 완성되면 여기 보관함에서 확인할 수 있어요.", ManualTarget.NONE),
-        ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.NONE),
-        ManualData("같이 만들었던 동화가 여기 있네요. 해당 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.NONE),
+        ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.ITEM),
+        ManualData("같이 만들었던 동화가 여기 있네요. 해당 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.IMAGE),
     )
 
     fun startManual() {

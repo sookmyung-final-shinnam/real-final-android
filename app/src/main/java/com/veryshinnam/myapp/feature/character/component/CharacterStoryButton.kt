@@ -77,10 +77,9 @@ fun CharacterStoryButton(
                         StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
                         StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
                         StoryStatus.COMPLETED -> {
-                            if (videoUrl.isNullOrBlank()) onMakingClick() // 서버 문의
-                            else onStoryClick(storyId, storyType)         // 완료 > 이동
+                            if (storyType == StoryType.VIDEO && videoUrl.isNullOrBlank()) onMakingClick() // 서버 문의
+                            else onStoryClick(storyId, storyType)   // IMAGE는 항상 이동, VIDEO는 videoUrl 있으면 이동
                         }
-
                     }
                 },
                 modifier = Modifier.aspectRatio(1f),
@@ -92,7 +91,7 @@ fun CharacterStoryButton(
                         when (storyUrl) {
                             is ImageType.Url -> {
                                 AsyncImage(
-                                    model = storyUrl,
+                                    model = storyUrl.url,
                                     contentDescription = "$storyTypeText 버튼",
                                     modifier = Modifier.fillMaxSize(),
                                     contentScale = ContentScale.Crop

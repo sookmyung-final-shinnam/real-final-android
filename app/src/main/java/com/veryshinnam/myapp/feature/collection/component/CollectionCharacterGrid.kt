@@ -18,8 +18,11 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -33,6 +36,7 @@ fun CollectionCharacterGrid(
     onItemClick: (CollectionData) -> Unit,
     cellPadding: Dp = 6.dp,
     modifier: Modifier,
+    onCharacterRect: (Rect) -> Unit,
     listState: LazyGridState = rememberLazyGridState()
 ) {
 
@@ -62,6 +66,13 @@ fun CollectionCharacterGrid(
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
+                            .then(
+                                if (index == 4) {
+                                    Modifier.onGloballyPositioned {
+                                        onCharacterRect(it.boundsInRoot())
+                                    }
+                                } else Modifier
+                            )
                             .clickable { onItemClick(item) }
                     )
                 }
