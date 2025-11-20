@@ -50,6 +50,7 @@ class ConversationViewModel @Inject constructor(
 
     // ManualManager 구독
     val manualState = manualManager.state
+    val manualMessage = manualManager.message
 
     // 매뉴얼 진행 단계 상태
     private val _manualStep = MutableStateFlow(0)
@@ -402,27 +403,35 @@ class ConversationViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 끝나면 제가 이전에 고른 내용들을 바탕으로 이야기를 만들어 제 질문에 답을 하며 저희 함께 동화를 만들어나가자!"),
-        ManualScriptData(step = ConversationStep.START, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "루미는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있엇요. 거기서 죽은 진우를 닯은 사람을 발견했어요."),
+        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 끝나면 제가 이전에 고른 내용들을 바탕으로 이야기를 만들어 나갈 거예요.\n제 질문에 답을 하며 저희 함께 동화를 만들어나가요!"),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "루미는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 진우를 닯은 사람을 발견했어요."),
         ManualScriptData(step = ConversationStep.QUESTION,  question = "루미는 그 사람을 보고 어떻게 행동했을까?"),
-        ManualScriptData(step = ConversationStep.QUESTION, question = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
+        ManualScriptData(step = ConversationStep.QUESTION, question = "제 질문에 대한 답을 생각했다면\n아래의 마이크를 눌러서 대답해 주세요!"),
         ManualScriptData(step = ConversationStep.ANSWER),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아, 앞으로도 그렇게 대답 해주면 돼.", 1)),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 안맞는 답변이나 나쁜 말을 사용하면 다시 답변해야해.", 2)),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "답변은 총 세번이니 잘 생각해보고 답변하자!", 3)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요, 앞으로도 그렇게 대답 해주면 돼요.", 1)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 안맞는 답변이나 나쁜 말을 사용하면 다시 답변해야 해요.", 2)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "답변은 총 세번이니 잘 생각해보고 답변해 주세요!", 3)),
     )
 
     private fun updateManual(index: Int) {
 
         val script = manuals[index]
 
+        val message = when (script.step) {
+            ConversationStep.STORY -> script.nextStory
+            ConversationStep.QUESTION -> script.question
+            ConversationStep.FEEDBACK -> script.feedback.text
+            else -> ""
+        }
+        manualManager.update(message)
+
         _conversationUiState.value = ConversationUiState.Success(
             sessionId = -1L,
-            nextStory = script.nextStory,
+            nextStory = message,
             questionData = QuestionData(
                 messageId = -1,
-                question = script.question
+                question = message
             ),
             answerData = AnswerData("", ""),
             feedbackData = script.feedback,
@@ -431,10 +440,9 @@ class ConversationViewModel @Inject constructor(
         )
     }
 
-
     fun startManual() {
         _manualStep.value = 0
-        updateManual(0)
+        manualManager.update(manuals[0].nextStory)
     }
 
     fun nextManual() {
@@ -442,6 +450,7 @@ class ConversationViewModel @Inject constructor(
 
         if (current < manuals.lastIndex) {
             val next = current + 1
+
             _manualStep.value = next
             updateManual(next)
         } else if (current == manuals.lastIndex) {

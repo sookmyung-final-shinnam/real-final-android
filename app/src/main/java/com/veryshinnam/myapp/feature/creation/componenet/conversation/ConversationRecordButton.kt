@@ -10,7 +10,10 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
@@ -25,7 +28,9 @@ fun ConversationRecordButton(
     Button(
         onClick = { onRecordClick() },
         enabled = enabled,
-        modifier = modifier.fillMaxHeight().aspectRatio(1f),
+        modifier = modifier
+            .fillMaxHeight()
+            .aspectRatio(1f),
         border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(R.color.lemon_yellow),
@@ -35,7 +40,8 @@ fun ConversationRecordButton(
         Image(
             painter = painterResource(R.drawable.img_mike_on),
             contentDescription = "Record",
-            modifier = Modifier.fillMaxSize(),
+            modifier = Modifier
+                .fillMaxSize(),
             contentScale = ContentScale.Fit,
             alpha = if (enabled) 1f else 0.3f
         )

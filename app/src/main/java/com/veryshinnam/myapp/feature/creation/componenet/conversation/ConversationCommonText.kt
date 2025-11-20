@@ -16,9 +16,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -36,13 +39,20 @@ fun ConversationCommonText(
     modifier: Modifier,
     verticalPadding: Dp = 24.dp,
     spacePadding: Dp = 12.dp,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold, textAlign = TextAlign.Center),
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = Bold,
+        textAlign = TextAlign.Center
+    ),
+    onTextRect: (Rect) -> Unit,
+    onImageRect: (Rect) -> Unit,
 ) {
     Box(modifier = modifier) {
         // 질문 텍스트
         Card(
-            modifier = Modifier.fillMaxWidth()
-                .align(Alignment.TopCenter), // Box 위쪽
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.TopCenter)
+                .onGloballyPositioned { onTextRect(it.boundsInRoot()) }, // Box 위쪽
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(32.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -53,7 +63,7 @@ fun ConversationCommonText(
                     .padding(verticalPadding),
                 verticalArrangement = Arrangement.spacedBy(spacePadding),
                 horizontalAlignment = Alignment.CenterHorizontally
-            ){
+            ) {
                 // 질문 텍스트
                 Text(
                     text = text,
@@ -66,24 +76,6 @@ fun ConversationCommonText(
                     onReplayClick = onReplayClick,
                     modifier = Modifier.align(Alignment.End)
                 )
-
-//                Button(
-//                    onClick = { onReplayClick() },
-//                    enabled = !isTtsSpeaking, // speaking 중이면 비활성화
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = colorResource(R.color.lemon_yellow),
-//                    ),
-//                    shape = CircleShape,
-//                    border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-//                    modifier = Modifier.align(Alignment.BottomEnd) // 오른쪽 아래
-//                ) {
-//                    Text(
-//                        "다시 듣기",
-//                        color = Color.Black,
-//                        modifier = Modifier.padding(8.dp),
-//                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.SemiBold)
-//                    )
-//                }
             }
         }
 
@@ -93,7 +85,8 @@ fun ConversationCommonText(
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
                 .fillMaxHeight(0.8f)
-                .align(Alignment.BottomCenter), // Box 아래쪽
+                .align(Alignment.BottomCenter)  // Box 아래쪽
+                .onGloballyPositioned { onImageRect(it.boundsInRoot()) },
             contentScale = ContentScale.Fit
         )
     }

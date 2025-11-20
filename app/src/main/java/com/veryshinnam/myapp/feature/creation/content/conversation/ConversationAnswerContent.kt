@@ -64,14 +64,10 @@ fun ConversationAnswerContent(
         }
         onRecordStop() // 3초 후 녹음 중단
 
-        isFinal = true // 최종 답변표시
+        isFinal = true // 최종 답변 표시
 
         delay(1000L) // 1초 후 피드백으로
         onFeedback()
-    }
-
-    LaunchedEffect(answerData.partialAnswer) {
-        Log.d("UI Test", "partialUpdated: ${answerData.partialAnswer}")
     }
 
     Column(

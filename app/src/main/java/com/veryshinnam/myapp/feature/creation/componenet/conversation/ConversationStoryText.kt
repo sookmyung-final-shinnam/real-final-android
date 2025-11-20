@@ -77,36 +77,6 @@ fun ConversationStoryText(
                     onReplayClick = onReplayClick,
                     modifier = Modifier.align(Alignment.End)
                 )
-//                Button(
-//                    onClick = { onReplayClick() },
-//                    enabled = !isTtsSpeaking, // speaking 중이면 비활성화
-//                    colors = ButtonDefaults.buttonColors(
-//                        containerColor = colorResource(R.color.lemon_yellow),
-//                    ),
-//                    shape = CircleShape,
-//                    border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-//                    modifier = Modifier.align(Alignment.End) // 오른쪽 아래
-//                ) {
-//                    Row(
-//                        verticalAlignment = Alignment.CenterVertically,
-//                        modifier = Modifier
-//                            .height(IntrinsicSize.Min)
-//                    ) {
-//                        Text(
-//                            text = "다시 듣기",
-//                            style = buttonTextStyle
-//                        )
-//
-//                        Icon(
-//                            imageVector = Icons.Default.Replay,
-//                            contentDescription = "다시듣기 아이콘",
-//                            tint = colorResource(id = R.color.main_orange),
-//                            modifier = Modifier
-//                                .padding(start = 2.dp)
-//                                .fillMaxHeight()
-//                        )
-//                    }
-//                }
             }
         }
     }

@@ -5,5 +5,6 @@ enum class ManualTarget {
     NONE,
     PROGRESSBAR,
     IMAGE,
-    BUTTON
+    BUTTON,
+    CUSTOM
 }
