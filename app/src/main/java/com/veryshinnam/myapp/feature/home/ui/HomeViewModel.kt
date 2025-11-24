@@ -54,7 +54,6 @@ class HomeViewModel @Inject constructor(
     private val _manualStep = MutableStateFlow(0)
     val manualStep = _manualStep.asStateFlow()
 
-
     // vm 초기화
     init {
         fetchHome()

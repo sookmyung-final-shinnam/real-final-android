@@ -369,7 +369,7 @@ fun HomeScreen(
             onReceiveClick = {
 //                vm.fetchAttendanceReward() // TODO: 보상 업데이트
                 vm.updateNewUser()
-                vm.showManual()
+                vm.showManual() // 매뉴얼 진행
             },
             modifier = Modifier
                 .fillMaxSize()

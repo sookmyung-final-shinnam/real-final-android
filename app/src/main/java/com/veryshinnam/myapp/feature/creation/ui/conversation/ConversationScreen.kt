@@ -40,7 +40,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
@@ -97,6 +96,8 @@ fun ConversationScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     var isWarning by remember { mutableStateOf(false) }   // 경고창
+
+    //  매뉴얼
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
     var textRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
     var imageRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
@@ -405,13 +406,3 @@ fun ConversationScreen(
         }
     }
 }
-
-// Column(
-//                            Modifier.fillMaxSize()
-//                        ) {
-//                            Spacer(Modifier.fillMaxHeight(0.15f))
-//                            Box(Modifier.fillMaxSize()) {
-//                                TargetConvText(tRect, density, onClick = { vm.nextManual() }, text = manualMessage)
-//                                TargetConvRecord(rRect, density, onRecordClick = { vm.nextManual() })
-//                            }
-//                        }

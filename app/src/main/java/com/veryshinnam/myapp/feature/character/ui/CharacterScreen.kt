@@ -2,19 +2,23 @@ package com.veryshinnam.myapp.feature.character.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.asPaddingValues
 import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.offset
@@ -31,16 +35,22 @@ import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalClipboardManager
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -53,13 +63,13 @@ import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.TargetImage
-import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
+import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 
@@ -72,12 +82,16 @@ fun CharacterScreen(
     goToNextManual: () -> Unit,
     xMoving: Dp = 60.dp,
     verticalPadding: Dp = 10.dp,
+    manualTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
     vm: CharacterViewModel = hiltViewModel()
 ) {
+    val density = LocalDensity.current
+
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 공유 및 클립보드
     val context = LocalContext.current
@@ -91,6 +105,14 @@ fun CharacterScreen(
     var isLinkSharing by remember { mutableStateOf(false) }
 
     var youtubeLink by remember { mutableStateOf<String?>(null) }
+
+    // ui 변수
+    var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
+
+    // 매뉴얼 변수
+    var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
+    var lockerRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
+
 
     // 가로 모드 고정
     SideEffect {
@@ -109,6 +131,9 @@ fun CharacterScreen(
     }
 
     LaunchedEffect(manualStep) {
+        if (manualStep == 3) {
+            isFront = false
+        }
         if (manualStep == vm.manuals.size) {
             goToNextManual()
         }
@@ -180,9 +205,16 @@ fun CharacterScreen(
                     // 오른쪽 캐릭터 정보 카드
                     CharacterCardRight(
                         character = state.characterData,
-                        onFlip = { isFront ->
-                            if (!isFront) {
-                                vm.refreshStories(state.characterData.id) } },
+                        isFront = isFront,
+                        onFlip = { newFront ->
+                            val prevFront = isFront // 이전 면
+                            isFront = newFront      // 업데이트된 면
+
+                            // 뒤 > 앞 때만 refresh
+                            if (!prevFront && newFront) {
+                                vm.refreshStories(state.characterData.id)
+                            }
+                        },
                         onStoryClick = onStoryClick,
                         onLockerClick = { storyId ->
                             isWarning = true
@@ -195,6 +227,18 @@ fun CharacterScreen(
                             } else {
                                 // 링크 없음 처리
                                 isLinkNotExisting = true
+                            }
+                        },
+                        onTabRect = { rect ->
+                            if (manualState == ManualState.START && tabRect == null) {
+                                tabRect = rect
+                            }
+                        },
+                        onLockerRect = { rect ->
+                            if (manualState == ManualState.START
+                                && manualStep == 3 && lockerRect == null) {
+                                lockerRect = rect
+                                Log.d("manual", "rect final update: $rect")
                             }
                         },
                         modifier = Modifier
@@ -266,8 +310,13 @@ fun CharacterScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f)
-                .background(Color.Black.copy(alpha = 0.5f))
+                .zIndex(20f)
+                .background(
+                    if (manualStep == 1 || manualStep == 3)
+                        Color.Transparent
+                    else
+                        Color.Black.copy(alpha = 0.5f)
+                )
                 .then(
                     when (manualState) {
                         ManualState.START -> Modifier.pointerInput(Unit) {
@@ -297,33 +346,110 @@ fun CharacterScreen(
                     }
                     .zIndex(11f)
             )
-        }
 
-//        Box(
-//            modifier = Modifier
-//                .absoluteOffset(
-//                    x = with(density) { rect.left.toDp() },
-//                    y = with(density) { rect.top.toDp() }
-//                )
-//                .size(
-//                    with(density) { rect.width.toDp() },
-//                    with(density) { rect.height.toDp() }
-//                )
-//                .background(Color.White, shape = RoundedCornerShape(messageCorner))
-//                .border(
-//                    messageBorder,
-//                    boxColor,
-//                    RoundedCornerShape(messageCorner)
-//                )
-//                .padding(messagePadding)
-//                .zIndex(50f),
-//            contentAlignment = Alignment.Center
-//        ) {
-//            Text(
-//                text = message.replace("", "\u200B" ),
-//                style = messageStyle.copy(fontWeight = Bold),
-//                modifier = Modifier.fillMaxWidth()
-//            )
-//        }
+            Column(
+                modifier = Modifier
+                    .align(Alignment.BottomStart)
+                    .padding(20.dp),
+                verticalArrangement = Arrangement.Bottom
+            ) {
+                // 토끼 이미지
+                Image(
+                    painter = painterResource(R.drawable.img_home_squirrel),
+                    contentDescription = "다람쥐 이미지",
+                    modifier = Modifier
+                        .fillMaxHeight(0.22f)
+                        .padding(start = 26.dp),
+                    contentScale = ContentScale.Fit
+                )
+
+                // 메시지 박스
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth(0.5f)
+                        .background(Color.White, shape = RoundedCornerShape(16.dp))
+                        .border(
+                            4.dp,
+                            colorResource(R.color.blue_gray),
+                            RoundedCornerShape(16.dp)
+                        )
+                        .padding(16.dp)
+                        .zIndex(50f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = manualMessage.replace("", "\u200B"),
+                        style = manualTextStyle.copy(
+                            lineHeight = manualTextStyle.fontSize * 1.2f
+                        ),
+                    )
+                }
+            }
+
+            when (manualStep) {
+                2 -> { tabRect?.let { it ->
+                    // 탭버튼
+                    CharacterTabButton(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { it.left.toDp() },
+                                y = with(density) { it.top.toDp() }
+                            )
+                            .size(
+                                with(density) { it.width.toDp() },
+                                with(density) { it.height.toDp() }
+                            ),
+                        onClick = {
+                            vm.nextManual()
+                        },
+                        alpha = 0.5f,
+                    )
+                }
+                }
+                4 -> { lockerRect?.let { it ->
+                    // 잠금 해제
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { it.left.toDp() },
+                                y = with(density) { it.top.toDp() })
+                            .size(
+                                with(density) { it.width.toDp() },
+                                with(density) { it.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))   // 여기에 clip
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_locker),
+                            contentDescription = "잠금 이미지",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+                }
+                5 -> { lockerRect?.let { it ->
+                    // 도토리
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { it.left.toDp() },
+                                y = with(density) { it.top.toDp() })
+                            .size(
+                                with(density) { it.width.toDp() },
+                                with(density) { it.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))   // 여기에 clip
+                    ) {
+
+                    }
+                }
+                }
+                6 -> {
+                    // 카톡 버튼
+
+                }
+            }
+        }
     }
 }

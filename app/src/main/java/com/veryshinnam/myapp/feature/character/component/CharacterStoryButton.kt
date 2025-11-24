@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.character.component
 
+import android.util.Log
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
@@ -19,8 +20,12 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -53,7 +58,6 @@ fun CharacterStoryButton(
     onLockerClick: (Long) -> Unit = {},
     onMakingClick: () -> Unit = {},
     onShareClick: (String?) -> Unit,
-    infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
     modifier: Modifier
 ) {
     val isShareEnabled = when (storyType) {
@@ -62,75 +66,99 @@ fun CharacterStoryButton(
     }
 
     // 동화 버튼
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(5.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+    Box(
+        modifier = modifier.fillMaxHeight(buttonSize),
+        contentAlignment = Alignment.TopEnd
     ) {
-        Box(
-            modifier = Modifier.fillMaxHeight(buttonSize),
-            contentAlignment = Alignment.TopEnd
+        Button(
+            onClick = {
+                when (storyStatus) {
+                    StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
+                    StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
+                    StoryStatus.COMPLETED -> {
+                        if (storyType == StoryType.VIDEO && videoUrl.isNullOrBlank()) onMakingClick() // 서버 문의
+                        else onStoryClick(storyId, storyType)   // IMAGE는 항상 이동, VIDEO는 videoUrl 있으면 이동
+                    }
+                }
+            },
+            modifier = Modifier.aspectRatio(1f),
+            shape = RoundedCornerShape(buttonRadius),
+            contentPadding = PaddingValues(0.dp) // 패딩 제거
         ) {
-            Button(
-                onClick = {
+            when (storyType) {
+                StoryType.IMAGE -> {
+                    when (storyUrl) {
+                        is ImageType.Url -> {
+                            AsyncImage(
+                                model = storyUrl.url,
+                                contentDescription = "$storyTypeText 버튼",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+                        is ImageType.Resource -> {
+                            Image(
+                                painter = painterResource(id = storyUrl.resId),
+                                contentDescription = "$storyTypeText 버튼",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Crop
+                            )
+                        }
+
+                        else -> {
+                            Image(
+                                painter = painterResource(R.drawable.img_locker),
+                                contentDescription = null,
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+                }
+
+                // 동화가 비디오일 경우
+                StoryType.VIDEO -> {
                     when (storyStatus) {
-                        StoryStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
-                        StoryStatus.MAKING  -> onMakingClick()      // 제작 중 > 시트 오픈
+                        StoryStatus.NONE -> {
+                            Image(
+                                painter = painterResource(R.drawable.img_locker),
+                                contentDescription = "$storyTypeText 잠금",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+
+                        StoryStatus.MAKING -> {
+                            Box(
+                                modifier = Modifier.fillMaxSize(),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                CircularProgressIndicator(
+                                    color = colorResource(id = R.color.main_orange),
+                                    trackColor = Color.White.copy(alpha = 0.5f),
+                                    strokeWidth = 6.dp,
+                                    modifier = Modifier
+                                        .zIndex(1f)
+                                        .fillMaxSize(0.7f)
+                                )
+
+                                Image(
+                                    painter = painterResource(R.drawable.img_locker_empty),
+                                    contentDescription = "$storyTypeText 제작 중",
+                                    modifier = Modifier.fillMaxSize(),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+
                         StoryStatus.COMPLETED -> {
-                            if (storyType == StoryType.VIDEO && videoUrl.isNullOrBlank()) onMakingClick() // 서버 문의
-                            else onStoryClick(storyId, storyType)   // IMAGE는 항상 이동, VIDEO는 videoUrl 있으면 이동
-                        }
-                    }
-                },
-                modifier = Modifier.aspectRatio(1f),
-                shape = RoundedCornerShape(buttonRadius),
-                contentPadding = PaddingValues(0.dp) // 패딩 제거
-            ) {
-                when (storyType) {
-                    StoryType.IMAGE -> {
-                        when (storyUrl) {
-                            is ImageType.Url -> {
-                                AsyncImage(
-                                    model = storyUrl.url,
-                                    contentDescription = "$storyTypeText 버튼",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
+                            if (videoUrl != null)
+                                VideoPlayer(
+                                    videoUrl = videoUrl,
+                                    modifier = Modifier.fillMaxSize()
                                 )
-                            }
-
-                            is ImageType.Resource -> {
-                                Image(
-                                    painter = painterResource(id = storyUrl.resId),
-                                    contentDescription = "$storyTypeText 버튼",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Crop
-                                )
-                            }
-
-                            else -> {
-                                Image(
-                                    painter = painterResource(R.drawable.img_locker),
-                                    contentDescription = null,
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-                        }
-                    }
-
-                    // 동화가 비디오일 경우
-                    StoryType.VIDEO -> {
-                        when (storyStatus) {
-                            StoryStatus.NONE -> {
-                                Image(
-                                    painter = painterResource(R.drawable.img_locker),
-                                    contentDescription = "$storyTypeText 잠금",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
-
-                            StoryStatus.MAKING -> {
+                            else {
                                 Box(
                                     modifier = Modifier.fillMaxSize(),
                                     contentAlignment = Alignment.Center
@@ -152,69 +180,32 @@ fun CharacterStoryButton(
                                     )
                                 }
                             }
-
-                            StoryStatus.COMPLETED -> {
-                                if (videoUrl != null)
-                                    VideoPlayer(
-                                        videoUrl = videoUrl,
-                                        modifier = Modifier.fillMaxSize()
-                                    )
-                                else {
-                                    Box(
-                                        modifier = Modifier.fillMaxSize(),
-                                        contentAlignment = Alignment.Center
-                                    ) {
-                                        CircularProgressIndicator(
-                                            color = colorResource(id = R.color.main_orange),
-                                            trackColor = Color.White.copy(alpha = 0.5f),
-                                            strokeWidth = 6.dp,
-                                            modifier = Modifier
-                                                .zIndex(1f)
-                                                .fillMaxSize(0.7f)
-                                        )
-
-                                        Image(
-                                            painter = painterResource(R.drawable.img_locker_empty),
-                                            contentDescription = "$storyTypeText 제작 중",
-                                            modifier = Modifier.fillMaxSize(),
-                                            contentScale = ContentScale.Fit
-                                        )
-                                    }
-                                }
-                            }
                         }
                     }
                 }
             }
-
-            if (isShareEnabled) {
-                Button(
-                    onClick = { onShareClick(storyYLink) },
-                    modifier = Modifier
-                        .align(Alignment.TopEnd)
-                        .fillMaxHeight(kakaoSize)
-                        .aspectRatio(1f)
-                        .zIndex(1f),
-                    shape = RoundedCornerShape(kakaoRadius),
-                    contentPadding = PaddingValues(0.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Transparent
-                    ),
-                ) {
-                    Image(
-                        painter = painterResource(R.drawable.img_kakao),
-                        contentDescription = "카카오 버튼",
-                        contentScale = ContentScale.Fit
-                    )
-                }
-            }
         }
 
-        Text(
-            text = "$storyTypeText 보러 가기",
-            style = infoTextStyle,
-            textAlign = TextAlign.Center,
-            modifier = Modifier.fillMaxWidth()
-        )
+        if (isShareEnabled) {
+            Button(
+                onClick = { onShareClick(storyYLink) },
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .fillMaxHeight(kakaoSize)
+                    .aspectRatio(1f)
+                    .zIndex(1f),
+                shape = RoundedCornerShape(kakaoRadius),
+                contentPadding = PaddingValues(0.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Color.Transparent
+                ),
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_kakao),
+                    contentDescription = "카카오 버튼",
+                    contentScale = ContentScale.Fit
+                )
+            }
+        }
     }
 }

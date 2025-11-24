@@ -81,7 +81,7 @@ fun StepProgressBar(
         val centerY = maxHeight / 2
         val travelX = edgePadding + interval * (steps - 1) * animatedProgress
         Image(
-            painter = painterResource(R.drawable.img_progress),
+            painter = painterResource(R.drawable.img_story_ending),
             contentDescription = "현재 진행 단계",
             modifier = Modifier
                 .offset(

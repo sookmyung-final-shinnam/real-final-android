@@ -1,9 +1,14 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
 import android.content.pm.ActivityInfo
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
@@ -11,12 +16,20 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
@@ -41,24 +54,22 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.core.orientation.OrientationManager
-import com.veryshinnam.myapp.feature.permit.component.PermitTermDesc
-import com.veryshinnam.myapp.feature.permit.component.PermitTermTitle
 
 @Composable
 fun SignUpScreen(
     tempCode: String,
     onHome: () -> Unit,
     horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 12.dp,
-    spacePadding: Dp = 2.dp,
-    titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    verticalPadding: Dp = 6.dp,
+    titleTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
+    subTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = SemiBold),
+    descTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = SemiBold),
     vm: PermitViewModel = hiltViewModel(),
 ) {
-    var termsChecked by remember { mutableStateOf(false) }
-    var privacyChecked by remember { mutableStateOf(false) }
-
-    val allChecked = termsChecked && privacyChecked
+    var checked by remember { mutableStateOf(false) }
     val state by vm.permitUiState.collectAsStateWithLifecycle()
+
+    val scrollState = rememberScrollState()
 
     // 세로 모드 고정
     SideEffect {
@@ -88,136 +99,297 @@ fun SignUpScreen(
             Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         }
     ) { innerPadding ->
-        Column(
+        Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(innerPadding),
-            horizontalAlignment = Alignment.Start,
-            verticalArrangement = Arrangement.spacedBy(verticalPadding * 2)
+                .padding(innerPadding)
         ) {
-            // 제목
-            Text(
-                text = "이용 약관 동의",
-                style = titleTextStyle,
-                modifier = Modifier.padding(top = verticalPadding, start = horizontalPadding, end = horizontalPadding),
-            )
-
             Column(
                 modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = horizontalPadding, verticalPadding/2)
-                    .weight(1f),
-                verticalArrangement = Arrangement.spacedBy(verticalPadding*2)
+                    .fillMaxSize()
+                    .padding(top = horizontalPadding, start = horizontalPadding, end = horizontalPadding),
+                horizontalAlignment = Alignment.Start,
+                verticalArrangement = Arrangement.spacedBy(verticalPadding)
             ) {
-                // 이용 약관
-                Column(
-                    modifier = Modifier.weight(1f),
+
+                // 제목
+                Text(
+                    text = "스토릭터(Storictor) 개인정보처리방침",
+                    style = titleTextStyle
+                )
+
+                // 부설명
+                Text(
+                    text = """
+                    스토릭터는 2025년 현대오토에버 배리어프리 앱 개발 공모전의 지원을 받아 개발 중이며, 서비스는 무료로 제공됩니다.
+                """.trimIndent().replace("", "\u200B"),
+                    style = descTextStyle.copy(color = colorResource(R.color.main_orange))
+                )
+
+                // 이용약관
+                Spacer(Modifier.height(verticalPadding))
+                Column(modifier = Modifier
+                    .weight(1f)
+                    .padding(horizontal = verticalPadding*2)
+                ){
+                    Column(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(
+                                color = Color.White, shape = RoundedCornerShape(16.dp)
+                            )
+                            .border(
+                                border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
+                                shape = RoundedCornerShape(16.dp)
+                            )
+                            .verticalScroll(scrollState)
+                            .padding(verticalPadding*2),
+                        verticalArrangement = Arrangement.spacedBy(verticalPadding*2)
+                    ) {
+                        Text(
+                            text = """
+                    본 개인정보처리방침은 스토릭터(Storictor) 앱(이하 “앱”)이 제공하는 서비스 이용과 관련하여 사용자의 개인정보 및 민감한 정보를 어떻게 수집·이용·보관·삭제·보호하는지 설명합니다.
+                    스토릭터는 유치원생 및 초등학교 저학년을 포함한 만 13세 미만의 어린이를 주요 이용자로 하는 서비스로, 어린이 개인정보 보호 규정 및 관련 법령을 준수합니다.
+                """.trimIndent().replace("", "\u200B"),
+                            style = subTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        1. 수집하는 정보
+                        
+                        앱은 서비스 제공을 위해 아래의 정보를 수집할 수 있습니다.
+
+                        ① 사용자가 직접 제공하는 정보
+                        - 아이 이름 또는 닉네임
+                        - 대화 녹음 파일(일시적 저장)
+                        - 아이의 질문/답변 내용(STT 변환 텍스트 포함)
+                        - 앱 내 선택 항목(관심사 선택, 테마 선택 등)
+                        
+                        ② 자동으로 수집되는 정보
+                        - 기기 정보 (모델명, OS 버전 등)
+                        - 앱 사용 기록 (사용 기능, 접속 시간 등)
+                        - 오류 로그 및 서비스 이용 중 발생하는 비식별 정보
+                        
+                        ③ 민감정보
+                        음성 녹음(STT 변환용)이 필요하지만, 이는 오직 동화 생성 기능 제공을 위해서만 사용됩니다.
+
+                        얼굴 이미지, 위치 정보, 연락처, 광고 ID 등은 수집하지 않습니다.
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        2. 개인정보 이용 목적
+                        
+                        - LLM 기반 대화형 동화 생성 기능 제공
+                        - 사용자 음성(STT 변환)을 활용한 자연스러운 상호작용 제공
+                        - 아이의 대화·선호 기반 지도(언어/정서/관심사) 대시보드 제공
+                        - 맞춤형 콘텐츠 품질 개선
+                        - 출석 체크 및 포인트(도장) 시스템 운영
+                        - 서비스 안정성 확보 및 오류 분석
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        3. 개인정보 보관 및 삭제
+                       
+                        ① 보관 기간
+                        - 스토리, 캐릭터: 운영자 검수 및 기능 특성상 삭제 요청 시 별도 문의 필요
+                        - 대화 기록 및 즐겨찾기: 회원 탈퇴 즉시 자동 삭제
+                        - 음성 녹음 파일: STT 변환 후 즉시 삭제(서버에 장기 저장하지 않음)
+                        
+                        ② 사용자 권리
+                        - 탈퇴 시 개인정보는 즉시 삭제됩니다.
+                        - 스토리 및 캐릭터 삭제 요청은 운영자 문의를 통해 처리됩니다.
+                        - 기타 개인정보 열람/정정/삭제 요청 가능
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        4. 개인정보 제3자 제공
+                        
+                        스토릭터는 법령에 의한 경우를 제외하고 제3자에게 개인정보를 제공하지 않습니다.
+
+                        단, 동화 생성 및 음성 변환에 필요한 목적에 한하여, AI 처리 엔진 등 외부 서비스에 비식별 데이터를 전송할 수 있습니다.
+
+                        이 경우:
+
+                        - 사용자 인증 정보는 전송하지 않음
+                        - 전송 데이터는 안전한 방식으로 암호화됨
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        5. 어린이 개인정보 보호
+                        
+                        스토릭터는 만 13세 미만 어린이를 대상으로 하므로 다음을 준수합니다:
+
+                        - 최소한의 정보만 수집
+                        - 수집 목적 외 절대 사용 금지
+                        - 광고 및 마케팅 목적의 데이터 사용 금지
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        6. 포인트(도장) 시스템 정책
+                        
+                        - 앱 내 포인트는 상업적 목적이 아닌 순수한 참여 유도 기능
+                        - 출석 체크를 통해 하루 1개씩 적립
+                        - 신규 가입 시 5개 제공
+                        - 포인트 사용 기능은 2가지:
+                            ① LLM 기반 대화형 동화 제작 – 1개 사용
+                            ② 이미지 동화(기본 제공)를 동영상으로 변환 – 1개 사용
+                        - 광고 시청 등을 통한 포인트 획득 기능 없음
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        7. 데이터 보안
+                        
+                        - 전송 구간 데이터 암호화(HTTPS)
+                        - 서버 접근 제어 및 권한 관리
+                        - 비식별 처리 시스템 적용
+                        - 불필요한 데이터 저장 금지 정책
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        8. 사용자 권리 및 문의처
+                        
+                        아래를 통해 문의하실 수 있습니다.
+
+                        - 이메일: <veryshinnam@gmail.com>
+                        - 앱 내 문의 기능
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        9. 약관 및 운영 규칙
+                        
+                        ① 스토리/캐릭터 삭제 정책
+                        스토리와 캐릭터는 운영자만 삭제 가능합니다. 앱의 지속성을 위해 유튜브 채널에 완성된 동화를 업로드하기에, 다른 사용자들이 캐릭터에 애정을 느낄 수 있어 중대한 사유가 아닌 경우 삭제가 제한됩니다.
+
+                        ② 탈퇴 시 데이터 삭제
+                        사용자의 대화 기록과 즐겨찾기는 회원 탈퇴 시 자동 삭제됩니다.
+                        """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+
+                        Text(
+                            text = """
+                        10. 개인정보처리방침 변경
+                        
+                        본 개인정보처리방침은 법령, 정책, 서비스 변경에 따라 갱신될 수 있으며, 변경 시 앱 또는 공지사항을 통해 안내합니다.
+                    """.trimIndent().replace("", "\u200B"),
+                            style = descTextStyle
+                        )
+                        HorizontalDivider(
+                            color = colorResource(R.color.main_orange),
+                            thickness = 2.dp
+                        )
+                        Text(
+                            text = "최종 업데이트: 2025-11-23",
+                            style = descTextStyle
+                        )
+                    }
+                }
+
+                // 모두 동의
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Start,
+                    modifier = Modifier.clickable { checked = !checked }
                 ) {
-                    PermitTermTitle(
-                        titleText = "이용 약관",
-                        isRequired = true,
-                        isChecked =  termsChecked,
-                        onClick = { termsChecked = !termsChecked }
+                    Icon(
+                        imageVector = Icons.Default.Check,
+                        contentDescription = "동의 버튼",
+                        tint = if (checked) colorResource(R.color.main_orange) else Color.Gray,
+                        modifier = Modifier.size(24.dp)
                     )
-                    Spacer(Modifier.height(spacePadding))
-                    PermitTermDesc(
-                        modifier = Modifier.weight(1f),
-                        descText = "본 이용 약관(이하 “이용 약관”)은 스토릭터 앱 및 관련 서비스의 사용 조건을 규정하며, 이용자의 권리와 의무를 명시합니다."
+
+                    Spacer(modifier = Modifier.width(6.dp))
+
+                    Text(
+                        text = "위 약관을 모두 확인하였으며, 이에 동의합니다.",
+                        style = subTextStyle.copy(fontWeight = Bold),
                     )
                 }
 
-                // 개인 정보 수집
-                Column(
-                    modifier = Modifier.weight(1f),
-                ) {
-                    PermitTermTitle(
-                        titleText = "개인 정보 수집 및 이용 동의",
-                        isRequired = true,
-                        isChecked = privacyChecked,
-                        onClick = { privacyChecked = !privacyChecked }
-                    )
-                    Spacer(Modifier.height(spacePadding))
-                    PermitTermDesc(
-                        modifier = Modifier.weight(1f),
-                        descText = """
-Storictor(이하 “당사”)는 사용자의 개인정보를 중요하게 생각하며, 「개인정보 보호법」 등 관련 법령을 준수합니다.
-본 개인정보처리방침은 당사가 수집하는 개인정보의 항목, 이용 목적, 처리 방법 등에 대해 설명합니다.
-
-1. 수집하는 개인정보 항목
-당사는 서비스 제공을 위해 다음과 같은 개인정보를 수집합니다.
-
-- 회원가입 시 필수 항목: 이름(닉네임), 이메일 주소  
-  (카카오 로그인 연동 시 카카오 계정 정보에서 자동 수집됩니다.)
-
-2. 개인정보 수집 및 이용 목적
-수집된 개인정보는 다음의 목적에 따라 이용됩니다.  
-- 회원 관리: 회원 식별, 가입 의사 확인, 로그인 인증  
-- 서비스 제공: 콘텐츠 제공, 맞춤형 서비스 제공  
-- 고객 지원: 문의 응대 및 문제 해결  
-- 마케팅: 신규 서비스 안내 및 프로모션  
-
-또한, 이용자가 생성한 동화 콘텐츠는 카카오톡 공유 또는 유튜브 등 외부 플랫폼에 업로드될 수 있습니다.  
-이러한 특성상 게시된 콘텐츠는 임의로 삭제가 불가능할 수 있으며,  
-삭제를 원하시는 경우 당사 이메일(veryshinnam@gmail.com)로 문의해 주시기 바랍니다.
-
-3. 개인정보의 보유 및 이용 기간
-회원 탈퇴 시 개인정보는 즉시 삭제됩니다.  
-단, 관련 법령에 따라 일정 기간 보관이 필요한 정보는 다음과 같습니다.  
-- 계약 또는 청약철회 기록: 5년 (전자상거래 등에서의 소비자 보호에 관한 법률)  
-- 거래 기록: 5년 (전자상거래 등에서의 소비자 보호에 관한 법률)
-
-4. 개인정보의 제3자 제공
-당사는 원칙적으로 사용자의 개인정보를 외부에 제공하지 않습니다.  
-다만, 법령에 따라 요청이 있을 경우에는 예외적으로 제공할 수 있습니다.
-
-5. 사용자의 권리
-사용자는 언제든지 자신의 개인정보를 열람, 수정, 삭제 요청할 수 있습니다.  
-요청 시 당사는 지체 없이 필요한 조치를 취하겠습니다.
-
-6. 개인정보 보호책임자
-- 책임자 이름: 000  
-- 연락처: veryshinnam@gmail.com  
-
-7. 개인정보처리방침의 변경
-본 방침은 변경될 수 있으며, 변경 시 공지사항을 통해 사전 안내드리겠습니다.  
-
-최종 개정일: 2025-11-01
-""".trimIndent()
-                    )
-                }
-            }
-
-            // 모두 동의
-            PermitTermTitle(
-                titleText = "위 약관을 모두 확인하였으며, 전체 항목에 동의합니다.".replace("", "\u200B"),
-                isRequired = false,
-                isChecked = allChecked,
-                onClick = {
-                    val newState = !(termsChecked && privacyChecked)
-                    termsChecked = newState
-                    privacyChecked = newState
-                },
-                titleTextStyle = MaterialTheme.typography.bodyMedium.copy(
-                    color = if (allChecked) colorResource(R.color.main_orange) else Color.Gray,
-                    fontWeight = SemiBold
-                ),
-                modifier = Modifier.padding(horizontal = horizontalPadding)
-            )
-
-            // 하단 버튼
-            Box(
-                modifier = Modifier.fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
+                // 하단 버튼
+                Spacer(Modifier.height(verticalPadding))
                 Button(
-                    onClick = { if (allChecked) vm.signup(tempCode) }, // 로그인과 함께 신규 유저 플래그
-                    enabled = allChecked,
+                    onClick = { if (checked) vm.signup(tempCode) },
+                    enabled = checked,
                     colors = ButtonDefaults.buttonColors(
                         containerColor = colorResource(R.color.main_orange),
-                        contentColor = Color.White
+                        contentColor = Color.White,
+                        disabledContainerColor = colorResource(R.color.lemon_yellow),
+                        disabledContentColor = Color.White
                     ),
-                    shape = RoundedCornerShape(20.dp),
-                    modifier = Modifier.fillMaxWidth(0.8f)
+                    shape = RoundedCornerShape(16.dp),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .border(
+                            width = 2.dp,
+                            color = colorResource(R.color.main_orange),
+                            shape = RoundedCornerShape(16.dp)
+                        )
                 ) {
                     Text(
                         text = "시작하기",

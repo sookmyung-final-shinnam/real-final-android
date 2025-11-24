@@ -89,8 +89,10 @@ fun CollectionCharacterItem(
             strokeColor = Color.Black,
             titleTextStyle = textStyle,
             strokeWidth = 4f,
-            modifier = Modifier.align(Alignment.BottomCenter)
-                .padding(bottom = 8.dp) // 아래 패딩
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .padding(bottom = 4.dp) // 아래 패딩
         )
     }
 //    else {

@@ -7,5 +7,6 @@ enum class ManualTarget {
     IMAGE,
     BUTTON,
     CUSTOM,
-    ITEM
+    ITEM,
+    ICON
 }

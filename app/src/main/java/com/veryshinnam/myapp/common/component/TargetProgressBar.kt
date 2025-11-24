@@ -92,7 +92,7 @@ fun TargetProgressBar(
         }
 
         Image(
-            painter = painterResource(R.drawable.img_progress),
+            painter = painterResource(R.drawable.img_story_ending),
             contentDescription = null,
             modifier = Modifier
                 .offset(
