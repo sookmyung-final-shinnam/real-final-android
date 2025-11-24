@@ -87,7 +87,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val email = "veryshinnam@gmail.com"
     val subjectText = "[문의합니다]"
-    val bodyText = "\n\n\n아래는 지우지 마세요!\n사용자 이메일: "
+    val bodyText = "문의 내용을 작성해 주세요."
 
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -193,11 +193,11 @@ fun SettingsScreen(
                     )
 
                     // 앱 사용 매뉴얼 버튼
-                    CircleButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {},
-                        text = "사용 설명 다시 보기"
-                    )
+//                    CircleButton(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        onClick = {},
+//                        text = "사용 설명 다시 보기"
+//                    )
 
                     // 문의하기
                     CircleButton(
@@ -237,7 +237,7 @@ fun SettingsScreen(
             )
 
             Text(
-                text = "앱 사용 중 불편한 점을 발견하셨다면 언제든지 저희에게 연락주세요!",
+                text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!",
                 style = footerTextStyle,
                 modifier = Modifier
                     .fillMaxWidth()

@@ -127,7 +127,7 @@ fun SignUpScreen(
                 )
 
                 // 이용약관
-                Spacer(Modifier.height(verticalPadding))
+//                Spacer(Modifier.height(verticalPadding))
                 Column(modifier = Modifier
                     .weight(1f)
                     .padding(horizontal = verticalPadding*2)
