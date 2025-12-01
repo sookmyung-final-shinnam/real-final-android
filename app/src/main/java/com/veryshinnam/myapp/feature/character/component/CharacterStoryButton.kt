@@ -130,26 +130,12 @@ fun CharacterStoryButton(
                         }
 
                         StoryStatus.MAKING -> {
-                            Box(
+                            Image(
+                                painter = painterResource(R.drawable.img_unlocker),
+                                contentDescription = "$storyTypeText 제작 중",
                                 modifier = Modifier.fillMaxSize(),
-                                contentAlignment = Alignment.Center
-                            ) {
-                                CircularProgressIndicator(
-                                    color = colorResource(id = R.color.main_orange),
-                                    trackColor = Color.White.copy(alpha = 0.5f),
-                                    strokeWidth = 6.dp,
-                                    modifier = Modifier
-                                        .zIndex(1f)
-                                        .fillMaxSize(0.7f)
-                                )
-
-                                Image(
-                                    painter = painterResource(R.drawable.img_locker_empty),
-                                    contentDescription = "$storyTypeText 제작 중",
-                                    modifier = Modifier.fillMaxSize(),
-                                    contentScale = ContentScale.Fit
-                                )
-                            }
+                                contentScale = ContentScale.Fit
+                            )
                         }
 
                         StoryStatus.COMPLETED -> {
@@ -173,7 +159,7 @@ fun CharacterStoryButton(
                                     )
 
                                     Image(
-                                        painter = painterResource(R.drawable.img_locker_empty),
+                                        painter = painterResource(R.drawable.img_unlocker),
                                         contentDescription = "$storyTypeText 제작 중",
                                         modifier = Modifier.fillMaxSize(),
                                         contentScale = ContentScale.Fit
