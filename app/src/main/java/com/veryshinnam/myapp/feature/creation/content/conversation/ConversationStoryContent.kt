@@ -4,6 +4,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.runtime.Composable
@@ -41,7 +42,8 @@ fun ConversationStoryContent(
 
         // 다음 버튼
         ConversationNextButton(
-            modifier = Modifier,
+            modifier = Modifier
+                .fillMaxHeight(0.15f),
             onClick = onNextClick,
             enabled = nextEnabled
         )
