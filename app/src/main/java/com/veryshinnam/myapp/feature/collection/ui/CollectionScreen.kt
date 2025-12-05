@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
@@ -195,7 +194,7 @@ fun CollectionScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.collectionDataList.size,
-                            itemImage =  painterResource(R.drawable.img_character_yellow),
+                            itemImage =  painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
                             animalDescription = "보관함 설명 토끼 이미지",
@@ -365,7 +364,7 @@ fun CollectionScreen(
                     itemRect?.let {
                         TargetItem(
                             it, density,
-                            image = painterResource(R.drawable.img_character_yellow),
+                            image = painterResource(R.drawable.ic_character),
                             imageDescription = "캐릭터 수",
                             value = 5,
                             boxColor = colorResource(R.color.blue_gray)
@@ -395,7 +394,7 @@ fun CollectionScreen(
                                 )
                         ) {
                             Image(
-                                painter = painterResource(R.drawable.img_dummy_character_1),
+                                painter = painterResource(R.drawable.img_character_1),
                                 contentDescription = "캐릭터 이미지",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,

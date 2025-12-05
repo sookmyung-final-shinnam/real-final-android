@@ -193,8 +193,8 @@ fun AttendanceCalender(
                                     val isToday = date == LocalDate.now()
 
                                     Image(
-                                        painter = if (isToday) painterResource(R.drawable.img_stamp_shining_yellow)
-                                        else painterResource(R.drawable.img_stamp_shining_no),
+                                        painter = if (isToday) painterResource(R.drawable.img_stamp_shining_on)
+                                        else painterResource(R.drawable.img_stamp_shining_off),
                                         contentDescription = if (isToday) "오늘 출석 도장" else "출석 도장",
                                         modifier = Modifier
                                             .fillMaxSize()

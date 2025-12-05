@@ -202,7 +202,7 @@ fun HomeScreen(
 
                                 // 나침반 수
                                 UserItem(
-                                    painter = painterResource(R.drawable.img_dotory),
+                                    painter = painterResource(R.drawable.ic_dotory),
                                     contentDescription = "모은 나침반 수",
                                     value = "$points",
                                     color = colorResource(R.color.main_orange),

@@ -125,35 +125,35 @@ class CollectionViewModel @Inject constructor(
             CollectionData(
                 id = -1,
                 name = "미니니",
-                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                image = ImageType.Resource(R.drawable.img_character_1),
                 gender = Gender.FEMALE,
                 isFavorite = false
             ),
             CollectionData(
                 id = -1,
                 name = "유니니",
-                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                image = ImageType.Resource(R.drawable.img_character_1),
                 gender = Gender.FEMALE,
                 isFavorite = false
             ),
             CollectionData(
                 id = -1,
                 name = "혀미미",
-                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                image = ImageType.Resource(R.drawable.img_character_1),
                 gender = Gender.FEMALE,
                 isFavorite = false
             ),
             CollectionData(
                 id = -1,
                 name = "여니니",
-                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                image = ImageType.Resource(R.drawable.img_character_1),
                 gender = Gender.FEMALE,
                 isFavorite = false
             ),
             CollectionData(
                 id = -1,
                 name = "릭터",
-                image = ImageType.Resource(R.drawable.img_dummy_character_1),
+                image = ImageType.Resource(R.drawable.img_character_1),
                 gender = Gender.MALE,
                 isFavorite = true
             )

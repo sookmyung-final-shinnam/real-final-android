@@ -10,8 +10,10 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -87,50 +89,46 @@ fun LoginScreen(
             verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Spacer(modifier = Modifier.weight(1.5f))
 
+            Spacer(Modifier.fillMaxHeight(0.15f))
             // 로고
-            LogoTitle(modifier = Modifier.weight(1.5f))
-            Spacer(modifier = Modifier.weight(.5f))
+            LogoTitle(modifier = Modifier)
+
 
             // 이미지
+            Spacer(Modifier.fillMaxHeight(0.17f))
             Box(
-                modifier = Modifier
-                    .weight(4f)
-                    .fillMaxWidth(),
-                contentAlignment = Alignment.Center
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.img_login),
-                    contentDescription = "스플래시 이미지",
-                    modifier = Modifier.fillMaxWidth(),
-                    contentScale = ContentScale.Inside
-                )
-            }
-            Spacer(modifier = Modifier.weight(.5f))
-
-            // 로그인 버튼
-            // TODO: 크게
-            Box(
-                modifier = Modifier
-                    .clickable(
-                        indication = null,  // ripple 제거로 충돌 방지
-                        interactionSource = remember { MutableInteractionSource() }
-                    ) { isKakaoLogin = true } // 로그인 버튼 클릭시 활성화
-                    .weight(.5f)
-                    .fillMaxWidth(0.8f)
-                    .background(color = colorResource(R.color.kakao_yellow)),
+                modifier = Modifier.weight(1f),
                 contentAlignment = Alignment.Center // 중앙 정렬
             ) {
                 Image(
-                    painter = painterResource(R.drawable.img_kakao_login),
-                    contentDescription = "카카오 로그인",
+                    painter = painterResource(R.drawable.img_login),
+                    contentDescription = "로그인 이미지",
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit
                 )
             }
 
-            Spacer(modifier = Modifier.weight(1.5f))
+            // 로그인 버튼
+            Box(
+                modifier = Modifier
+                    .fillMaxHeight(0.2f)
+                    .fillMaxWidth(0.8f),
+                contentAlignment = Alignment.Center // 중앙 정렬
+            ) {
+                Image(
+                    painter = painterResource(R.drawable.img_kakao_login),
+                    contentDescription = "카카오 로그인",
+                    modifier = Modifier.fillMaxSize()
+                        .clickable(
+                            indication = null,  // ripple 제거로 충돌 방지
+                            interactionSource = remember { MutableInteractionSource() }
+                        ) { isKakaoLogin = true }, // 로그인 버튼 클릭시 활성화
+                    contentScale = ContentScale.Fit
+                )
+            }
+
+            Spacer(Modifier.fillMaxHeight(0.15f))
         }
     }
 }
