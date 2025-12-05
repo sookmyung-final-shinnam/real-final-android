@@ -51,16 +51,14 @@ fun CharacterRightFront(
                 )
             }
 
-
             // --- 캐릭터 기본 정보
             // 성별 & 나이
-
-
             Column(
                 verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-// 성격
+
+                // 성격
                 Text(
                     text = character.personality,
                     style = mainTextStyle.copy(

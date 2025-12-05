@@ -311,7 +311,8 @@ fun CollectionScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)
-                .background(Color.Black.copy(alpha = 0.5f))
+                .background(
+                    Color.Black.copy(alpha = 0.5f))
                 .then(
                     when (manualState) {
                         ManualState.START -> Modifier.pointerInput(Unit) {
@@ -371,7 +372,10 @@ fun CollectionScreen(
                         )
                     }
                 }
-                2 -> {
+                2-> {
+
+                }
+                3 -> {
                     characterRect?.let { it ->
                         Box(
                             modifier = Modifier

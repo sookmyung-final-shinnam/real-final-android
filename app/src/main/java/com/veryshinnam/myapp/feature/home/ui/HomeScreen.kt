@@ -367,9 +367,8 @@ fun HomeScreen(
             painter = painterResource(R.drawable.img_dotory_shining),
             text = "신규 유저 보상\n도토리 5개",
             onReceiveClick = {
-//                vm.fetchAttendanceReward() // TODO: 보상 업데이트
                 vm.updateNewUser()
-                vm.showManual()
+//                vm.showManual() // 매뉴얼 진행
             },
             modifier = Modifier
                 .fillMaxSize()

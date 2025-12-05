@@ -80,7 +80,6 @@ fun SettingsScreen(
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
     verticalPadding: Dp = 20.dp,
-    buttonTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
     vm: SettingsViewModel = hiltViewModel()
 ) {
@@ -88,7 +87,7 @@ fun SettingsScreen(
     val context = LocalContext.current
     val email = "veryshinnam@gmail.com"
     val subjectText = "[문의합니다]"
-    val bodyText = "문의합니다"
+    val bodyText = "문의 내용을 작성해 주세요."
 
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
@@ -194,11 +193,11 @@ fun SettingsScreen(
                     )
 
                     // 앱 사용 매뉴얼 버튼
-                    CircleButton(
-                        modifier = Modifier.fillMaxWidth(),
-                        onClick = {},
-                        text = "사용 설명 다시 보기"
-                    )
+//                    CircleButton(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        onClick = {},
+//                        text = "사용 설명 다시 보기"
+//                    )
 
                     // 문의하기
                     CircleButton(
@@ -217,10 +216,10 @@ fun SettingsScreen(
                                     context.startActivity(Intent.createChooser(intent, "문의 메일 보내기"))
                                 }
                             } catch (_: Exception) {
-                                Toast.makeText(context, "문의를 보낼 수 있는 메일 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
+                                Toast.makeText(context, "메일을 보낼 수 있는 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
                         },
-                        text = "문의하기"
+                        text = "메일 보내기"
                     )
                 }
             }
@@ -238,7 +237,7 @@ fun SettingsScreen(
             )
 
             Text(
-                text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!\n\nveryshinnam@gmail.com",
+                text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!",
                 style = footerTextStyle,
                 modifier = Modifier
                     .fillMaxWidth()

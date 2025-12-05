@@ -21,7 +21,7 @@ fun CircleButton(
     modifier: Modifier = Modifier,
     text: String,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
-    textPadding: Dp = 20.dp,
+    textPadding: Dp = 8.dp,
     onClick: () -> Unit
 ) {
     Button(
@@ -36,7 +36,8 @@ fun CircleButton(
         Text(
             text = text,
             style = textStyle,
-            modifier = Modifier.padding(vertical = textPadding / 2)
+            modifier = Modifier
+                .padding(vertical = textPadding)
         )
     }
 }

@@ -113,7 +113,8 @@ class CollectionViewModel @Inject constructor(
     val manuals = listOf(
         ManualData("동화가 완성되면 여기 보관함에서 확인할 수 있어요.", ManualTarget.NONE),
         ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.ITEM),
-        ManualData("같이 만들었던 동화가 여기 있네요. 해당 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.IMAGE),
+        ManualData("캐릭터 위 별 모양의 즐겨찾기를 누르면, 홈 화면에서 해당 캐릭터를 볼 수 있답니다.", ManualTarget.ICON),
+        ManualData("앗! 같이 만들었던 동화가 여기 있네요. 해당 릭터 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.IMAGE),
     )
 
     fun startManual() {
@@ -150,8 +151,8 @@ class CollectionViewModel @Inject constructor(
                 isFavorite = false
             ),
             CollectionData(
-                id = -2,
-                name = "카리나",
+                id = -1,
+                name = "릭터",
                 image = ImageType.Resource(R.drawable.img_dummy_character_1),
                 gender = Gender.MALE,
                 isFavorite = true

@@ -13,14 +13,15 @@ import androidx.compose.ui.zIndex
 @Composable
 fun TargetImage(
     rect: Rect,
-    image: Painter
+    image: Painter,
+    modifier: Modifier = Modifier
 ) {
     val density = LocalDensity.current
 
     Image(
         painter = image,
         contentDescription = null,
-        modifier = Modifier
+        modifier = modifier
             .absoluteOffset(
                 x = with(density) { rect.left.toDp() },
                 y = with(density) { rect.top.toDp() }
