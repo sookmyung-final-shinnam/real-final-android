@@ -1,108 +1,99 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.Text
-import androidx.compose.runtime.Composable
+import androidx.compose.material3.*
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import com.veryshinnam.myapp.feature.dashboard.model.DashboardResult
+import com.veryshinnam.myapp.feature.dashboard.ui.interest.InterestSection
+import com.veryshinnam.myapp.feature.dashboard.ui.storybase.StoryLearningSection
 
+/** 메인 대시보드 화면 */
 @Composable
 fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
+    onCharacterNavigate: (Long) -> Unit,
     viewModel: DashboardViewModel = hiltViewModel()
 ) {
     val state = viewModel.uiState
 
     when {
-        state.isLoading -> {
-            Text("로딩중...")
+        state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            CircularProgressIndicator()
         }
-        state.errorMessage != null -> {
-            Text("❌ 대시보드를 불러올 수 없어요.")
+        state.errorMessage != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            Text("❌ 대시보드를 불러올 수 없어요: ${state.errorMessage}")
         }
-        state.data != null -> {
-            DashboardContent(state.data!!)
-        }
+        state.data != null -> DashboardContent(
+            data = state.data,
+            onCharacterClick = onCharacterNavigate
+        )
     }
 }
 
+/** 대시보드 내용 */
 @Composable
-fun DashboardContent(data: DashboardResult) {
+fun DashboardContent(
+    data: DashboardResult,
+    onCharacterClick: (Long) -> Unit
+) {
     Column(
         modifier = Modifier
-            .padding(16.dp)
             .verticalScroll(rememberScrollState())
+            .padding(horizontal = 20.dp, vertical = 24.dp)
     ) {
 
-        Text("📊 Dashboard ID: ${data.dashboardId}")
+        // 1. 관심사 통계 (도넛 차트)
+        InterestSection(
+            themeStats = data.themeStats,
+            backgroundStats = data.backgroundStats
+        )
 
-        // -------------------- 1. Background Stats --------------------
+        Spacer(Modifier.height(32.dp))
+
+        // 2. 스토리에서 학습한 언어 + 정서 분석
+        Text("📘 스토리 언어 학습 & 정서 분석", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(12.dp))
-        Text("🎨 배경 사용 비율")
-        data.backgroundStats.forEach {
-            Text("• ${it.name} : ${it.count}회 (${String.format("%.2f", it.percent)}%)")
+
+        // storyId 기준 매칭 (동화와 언어/감정이 연결되는 구조)
+        val stories = data.languageStats.mapNotNull { lang ->
+            val emo = data.emotionsStats.find { it.storyId == lang.storyId }
+            emo?.let { lang to emo }
         }
 
-        // -------------------- 2. Theme Stats --------------------
-        Spacer(Modifier.height(12.dp))
-        Text("🧩 테마 사용 비율")
-        data.themeStats.forEach {
-            Text("• ${it.name} : ${it.count}회 (${String.format("%.2f", it.percent)}%)")
+        StoryLearningSection(stories) { lang, emotion ->
+            onCharacterClick(lang.storyId)
         }
 
-        // -------------------- 3. Language Stats 상세 출력 --------------------
+        Spacer(Modifier.height(32.dp))
+
+        // 3. 부모 조언
+        Text("💡 부모 조언", style = MaterialTheme.typography.titleMedium)
         Spacer(Modifier.height(12.dp))
-        Text("🗣️ 언어 학습 데이터")
-
-        data.languageStats.forEach { item ->
-            Spacer(Modifier.height(6.dp))
-            Text("📘 Story ID: ${item.storyId}")
-            Text("🕒 생성시간: ${item.createdAt}")
-            Text("📌 평균 단계 당 시도: ${item.avgAttemptPerStage}")
-            Text("✍ 평균 답변 길이: ${item.avgAnswerLength}")
-
-            Text("🔁 시도 기록:")
-            Text("  - 기: ${item.attemptStats.giCount}")
-            Text("  - 승: ${item.attemptStats.seungCount}")
-            Text("  - 전: ${item.attemptStats.jeonCount}")
-            Text("  - 결: ${item.attemptStats.gyeolCount}")
-
-            Text("🆕 새로운 단어:")
-            item.newWords.forEach { word ->
-                Text("  • $word")
-            }
-        }
-
-        // -------------------- 4. Emotions Stats 상세 출력 --------------------
-        Spacer(Modifier.height(12.dp))
-        Text("😊 정서 분석")
-
-        data.emotionsStats.forEach { item ->
-            Spacer(Modifier.height(6.dp))
-            Text("📘 Story ID: ${item.storyId}")
-            Text("🕒 생성시간: ${item.createdAt}")
-            Text("🎭 감정 비율")
-            Text("  - joy: ${item.joy}")
-            Text("  - sadness: ${item.sadness}")
-            Text("  - anger: ${item.anger}")
-            Text("  - fear: ${item.fear}")
-            Text("  - surprise: ${item.surprise}")
-            Text("  - neutral: ${item.neutral}")
-            Text("📖 감정 요약: ${item.summary}")
-        }
-
-        // -------------------- 5. Parent Advice --------------------
-        Spacer(Modifier.height(12.dp))
-        Text("👪 부모 조언")
-        Text(data.parentAdvice)
+        ParentAdviceSection(data.parentAdvice)
     }
 
+}
+
+/** 부모 조언 섹션 */
+@Composable
+fun ParentAdviceSection(advice: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant),
+        shape = RoundedCornerShape(14.dp)
+    ) {
+        Text(
+            text = advice,
+            modifier = Modifier.padding(16.dp),
+            style = MaterialTheme.typography.bodyLarge
+        )
+    }
 }
