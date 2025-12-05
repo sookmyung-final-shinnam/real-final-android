@@ -1,5 +1,7 @@
 package com.veryshinnam.myapp.feature.dashboard.ui
 
+import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -8,8 +10,13 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.feature.dashboard.model.DashboardResult
 import com.veryshinnam.myapp.feature.dashboard.ui.interest.InterestSection
 import com.veryshinnam.myapp.feature.dashboard.ui.storybase.StoryLearningSection
@@ -24,17 +31,49 @@ fun DashboardScreen(
 ) {
     val state = viewModel.uiState
 
-    when {
-        state.isLoading -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            CircularProgressIndicator()
+    // 뒤로 가기
+    BackHandler { onBack() }
+
+    // 대시보드 ui
+    Scaffold(
+        containerColor = colorResource(id = R.color.background_yellow),
+        topBar = {
+            // 상태바 만큼 여백 & 상단 로고
+            Column {
+                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                LogoBar(onLogoClick = onLogoClick)
+            }
+        },
+        bottomBar = {
+            // 네비게이션바 만큼 여백
+            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
         }
-        state.errorMessage != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
-            Text("❌ 대시보드를 불러올 수 없어요: ${state.errorMessage}")
+    ) { innerPadding ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(innerPadding),
+            contentAlignment = Alignment.Center
+        ) {
+            // 뒤로 가기 버튼
+            BackButton(
+                modifier = Modifier
+                    .align(Alignment.TopStart)
+                    .zIndex(1f),
+                onBackClick = onBack
+            )
+
+            when {
+                state.isLoading -> CircularProgressIndicator()
+                state.errorMessage != null -> Box(Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    Text("❌ 대시보드를 불러올 수 없어요: ${state.errorMessage}")
+                }
+                state.data != null -> DashboardContent(
+                    data = state.data,
+                    onCharacterClick = onCharacterNavigate
+                )
+            }
         }
-        state.data != null -> DashboardContent(
-            data = state.data,
-            onCharacterClick = onCharacterNavigate
-        )
     }
 }
 
@@ -87,7 +126,10 @@ fun DashboardContent(
 fun ParentAdviceSection(advice: String) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surfaceVariant),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.lemon_yellow)
+        ),
+        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         shape = RoundedCornerShape(14.dp)
     ) {
         Text(

@@ -96,10 +96,6 @@ fun CollectionScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // 캐릭터 상세 > 보관함 화면: 세로 모드
-//    val context = LocalContext.current
-//    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
-
     // 매뉴얼 > 강조할 좌표
     var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
@@ -133,6 +129,7 @@ fun CollectionScreen(
     // 뒤로 가기
     BackHandler { onBack() }
 
+    // 보관함 ui
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {

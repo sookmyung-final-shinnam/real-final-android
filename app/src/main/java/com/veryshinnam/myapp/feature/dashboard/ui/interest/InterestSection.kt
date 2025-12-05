@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.dashboard.ui.interest
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -10,8 +11,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.StrokeCap
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.dashboard.model.StatItem
 
 /** 도넛 차트 색상 */
@@ -52,6 +55,7 @@ private fun AnalyticsCard(
         modifier = modifier,
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(MaterialTheme.colorScheme.surface),
+        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         elevation = CardDefaults.cardElevation(4.dp)
     ) {
         Column(

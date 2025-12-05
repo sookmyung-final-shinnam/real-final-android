@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.dashboard.ui.storybase
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -23,7 +24,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.dashboard.model.EmotionItem
 import com.veryshinnam.myapp.feature.dashboard.model.LanguageItem
 import com.veryshinnam.myapp.feature.dashboard.ui.storybase.language.LanguageGraph
@@ -46,14 +49,18 @@ fun StoryCardItem(
             .padding(4.dp)
             .clickable {
                 isFront = !isFront        // 카드 터치 시 앞/뒤 전환
-            }
-            .then(
-                if (isCenter) Modifier.border(
-                    width = 2.dp,
-                    color = MaterialTheme.colorScheme.primary,
-                    shape = RoundedCornerShape(12.dp)
-                ) else Modifier
-            ),
+            },
+//            .then(
+//                if (isCenter) Modifier.border(
+//                    width = 2.dp,
+//                    color = MaterialTheme.colorScheme.primary,
+//                    shape = RoundedCornerShape(12.dp)
+//                ) else Modifier
+//            ),
+        colors = CardDefaults.cardColors(
+            containerColor = colorResource(R.color.lemon_yellow)
+        ),
+        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(if (isCenter) 8.dp else 4.dp)
     ) {
@@ -91,7 +98,7 @@ fun StoryCardItem(
                     Text(
                         "👉 탭해서 정서 분석 보기",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
+                        color = colorResource(R.color.main_orange)
                     )
 
                 } else {
@@ -105,7 +112,7 @@ fun StoryCardItem(
                     Text(
                         "👉 탭해서 언어 분석 보기",
                         style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.outline
+                        color = colorResource(R.color.main_orange)
                     )
                 }
             }
