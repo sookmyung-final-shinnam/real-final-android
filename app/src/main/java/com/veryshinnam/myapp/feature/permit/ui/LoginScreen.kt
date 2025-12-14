@@ -101,7 +101,7 @@ fun LoginScreen(
                 contentAlignment = Alignment.Center
             ) {
                 Image(
-                    painter = painterResource(R.drawable.img_splash),
+                    painter = painterResource(R.drawable.img_login),
                     contentDescription = "스플래시 이미지",
                     modifier = Modifier.fillMaxWidth(),
                     contentScale = ContentScale.Inside

@@ -19,7 +19,7 @@ import javax.inject.Singleton
 
 @Singleton
 class SessionManager @Inject constructor(
-    private val dataStore: DataStore<Preferences>,
+    private val dataStore: DataStore<Preferences>
 ) {
     // SessionManager 키 정의
     private val accessToken = stringPreferencesKey("access_token")

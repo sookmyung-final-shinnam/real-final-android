@@ -1,11 +1,13 @@
 package com.veryshinnam.myapp.feature.settings.ui
 
+import android.content.Intent
 import android.content.pm.ActivityInfo
+import android.net.Uri
+import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -14,7 +16,6 @@ import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
@@ -35,17 +36,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -54,29 +58,41 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.CircleButton
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import kotlinx.coroutines.delay
 
+/**
+ * 설정 화면
+ * : 로그아웃, 회원탈퇴, 앱 사용 매뉴얼 제공
+ *
+ * - onBack: 단순 뒤로 가기
+ * - onLogoClick: 버튼 클릭 시, 홈 화면(HomeScreen)으로 이동
+ * - horizontalPadding: 화면 가로 패딩
+ * - buttonTextStyle: 버튼 공통 텍스트 스타일
+ */
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onHome: () -> Unit,
+    onBack: () -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+    verticalPadding: Dp = 20.dp,
+    footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
     vm: SettingsViewModel = hiltViewModel()
 ) {
+    // 메일 관련 변수
+    val context = LocalContext.current
+    val email = "veryshinnam@gmail.com"
+    val subjectText = "[문의합니다]"
+    val bodyText = "문의 내용을 작성해 주세요."
+
+    // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
-
-    var isWarning by remember { mutableStateOf(false) }   // 경고창
-    var warningText by remember { mutableStateOf("") }
-    var confirmText by remember { mutableStateOf("") }
-    var confirmAction by remember { mutableStateOf({}) }
-
-    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
-    var SimpleWarningText by remember { mutableStateOf("") }
+    val confirmWarningState by vm.confirmWarningState.collectAsStateWithLifecycle()
+    val warningState by vm.warningState.collectAsStateWithLifecycle()
 
     // 세로 모드 고정
     SideEffect {
@@ -85,19 +101,17 @@ fun SettingsScreen(
         )
     }
 
+    // 에러 처리
     LaunchedEffect(uiState) {
-        when (uiState) {
-            is SettingsUiState.Error -> {
-                SimpleWarningText = "요청에 실패하셨습니다"
-                isSimpleWarning = true
-            }
-            else -> Unit
+        if (uiState is SettingsUiState.Error) {
+            vm.showWarning("요청에 실패하셨습니다.")
         }
     }
 
     // 뒤로 가기
-    BackHandler { onHome() }
+    BackHandler { onBack() }
 
+    // 설정 화면 UI
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -122,14 +136,14 @@ fun SettingsScreen(
             // 뒤로 가기 버튼
             BackButton(
                 modifier = Modifier.zIndex(1f),
-                onBackClick = onHome
+                onBackClick = onBack
             )
 
             // --- 버튼 영역
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.45f)
+                    .fillMaxHeight(0.52f)
                     .padding(horizontalPadding),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -140,66 +154,73 @@ fun SettingsScreen(
                 Column(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(vertical = horizontalPadding * 2, horizontal = horizontalPadding),
+                        .padding(verticalPadding),
                     verticalArrangement = Arrangement.SpaceAround
                 ) {
                     // 로그아웃 버튼
-                    Button(
-                        onClick = {
-                            warningText = "정말 로그아웃 하시겠어요?\n"
-                            confirmText = "로그아웃 하기"
-                            isWarning = true
-//                            warningStyle = titleStyle2
-                            confirmAction = {
-                                isWarning = false
-                                vm.logout() // 로그아웃
-                                SimpleWarningText = "로그아웃이 완료되었습니다.\n"
-                                isSimpleWarning = true
-                            }
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick =  {
+                            vm.showConfirmWarning(
+                                warningText = "정말 로그아웃 하시겠어요?",
+                                confirmText = "로그아웃 하기",
+                                onConfirm = {
+                                    vm.logout()
+                                    vm.showWarning("로그아웃이 완료되었습니다.")
+                                }
+                            )
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.main_orange),
-                            contentColor = Color.White
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "로그아웃",
-                            style = textStyle,
-                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
-                        )
-                    }
+                        text = "로그아웃"
+                    )
 
                     // 회원 탈퇴 버튼
-                    Button(
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick =  {
+                            vm.showConfirmWarning(
+                                warningText =
+                                    "정말 탈퇴하시겠어요?\n\n" +
+                                            "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제되며,\n" +
+                                            "탈퇴 후 24시간 내에 재로그인시\n회원 탈퇴가 취소됩니다.",
+                                confirmText = "회원 탈퇴 하기",
+                                onConfirm = {
+                                    vm.withdraw()
+                                    vm.showWarning("회원 탈퇴가 완료되었습니다.")
+                                }
+                            )
+                        },
+                        text = "회원 탈퇴"
+                    )
+
+                    // 앱 사용 매뉴얼 버튼
+//                    CircleButton(
+//                        modifier = Modifier.fillMaxWidth(),
+//                        onClick = {},
+//                        text = "사용 설명 다시 보기"
+//                    )
+
+                    // 문의하기
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
                         onClick = {
-                            warningText = "정말 탈퇴하시겠어요?\n" +
-                                    "동화/캐릭터 정보를 제외한 사용자 관련 모든 정보가 삭제됩니다.\n" +
-                                    "(탈퇴 후 24시간 내에 재로그인시 회원 탈퇴가 취소됩니다.)"
-                            confirmText = "회원 탈퇴하기"
-                            isWarning = true
-//                            warningStyle = titleStyle
-                            confirmAction = {
-                                isWarning = false
-                                vm.withdraw() // 회원 탈퇴
-                                SimpleWarningText = "회원 탈퇴가 완료되었습니다.\n"
-                                isSimpleWarning = true
+                            try {
+                                val intent = Intent(Intent.ACTION_SENDTO).apply {
+                                    data = Uri.parse("mailto:")
+                                    putExtra(Intent.EXTRA_EMAIL, arrayOf(email))
+                                    putExtra(Intent.EXTRA_SUBJECT, subjectText)
+                                    putExtra(Intent.EXTRA_TEXT, bodyText)
+                                }
+
+                                // resolveActivity: 사용 가능한 메일 앱 체크
+                                if (intent.resolveActivity(context.packageManager) != null) {
+                                    context.startActivity(Intent.createChooser(intent, "문의 메일 보내기"))
+                                }
+                            } catch (_: Exception) {
+                                Toast.makeText(context, "메일을 보낼 수 있는 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
                         },
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = colorResource(R.color.main_orange),
-                            contentColor = Color.White
-                        ),
-                        shape = CircleShape,
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = "회원 탈퇴",
-                            style = textStyle,
-                            modifier = Modifier.padding(vertical = horizontalPadding / 2)
-                        )
-                    }
+                        text = "메일 보내기"
+                    )
                 }
             }
 
@@ -209,52 +230,63 @@ fun SettingsScreen(
                 contentDescription = "다람쥐 이미지",
                 modifier = Modifier
                     .fillMaxHeight()
-                    .weight(1f)
-                    .offset(y = (-80).dp)
+                    .weight(1f) // 남은 공간 차지
+                    .offset(y = (-50).dp)
                     .align(Alignment.CenterHorizontally), // 가로 정렬
                 contentScale = ContentScale.Fit
             )
-        }
 
+            Text(
+                text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!",
+                style = footerTextStyle,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(bottom = horizontalPadding / 2)
+            )
+        }
     }
 
-    if (isWarning) {
-        WarningSheet(
-            warningText  = warningText,
-            confirmText = confirmText,
-            onDismiss = { isWarning = false },
-            onConfirm = { confirmAction() }
+    // 확인 버튼이 있는 경고창
+    if (confirmWarningState.isVisible) {
+        WarningConfirmSheet(
+            warningText = confirmWarningState.warningText,
+            confirmText = confirmWarningState.confirmText,
+            onDismiss = { vm.hideConfirmWarning() },
+            onConfirm = {
+                confirmWarningState.onConfirm()
+                vm.hideConfirmWarning()
+            }
         )
     }
 
-    if (isSimpleWarning) {
-        var countdown by remember { mutableStateOf(3) }
+    // 단순 경고창
+    if (warningState.isVisible) {
 
         // 3초 카운트다운
-        LaunchedEffect(isSimpleWarning) {
-            if (isSimpleWarning) {
+        var countdown by remember { mutableIntStateOf(3) }
+        LaunchedEffect(warningState.isVisible) {
+            if (warningState.isVisible) {
                 for (i in 3 downTo 1) {
                     countdown = i
                     delay(1000)
                 }
+                vm.hideWarning()
             }
         }
 
-        // 뒤로가기 무시
-//        BackHandler(enabled = true) {}
-
+        // 검은색 오버레이 + 경고창
         Box(
-            modifier = Modifier.fillMaxSize()
+            modifier = Modifier
+                .fillMaxSize()
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(enabled = true, onClick = { }) // 터치 불가
+                .pointerInput(Unit) {}
         ){
-            WarningSimpleSheet(
+            WarningSheet(
                 warningText = buildString {
-                    append(SimpleWarningText)
-                    append("\n")
-                    append("${countdown}초 뒤 시작 화면으로 이동합니다.")
+                    append(warningState.warningText)
+                    append("\n${countdown}초 뒤 시작 화면으로 이동합니다.")
                 },
-                onDismiss = { },    // 닫기 금지
+                onDismiss = { },    // 닫기 방지
                 dismissible = false // 시트 닫힘 방지
             )
         }

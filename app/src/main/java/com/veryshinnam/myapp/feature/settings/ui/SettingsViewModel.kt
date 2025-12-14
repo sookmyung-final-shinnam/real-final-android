@@ -3,12 +3,15 @@ package com.veryshinnam.myapp.feature.settings.ui
 import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.common.model.WarningConfirmState
+import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.settings.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
 
@@ -18,9 +21,52 @@ class SettingsViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+    // 화면 전체 ui 상태
     private val _uiState = MutableStateFlow<SettingsUiState>(SettingsUiState.Loading)
-    val uiState: StateFlow<SettingsUiState> = _uiState
+    val uiState = _uiState.asStateFlow()
 
+    // 확인 버튼이 있는 경고창 상태
+    private val _confirmWarningState = MutableStateFlow(WarningConfirmState())
+    val confirmWarningState = _confirmWarningState.asStateFlow()
+
+    // 단순 경고창 상태
+    private val _warningState = MutableStateFlow(WarningState())
+    val warningState = _warningState.asStateFlow()
+
+    // --- ui 이벤트 관련 ---
+    // 확인 버튼이 있는 경고창 열기
+    fun showConfirmWarning(
+        warningText: String,
+        confirmText: String,
+        onConfirm: () -> Unit
+    ) {
+        _confirmWarningState.value = WarningConfirmState(
+            isVisible = true,
+            warningText = warningText,
+            confirmText = confirmText,
+            onConfirm = onConfirm
+        )
+    }
+
+    // 확인 버튼이 있는 경고창 닫기
+    fun hideConfirmWarning() {
+        _confirmWarningState.value = WarningConfirmState()
+    }
+
+    // 단순 경고창 열기
+    fun showWarning(warningText: String) {
+        _warningState.value = WarningState(
+            isVisible = true,
+            warningText = warningText
+        )
+    }
+
+    // 단순 경고창 닫기
+    fun hideWarning() {
+        _warningState.value = WarningState()
+    }
+
+    // --- api 호출 관련 ---
     // 로그아웃
     fun logout() {
         viewModelScope.launch {

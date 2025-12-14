@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.common.component
 
 import android.content.res.Configuration
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -9,11 +10,8 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -30,7 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -44,12 +41,10 @@ import com.veryshinnam.myapp.R
 @Composable
 fun WarningSheet(
     warningText: String,
-    confirmText: String,
-    confirmTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = Color.Black, fontWeight = FontWeight.Bold),
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
+    dismissible: Boolean = true,
     onDismiss: () -> Unit,
-    onConfirm: () -> Unit,
 ) {
     val configuration = LocalConfiguration.current // 가로-세로 모드 구분
     val isPortrait = configuration.orientation == Configuration.ORIENTATION_PORTRAIT
@@ -61,7 +56,8 @@ fun WarningSheet(
             color = Color.White,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,
-            lineHeight = 1.2.em)
+            lineHeight = 1.2.em
+        )
     } else {
         MaterialTheme.typography.bodyLarge.copy(
             color = Color.White,
@@ -73,26 +69,29 @@ fun WarningSheet(
 
     val sheetState = rememberModalBottomSheetState(
         skipPartiallyExpanded = true,
-        confirmValueChange = { it != SheetValue.Expanded } // 전체 높이 허용 x
+        confirmValueChange = { newValue ->
+            newValue != SheetValue.Expanded && (dismissible || newValue != SheetValue.Hidden)
+        }
     )
 
     ModalBottomSheet(
-        onDismissRequest = { onDismiss() },
+        onDismissRequest = {
+            if (dismissible) { onDismiss() }
+        },
         sheetState = sheetState,
         dragHandle = null, // 손잡이 제거
         containerColor = colorResource(R.color.main_orange)
     ) {
-        // --- 닫기 버튼 + 경고 내용 + 확인 버튼
+        BackHandler(enabled = !dismissible) { }
+
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(.35f)
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             verticalArrangement = Arrangement.Center,
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
         ) {
             Box(modifier = Modifier.fillMaxWidth()) {
-                // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(iconSize)
@@ -107,15 +106,13 @@ fun WarningSheet(
                     )
                 }
 
-                // --- 경고 내용 (경고 이미지 + 문구)
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = verticalPadding),
+                        .padding(vertical = verticalPadding),
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
                 ) {
-                    // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
                         contentDescription = "경고 이미지",
@@ -123,7 +120,6 @@ fun WarningSheet(
                         contentScale = ContentScale.Fit
                     )
 
-                    // 문구
                     Text(
                         text = buildAnnotatedString {
                             withStyle(
@@ -135,28 +131,11 @@ fun WarningSheet(
                             // 경고 문구
                             withStyle(
                                 style = warningTextStyle.toSpanStyle()
-                            ) { append("$warningText\n") }
+                            ) { append(warningText) }
                         },
                         style = warningTextStyle,
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier.fillMaxWidth(0.8f)
                     )
-
-                    // --- 확인 버튼
-                    Button(
-                        onClick = {
-                            onConfirm()
-                            onDismiss()
-                        },
-                        colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
-                        shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        Text(
-                            text = confirmText,
-                            style = confirmTextStyle,
-                            modifier = Modifier.padding(4.dp)
-                        )
-                    }
                 }
             }
         }

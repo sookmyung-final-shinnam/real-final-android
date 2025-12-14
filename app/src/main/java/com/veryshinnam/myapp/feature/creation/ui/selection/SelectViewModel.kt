@@ -2,27 +2,42 @@ package com.veryshinnam.myapp.feature.creation.ui.selection
 
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
+import com.veryshinnam.myapp.common.model.ManualData
+import com.veryshinnam.myapp.common.model.ManualTarget
+import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.update
 import javax.inject.Inject
 
 @HiltViewModel
-class SelectViewModel @Inject constructor() : ViewModel() {
+class SelectViewModel @Inject constructor(
+    private val manualManager: ManualManager
+) : ViewModel() {
 
-    // 선택 화면 상태 관리
+    // 화면 전체 ui 상태
     private val _selectUiState = MutableStateFlow(SelectUiState(selectionData = SelectionData()))
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
-    // 나이 스크롤 상태 기억
+    // 나이 스크롤 상태
     val ageListState: LazyListState = LazyListState(
         firstVisibleItemIndex = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % 100) + 5
     )
 
+    // ManualManager 구독
+    val manualState = manualManager.state
+    val manualMessage = manualManager.message
+
+    // 매뉴얼 진행 단계 상태
+    private val _manualStep = MutableStateFlow(0)
+    val manualStep = _manualStep.asStateFlow()
+
+    // --- ui 이벤트 관련 ---
     // 테마 선택/해제
     fun selectTheme(theme: String) {
         val current = _selectUiState.value.selectionData
@@ -167,4 +182,34 @@ class SelectViewModel @Inject constructor() : ViewModel() {
             )
         }
     }
+
+    // --- 매뉴얼 관련 ---
+    // 생성 전 선택 화면 사용 매뉴얼
+    val manuals = listOf(
+        ManualData("이곳에서 동화와 캐릭터를 만들 수 있어요.", ManualTarget.NONE),
+        ManualData("동화의 주제·배경부터 캐릭터의 성별·나이·이름·외형까지 고를 수 있어요!", ManualTarget.PROGRESSBAR),
+        ManualData("저는 루미와 진우의 러브 스토리가 떠올라서 로맨스를 골라볼게요.", ManualTarget.BUTTON),
+        ManualData("만약 주제를 직접 선택하고 싶다면 아래 키보드를 눌러 입력해도 돼요!", ManualTarget.CUSTOM),
+    )
+
+    fun startManual() {
+        _manualStep.value = 0
+        manualManager.update(manuals[0].message)
+    }
+
+    fun nextManual() {
+        val current = _manualStep.value
+
+        if (current < manuals.lastIndex) {
+            val next = current + 1
+            _manualStep.value = next
+            manualManager.update(manuals[next].message)
+        } else if (current == manuals.lastIndex) {
+            _manualStep.value = manuals.size
+        }
+    }
+
+    fun stopManual() = manualManager.stop()
+
+    fun hideManual() = manualManager.clear()
 }

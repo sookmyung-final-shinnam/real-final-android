@@ -16,7 +16,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.feature.creation.model.NameError
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionNameInput
-import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
+import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
 
 
 @Composable
@@ -79,7 +79,7 @@ fun SelectionNameContent(
         Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
-        SelectionTripleButtons(
+        SelectionBottomButtons(
             isLeft = true,     // 이전 버튼
             isCenter = false,  // 없음
             isRight = true,    // 다음 버튼

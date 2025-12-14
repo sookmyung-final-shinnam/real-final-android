@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.collection.ui
 
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.feature.collection.model.CollectionData
 
 sealed interface CollectionUiState {

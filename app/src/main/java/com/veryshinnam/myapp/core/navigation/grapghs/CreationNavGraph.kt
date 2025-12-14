@@ -1,0 +1,97 @@
+package com.veryshinnam.myapp.core.navigation.grapghs
+
+import android.util.Log
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
+import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.navigation.NavController
+import androidx.navigation.NavGraphBuilder
+import androidx.navigation.compose.composable
+import androidx.navigation.navigation
+import com.veryshinnam.myapp.core.navigation.routes.CreationRoutes
+import com.veryshinnam.myapp.core.navigation.routes.MainRoutes
+import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationScreen
+import com.veryshinnam.myapp.feature.creation.ui.conversation.ConversationViewModel
+import com.veryshinnam.myapp.feature.creation.data.dto.StartRequest
+import com.veryshinnam.myapp.feature.creation.data.dto.toStartRequest
+import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
+
+// 캐릭터 및 동화 생성 플로우 네비게이션 그래프
+fun NavGraphBuilder.creationNavGraph(navController: NavController) {
+    navigation(
+        route = NavGraphs.CREATION,
+        startDestination = CreationRoutes.SELECTION
+    ) {
+        // 선택 화면
+        composable(CreationRoutes.SELECTION) {
+            SelectionScreen(
+                onHome = {
+                    navController.navigate(MainRoutes.HOME) {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                        launchSingleTop = true
+                    }
+                },
+                onFinish = { data ->
+                    val req = data.toStartRequest()
+
+                    navController.currentBackStackEntry
+                        ?.savedStateHandle
+                        ?.set("request", req)
+
+                    navController.navigate(CreationRoutes.CONVERSATION) {
+                        launchSingleTop = true
+                    }
+                },
+                goToNextManual = {
+                    navController.navigate(CreationRoutes.CONVERSATION) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+
+        // llm 대화 화면
+        composable(CreationRoutes.CONVERSATION) { backStackEntry ->
+            val vm: ConversationViewModel = hiltViewModel()
+
+            val req = remember(backStackEntry) {
+                navController.getBackStackEntry(CreationRoutes.SELECTION)
+                    .savedStateHandle
+                    .get<StartRequest>("request")
+            }
+
+            Log.d("conversation", "$req")
+            LaunchedEffect(req) {
+                if (req != null) {
+                    vm.startConversation(req) // api 호출, 동화 세선 시작
+                }
+                else {
+                    vm.startManual()            // ← 매뉴얼 모드 시작
+                }
+            }
+
+            ConversationScreen(
+                onBack = {
+                    // 선택 화면 스택 정리 후 홈으로
+                    navController.popBackStack(CreationRoutes.SELECTION, inclusive = true)
+                    navController.navigate(MainRoutes.HOME) {
+                        launchSingleTop = true
+                    }
+                },
+//                onLogoClick = {
+//                    navController.popBackStack("selection", inclusive = true)
+//                    navController.navigate(MainRoutes.HOME) {
+//                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+//                        launchSingleTop = true
+//                    }
+//                },
+                goToNextManual = {
+                    navController.navigate(MainRoutes.COLLECTION) {
+                        launchSingleTop = true
+                    }
+                },
+                vm = vm
+            )
+        }
+    }
+}

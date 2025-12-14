@@ -1,6 +1,6 @@
 package com.veryshinnam.myapp.feature.creation.model
 
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 
 data class SelectionData(
     val customTheme: String = "",           // 직접추가 테마

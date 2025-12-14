@@ -6,8 +6,10 @@ import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Settings
@@ -15,12 +17,16 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -28,12 +34,16 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.CircleButton
+import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.feature.home.component.HomeBottomButtons
 import com.veryshinnam.myapp.feature.home.component.HomeFavoriteCarousel
 import com.veryshinnam.myapp.common.component.UserItem
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.common.component.WarningSheet
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.admin.ui.AdminStoryScreen
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
@@ -57,24 +67,52 @@ fun HomeScreen(
     onDashboardClick: () -> Unit,       // 바텀 버튼
     onCreationClick: () -> Unit,        // 바텀 버튼
     onCollectionClick: () -> Unit,      // 바텀 버튼
+    messageBorder: Dp = 4.dp,
+    messageCorner: Dp = 16.dp,
+    messagePadding: Dp = 20.dp,
     horizontalPadding: Dp = 16.dp,
     bottomPadding: Dp = 10.dp,
-    cardPadding: Dp = 20.dp, // 텍스트 양옆 패딩
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge,
-    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall,
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange)),
     vm: HomeViewModel =  hiltViewModel(),
     navController: NavController
 ) {
-    // 홈 화면 상태 관리
-    val uiState by vm.homeUiState.collectAsStateWithLifecycle()
+    // 상태 구독
+    val uiState by vm.homeUiState.collectAsStateWithLifecycle() // 화면 전체 ui
     val isNewUser by vm.isNewUser.collectAsStateWithLifecycle() // 신규 유저 여부
     val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
+    val warningState by vm.warningState.collectAsStateWithLifecycle() // 단순 경고
+    val manualState by vm.manualState.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val username by vm.username.collectAsStateWithLifecycle()
 
-    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
+    // 매뉴얼 > 강조할 좌표
+    var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
+    var creationRect by remember { mutableStateOf<Rect?>(null) }  // 생성
+    var collectionRect by remember { mutableStateOf<Rect?>(null) }  // 보관함
+    var dashboardRect by remember { mutableStateOf<Rect?>(null) }  // 대시보드
+    var attendanceRect by remember { mutableStateOf<Rect?>(null) }  // 출석체크
 
-    // 관리자 여부 확인
+    // 세로 모드 고정
+    SideEffect {
+        OrientationManager.setOrientation?.invoke(
+            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
+        )
+    }
+
+    // HomeScreen 진입 시 한번만  실행
     LaunchedEffect(Unit) {
-        vm.checkAdminStatus()
+        vm.checkAdminStatus() // 관리자 여부 확인
+        vm.reload()        // 홈 데이터 다시 불러오기
+        vm.changeMessage() // 랜덤 메시지도 갱신
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            onCreationClick()
+        }
     }
 
     if (isAdmin == true) {
@@ -97,20 +135,6 @@ fun HomeScreen(
         return
     }
 
-    // 세로 모드 고정
-    SideEffect {
-        OrientationManager.setOrientation?.invoke(
-            ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-        )
-    }
-
-    // HomeScreen 진입할 때마다 실행
-    LaunchedEffect(Unit) {
-        vm.reload()        // 홈 데이터 다시 불러오기
-        vm.changeMessage() // 랜덤 메시지도 갱신
-    }
-
-    // 홈 UI
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -167,7 +191,12 @@ fun HomeScreen(
                                     modifier = Modifier
                                         .fillMaxHeight()
                                         .align(Alignment.BottomStart)  // start 정렬
-                                        .padding(start = 26.dp),
+                                        .padding(start = 26.dp)
+                                        .onGloballyPositioned {
+                                            if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && squirrelRect == null) {
+                                                squirrelRect = it.boundsInRoot()
+                                            }
+                                        },
                                     contentScale = ContentScale.Fit
                                 )
 
@@ -185,16 +214,22 @@ fun HomeScreen(
                                 )
                             }
 
+                            // 메시지 박스
                             Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .wrapContentHeight()
-                                    .background(Color.White, shape = RoundedCornerShape(16.dp))
+                                    .background(Color.White, shape = RoundedCornerShape(messageCorner))
                                     .border(
-                                        4.dp,
+                                        messageBorder,
                                         colorResource(R.color.main_orange),
-                                        RoundedCornerShape(16.dp))
-                                    .padding(all = cardPadding),
+                                        RoundedCornerShape(messageCorner))
+                                    .onGloballyPositioned {
+                                        if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && messageRect == null) {
+                                            messageRect = it.boundsInRoot()
+                                        }
+                                    }
+                                    .padding(all = messagePadding),
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(verticalArrangement = Arrangement.SpaceEvenly) {
@@ -208,9 +243,7 @@ fun HomeScreen(
                                     ) {
                                         Text(
                                             text = "반가워요 ${username}!",
-                                            style = textStyle.copy(
-                                                fontWeight = FontWeight.Bold
-                                            )
+                                            style = textStyle
                                         )
 
                                         Row(
@@ -221,9 +254,7 @@ fun HomeScreen(
                                         ) {
                                             Text(
                                                 text = "환경설정",
-                                                style = settingsTextStyle.copy(
-                                                    color = colorResource(id = R.color.main_orange)
-                                                )
+                                                style = settingsTextStyle
                                             )
 
                                             Icon(
@@ -239,11 +270,8 @@ fun HomeScreen(
 
                                     // 랜덤 메시지
                                     Text(
-//                                    modifier = Modifier.padding(top = 2.dp),
                                         text = state.randomMessage,
-                                        style = textStyle.copy(
-                                            fontWeight = FontWeight.Bold
-                                        )
+                                        style = textStyle
                                     )
                                 }
                             }
@@ -258,7 +286,7 @@ fun HomeScreen(
                             HomeFavoriteCarousel(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                .weight(8f),
+                                    .weight(8f),
                                 characters = favorites,
                                 lastSelectedId = state.lastSelectedCharacter,
                                 onCharacterClick = onCharacterClick
@@ -269,9 +297,24 @@ fun HomeScreen(
                                 onDashboardClick = onDashboardClick,
                                 onCreationClick = {
                                     if (points > 0) onCreationClick()
-                                    else isSimpleWarning = true
+                                    else vm.showWarning("포인트가 부족해요.\n출석을 통해 포인트를 모아 볼까요?")
                                 },
                                 onCollectionClick = onCollectionClick,
+                                onDashboardRect = { rect ->
+                                    if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && dashboardRect == null) {
+                                        dashboardRect = rect
+                                    }
+                                },
+                                onCreationRect = { rect ->
+                                    if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && creationRect == null) {
+                                        creationRect = rect
+                                    }
+                                },
+                                onCollectionRect = { rect ->
+                                    if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && collectionRect == null) {
+                                        collectionRect = rect
+                                    }
+                                },
                                 modifier = Modifier
                                     .fillMaxWidth()
                                     .weight(2f)
@@ -288,6 +331,11 @@ fun HomeScreen(
                             .fillMaxHeight(0.08f)
                             .padding(horizontal = 16.dp)
                             .align(Alignment.TopEnd)
+                            .onGloballyPositioned {
+                                if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && attendanceRect == null) {
+                                    attendanceRect = it.boundsInRoot()
+                                }
+                            }
                             .clickable(
                                 indication = LocalIndication.current,
                                 interactionSource = remember { MutableInteractionSource() }
@@ -298,37 +346,112 @@ fun HomeScreen(
         }
     }
 
-    if (isSimpleWarning) {
-        WarningSimpleSheet(
-            warningText = "포인트가 부족해요.\n출석을 통해 포인트를 모아 볼까요?",
-            onDismiss = { isSimpleWarning = false}
+    if (warningState.isVisible) {
+        WarningSheet(
+            warningText = warningState.warningText,
+            onDismiss = { vm.hideWarning() }
         )
     }
 
-    // 신규 유저 보상 화면
+    // 신규 유저 보상창
     if (isNewUser) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(
-                    enabled = true,
-                    indication = null, // 터치 효과 제거
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { }
+                .pointerInput(Unit) {},
         )
 
         AttendanceReward(
             painter = painterResource(R.drawable.img_dotory_shining),
-            text = "신규 유저 보상\n나침반 5개",
+            text = "신규 유저 보상\n도토리 5개",
             onReceiveClick = {
-//                vm.fetchAttendanceReward() // 보상 업데이트
                 vm.updateNewUser()
+//                vm.showManual() // 매뉴얼 진행
             },
             modifier = Modifier
                 .fillMaxSize()
                 .zIndex(2f)
         )
+    }
+
+    // 매뉴얼 진행
+    if (manualState != ManualState.NONE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .then(
+                    when (manualState) {
+                        ManualState.REQUEST -> Modifier.pointerInput(Unit) {}
+
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+        ) {
+            squirrelRect?.let { rect ->
+                TargetImage(
+                    rect,
+                    painterResource(R.drawable.img_home_squirrel)
+                )  // zIndex 20
+            }
+
+            messageRect?.let { rect ->
+                TargetMessage(
+                    rect = rect,
+                    message = manualMessage.replace("{username}", username),
+                    messageStyle =
+                        if (manualState == ManualState.START)
+                            MaterialTheme.typography.titleMedium
+                        else
+                            MaterialTheme.typography.titleLarge
+                )
+            }
+
+            if (manualState == ManualState.REQUEST) {
+                Column(
+                    modifier = Modifier.fillMaxSize(),
+                    horizontalAlignment = Alignment.CenterHorizontally
+                ){
+                    Spacer(modifier = Modifier.fillMaxHeight(0.7f))
+                    Row(
+                        modifier = Modifier.fillMaxWidth(0.85f),
+                        Arrangement.SpaceBetween
+                    ) {
+                        CircleButton(
+                            modifier = Modifier.weight(7f),
+                            onClick = { vm.startManual() },
+                            text = "좋아요!"
+                        )
+                        Spacer(modifier = Modifier.weight(1f))
+                        CircleButton(
+                            modifier = Modifier.weight(7f),
+                            onClick = { vm.stopManual() },
+                            text = "괜찮아요."
+                        )
+                    }
+                }
+            }
+
+            if (manualState == ManualState.START) {
+                when (manualStep) {
+                    0 -> {}
+                    1 -> creationRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_creation)) }
+                    2 -> collectionRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_collection)) }
+                    3 -> dashboardRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_dashboard)) }
+                    4 -> attendanceRect?.let { TargetImage(it, painterResource(R.drawable.img_home_check)) }
+                }
+            }
+        }
     }
 }

@@ -6,18 +6,15 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionPaletteGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionStyleButtons
-import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionTripleButtons
+import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
 
 
 @Composable
@@ -98,7 +95,7 @@ fun SelectionFaceContent(
         Spacer(Modifier.height(spacePadding))
 
         // 하단 버튼 영역
-        SelectionTripleButtons(
+        SelectionBottomButtons(
             isLeft = true,     // 이전 버튼
             isCenter = false,  // 없음
             isRight = true,    // 다음 버튼

@@ -3,19 +3,27 @@ package com.veryshinnam.myapp.feature.creation.ui.selection
 import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -26,19 +34,31 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
+import com.veryshinnam.myapp.common.component.TargetButton
+import com.veryshinnam.myapp.common.component.TargetCustom
+import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetMessage
+import com.veryshinnam.myapp.common.component.TargetProgressBar
 import com.veryshinnam.myapp.common.component.UserInfo
+import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
-import com.veryshinnam.myapp.common.component.WarningSimpleSheet
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
@@ -55,21 +75,33 @@ import com.veryshinnam.myapp.feature.creation.content.selection.SelectionThemeCo
 fun SelectionScreen(
     onHome: () -> Unit,
     onFinish: (SelectionData) -> Unit,
+    goToNextManual: () -> Unit,
     vm: SelectViewModel = hiltViewModel(),
     horizontalPadding: Dp = 16.dp,
     topPadding: Dp = 24.dp
 ) {
+    // 상태 구독
     val uiState by vm.selectUiState.collectAsState()             // 선택 화면 상태 관리
     val selectionStep = uiState.selectionStep                    // 현재 선택 단계
-    var isInputMode by remember { mutableStateOf(false) } // 테마+배경 직접추가 입력 모드
 
+    var isInputMode by remember { mutableStateOf(false) } // 테마+배경 직접추가 입력 모드
     var isWarning by remember { mutableStateOf(false) }   // 경고창
     var warningText by remember { mutableStateOf("") }
     var confirmText by remember { mutableStateOf("") }
     var confirmAction by remember { mutableStateOf<() -> Unit>({}) }
-
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
+
+    val manualState by vm.manualState.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+
+    // 매뉴얼 > 강조할 좌표
+    var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
+    var progressRect by remember { mutableStateOf<Rect?>(null) } // 진행바
+    var firstBRect by remember { mutableStateOf<Rect?>(null) } // 첫 테마 버튼
+    var customBRect by remember { mutableStateOf<Rect?>(null) } // 직접 추가 버튼
 
     // 뒤로 가기 로직
     fun handleBack() {
@@ -139,6 +171,18 @@ fun SelectionScreen(
         )
     }
 
+    LaunchedEffect(manualState) {
+        if (manualState == ManualState.START && manualStep == 0) {
+            vm.startManual()
+        }
+    }
+
+    LaunchedEffect(manualStep) {
+        if (manualStep == vm.manuals.size) {
+            goToNextManual()
+        }
+    }
+
     // 뒤로 가기
     BackHandler { handleBack() }
 
@@ -178,24 +222,21 @@ fun SelectionScreen(
                     .fillMaxSize()
                     .padding(horizontal = horizontalPadding),
             ) {
-                // 단계 화면 설명 (+ 진행바)
-//                SelectionInfo(
-//                    text = getInfoText(selectionStep, isInputMode),
-//                    currentStep = uiState.currentStep,
-//                    modifier = Modifier.fillMaxWidth()
-//                        .weight(0.25f)
-//                )
-
                 Box{
                     // 진행바
                     StepProgressBar(
                         steps = 6,
                         currentStep = uiState.currentStep,
                         modifier = Modifier
-                            .align(Alignment.TopCenter)
-                            .fillMaxWidth(0.5f)
-                            .fillMaxHeight(0.08f)
-                            .padding(top = topPadding / 2)
+                            .align(Alignment.CenterStart)
+                            .fillMaxWidth(0.7f)
+                            .fillMaxHeight(0.2f)
+                            .offset(x = 12.dp, y = (-20).dp)
+                            .onGloballyPositioned {
+                                if (manualState == ManualState.START  && progressRect == null) {
+                                    progressRect = it.boundsInRoot()
+                                }
+                            }
                             .zIndex(1f)
                     )
 
@@ -205,6 +246,16 @@ fun SelectionScreen(
                         animalDescription = "캐릭터 생성 설명 다람쥐 이미지",
                         cardColor = colorResource(R.color.main_orange),
                         cardText =  getInfoText(selectionStep, isInputMode),
+                        onAnimalRect = { rect ->
+                            if (manualState == ManualState.START && squirrelRect == null) {
+                                squirrelRect = rect
+                            }
+                        },
+                        onMessageRect = { rect ->
+                            if (manualState == ManualState.START && messageRect == null) {
+                                messageRect = rect
+                            }
+                        }
                     )
                 }
 
@@ -222,6 +273,16 @@ fun SelectionScreen(
                             onSimpleWarning = { text ->  // 경고 문구
                                 SimpleWarningText = text
                                 isSimpleWarning = true
+                            },
+                            onFirstBRect = { rect ->
+                                if (manualState == ManualState.START && firstBRect == null) {
+                                    firstBRect = rect
+                                }
+                            },
+                            onCustomBRect = { rect ->
+                                if (manualState == ManualState.START && customBRect == null) {
+                                    customBRect = rect
+                                }
                             },
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -329,7 +390,7 @@ fun SelectionScreen(
     }
 
     if (isWarning) {
-        WarningSheet(
+        WarningConfirmSheet(
             warningText  = warningText,
             confirmText = confirmText,
             onDismiss = { isWarning = false },
@@ -341,10 +402,75 @@ fun SelectionScreen(
     }
 
     if (isSimpleWarning) {
-        WarningSimpleSheet(
+        WarningSheet(
             warningText = SimpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )
+    }
+
+    // 매뉴얼 진행
+    if (manualState != ManualState.NONE) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(2f)
+                .background(Color.Black.copy(alpha = 0.5f))
+                .then(
+                    when (manualState) {
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.hideManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+        ) {
+            Text(
+                color = colorResource(R.color.main_orange),
+                text = "그만 들을래요.",
+                modifier = Modifier
+                    .align(Alignment.TopEnd)
+                    .clickable {
+                        when (manualState) {
+                            ManualState.START -> vm.stopManual()
+                            ManualState.STOP -> vm.hideManual()
+                            else -> {}
+                        }
+                    }
+                    .padding(30.dp)
+                    .zIndex(3f)
+            )
+
+            squirrelRect?.let { rect ->
+                TargetImage(
+                    rect,
+                    painterResource(R.drawable.img_squirrel_cut)
+                )
+            }
+
+            messageRect?.let { rect ->
+                TargetMessage(
+                    rect = rect,
+                    message = manualMessage,
+                    messageStyle = MaterialTheme.typography.titleSmall,
+                    messagePadding = 16.dp
+                )
+            }
+
+            if (manualState == ManualState.START) {
+                when (manualStep) {
+                    0 -> {}
+                    1 -> progressRect?.let { TargetProgressBar(it, 6) }
+                    2 -> firstBRect?.let { TargetButton(it) }
+                    3 -> customBRect?.let { TargetCustom(it) }
+                }
+            }
+
+        }
     }
 }
 

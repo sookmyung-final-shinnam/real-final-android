@@ -1,7 +1,7 @@
 package com.veryshinnam.myapp.feature.creation.data.dto
 
 import android.os.Parcelable
-import com.veryshinnam.myapp.common.enums.Gender
+import com.veryshinnam.myapp.common.model.Gender
 import kotlinx.parcelize.Parcelize
 
 // 대화 세션 시작 요청

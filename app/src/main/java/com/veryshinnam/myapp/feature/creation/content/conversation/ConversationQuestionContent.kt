@@ -5,10 +5,12 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationCommonText
@@ -20,6 +22,9 @@ fun ConversationQuestionContent(
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     onRecordClick: () -> Unit,
+    onTextRect: (Rect) -> Unit,
+    onImageRect: (Rect) -> Unit,
+    onRecordRect: (Rect) -> Unit,
     nextEnabled: Boolean,
     modifier: Modifier
 ) {
@@ -35,10 +40,12 @@ fun ConversationQuestionContent(
             text = question,
             painter = painterResource(R.drawable.img_llm_question),
             modifier = Modifier
-                .weight(1f) 
-                .align(Alignment.CenterHorizontally),
+                .align(Alignment.CenterHorizontally)
+                .weight(1f),
             isTtsSpeaking = isTtsSpeaking,
-            onReplayClick = onReplayClick
+            onReplayClick = onReplayClick,
+            onTextRect = onTextRect,
+            onImageRect = onImageRect
         )
 
         // 먀이크 버튼
@@ -48,6 +55,7 @@ fun ConversationQuestionContent(
             modifier = Modifier
                 .fillMaxHeight(0.15f)
                 .align(Alignment.CenterHorizontally)
+                .onGloballyPositioned { onRecordRect(it.boundsInRoot()) },
         )
     }
 }

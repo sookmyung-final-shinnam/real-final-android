@@ -49,6 +49,7 @@ fun ConversationFeedbackContent(
                 onClick ={ onButtonClick() },
                 enabled = nextEnabled,
                 modifier = Modifier
+                    .fillMaxHeight(0.15f)
                     .align(Alignment.CenterHorizontally))
         } else { // 부정 - 먀이크 버튼
             ConversationRecordButton(

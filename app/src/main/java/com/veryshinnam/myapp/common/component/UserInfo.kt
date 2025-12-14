@@ -16,9 +16,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -48,7 +51,10 @@ fun UserInfo(
     cardTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
     spanText: String? = null,               // 강조할 텍스트
     spanColor: Color = Color.Unspecified,   // 강조할 색상
-    spanTextStyle: TextStyle = MaterialTheme.typography.titleMedium
+    spanTextStyle: TextStyle = MaterialTheme.typography.titleMedium,
+    onItemRect: (Rect) -> Unit = {},
+    onAnimalRect: (Rect) -> Unit = {},
+    onMessageRect: (Rect) -> Unit = {},
 ) {
     Column(modifier = modifier) {
         Box(
@@ -62,7 +68,8 @@ fun UserInfo(
                 modifier = Modifier
                     .fillMaxHeight()
                     .align(Alignment.BottomEnd)
-                    .padding(end = 16.dp),
+                    .padding(end = 16.dp)
+                    .onGloballyPositioned { onAnimalRect(it.boundsInRoot()) },
                 contentScale = ContentScale.Fit
             )
 
@@ -78,6 +85,7 @@ fun UserInfo(
                         .align(animalAlignment)
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight(0.6f)
+                        .onGloballyPositioned { onItemRect(it.boundsInRoot()) }
                 )
             }
         }
@@ -92,7 +100,8 @@ fun UserInfo(
                     width = 4.dp,
                     color = cardColor,
                     shape = RoundedCornerShape(16.dp))
-                .padding(horizontal = cardPadding, vertical = 16.dp),
+                .onGloballyPositioned { onMessageRect(it.boundsInRoot()) }
+                .padding(cardPadding),
             contentAlignment = Alignment.TopStart
         ) {
             // 강조 텍스트 처리

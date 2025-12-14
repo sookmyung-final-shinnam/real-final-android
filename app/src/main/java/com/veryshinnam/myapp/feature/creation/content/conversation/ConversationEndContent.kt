@@ -55,7 +55,7 @@ fun ConversationEndContent(
         Spacer(Modifier.fillMaxHeight(spacePadding))
 
         Image(
-            painter = painterResource(R.drawable.img_story_end),
+            painter = painterResource(R.drawable.img_login),
             contentDescription = "다람쥐 이미지",
             modifier = Modifier
                 .fillMaxHeight(0.5f),
