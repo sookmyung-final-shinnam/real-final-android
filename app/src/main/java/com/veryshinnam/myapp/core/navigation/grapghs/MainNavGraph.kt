@@ -76,6 +76,9 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
+                },
+                onCharacterNavigate = { characterId ->
+                    navController.navigate("character/$characterId")
                 }
             )
         }

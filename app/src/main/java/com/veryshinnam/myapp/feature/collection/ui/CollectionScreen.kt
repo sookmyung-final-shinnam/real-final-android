@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
@@ -97,10 +96,6 @@ fun CollectionScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // 캐릭터 상세 > 보관함 화면: 세로 모드
-//    val context = LocalContext.current
-//    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
-
     // 매뉴얼 > 강조할 좌표
     var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
@@ -134,6 +129,7 @@ fun CollectionScreen(
     // 뒤로 가기
     BackHandler { onBack() }
 
+    // 보관함 ui
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -195,7 +191,7 @@ fun CollectionScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.collectionDataList.size,
-                            itemImage =  painterResource(R.drawable.img_character_yellow),
+                            itemImage =  painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
                             animalDescription = "보관함 설명 토끼 이미지",
@@ -365,7 +361,7 @@ fun CollectionScreen(
                     itemRect?.let {
                         TargetItem(
                             it, density,
-                            image = painterResource(R.drawable.img_character_yellow),
+                            image = painterResource(R.drawable.ic_character),
                             imageDescription = "캐릭터 수",
                             value = 5,
                             boxColor = colorResource(R.color.blue_gray)
@@ -395,7 +391,7 @@ fun CollectionScreen(
                                 )
                         ) {
                             Image(
-                                painter = painterResource(R.drawable.img_dummy_character_1),
+                                painter = painterResource(R.drawable.img_character_1),
                                 contentDescription = "캐릭터 이미지",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,

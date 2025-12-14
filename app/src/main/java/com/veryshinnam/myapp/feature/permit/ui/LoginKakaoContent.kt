@@ -1,11 +1,18 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
+import android.net.http.SslError
 import android.view.ViewGroup
+import android.webkit.SslErrorHandler
+import android.webkit.WebChromeClient
 import android.webkit.WebResourceRequest
+import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
+import android.widget.TextView
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.veryshinnam.myapp.core.network.BaseUrls
 
@@ -28,15 +35,35 @@ fun LoginKakaoContent(
                     ViewGroup.LayoutParams.MATCH_PARENT
                 )
 
-                settings.javaScriptEnabled = true
+                settings.apply {
+                    javaScriptEnabled = true
+                    domStorageEnabled = true       // crash 방지
+                    mixedContentMode = WebSettings.MIXED_CONTENT_NEVER_ALLOW
+                    allowFileAccess = false
+                    allowContentAccess = false
+                }
 
+                webChromeClient = WebChromeClient()
                 webViewClient = object : WebViewClient() { // 리다이렉트 감지 (2)
+
+                    override fun onReceivedSslError(
+                        view: WebView?,
+                        handler: SslErrorHandler?,
+                        error: SslError?
+                    ) {
+                        // 인증서 오류
+                        handler?.cancel()
+                    }
+
                     override fun shouldOverrideUrlLoading(
                         view: WebView?,
                         request: WebResourceRequest?
                     ): Boolean {
                         // 불러올 웹뷰
                         val uri = request?.url ?: return false
+
+                        // https만 인정
+                        if (uri.scheme != "https") return true
 
                         // 리다이렉트 주소에서 정보 추출
                         if (uri.toString().contains(BaseUrls.REDIRECT_PATH)) {

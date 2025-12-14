@@ -166,7 +166,7 @@ fun AttendanceScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.attendanceData.stamps,
-                            itemImage =  painterResource(R.drawable.img_stamp),
+                            itemImage =  painterResource(R.drawable.ic_stamp),
                             itemDescription = "모은 도장 수",
                             animalImage = painterResource(R.drawable.img_pig_cut),
                             animalDescription = "출석체크 설명 돼지 이미지",

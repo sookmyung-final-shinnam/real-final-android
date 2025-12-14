@@ -55,7 +55,7 @@ fun TargetConvRecord(
         contentAlignment = Alignment.Center
     ) {
         Image(
-            painter = painterResource(R.drawable.img_mike_on),
+            painter = painterResource(R.drawable.ic_mike),
             contentDescription = "마이크 버튼",
             modifier = Modifier
                 .fillMaxSize()
