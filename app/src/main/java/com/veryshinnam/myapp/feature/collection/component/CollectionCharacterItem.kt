@@ -90,7 +90,6 @@ fun CollectionCharacterItem(
             titleTextStyle = textStyle,
             strokeWidth = 4f,
             modifier = Modifier
-                .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 4.dp) // 아래 패딩
         )

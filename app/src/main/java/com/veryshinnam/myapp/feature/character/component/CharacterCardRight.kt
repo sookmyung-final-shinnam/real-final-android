@@ -41,6 +41,7 @@ fun CharacterCardRight(
     onShareClick: (String?) -> Unit,
     onTabRect: (Rect) -> Unit,
     onLockerRect: (Rect) -> Unit,
+    onKakaoRect: (Rect) -> Unit,
     cardPadding: Dp = 24.dp,
     tabPadding: Dp = 12.dp,
     modifier: Modifier = Modifier // 부모가 넘겨준 크기
@@ -122,6 +123,7 @@ fun CharacterCardRight(
                             onMakingClick = onMakingClick,
                             onShareClick = onShareClick,
                             onLockerRect = onLockerRect,
+                            onKakaoRect = onKakaoRect,
                             rotation = rotation
                         )
 

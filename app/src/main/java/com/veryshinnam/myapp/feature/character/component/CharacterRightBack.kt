@@ -43,6 +43,7 @@ fun CharacterRightBack(
     onMakingClick: () -> Unit,
     onShareClick: (String?) -> Unit,
     onLockerRect: (Rect) -> Unit,
+    onKakaoRect: (Rect) -> Unit,
     rotation: Float,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
     infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
@@ -117,7 +118,6 @@ fun CharacterRightBack(
                             }
                         }
                 )
-
 
                 Text(
                     text = "움직이는 동화 보러 가기",

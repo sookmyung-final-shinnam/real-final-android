@@ -63,11 +63,11 @@ class HomeViewModel @Inject constructor(
     // --- ui 이벤트 관련 ---
     // 신규 유저 확인
     private fun checkNewUser() {
-        viewModelScope.launch {
-            val newUser = sessionManager.isNewUser()
-            _isNewUser.value = newUser
-        }
-//        _isNewUser.value = true
+//        viewModelScope.launch {
+//            val newUser = sessionManager.isNewUser()
+//            _isNewUser.value = newUser
+//        }
+        _isNewUser.value = true
     }
 
     // 신규 유저 업데이트

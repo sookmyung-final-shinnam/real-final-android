@@ -391,7 +391,7 @@ fun CollectionScreen(
                                 )
                         ) {
                             Image(
-                                painter = painterResource(R.drawable.img_character_1),
+                                painter = painterResource(R.drawable.img_character_5),
                                 contentDescription = "캐릭터 이미지",
                                 modifier = Modifier.fillMaxSize(),
                                 contentScale = ContentScale.Crop,
@@ -411,7 +411,7 @@ fun CollectionScreen(
 
                             // 캐릭터 이름
                             StrokeTitle(
-                                titleText = "카리나",
+                                titleText = "스토릭터",
                                 titleColor = Color.White,
                                 strokeColor = Color.Black,
                                 titleTextStyle = MaterialTheme.typography.titleLarge,

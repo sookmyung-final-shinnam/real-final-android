@@ -62,7 +62,7 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
-import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.model.ManualState
@@ -112,7 +112,7 @@ fun CharacterScreen(
     // 매뉴얼 변수
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var lockerRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
-
+    var kakaoRect by remember { mutableStateOf<Rect?>(null) } // 카톡 버튼 위치
 
     // 가로 모드 고정
     SideEffect {
@@ -238,7 +238,12 @@ fun CharacterScreen(
                             if (manualState == ManualState.START
                                 && manualStep == 3 && lockerRect == null) {
                                 lockerRect = rect
-                                Log.d("manual", "rect final update: $rect")
+                            }
+                        },
+                        onKakaoRect = { rect ->
+                            if (manualState == ManualState.START && kakaoRect == null) {
+                                kakaoRect = rect
+                                Log.d("manual", "kakaoLRect final update: $rect")
                             }
                         },
                         modifier = Modifier
@@ -386,6 +391,38 @@ fun CharacterScreen(
                 }
             }
 
+            // 동영상
+            if (manualStep >= 5) {
+                lockerRect?.let { rect ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { rect.top.toDp() }
+                            )
+                            .size(
+                                with(density) { rect.width.toDp() },
+                                with(density) { rect.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        VideoPlayer(
+                            videoUrl = "android.resource://${context.packageName}/${R.raw.dummy_page}",
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        if (manualStep >= 6) {
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 그외 강조 요소
             when (manualStep) {
                 2 -> { tabRect?.let { it ->
                     // 탭버튼
@@ -398,14 +435,14 @@ fun CharacterScreen(
                             .size(
                                 with(density) { it.width.toDp() },
                                 with(density) { it.height.toDp() }
-                            ),
+                            )
+                            .zIndex(10f),
                         onClick = {
                             vm.nextManual()
                         },
                         alpha = 0.5f,
                     )
-                }
-                }
+                } }
                 4 -> { lockerRect?.let { it ->
                     // 잠금 해제
                     Box(
@@ -426,25 +463,7 @@ fun CharacterScreen(
                             contentScale = ContentScale.Fit
                         )
                     }
-                }
-                }
-                5 -> { lockerRect?.let { it ->
-                    // 도토리
-                    Box(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { it.left.toDp() },
-                                y = with(density) { it.top.toDp() })
-                            .size(
-                                with(density) { it.width.toDp() },
-                                with(density) { it.height.toDp() }
-                            )
-                            .clip(RoundedCornerShape(16.dp))   // 여기에 clip
-                    ) {
-
-                    }
-                }
-                }
+                } }
                 6 -> {
                     // 카톡 버튼
 

@@ -124,36 +124,36 @@ class CollectionViewModel @Inject constructor(
         val dummyList = listOf(
             CollectionData(
                 id = -1,
-                name = "미니니",
+                name = "최강혁",
                 image = ImageType.Resource(R.drawable.img_character_1),
+                gender = Gender.FEMALE,
+                isFavorite = true
+            ),
+            CollectionData(
+                id = -1,
+                name = "베네딕트",
+                image = ImageType.Resource(R.drawable.img_character_2),
+                gender = Gender.FEMALE,
+                isFavorite = true
+            ),
+            CollectionData(
+                id = -1,
+                name = "준",
+                image = ImageType.Resource(R.drawable.img_character_3),
                 gender = Gender.FEMALE,
                 isFavorite = false
             ),
             CollectionData(
                 id = -1,
-                name = "유니니",
-                image = ImageType.Resource(R.drawable.img_character_1),
+                name = "여름",
+                image = ImageType.Resource(R.drawable.img_character_4),
                 gender = Gender.FEMALE,
-                isFavorite = false
+                isFavorite = true
             ),
             CollectionData(
                 id = -1,
-                name = "혀미미",
-                image = ImageType.Resource(R.drawable.img_character_1),
-                gender = Gender.FEMALE,
-                isFavorite = false
-            ),
-            CollectionData(
-                id = -1,
-                name = "여니니",
-                image = ImageType.Resource(R.drawable.img_character_1),
-                gender = Gender.FEMALE,
-                isFavorite = false
-            ),
-            CollectionData(
-                id = -1,
-                name = "릭터",
-                image = ImageType.Resource(R.drawable.img_character_1),
+                name = "스토릭터",
+                image = ImageType.Resource(R.drawable.img_character_5),
                 gender = Gender.MALE,
                 isFavorite = true
             )
