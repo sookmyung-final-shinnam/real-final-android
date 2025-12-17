@@ -24,24 +24,27 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
-import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.model.ImageType
+import com.veryshinnam.myapp.common.component.VideoPlayer
+import com.veryshinnam.myapp.feature.character.model.VideoStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
-fun CharacterStoryButton(
+fun CharacterVideoButton(
     storyId: Long,          // 동화 아이디
-    imageUrl: ImageType, // 종이 동화 표지
+    videoUrl: String? = null,  // 영상 표지
+    videoStatus: VideoStatus,
     youTubeLink: String?,    // 유튜브 링크
-    infoText: String = "동화 보러 가기",  // 동화 타입 텍스트
+    infoText: String = "움직이는 동화 보러 가기",  // 동화 타입 텍스트
     infoTextStyle: TextStyle,
     storySize: Float = 0.7f,
     storyRadius: Dp = 16.dp,
     kakaoSize: Float = 0.35f,
     kakaoRadius: Dp = 12.dp,
     onStoryClick: (Long, StoryType) -> Unit,
-    onKakaoClick: (String?) -> Unit,
+    onLockerClick: (Long) -> Unit = {}, // 잠금 클릭
+    onMakingClick: () -> Unit = {},     // 제작 중 클릭
+    onKakaoClick: (String?) -> Unit,    // 공유 클릭
     modifier: Modifier
 ) {
     Column(
@@ -57,35 +60,69 @@ fun CharacterStoryButton(
         ) {
             Button(
                 onClick = {
-                    onStoryClick(storyId, StoryType.IMAGE) }, // IMAGE는 항상 이동
+                    when (videoStatus) {
+                        VideoStatus.NONE -> onLockerClick(storyId)  // 잠금 > 제작
+                        VideoStatus.MAKING -> onMakingClick()      // 제작 중 > 경고 시트
+                        VideoStatus.COMPLETED -> {
+                            if (videoUrl.isNullOrBlank()) onMakingClick() // 서버 문제
+                            else onStoryClick(storyId, StoryType.VIDEO)   // 표지 있으면 이동
+                        }
+                    }
+                },
                 modifier = Modifier.aspectRatio(1f),
                 shape = RoundedCornerShape(storyRadius),
                 contentPadding = PaddingValues(0.dp) // 패딩 제거
             ) {
-                when (imageUrl) {
-                    is ImageType.Url -> {
-                        AsyncImage(
-                            model = imageUrl.url,
-                            contentDescription = "$infoText 버튼",
+
+                // 동화가 비디오일 경우
+                when (videoStatus) {
+                    // 잠금 상태
+                    VideoStatus.NONE -> {
+                        Image(
+                            painter = painterResource(R.drawable.img_locker),
+                            contentDescription = "$infoText 잠금",
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Fit
                         )
                     }
 
-                    is ImageType.Resource -> {
+                    // 제작 중 상태
+                    VideoStatus.MAKING -> {
                         Image(
-                            painter = painterResource(id = imageUrl.resId),
-                            contentDescription = "$infoText 버튼",
+                            painter = painterResource(R.drawable.img_unlocker),
+                            contentDescription = "$infoText 제작 중",
                             modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Crop
+                            contentScale = ContentScale.Fit
                         )
+                    }
+
+                    // 완성된 상태
+                    VideoStatus.COMPLETED -> {
+                        // 서버 문제
+                        if (videoUrl.isNullOrBlank()) {
+                            Image(
+                                painter = painterResource(R.drawable.img_unlocker),
+                                contentDescription = "$infoText 제작 중",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit
+                            )
+                        } else {
+                            // 영상 재생
+                            VideoPlayer(
+                                videoUrl = videoUrl,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
                 }
             }
+
+            // 표지 있으면 카카오 버튼
+            if (!videoUrl.isNullOrBlank()) {
                 Button(
                     onClick = { onKakaoClick(youTubeLink) },
                     modifier = Modifier
-                        .align(Alignment.TopEnd)
+//                        .align(Alignment.TopEnd)
                         .fillMaxHeight(kakaoSize)
                         .aspectRatio(1f)
                         .zIndex(1f),
@@ -102,13 +139,14 @@ fun CharacterStoryButton(
                     )
                 }
             }
-
-            Text(
-                text = infoText,
-                style = infoTextStyle,
-                textAlign = TextAlign.Center,
-                modifier = Modifier.fillMaxWidth(),
-                maxLines = 1
-            )
         }
+
+        Text(
+            text = infoText,
+            style = infoTextStyle,
+            textAlign = TextAlign.Center,
+            modifier = Modifier.fillMaxWidth(),
+            maxLines = 1
+        )
     }
+}

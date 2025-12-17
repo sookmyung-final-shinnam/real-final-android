@@ -38,7 +38,7 @@ fun CharacterCardRight(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String?) -> Unit,
+    onKakaoClick: (String?) -> Unit,
     onTabRect: (Rect) -> Unit,
     onLockerRect: (Rect) -> Unit,
     onKakaoRect: (Rect) -> Unit,
@@ -121,7 +121,7 @@ fun CharacterCardRight(
                             onStoryClick = onStoryClick,
                             onLockerClick = onLockerClick,
                             onMakingClick = onMakingClick,
-                            onShareClick = onShareClick,
+                            onKakaoClick = onKakaoClick,
                             onLockerRect = onLockerRect,
                             onKakaoRect = onKakaoRect,
                             rotation = rotation

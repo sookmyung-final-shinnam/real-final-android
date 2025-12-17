@@ -11,7 +11,7 @@ import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.StoryStatus
+import com.veryshinnam.myapp.feature.character.model.VideoStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -144,7 +144,7 @@ class CharacterViewModel @Inject constructor(
                 storyId = -1,
                 title = "스토릭터와 노란 새의 모험",
                 imageUrl = ImageType.Resource(R.drawable.img_dummy_page),
-                storyStatus = StoryStatus.NONE,
+                videoStatus = VideoStatus.NONE,
                 videoUrl = null ,
                 imageYLink = "https://www.youtube.com/shorts/w5M0pxr-u-k",
                 videoYLink= null

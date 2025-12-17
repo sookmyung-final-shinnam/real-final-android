@@ -220,7 +220,7 @@ fun CharacterScreen(
                             isWarning = true
                             warnedStoryId = storyId },
                         onMakingClick = { isVideoMaking = true },
-                        onShareClick = { storyYLink ->
+                        onKakaoClick = { storyYLink ->
                             if (!storyYLink.isNullOrBlank()) {
                                 isLinkSharing = true
                                 youtubeLink = storyYLink

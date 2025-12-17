@@ -4,7 +4,7 @@ import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.common.model.ImageType
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.StoryStatus
+import com.veryshinnam.myapp.feature.character.model.VideoStatus
 
 fun CharacterDetailResult.toCharacterData(): CharacterData =
     CharacterData(
@@ -24,8 +24,8 @@ fun CharacterDetailResult.toStoriesData(): StoriesData =
         storyId = storyId,
         title = storyTitle,
         imageUrl = ImageType.Url(imageStoryUrl), // 기본값
-        storyStatus = StoryStatus.valueOf(videoStatus),
-        videoUrl = videoStoryUrl,
         imageYLink = imageYoutubeLink,
+        videoStatus = VideoStatus.valueOf(videoStatus),
+        videoUrl = videoStoryUrl,
         videoYLink = videoYoutubeLink
     )

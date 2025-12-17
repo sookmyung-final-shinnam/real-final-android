@@ -1,5 +1,5 @@
 package com.veryshinnam.myapp.feature.character.model
 
-enum class StoryStatus {
+enum class VideoStatus {
     NONE, MAKING, COMPLETED
 }
