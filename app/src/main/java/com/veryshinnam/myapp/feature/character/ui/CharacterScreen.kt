@@ -111,8 +111,8 @@ fun CharacterScreen(
 
     // 매뉴얼 변수
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
-    var lockerRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
-    var kakaoRect by remember { mutableStateOf<Rect?>(null) } // 카톡 버튼 위치
+    var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
+    var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
 
     // 가로 모드 고정
     SideEffect {
@@ -234,16 +234,16 @@ fun CharacterScreen(
                                 tabRect = rect
                             }
                         },
-                        onLockerRect = { rect ->
+                        onStoryRect = { rect ->
                             if (manualState == ManualState.START
-                                && manualStep == 3 && lockerRect == null) {
-                                lockerRect = rect
+                                && manualStep == 3 && storyRect == null) {
+                                storyRect = rect
                             }
                         },
-                        onKakaoRect = { rect ->
-                            if (manualState == ManualState.START && kakaoRect == null) {
-                                kakaoRect = rect
-                                Log.d("manual", "kakaoLRect final update: $rect")
+                        onVideoRect = { rect ->
+                            if (manualState == ManualState.START
+                                && manualStep == 3 && videoRect == null) {
+                                videoRect = rect
                             }
                         },
                         modifier = Modifier
@@ -393,7 +393,7 @@ fun CharacterScreen(
 
             // 동영상
             if (manualStep >= 5) {
-                lockerRect?.let { rect ->
+                videoRect?.let { rect ->
                     Box(
                         modifier = Modifier
                             .absoluteOffset(
@@ -412,12 +412,59 @@ fun CharacterScreen(
                         )
 
                         if (manualStep >= 6) {
+
+                            // 오버레이
                             Box(
                                 modifier = Modifier
                                     .matchParentSize()
                                     .background(Color.Black.copy(alpha = 0.5f))
                             )
+
+                            // 오른쪽 카톡 버튼
+                            Image(
+                                painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                                contentDescription = "카카오 이미지",
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(
+                                        with(density) { rect.width.toDp() * 0.35f },
+                                        with(density) { rect.height.toDp() * 0.35f }
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .zIndex(1f),
+                                contentScale = ContentScale.Fit
+                            )
                         }
+                    }
+                }
+
+                // 왼쪽 카톡 버튼
+                storyRect?.let { rect ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { rect.top.toDp() }
+                            )
+                            .size(
+                                with(density) { rect.width.toDp() },
+                                with(density) { rect.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                            contentDescription = "카카오 이미지",
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(
+                                    with(density) { rect.width.toDp() * 0.35f },
+                                    with(density) { rect.height.toDp() * 0.35f }
+                                )
+                                .clip(RoundedCornerShape(12.dp))
+                                .zIndex(1f),
+                            contentScale = ContentScale.Fit
+                        )
                     }
                 }
             }
@@ -443,7 +490,7 @@ fun CharacterScreen(
                         alpha = 0.5f,
                     )
                 } }
-                4 -> { lockerRect?.let { it ->
+                4 -> { videoRect?.let { it ->
                     // 잠금 해제
                     Box(
                         modifier = Modifier
@@ -464,10 +511,6 @@ fun CharacterScreen(
                         )
                     }
                 } }
-                6 -> {
-                    // 카톡 버튼
-
-                }
             }
         }
     }
