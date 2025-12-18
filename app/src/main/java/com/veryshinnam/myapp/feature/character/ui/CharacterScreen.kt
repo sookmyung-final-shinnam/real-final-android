@@ -437,8 +437,10 @@ fun CharacterScreen(
                         }
                     }
                 }
+            }
 
-                // 왼쪽 카톡 버튼
+            // 왼쪽 카톡 버튼
+            if (manualStep >= 6) {
                 storyRect?.let { rect ->
                     Box(
                         modifier = Modifier

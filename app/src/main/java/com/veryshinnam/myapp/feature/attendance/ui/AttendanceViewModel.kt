@@ -147,7 +147,7 @@ class AttendanceViewModel @Inject constructor(
                 LocalDate.of(today.year, today.month, 9),
                 LocalDate.of(today.year, today.month, 13),
                 LocalDate.of(today.year, today.month, 14),
-                LocalDate.of(today.year, today.month, 17),
+                LocalDate.of(today.year, today.month, 18),
                 LocalDate.of(today.year, today.month, 27),
             ),
             lastExchangeDate = LocalDate.of(today.year, today.month, 5)
