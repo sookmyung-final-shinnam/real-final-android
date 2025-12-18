@@ -113,7 +113,7 @@ class CollectionViewModel @Inject constructor(
     val manuals = listOf(
         ManualData("동화가 완성되면 여기 보관함에서 확인할 수 있어요.", ManualTarget.NONE),
         ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.ITEM),
-        ManualData("캐릭터 위 별 모양의 즐겨찾기를 누르면, 홈 화면에서 해당 캐릭터를 볼 수 있답니다.", ManualTarget.ICON),
+        ManualData("별 모양의 즐겨찾기를 누르면, 홈 화면에서 해당 캐릭터를 볼 수 있답니다.", ManualTarget.ICON),
         ManualData("앗! 같이 만들었던 동화가 여기 있네요. 장신남 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.IMAGE),
     )
 
@@ -134,7 +134,7 @@ class CollectionViewModel @Inject constructor(
                 name = "베네딕트",
                 image = ImageType.Resource(R.drawable.img_character_2),
                 gender = Gender.FEMALE,
-                isFavorite = true
+                isFavorite = false
             ),
             CollectionData(
                 id = -1,

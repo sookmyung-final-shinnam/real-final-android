@@ -115,9 +115,13 @@ fun CollectionScreen(
 
     LaunchedEffect(manualState) {
         when (manualState) {
-            ManualState.NONE -> { vm.fetchCollection(Gender.ALL) } // 실제 데이터
-            ManualState.START -> { vm.startManual() } // 매뉴얼 시작일 때만 더미 데이터
-            else -> { }
+            ManualState.NONE -> {
+                vm.fetchCollection(Gender.ALL)
+            } // 실제 데이터
+            ManualState.START -> {
+                vm.startManual()
+            } // 매뉴얼 시작일 때만 더미 데이터
+            else -> {}
         }
     }
 
@@ -192,12 +196,12 @@ fun CollectionScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.collectionDataList.size,
-                            itemImage =  painterResource(R.drawable.ic_character),
+                            itemImage = painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
                             animalDescription = "보관함 설명 토끼 이미지",
                             cardColor = colorResource(R.color.blue_gray),
-                            cardText =  "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
+                            cardText = "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
                             spanText = "캐릭터 5명",
                             spanColor = colorResource(R.color.blue_sky),
                             onItemRect = { rect ->
@@ -206,7 +210,7 @@ fun CollectionScreen(
                                 }
                             },
                             onAnimalRect = { rect ->
-                                if (manualState == ManualState.START  && rabbitRect == null) {
+                                if (manualState == ManualState.START && rabbitRect == null) {
                                     rabbitRect = rect
                                 }
                             },
@@ -226,7 +230,7 @@ fun CollectionScreen(
                         )
 
                         // 캐릭터 아이템 그리드 (3*3)
-                        Spacer(Modifier.height(spacerPadding /2))
+                        Spacer(Modifier.height(spacerPadding / 2))
 
                         if (isEmpty) { // 비어있는 경우 > 캐릭터 생성으로
                             Column(
@@ -259,7 +263,7 @@ fun CollectionScreen(
                                             fontSize = emptyTextStyle.fontSize * 1.2f,
                                             fontWeight = Bold
                                         ),
-                                        modifier = Modifier.padding(vertical = spacerPadding/2)
+                                        modifier = Modifier.padding(vertical = spacerPadding / 2)
                                     )
                                 }
                             }
@@ -298,7 +302,7 @@ fun CollectionScreen(
     if (isSimpleWarning) {
         WarningSheet(
             warningText = SimpleWarningText,
-            onDismiss = { isSimpleWarning = false}
+            onDismiss = { isSimpleWarning = false }
         )
     }
 
@@ -309,7 +313,8 @@ fun CollectionScreen(
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(
-                    Color.Black.copy(alpha = 0.5f))
+                    Color.Black.copy(alpha = 0.5f)
+                )
                 .then(
                     when (manualState) {
                         ManualState.START -> Modifier.pointerInput(Unit) {
@@ -382,19 +387,17 @@ fun CollectionScreen(
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Crop,
                         )
-
                         // 즐찾 버튼
-                        FavoriteButton (
+                        FavoriteButton(
                             modifier = Modifier
                                 .fillMaxWidth(0.44f)
                                 .aspectRatio(1f)
                                 .align(Alignment.TopStart)
                                 .padding(4.dp),
                             characterId = -1,
-                            isFavorite = false,
-                            onFavoriteClick = {  }
+                            isFavorite = true,
+                            onFavoriteClick = { }
                         )
-
                         // 캐릭터 이름
                         StrokeTitle(
                             titleText = "장신남",
@@ -422,8 +425,35 @@ fun CollectionScreen(
                         )
                     }
                 }
-                2-> {
 
+                2 -> {
+                    characterRect?.let { it ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { it.left.toDp() },
+                                    y = with(density) { it.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { it.width.toDp() },
+                                    with(density) { it.height.toDp() }
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                        ) {
+                            // 즐찾 버튼
+                            FavoriteButton(
+                                modifier = Modifier
+                                    .fillMaxWidth(0.44f)
+                                    .aspectRatio(1f)
+                                    .align(Alignment.TopStart)
+                                    .padding(4.dp)
+                                    .zIndex(20f),
+                                characterId = -1,
+                                isFavorite = true,
+                                onFavoriteClick = { vm.manualStep }
+                            )
+                        }
+                    }
                 }
             }
         }
