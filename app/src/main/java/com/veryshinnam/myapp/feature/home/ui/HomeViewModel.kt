@@ -180,22 +180,6 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-//    private fun getDummyUser(): UserData {
-//        return UserData(
-//            username = "짱신남",
-//            points = 99,
-//            characters = 5
-//        )
-//    }
-
-//    private fun getDummyFavorites(): List<FavoriteData> {
-//        return listOf(
-//            FavoriteData(id = 11, name = "지우", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_1.png"),
-//            FavoriteData(id = 20,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"),
-//            FavoriteData(id = 19,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_19.png"),
-//            FavoriteData(id = 18,  name = "민수", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")
-//        )
-//    }
 
     // --- 매뉴얼 관련 ---
     // 홈 화면 사용 매뉴얼

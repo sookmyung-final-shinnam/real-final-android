@@ -73,6 +73,7 @@ import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
+import org.threeten.bp.YearMonth
 
 @Composable
 fun CollectionScreen(
@@ -97,7 +98,7 @@ fun CollectionScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
-    var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
+    var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
     var characterRect by remember { mutableStateOf<Rect?>(null) } // 캐릭터 박스
@@ -113,10 +114,10 @@ fun CollectionScreen(
     }
 
     LaunchedEffect(manualState) {
-        if (manualState != ManualState.NONE) {
-            vm.startManual()               // 매뉴얼용 더미 데이터
-        } else {
-            vm.fetchCollection(Gender.ALL) // 실제 데이터
+        when (manualState) {
+            ManualState.NONE -> { vm.fetchCollection(Gender.ALL) } // 실제 데이터
+            ManualState.START -> { vm.startManual() } // 매뉴얼 시작일 때만 더미 데이터
+            else -> { }
         }
     }
 
@@ -356,6 +357,59 @@ fun CollectionScreen(
                 )
             }
 
+            if (manualStep >= 3) {
+                characterRect?.let { it ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { it.left.toDp() },
+                                y = with(density) { it.top.toDp() }
+                            )
+                            .size(
+                                with(density) { it.width.toDp() },
+                                with(density) { it.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                2.dp,
+                                colorResource(id = R.color.blue_gray),
+                                RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_character_5),
+                            contentDescription = "캐릭터 이미지",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                        )
+
+                        // 즐찾 버튼
+                        FavoriteButton (
+                            modifier = Modifier
+                                .fillMaxWidth(0.44f)
+                                .aspectRatio(1f)
+                                .align(Alignment.TopStart)
+                                .padding(4.dp),
+                            characterId = -1,
+                            isFavorite = false,
+                            onFavoriteClick = {  }
+                        )
+
+                        // 캐릭터 이름
+                        StrokeTitle(
+                            titleText = "장신남",
+                            titleColor = Color.White,
+                            strokeColor = Color.Black,
+                            titleTextStyle = MaterialTheme.typography.titleLarge,
+                            strokeWidth = 4f,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp) // 아래 패딩
+                        )
+                    }
+                }
+            }
+
             when (manualStep) {
                 1 -> {
                     itemRect?.let {
@@ -370,58 +424,6 @@ fun CollectionScreen(
                 }
                 2-> {
 
-                }
-                3 -> {
-                    characterRect?.let { it ->
-                        Box(
-                            modifier = Modifier
-                                .absoluteOffset(
-                                    x = with(density) { it.left.toDp() },
-                                    y = with(density) { it.top.toDp() }
-                                )
-                                .size(
-                                    with(density) { it.width.toDp() },
-                                    with(density) { it.height.toDp() }
-                                )
-                                .clip(RoundedCornerShape(16.dp))
-                                .border(
-                                    2.dp,
-                                    colorResource(id = R.color.blue_gray),
-                                    RoundedCornerShape(16.dp)
-                                )
-                        ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_character_5),
-                                contentDescription = "캐릭터 이미지",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                            )
-
-                            // 즐찾 버튼
-                            FavoriteButton (
-                                modifier = Modifier
-                                    .fillMaxWidth(0.44f)
-                                    .aspectRatio(1f)
-                                    .align(Alignment.TopStart)
-                                    .padding(4.dp),
-                                characterId = -1,
-                                isFavorite = false,
-                                onFavoriteClick = {  }
-                            )
-
-                            // 캐릭터 이름
-                            StrokeTitle(
-                                titleText = "스토릭터",
-                                titleColor = Color.White,
-                                strokeColor = Color.Black,
-                                titleTextStyle = MaterialTheme.typography.titleLarge,
-                                strokeWidth = 4f,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 8.dp) // 아래 패딩
-                            )
-                        }
-                    }
                 }
             }
         }

@@ -47,6 +47,7 @@ fun AttendanceCalender(
     lastExchangeDate: LocalDate?,
     onPrevMonth: () -> Unit,
     onNextMonth: () -> Unit,
+    isManual: Boolean = false,
     textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = FontWeight.Bold),
     dateTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
     sectionPadding:Dp = 5.dp,   // 섹션 패딩, 요일 행 패딩
@@ -193,8 +194,8 @@ fun AttendanceCalender(
                                     val isToday = date == LocalDate.now()
 
                                     Image(
-                                        painter = if (isToday) painterResource(R.drawable.img_stamp_shining_on)
-                                        else painterResource(R.drawable.img_stamp_shining_off),
+                                        painter = if (!isManual && isToday) painterResource(R.drawable.img_stamp_shining_on)
+                                            else painterResource(R.drawable.img_stamp_shining_off),
                                         contentDescription = if (isToday) "오늘 출석 도장" else "출석 도장",
                                         modifier = Modifier
                                             .fillMaxSize()

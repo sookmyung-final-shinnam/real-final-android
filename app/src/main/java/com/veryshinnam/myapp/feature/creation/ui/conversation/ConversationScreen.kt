@@ -174,10 +174,12 @@ fun ConversationScreen(
                     // 진행바 (START, END 제외)
                     if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
                         StepProgressBar(
+                            radius = 0.068f,
+                            line = 24f,
                             steps = 4,                        // 총 반복 횟수
                             currentStep = state.loopStep,     // 현재 진행 단계
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)  // 진행 바 길이
+                                .fillMaxWidth(0.75f)  // 진행 바 길이
                                 .fillMaxHeight(0.15f)
                                 .zIndex(2f)
                                 .align(Alignment.TopCenter),

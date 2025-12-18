@@ -13,6 +13,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -23,6 +24,8 @@ import com.veryshinnam.myapp.R
 fun StepProgressBar(
     steps: Int,             // 총 진행 단계
     currentStep: Int,       // 현재 진행 단계
+    radius: Float =  0.05f, // 원 사이즈
+    line: Float = 16f,      // 선 두께
     lineColor: Color = colorResource(R.color.main_orange), // 선 색, 원 색
     prevColor: Color = colorResource(R.color.main_orange_50), // 이전 단계 색
     modifier: Modifier
@@ -36,7 +39,7 @@ fun StepProgressBar(
     )
 
     BoxWithConstraints(modifier = modifier) {
-        val circle = maxWidth * 0.05f       // 숫자 원 (반지름)
+        val circle = maxWidth * radius       // 숫자 원 (반지름)
         val edgePadding = maxWidth * 0.12f  // 양쪽 여백
         val imageSize = circle * 3f         // 이미지 크기
         val interval = (maxWidth - edgePadding * 2) / (steps - 1) // 각 단계 사이의 간격
@@ -53,7 +56,8 @@ fun StepProgressBar(
                 color = lineColor,
                 start = Offset(0f, y),
                 end = Offset(size.width, y),
-                strokeWidth = 8f
+                strokeWidth = line,
+                cap = StrokeCap.Round
             )
 
             // 숫자 원

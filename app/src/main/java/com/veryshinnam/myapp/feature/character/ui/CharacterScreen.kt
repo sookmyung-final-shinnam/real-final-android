@@ -71,6 +71,7 @@ import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
+import org.threeten.bp.YearMonth
 
 
 @Composable
@@ -110,6 +111,7 @@ fun CharacterScreen(
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
 
     // 매뉴얼 변수
+    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
@@ -122,11 +124,15 @@ fun CharacterScreen(
     }
 
     // 캐릭터 id 바뀌면 재로딩
-    LaunchedEffect(id, manualState) {
-        if (manualState != ManualState.NONE || id == -1L) {
-            vm.startManual()
-        } else {
-            vm.fetchCharacter(id)
+    LaunchedEffect(id) {
+        if (manualState == ManualState.NONE) {
+            vm.fetchCharacter(id) // 실제 데이터
+        }
+    }
+
+    LaunchedEffect(manualState) {
+        if (manualState == ManualState.START) {
+            vm.startManual() // 매뉴얼 시작일 때만 더미 데이터
         }
     }
 
@@ -329,7 +335,7 @@ fun CharacterScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { onStopManual() }
                         }
 
                         else -> Modifier
@@ -344,8 +350,8 @@ fun CharacterScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual }
                             else -> {}
                         }
                     }

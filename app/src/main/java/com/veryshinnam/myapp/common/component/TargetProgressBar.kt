@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.common.component
 
-import android.R.attr.textSize
 import android.graphics.Paint
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
@@ -13,6 +12,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
@@ -64,7 +64,8 @@ fun TargetProgressBar(
                 color = lineColor,
                 start = Offset(0f, y),
                 end = Offset(size.width, y),
-                strokeWidth = 8f
+                strokeWidth = 16f,
+                cap = StrokeCap.Round
             )
 
             // 숫자 원
