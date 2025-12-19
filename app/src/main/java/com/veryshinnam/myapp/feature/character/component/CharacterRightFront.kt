@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.character.component
 
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -25,7 +26,7 @@ fun CharacterRightFront(
     character: CharacterData, // 캐릭터 정보
     nameTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
     mainTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold, textAlign = TextAlign.Center),
-    subTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold)
+    subTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold)
 ) {
         Column(
             modifier = modifier,
@@ -54,17 +55,23 @@ fun CharacterRightFront(
             // --- 캐릭터 기본 정보
             // 성별 & 나이
             Column(
+                modifier = Modifier.weight(1f),
                 verticalArrangement = Arrangement.spacedBy(5.dp, Alignment.Bottom),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
 
                 // 성격
-                Text(
-                    text = character.personality,
-                    style = mainTextStyle.copy(
-                        lineHeight = (mainTextStyle.fontSize.value * 1.1).sp
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        text = character.personality,
+                        style = mainTextStyle.copy(
+                            lineHeight = (mainTextStyle.fontSize.value * 1.1).sp
+                        )
                     )
-                )
+                }
 
                 // 생성일
                 Text(

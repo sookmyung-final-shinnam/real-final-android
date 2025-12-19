@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -31,6 +32,7 @@ fun StrokeTitle(
         // 윤곽선
         Text(
             text = titleText,
+            textAlign = TextAlign.Center,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = strokeColor,
@@ -41,6 +43,7 @@ fun StrokeTitle(
         // 실제 텍스트
         Text(
             text = titleText,
+            textAlign = TextAlign.Center,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = titleColor
