@@ -98,6 +98,7 @@ fun ConversationScreen(
     var isWarning by remember { mutableStateOf(false) }   // 경고창
 
     //  매뉴얼
+    val onStopManual: () -> Unit = { vm.hideManual(); onBack() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
     var textRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
     var imageRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
@@ -344,9 +345,11 @@ fun ConversationScreen(
                             ManualState.START -> Modifier.pointerInput(Unit) {
                                 detectTapGestures { vm.nextManual() }
                             }
+
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.hideManual() }
+                                detectTapGestures { onStopManual() }
                             }
+
                             else -> Modifier
                         }
                     }
@@ -361,8 +364,8 @@ fun ConversationScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }

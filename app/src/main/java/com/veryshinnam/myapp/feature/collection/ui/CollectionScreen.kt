@@ -98,6 +98,7 @@ fun CollectionScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
+    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
     var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
@@ -322,7 +323,7 @@ fun CollectionScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { onStopManual() }
                         }
 
                         else -> Modifier
@@ -337,8 +338,9 @@ fun CollectionScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
+
                             else -> {}
                         }
                     }
