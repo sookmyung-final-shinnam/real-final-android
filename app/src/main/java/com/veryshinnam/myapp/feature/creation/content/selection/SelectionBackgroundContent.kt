@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
@@ -33,7 +34,7 @@ fun SelectionBackgroundContent (
     spacePadding: Dp = 24.dp
 ) {
     var customInput by remember { mutableStateOf("") }
-    val initBackgrounds = listOf("숲 속","바다","왕국","학교","집","우주")
+    val initBackgrounds = DashboardInit.BACKGROUNDS
 
     Column(
         modifier = modifier,

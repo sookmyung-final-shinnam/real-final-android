@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.dashboard.ui.storybase
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -27,16 +26,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.dashboard.model.EmotionItem
-import com.veryshinnam.myapp.feature.dashboard.model.LanguageItem
-import com.veryshinnam.myapp.feature.dashboard.ui.storybase.language.LanguageGraph
-import com.veryshinnam.myapp.feature.dashboard.ui.storybase.emotion.EmotionGraph
 
 /** 스토리 학습/정서 분석 카드 아이템 (앞/뒤 전환 기능) */
 @Composable
 fun StoryCardItem(
-    lang: LanguageItem,
-    emotion: EmotionItem,
+//    lang: LanguageItem,
+//    emotion: EmotionItem,
     isCenter: Boolean = false,
     onClick: () -> Unit
 ) {
@@ -92,7 +87,7 @@ fun StoryCardItem(
                     // ---------------------- 앞면 : 언어 분석 ----------------------
                     Text("📘 언어 발달 / 학습", style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(16.dp))
-                    LanguageGraph(lang)
+//                    LanguageGraph(lang)
 
                     Spacer(Modifier.weight(1f))
                     Text(
@@ -106,7 +101,7 @@ fun StoryCardItem(
                     // ---------------------- 뒷면 : 정서 분석 ----------------------
                     Text("😊 정서 분석", style = MaterialTheme.typography.titleLarge)
                     Spacer(Modifier.height(16.dp))
-                    EmotionGraph(emotion)
+//                    EmotionGraph(emotion)
 
                     Spacer(Modifier.weight(1f))
                     Text(

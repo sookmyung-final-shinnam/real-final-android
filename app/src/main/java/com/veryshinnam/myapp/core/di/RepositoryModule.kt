@@ -6,6 +6,8 @@ import com.veryshinnam.myapp.feature.character.data.repository.CharacterReposito
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepositoryImpl
 import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepository
 import com.veryshinnam.myapp.feature.creation.data.repository.ConversationRepositoryImpl
+import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepository
+import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepositoryImpl
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepositoryImpl
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepository
@@ -51,4 +53,8 @@ abstract class RepositoryModule {
     @Binds
     @Singleton
     abstract fun bindAttendanceRepository(impl: AttendanceRepositoryImpl): AttendanceRepository
+
+    @Binds
+    @Singleton
+    abstract fun bindDashboardRepository(impl: DashboardRepositoryImpl): DashboardRepository
 }

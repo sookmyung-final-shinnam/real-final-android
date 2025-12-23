@@ -1,7 +1,7 @@
-package com.veryshinnam.myapp.feature.dashboard.data
+package com.veryshinnam.myapp.feature.dashboard.data.api
 
 import com.veryshinnam.myapp.core.network.BaseResponse
-import com.veryshinnam.myapp.feature.dashboard.model.DashboardResult
+import com.veryshinnam.myapp.feature.dashboard.data.dto.DashboardResult
 import retrofit2.http.GET
 
 interface DashboardApi {

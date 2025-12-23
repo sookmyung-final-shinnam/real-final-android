@@ -102,8 +102,7 @@ fun SelectionFaceContent(
             onLeftClick = { onPrevClick() },  // 이전 단계로 이동
             onRightClick = {
                 if (isValid) {
-                    onWarning("선택한 정보로 동화를 시작할까요?", "시작하기")
-                    // > 아이템 1개가 소진됩니다.
+                    onWarning("선택한 정보로 동화를 시작할까요?\n도토리 1개가 사용됩니다.", "시작하기")
                 }
                 else {
                     onSimpleWarning("아직 머리 스타일을 선택하지 않았어요!")
