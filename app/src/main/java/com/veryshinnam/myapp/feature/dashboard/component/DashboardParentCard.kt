@@ -32,7 +32,7 @@ fun DashboardParentCard(
     username: String,
     advice: String,
     titleTextStyle: TextStyle,
-    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
     cardCorner: Dp = 16.dp,
     cardColor: Color = Color.White,
     borderWidth: Dp = 4.dp,

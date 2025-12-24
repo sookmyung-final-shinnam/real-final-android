@@ -38,7 +38,7 @@ import kotlin.math.sin
 
 // 대시보드 통계 분석 - 도넛 차트
 @Composable
-fun DashBoardStaticsAnalysis(
+fun DashBoardStaticsCard(
     title: String,
     chartStats: List<ChartStatData>, // 비육
     listStats: List<StatData>,       // 횟수

@@ -5,7 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepository
 import com.veryshinnam.myapp.feature.dashboard.model.ChartStatData
+import com.veryshinnam.myapp.feature.dashboard.model.EmotionData
+import com.veryshinnam.myapp.feature.dashboard.model.LanguageData
 import com.veryshinnam.myapp.feature.dashboard.model.StatData
+import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
+import com.veryshinnam.myapp.feature.dashboard.model.WordsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -35,21 +39,36 @@ class DashboardViewModel @Inject constructor(
 
                 // 테마용 차트 정보 변환
                 val themeChart =  groupByCustom(
-                    stats = dashboard.backgroundStats,
+                    stats = dashboard.themeStats,
                     initList = DashboardInit.THEMES,
                     customLabel = DashboardInit.CUSTOM)
 
                 // 배경용 차트 정보 변환
                 val backgroundChart = groupByCustom(
-                        stats = dashboard.backgroundStats,
-                        initList = DashboardInit.BACKGROUNDS,
-                        customLabel = DashboardInit.CUSTOM
-                    )
+                    stats = dashboard.backgroundStats,
+                    initList = DashboardInit.BACKGROUNDS,
+                    customLabel = DashboardInit.CUSTOM
+                )
+
+                // 개별 스토리 분석
+                val storyAnalysis = toStoryAnalysisData(
+                    dashboard.emotionList,
+                    dashboard.languageList)
+
+                // 전체 스토리 단어 리스트 추출
+                val wordsAnalysis = toWordsData(dashboard.languageList)
 
                 _uiState.value = DashboardUiState.Success(
-                    dashboardData = dashboard,
                     themeChart = toChartStats(themeChart),
-                    backgroundChart = toChartStats(backgroundChart)
+                    themeList = dashboard.themeStats,
+                    backgroundChart = toChartStats(backgroundChart),
+                    backgroundList = dashboard.backgroundStats,
+
+                    storyAnalysis = storyAnalysis,
+                    storyIndex = 0,
+                    wordsAnalysis = wordsAnalysis,
+
+                    advice = dashboard.parentAdvice
                 )
 
             } catch (e: Exception) {
@@ -93,6 +112,67 @@ class DashboardViewModel @Inject constructor(
             ChartStatData(
                 name = it.name,
                 ratio = it.count / total
+            )
+        }
+    }
+
+    fun toStoryAnalysisData(
+        emotionData: List<EmotionData>,
+        languageData: List<LanguageData>
+    ): List<StoryAnalysisData> {
+
+        val emotionMap = emotionData.associateBy { it.storyId }
+
+        return languageData.map { language ->
+            val emotion = emotionMap[language.storyId]
+
+            StoryAnalysisData(
+                storyId = language.storyId,
+                createdAt = language.createdAt,
+                attempts = language.attempts,
+                avgAttemptPerStage = language.avgAttemptPerStage,
+                avgAnswerLength = language.avgAnswerLength,
+                emotions = emotion?.emotions.orEmpty(),
+                summary = emotion?.summary.orEmpty()
+            )
+        }
+    }
+
+    fun toWordsData(
+        languageData: List<LanguageData>
+    ): List<WordsData> {
+        return languageData.map {
+            WordsData(
+                storyId = it.storyId,
+                createdAt = it.createdAt,
+                newWords = it.newWords,
+                count = it.newWords.size
+            )
+        }
+    }
+
+    // 다음 스토리 분석 이동
+    fun nextStory() {
+        val state = _uiState.value
+        if (state is DashboardUiState.Success) {
+            val size = state.storyAnalysis.size
+            if (size == 0) return
+
+            _uiState.value = state.copy(
+                storyIndex = (state.storyIndex + 1) % size
+            )
+        }
+    }
+
+    // 이전 스토리 분석 이동
+    fun prevStory() {
+        val state = _uiState.value
+        if (state is DashboardUiState.Success) {
+            val size = state.storyAnalysis.size
+            if (size == 0) return
+
+            _uiState.value = state.copy(
+                storyIndex = (state.storyIndex - 1 + size) % size
             )
         }
     }

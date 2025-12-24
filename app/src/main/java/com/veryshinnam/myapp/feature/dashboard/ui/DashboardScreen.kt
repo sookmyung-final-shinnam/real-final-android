@@ -2,12 +2,9 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
-import androidx.compose.foundation.background
-import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -30,9 +27,10 @@ import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.core.orientation.OrientationManager
-import com.veryshinnam.myapp.feature.dashboard.component.DashBoardStaticsAnalysis
-import com.veryshinnam.myapp.feature.dashboard.component.DashboardLanguageAnalysis
+import com.veryshinnam.myapp.feature.dashboard.component.DashBoardStaticsCard
+import com.veryshinnam.myapp.feature.dashboard.component.DashboardStoryCard
 import com.veryshinnam.myapp.feature.dashboard.component.DashboardParentCard
+import com.veryshinnam.myapp.feature.dashboard.component.DashboardWordsCard
 
 /** 메인 대시보드 화면 */
 @Composable
@@ -40,12 +38,8 @@ fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     onCharacterNavigate: (Long) -> Unit,
-    cardCorner: Dp = 16.dp,
-    cardColor: Color = Color.White,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontWeight = Bold),
-    borderWidth: Dp = 4.dp,
-    borderCorner: Dp = 16.dp,
-    borderColor: Color = colorResource(R.color.deep_green),
+    spacer: Dp = 6.dp,
     vm: DashboardViewModel = hiltViewModel(),
 ) {
     // 상태 구독
@@ -126,34 +120,45 @@ fun DashboardScreen(
                             cardText = "\${username}의 최대 관심사는 \${username}와 \${username}야",
                         )
 
-                        Row {
+                        Row(
+                            horizontalArrangement = Arrangement.spacedBy(spacer)
+                        ) {
                             // 왼쪽 테마
-                            DashBoardStaticsAnalysis(
+                            DashBoardStaticsCard(
                                 title = "주제",
                                 chartStats = state.themeChart,
-                                listStats = state.dashboardData.themeStats,
+                                listStats = state.themeList,
                                 modifier = Modifier.weight(1f)
                             )
 
                             // 오른쪽 배경
-                            DashBoardStaticsAnalysis(
+                            DashBoardStaticsCard(
                                 title = "배경",
                                 chartStats = state.backgroundChart,
-                                listStats = state.dashboardData.backgroundStats,
+                                listStats = state.backgroundList,
                                 modifier = Modifier.weight(1f)
                             )
                         }
 
-                        // -- 언어 분석
-                        DashboardLanguageAnalysis(
+                        // 스토리별 언어 + 감정 분석
+                        DashboardStoryCard(
+                            story = state.storyAnalysis[state.storyIndex],
+                            onPrevClick = { vm.prevStory() },
+                            onNextClick = { vm.nextStory() },
                             titleTextStyle = titleTextStyle,
+                            modifier = Modifier
+                        )
+
+                        // 스토리 전체 막대 그래프
+                        DashboardWordsCard(
+                            wordsList = state.wordsAnalysis,
                             modifier = Modifier
                         )
 
                         // 부모 조언 분석
                         DashboardParentCard(
                             username = "username",
-                            advice = state.dashboardData.parentAdvice,
+                            advice = state.advice,
                             titleTextStyle = titleTextStyle,
                             modifier = Modifier
                         )
@@ -163,66 +168,3 @@ fun DashboardScreen(
         }
     }
 }
-
-/** 대시보드 내용
-@Composable
-fun DashboardContent(
-    data: DashboardResult,
-    onCharacterClick: (Long) -> Unit
-) {
-    Column(
-        modifier = Modifier
-            .verticalScroll(rememberScrollState())
-            .padding(horizontal = 20.dp, vertical = 24.dp)
-    ) {
-
-        // 1. 관심사 통계 (도넛 차트)
-        InterestSection(
-            themeStats = data.themeStats,
-            backgroundStats = data.backgroundStats
-        )
-
-        Spacer(Modifier.height(32.dp))
-
-        // 2. 스토리에서 학습한 언어 + 정서 분석
-        Text("📘 스토리 언어 학습 & 정서 분석", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(12.dp))
-
-        // storyId 기준 매칭 (동화와 언어/감정이 연결되는 구조)
-        val stories = data.languageStats.mapNotNull { lang ->
-            val emo = data.emotionsStats.find { it.storyId == lang.storyId }
-            emo?.let { lang to emo }
-        }
-
-        StoryLearningSection(stories) { lang, emotion ->
-            onCharacterClick(lang.storyId)
-        }
-
-        Spacer(Modifier.height(32.dp))
-
-        // 3. 부모 조언
-        Text("💡 부모 조언", style = MaterialTheme.typography.titleMedium)
-        Spacer(Modifier.height(12.dp))
-        ParentAdviceSection(data.parentAdvice)
-    }
-
-}
-
-/** 부모 조언 섹션 */
-@Composable
-fun ParentAdviceSection(advice: String) {
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        colors = CardDefaults.cardColors(
-            containerColor = colorResource(R.color.lemon_yellow)
-        ),
-        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
-        shape = RoundedCornerShape(14.dp)
-    ) {
-        Text(
-            text = advice,
-            modifier = Modifier.padding(16.dp),
-            style = MaterialTheme.typography.bodyLarge
-        )
-    }
-}*/
