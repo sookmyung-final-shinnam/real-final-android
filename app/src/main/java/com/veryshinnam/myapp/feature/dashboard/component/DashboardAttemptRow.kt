@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.dashboard.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -7,7 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
@@ -23,6 +24,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -30,27 +32,31 @@ import com.veryshinnam.myapp.R
 fun DashboardAttemptRow(
     title: String,
     count: Int,
-    orangeColor: Color = colorResource(R.color.main_orange),
+    spacer: Dp = 12.dp,
+    horizontalPadding: Dp = 16.dp,
+    successColor: Color = colorResource(R.color.main_orange),
     failColor: Color = Color.LightGray,
     titleTextStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = Bold),
-    subTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    subTextStyle: TextStyle,
     modifier: Modifier = Modifier
 ) {
-    val iconCount = count.coerceIn(1, 3) // 1 ~ 3 제한
+    val iconCount = count.coerceIn(1, 3) // 시도 횟수 1 ~ 3 제한
 
     Row(
-        modifier = modifier.fillMaxWidth(),
+        modifier = modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
-        // 기, 승, 전, 결
+        // 기, 승, 전, 결 라벨
         Text(
             text = title,
             style = titleTextStyle
         )
-        Spacer(Modifier.width(4.dp))
 
+        Spacer(Modifier.width(spacer))
+
+        // 시도 아이콘
         Row(
             modifier = Modifier
                 .weight(1f)
@@ -75,14 +81,14 @@ fun DashboardAttemptRow(
                     Icon(
                         imageVector = if (isLast) Icons.Outlined.CheckCircle else Icons.Outlined.Cancel,
                         contentDescription = null,
-                        tint = if (isLast) orangeColor else failColor,
-                        modifier = Modifier.fillMaxSize()
+                        tint = if (isLast) successColor else failColor,
+                        modifier = Modifier.fillMaxSize(0.8f)
                     )
                 }
             }
 
-            // 횟수 3보다 적을 때 빈 공간 채우기
-            repeat(3 - iconCount) {
+            // 4칸 나머지 빈 공간 채우기
+            repeat(4 - iconCount) {
                 Spacer(
                     modifier = Modifier
                         .weight(1f)
@@ -91,7 +97,7 @@ fun DashboardAttemptRow(
             }
         }
 
-        // "N회"
-        Text(text = "${count}회", style = subTextStyle.copy(color = orangeColor))
+        // 횟수
+        Text(text = "${count}회", style = subTextStyle.copy(color = successColor))
     }
 }

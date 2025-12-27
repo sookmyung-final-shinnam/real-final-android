@@ -6,6 +6,6 @@ data class StoryAnalysisData(
     val attempts: Map<Attempt, Int>,
     val avgAttemptPerStage: Double,
     val avgAnswerLength: Int,
-    val emotions: Map<Emotion, Float>,
+    val emotions: List<ChartStatData>,
     val summary: String
 )

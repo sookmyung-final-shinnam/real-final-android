@@ -40,6 +40,8 @@ fun DashboardScreen(
     onCharacterNavigate: (Long) -> Unit,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontWeight = Bold),
     spacer: Dp = 6.dp,
+    horizontalPadding: Dp = 16.dp,
+    sectionSpacer: Dp = 26.dp,
     vm: DashboardViewModel = hiltViewModel(),
 ) {
     // 상태 구독
@@ -107,8 +109,8 @@ fun DashboardScreen(
                     Column(
                         modifier = Modifier
                             .verticalScroll(rememberScrollState())
-                            .padding(horizontal = 16.dp),
-                        verticalArrangement = Arrangement.Top
+                            .padding(horizontal = horizontalPadding),
+                        verticalArrangement = Arrangement.spacedBy(spacer)
                     ) {
                         // 대시보드 상단
                         UserInfo(
@@ -140,7 +142,8 @@ fun DashboardScreen(
                             )
                         }
 
-                        // 스토리별 언어 + 감정 분석
+                        Spacer(Modifier.height(sectionSpacer))
+                        // 섹션 2: 스토리별 언어 + 감정 분석
                         DashboardStoryCard(
                             story = state.storyAnalysis[state.storyIndex],
                             onPrevClick = { vm.prevStory() },
@@ -155,7 +158,8 @@ fun DashboardScreen(
                             modifier = Modifier
                         )
 
-                        // 부모 조언 분석
+                        Spacer(Modifier.height(sectionSpacer))
+                        // 섹션 3: 부모 조언 분석
                         DashboardParentCard(
                             username = "username",
                             advice = state.advice,

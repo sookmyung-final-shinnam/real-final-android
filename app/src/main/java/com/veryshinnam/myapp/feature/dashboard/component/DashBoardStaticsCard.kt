@@ -146,6 +146,7 @@ fun DashBoardStaticsCard(
                         style = Stroke(width = donutWith.toPx(), cap = StrokeCap.Butt)
                     )
 
+                    // -- 라벨 그리기
                     // 라벨 위치 계산
                     val middle = start + sweep / 2f
                     val angleRad = Math.toRadians(middle.toDouble())
@@ -163,7 +164,6 @@ fun DashBoardStaticsCard(
                     }
                     val lineHeight = paint.textSize * 1.2f
 
-                    // -- 라벨 그리기
                     // 이름
                     drawContext.canvas.nativeCanvas.drawText(
                         item.name,

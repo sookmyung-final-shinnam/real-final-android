@@ -11,8 +11,12 @@ fun DashboardResult.toDashboardData(): DashboardData {
     return DashboardData(
         backgroundStats = backgroundStats.map { it.toStatData() },
         themeStats = themeStats.map { it.toStatData() },
-        languageList = languageStats.map { it.toLanguageData() },
-        emotionList = emotionsStats.map { it.toEmotionData() },
+        languageList = languageStats
+            .take(5)    // 5개 제한
+            .map { it.toLanguageData() },
+        emotionList = emotionsStats
+            .take(5)    // 5개 제한
+            .map { it.toEmotionData() },
         parentAdvice = parentAdvice
     )
 }
@@ -27,7 +31,7 @@ fun StatItemResult.toStatData(): StatData {
 fun LanguageItemResult.toLanguageData(): LanguageData {
     return LanguageData(
         storyId = storyId,
-        createdAt = createdAt,
+        createdAt = createdAt.substring(0, 10),
         attempts =  mapOf(
             Attempt.GI to attemptStats.giCount,
             Attempt.SEUNG to attemptStats.seungCount,
@@ -43,7 +47,7 @@ fun LanguageItemResult.toLanguageData(): LanguageData {
 fun EmotionItemResult.toEmotionData(): EmotionData {
     return EmotionData(
         storyId = storyId,
-        createdAt = createdAt,
+        createdAt = createdAt.substring(0, 10),
         emotions = mapOf(
             Emotion.JOY to joy.toFloat(),
             Emotion.SADNESS to sadness.toFloat(),

@@ -126,13 +126,23 @@ class DashboardViewModel @Inject constructor(
         return languageData.map { language ->
             val emotion = emotionMap[language.storyId]
 
+            val chartStats: List<ChartStatData> =
+                emotion?.emotions
+                    ?.map { (emotionType, value) ->
+                        ChartStatData(
+                            name = emotionType.type,
+                            ratio = value
+                        )
+                    }
+                    ?: emptyList()
+
             StoryAnalysisData(
                 storyId = language.storyId,
                 createdAt = language.createdAt,
                 attempts = language.attempts,
                 avgAttemptPerStage = language.avgAttemptPerStage,
                 avgAnswerLength = language.avgAnswerLength,
-                emotions = emotion?.emotions.orEmpty(),
+                emotions = chartStats,
                 summary = emotion?.summary.orEmpty()
             )
         }

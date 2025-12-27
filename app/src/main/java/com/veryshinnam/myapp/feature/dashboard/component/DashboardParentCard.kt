@@ -3,9 +3,11 @@ package com.veryshinnam.myapp.feature.dashboard.component
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitFirstDown
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
@@ -31,8 +33,10 @@ import com.veryshinnam.myapp.R
 fun DashboardParentCard(
     username: String,
     advice: String,
+    spacer: Dp = 6.dp,
+    horizontalPadding: Dp = 16.dp,
     titleTextStyle: TextStyle,
-    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
+    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
     cardCorner: Dp = 16.dp,
     cardColor: Color = Color.White,
     borderWidth: Dp = 4.dp,
@@ -42,14 +46,18 @@ fun DashboardParentCard(
 ) {
     var pressed by remember { mutableStateOf(false) }
 
-    Column(modifier = modifier.fillMaxWidth()) {
+    Column(
+        modifier = modifier.fillMaxWidth(),
+        verticalArrangement = Arrangement.spacedBy(spacer)
+    ) {
         Box(
             modifier = Modifier
                 .fillMaxWidth()
                 .background(borderColor, shape = RoundedCornerShape(cardCorner)),
             contentAlignment = Alignment.CenterStart
         ) {
-            Text("${username}의 부모님께", style = titleTextStyle)
+            Text("${username}의 부모님께", style = titleTextStyle,
+                modifier = Modifier.padding(vertical = horizontalPadding))
 
             // 터치 영역
             Box(
@@ -92,7 +100,8 @@ fun DashboardParentCard(
                     shape = RoundedCornerShape(borderCorner)
                 )
         ) {
-            Text(text = advice, style = adviceTextStyle)
+            Text(text = advice, style = adviceTextStyle,
+                modifier = Modifier.padding(horizontalPadding))
 
             if (pressed) {
                 Box( modifier = modifier
