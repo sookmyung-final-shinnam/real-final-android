@@ -198,7 +198,6 @@ fun DashboardScreen(
 
                             DashboardStoryCard(
                                 story = state.storyAnalysis[state.storyIndex],
-                                titleTextStyle = titleTextStyle,
                                 modifier = Modifier
                             )
                         }
@@ -208,7 +207,6 @@ fun DashboardScreen(
                         DashboardParentCard(
                             username = "username",
                             advice = state.advice,
-                            titleTextStyle = titleTextStyle,
                             modifier = Modifier
                         )
                     }

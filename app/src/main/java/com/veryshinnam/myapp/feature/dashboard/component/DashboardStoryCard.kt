@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.dashboard.component
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -35,8 +36,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -62,7 +66,8 @@ fun DashboardStoryCard(
     borderColor: Color = colorResource(R.color.deep_green),
     orangeColor: Color = colorResource(R.color.main_orange),
     lGreenColor: Color = colorResource(R.color.light_green),
-    titleTextStyle: TextStyle,
+    imageWidth: Float = 0.25f,
+    titleTextStyle: TextStyle= MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     subTitleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     linkTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = orangeColor, fontWeight = SemiBold, textDecoration = Underline),
     summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
@@ -79,55 +84,49 @@ fun DashboardStoryCard(
     val barHeight = 100.dp
 
     Column(
-        modifier = Modifier.fillMaxWidth().padding(horizontal = cardCorner),
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(horizontal = cardCorner),
         verticalArrangement = Arrangement.spacedBy(spacer)
     ) {
 
-        // 제목
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    borderColor,
-                    shape = RoundedCornerShape(cardCorner)
-                ),
-            contentAlignment = Alignment.CenterStart
+            modifier = Modifier.zIndex(20f),
+            contentAlignment = Alignment.BottomStart
         ) {
-            Text("동화 언어 및 정서 분석", style = titleTextStyle,
-                modifier = Modifier.padding(vertical = cardCorner))
-
-            // 도움말 터치 영역
-            Box(
-                modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterEnd)
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitFirstDown()
-                                titlePressed = true
-
-                                // Up 또는 Cancel 대기
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    if (event.changes.all { !it.pressed }) {
-                                        break
-                                    }
-                                }
-
-                                titlePressed = false
-                            }
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
+            Box {
+                // 제목
+                DashboardCardTitle(
+                    title = "동화 언어 및 정서 분석",
+                    borderColor = borderColor,
+                    cardCorner = cardCorner,
+                    spacer = imageWidth,
+                    modifier = Modifier.fillMaxWidth()
+                )
                 // 원형 도움말
-                DashboardHelpButton()
+                DashboardHelpButton(
+                    onPress = {pressed ->
+                        titlePressed = pressed
+                    },
+                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = spacer*2)
+                )
             }
+
+            // 이미지
+            Image(
+                painter = painterResource(R.drawable.img_book),
+                contentDescription = "책 이미지",
+                modifier = Modifier
+                    .fillMaxWidth(imageWidth)
+                    .graphicsLayer {
+                        scaleX = 1.3f
+                        scaleY = 1.3f
+                        translationX = -12.dp.toPx() // 왼쪽으로 이동
+                        translationY = 22.dp.toPx() // 아래로 이동
+                    },
+                contentScale = ContentScale.Fit
+            )
         }
-
-        // 내용
-
 
         // 시도횟수 및 감정분석
         Box(
@@ -172,59 +171,22 @@ fun DashboardStoryCard(
 
                 Spacer(Modifier.height(spacer*2)) // 간격
 
-                Box(modifier = Modifier.fillMaxWidth()
-                    .wrapContentHeight().padding(horizontal = verticalPadding)) {
-//                    if (isMore) {
-//                        Column(modifier = Modifier
-//                            .matchParentSize()
-//                            .zIndex(10f)
-//                            .background(lGreenColor)) {
-//                            story.newWords.forEach { word ->
-//                                Text(
-//                                    text = "• $word",
-//                                    style = subTitleTextStyle
-//                                )
-//                            }
-//
-//                            Text(
-//                                text = "닫기",
-//                                style = linkTextStyle,
-//                                modifier = Modifier.clickable { isMore = false }
-//                            )
-//                        }
-//                    }
-
+                Box(modifier = Modifier
+                    .fillMaxWidth()
+                    .wrapContentHeight()
+                    .padding(horizontal = verticalPadding)) {
                     Column{
                         // -- 1. 시도 횟수 영역
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            // 도움말 터치 영역
-                            Box(
+                            // 원형 도움말
+                            DashboardHelpButton(
+                                onPress = {pressed ->
+                                    attemptPressed = pressed
+                                },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .size(48.dp)
-                                    .pointerInput(Unit) {
-                                        awaitPointerEventScope {
-                                            while (true) {
-                                                awaitFirstDown()
-                                                attemptPressed = true
 
-                                                // Up 또는 Cancel 대기
-                                                while (true) {
-                                                    val event = awaitPointerEvent()
-                                                    if (event.changes.all { !it.pressed }) {
-                                                        break
-                                                    }
-                                                }
+                            )
 
-                                                attemptPressed = false
-                                            }
-                                        }
-                                    },
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                // 원형 도움말
-                                DashboardHelpButton()
-                            }
                             Box {
                                 if (attemptPressed) {
                                     Box(
@@ -257,34 +219,15 @@ fun DashboardStoryCard(
                         // -- 2. 새 단어 분석
                         Spacer(Modifier.height(cardCorner))
                         Box(modifier = Modifier.fillMaxWidth()) {
-                            // 도움말 터치 영역
-                            Box(
+                            // 원형 도움말
+                            DashboardHelpButton(
+                                onPress = {pressed ->
+                                    wordPressed = pressed
+                                },
                                 modifier = Modifier
-                                    .fillMaxWidth()
-                                    .size(48.dp)
-                                    .pointerInput(Unit) {
-                                        awaitPointerEventScope {
-                                            while (true) {
-                                                awaitFirstDown()
-                                                wordPressed = true
 
-                                                // Up 또는 Cancel 대기
-                                                while (true) {
-                                                    val event = awaitPointerEvent()
-                                                    if (event.changes.all { !it.pressed }) {
-                                                        break
-                                                    }
-                                                }
+                            )
 
-                                                wordPressed = false
-                                            }
-                                        }
-                                    },
-                                contentAlignment = Alignment.TopEnd
-                            ) {
-                                // 원형 도움말
-                                DashboardHelpButton()
-                            }
                             Box {
                                 if (wordPressed) {
                                     Box(
@@ -377,34 +320,15 @@ fun DashboardStoryCard(
                             // -- 3. 정서 분석
                             Spacer(Modifier.height(10.dp))
                             Column(modifier = Modifier.fillMaxWidth()) {
-                                // 도움말 터치 영역
-                                Box(
+                                // 원형 도움말
+                                DashboardHelpButton(
+                                    onPress = {pressed ->
+                                        emotionPressed = pressed
+                                    },
                                     modifier = Modifier
-                                        .fillMaxWidth()
-                                        .size(48.dp)
-                                        .pointerInput(Unit) {
-                                            awaitPointerEventScope {
-                                                while (true) {
-                                                    awaitFirstDown()
-                                                    emotionPressed = true
 
-                                                    // Up 또는 Cancel 대기
-                                                    while (true) {
-                                                        val event = awaitPointerEvent()
-                                                        if (event.changes.all { !it.pressed }) {
-                                                            break
-                                                        }
-                                                    }
+                                )
 
-                                                    emotionPressed = false
-                                                }
-                                            }
-                                        },
-                                    contentAlignment = Alignment.TopEnd
-                                ) {
-                                    // 원형 도움말
-                                    DashboardHelpButton()
-                                }
 
                                 Box {
                                     if (emotionPressed) {
@@ -492,7 +416,8 @@ fun DashboardStoryCard(
 
                                         Box(
                                             modifier = Modifier
-                                                .fillMaxWidth().height(textHeight),
+                                                .fillMaxWidth()
+                                                .height(textHeight),
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(story.summary + "\n\n" + story.createdAt,

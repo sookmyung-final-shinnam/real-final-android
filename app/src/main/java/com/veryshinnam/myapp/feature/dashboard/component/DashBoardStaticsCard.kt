@@ -61,7 +61,7 @@ fun DashBoardStaticsCard(
         colorResource(R.color.chart_6),
         colorResource(R.color.chart_7),
     )
-    var pressed by remember { mutableStateOf(false) }
+    var helpPressed by remember { mutableStateOf(false) }
 
     // 왼쪽 테마
     Column(
@@ -87,36 +87,15 @@ fun DashBoardStaticsCard(
                 modifier = Modifier.align(Alignment.Center)
             )
 
-            // 터치 영역
-            Box(
+            // 원형 도움말
+            DashboardHelpButton(
+                onPress = {pressed ->
+                    helpPressed = pressed
+                },
                 modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterEnd)
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitFirstDown()
-                                pressed = true
+            )
 
-                                // Up 또는 Cancel 대기
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    if (event.changes.all { !it.pressed }) {
-                                        break
-                                    }
-                                }
-
-                                pressed = false
-                            }
-                        }
-                    },
-                contentAlignment = Alignment.Center
-            ) {
-                // 원형 도움말
-                DashboardHelpButton(borderColor = colorResource(R.color.light_green))
-            }
-
-            if (pressed) {
+            if (helpPressed) {
                 Text("터치중")
             }
         }
