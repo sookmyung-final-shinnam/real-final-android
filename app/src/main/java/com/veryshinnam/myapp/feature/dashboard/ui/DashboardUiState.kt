@@ -5,7 +5,6 @@ import com.veryshinnam.myapp.feature.dashboard.model.ChartStatData
 import com.veryshinnam.myapp.feature.dashboard.model.DashboardData
 import com.veryshinnam.myapp.feature.dashboard.model.StatData
 import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
-import com.veryshinnam.myapp.feature.dashboard.model.WordsData
 import com.veryshinnam.myapp.feature.home.model.HomeData
 
 sealed interface DashboardUiState {
@@ -19,7 +18,6 @@ sealed interface DashboardUiState {
 
         val storyAnalysis: List<StoryAnalysisData>, // 개별 스토리 분석 (시도 + 감정)
         val storyIndex: Int,
-        val wordsAnalysis: List<WordsData>,          // 전체 스토리 분석 (언어 획득)
 
         val advice: String                           // 부모 조언
     ) : DashboardUiState

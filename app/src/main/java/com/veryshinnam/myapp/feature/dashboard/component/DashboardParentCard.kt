@@ -1,11 +1,13 @@
 package com.veryshinnam.myapp.feature.dashboard.component
 
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -21,7 +23,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -46,68 +52,76 @@ fun DashboardParentCard(
 ) {
     var pressed by remember { mutableStateOf(false) }
 
-    Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.spacedBy(spacer)
-    ) {
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(borderColor, shape = RoundedCornerShape(cardCorner)),
-            contentAlignment = Alignment.CenterStart
+    Box {
+        Image(
+            painter = painterResource(R.drawable.img_fox_full),
+            contentDescription = "여우 이미지",
+            modifier = Modifier.fillMaxWidth(.2f) ,
+            contentScale = ContentScale.Fit
+        )
+        Column(
+            modifier = modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(spacer)
         ) {
-            Text("${username}의 부모님께", style = titleTextStyle,
-                modifier = Modifier.padding(vertical = horizontalPadding))
-
-            // 터치 영역
             Box(
                 modifier = Modifier
-                    .size(48.dp)
-                    .align(Alignment.CenterEnd)
-                    .pointerInput(Unit) {
-                        awaitPointerEventScope {
-                            while (true) {
-                                awaitFirstDown()
-                                pressed = true
-
-                                // Up 또는 Cancel 대기
-                                while (true) {
-                                    val event = awaitPointerEvent()
-                                    if (event.changes.all { !it.pressed }) {
-                                        break
-                                    }
-                                }
-
-                                pressed = false
-                            }
-                        }
-                    },
-                contentAlignment = Alignment.Center
+                    .fillMaxWidth()
+                    .background(borderColor, shape = RoundedCornerShape(cardCorner)),
+                contentAlignment = Alignment.CenterStart
             ) {
-                // 원형 도움말
-                DashboardHelpButton()
-            }
-        }
+                Text("${username}의 부모님께", style = titleTextStyle,
+                    modifier = Modifier.padding(vertical = horizontalPadding))
 
-        // 부모 조언
-        Box(
-            modifier = modifier
-                .fillMaxWidth()
-                .background(cardColor, shape = RoundedCornerShape(cardCorner))
-                .border(
-                    width = borderWidth,
-                    color = borderColor,
-                    shape = RoundedCornerShape(borderCorner)
-                )
-        ) {
-            Text(text = advice, style = adviceTextStyle,
-                modifier = Modifier.padding(horizontalPadding))
+                // 터치 영역
+                Box(
+                    modifier = Modifier
+                        .size(48.dp)
+                        .align(Alignment.CenterEnd)
+                        .pointerInput(Unit) {
+                            awaitPointerEventScope {
+                                while (true) {
+                                    awaitFirstDown()
+                                    pressed = true
 
-            if (pressed) {
-                Box( modifier = modifier
-                    .background(borderColor)
+                                    // Up 또는 Cancel 대기
+                                    while (true) {
+                                        val event = awaitPointerEvent()
+                                        if (event.changes.all { !it.pressed }) {
+                                            break
+                                        }
+                                    }
+
+                                    pressed = false
+                                }
+                            }
+                        },
+                    contentAlignment = Alignment.Center
                 ) {
-                    Text("터치 중")
+                    // 원형 도움말
+                    DashboardHelpButton()
+                }
+            }
+
+            // 부모 조언
+            Box(
+                modifier = modifier
+                    .fillMaxWidth()
+                    .background(cardColor, shape = RoundedCornerShape(cardCorner))
+                    .border(
+                        width = borderWidth,
+                        color = borderColor,
+                        shape = RoundedCornerShape(borderCorner)
+                    )
+            ) {
+                Text(text = advice, style = adviceTextStyle,
+                    modifier = Modifier.padding(horizontalPadding))
+
+                if (pressed) {
+                    Box( modifier = modifier
+                        .background(borderColor)
+                    ) {
+                        Text("터치 중")
+                    }
                 }
             }
         }

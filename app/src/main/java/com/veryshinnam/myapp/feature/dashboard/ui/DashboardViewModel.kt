@@ -5,11 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepository
 import com.veryshinnam.myapp.feature.dashboard.model.ChartStatData
+import com.veryshinnam.myapp.feature.dashboard.model.Emotion
 import com.veryshinnam.myapp.feature.dashboard.model.EmotionData
 import com.veryshinnam.myapp.feature.dashboard.model.LanguageData
 import com.veryshinnam.myapp.feature.dashboard.model.StatData
 import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
-import com.veryshinnam.myapp.feature.dashboard.model.WordsData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -53,10 +53,8 @@ class DashboardViewModel @Inject constructor(
                 // 개별 스토리 분석
                 val storyAnalysis = toStoryAnalysisData(
                     dashboard.emotionList,
-                    dashboard.languageList)
-
-                // 전체 스토리 단어 리스트 추출
-                val wordsAnalysis = toWordsData(dashboard.languageList)
+                    dashboard.languageList
+                )
 
                 _uiState.value = DashboardUiState.Success(
                     themeChart = toChartStats(themeChart),
@@ -66,7 +64,6 @@ class DashboardViewModel @Inject constructor(
 
                     storyAnalysis = storyAnalysis,
                     storyIndex = 0,
-                    wordsAnalysis = wordsAnalysis,
 
                     advice = dashboard.parentAdvice
                 )
@@ -124,17 +121,16 @@ class DashboardViewModel @Inject constructor(
         val emotionMap = emotionData.associateBy { it.storyId }
 
         return languageData.map { language ->
-            val emotion = emotionMap[language.storyId]
+            val emotionData = emotionMap[language.storyId]
 
             val chartStats: List<ChartStatData> =
-                emotion?.emotions
-                    ?.map { (emotionType, value) ->
-                        ChartStatData(
-                            name = emotionType.type,
-                            ratio = value
-                        )
-                    }
-                    ?: emptyList()
+                // Emotion 순서대로 값 채우기
+                Emotion.values().map { emotion ->
+                    ChartStatData(
+                        name = emotion.type,
+                        ratio = emotionData?.emotions?.get(emotion) ?: 0f
+                    )
+                }
 
             StoryAnalysisData(
                 storyId = language.storyId,
@@ -142,21 +138,9 @@ class DashboardViewModel @Inject constructor(
                 attempts = language.attempts,
                 avgAttemptPerStage = language.avgAttemptPerStage,
                 avgAnswerLength = language.avgAnswerLength,
+                newWords = language.newWords,
                 emotions = chartStats,
-                summary = emotion?.summary.orEmpty()
-            )
-        }
-    }
-
-    fun toWordsData(
-        languageData: List<LanguageData>
-    ): List<WordsData> {
-        return languageData.map {
-            WordsData(
-                storyId = it.storyId,
-                createdAt = it.createdAt,
-                newWords = it.newWords,
-                count = it.newWords.size
+                summary = emotionData?.summary.orEmpty()
             )
         }
     }

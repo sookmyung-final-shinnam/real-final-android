@@ -1,22 +1,29 @@
 package com.veryshinnam.myapp.feature.dashboard.component
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -26,6 +33,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
@@ -33,6 +41,7 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextDecoration.Companion.None
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -44,29 +53,33 @@ import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
 @Composable
 fun DashboardStoryCard(
     story: StoryAnalysisData,
-    onPrevClick: () -> Unit,
-    onNextClick: () -> Unit,
     spacer: Dp = 6.dp,
-    horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 28.dp,
+    verticalPadding: Dp = 24.dp,
     cardCorner: Dp = 16.dp,
     cardColor: Color = Color.White,
     borderWidth: Dp = 4.dp,
     borderCorner: Dp = 16.dp,
     borderColor: Color = colorResource(R.color.deep_green),
     orangeColor: Color = colorResource(R.color.main_orange),
+    lGreenColor: Color = colorResource(R.color.light_green),
     titleTextStyle: TextStyle,
-    textStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = Bold),
-    subTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    subTitleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
+    linkTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = orangeColor, fontWeight = SemiBold, textDecoration = Underline),
+    summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
     modifier: Modifier
 ) {
 
     var titlePressed by remember { mutableStateOf(false) }
     var attemptPressed by remember { mutableStateOf(false) }
     var emotionPressed by remember { mutableStateOf(false) }
+    var wordPressed by remember { mutableStateOf(false) }
+    var isMore by remember { mutableStateOf(false) }
+    val scrollState = rememberScrollState()
+    val textHeight = summaryTextStyle.lineHeight.value.dp * 6
+    val barHeight = 100.dp
 
     Column(
-        modifier = Modifier.fillMaxWidth(),
+        modifier = Modifier.fillMaxWidth().padding(horizontal = cardCorner),
         verticalArrangement = Arrangement.spacedBy(spacer)
     ) {
 
@@ -81,7 +94,7 @@ fun DashboardStoryCard(
             contentAlignment = Alignment.CenterStart
         ) {
             Text("동화 언어 및 정서 분석", style = titleTextStyle,
-                modifier = Modifier.padding(vertical = horizontalPadding))
+                modifier = Modifier.padding(vertical = cardCorner))
 
             // 도움말 터치 영역
             Box(
@@ -114,215 +127,385 @@ fun DashboardStoryCard(
         }
 
         // 내용
-        Box(
-            modifier = Modifier.fillMaxWidth(),
-            contentAlignment = Alignment.Center
-        ) {
-            // 이동 버튼
-            Row(
-                modifier = Modifier.fillMaxWidth().zIndex(10f),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // ▶ 다음 버튼
-                Button(
-                    onClick = { onPrevClick() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = orangeColor.copy(0.5f),
-                        contentColor = Color.White
-                    ),
-                    border = BorderStroke(
-                        2.dp,
-                        orangeColor
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(48.dp)
-                ) {
-                    Text(
-                        text = "◀",
-                    )
-                }
 
-                // ▶ 다음 버튼
-                Button(
-                    onClick = { onNextClick() },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = orangeColor.copy(0.5f),
-                        contentColor = Color.White
-                    ),
-                    border = BorderStroke(
-                        2.dp,
-                        orangeColor
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.size(48.dp)
+
+        // 시도횟수 및 감정분석
+        Box(
+            modifier = modifier
+                .fillMaxWidth()
+                .background(cardColor, shape = RoundedCornerShape(cardCorner))
+                .border(
+                    width = borderWidth,
+                    color = borderColor,
+                    shape = RoundedCornerShape(borderCorner)
+                )
+        ) {
+
+            if (titlePressed) {
+                Box(
+                    modifier = Modifier
+                        .background(borderColor)
+                        .zIndex(20f)
                 ) {
-                    Text(
-                        text = "▶",
-                    )
+                    Text("터치 중")
                 }
             }
 
-            // 내용
-            // 시도횟수 및 감정분석
-            Box(
-                modifier = modifier
+            Column(
+                modifier = Modifier
                     .fillMaxWidth()
-                    .background(cardColor, shape = RoundedCornerShape(cardCorner))
-                    .border(
-                        width = borderWidth,
-                        color = borderColor,
-                        shape = RoundedCornerShape(borderCorner)
-                    )
+                    .padding(horizontal = cardCorner, vertical = verticalPadding),
             ) {
-                if (titlePressed) {
-                    Box(
-                        modifier = Modifier.background(borderColor).zIndex(20f)
-                    ) {
-                        Text("터치 중")
-                    }
-                }
+                // -- 동화 제목
+                Text(
+                    text = "storyIdstoryIdstoryId: ${story.storyId}",
+                    style = titleTextStyle.copy(color = Color.Black),
+                    modifier = Modifier.align(Alignment.CenterHorizontally)
+                )
+                Spacer(Modifier.height(spacer))
 
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(horizontal = horizontalPadding, vertical = verticalPadding),
-                ) {
-                    Text(
-                        text = "storyIdstoryIdstoryId: ${story.storyId}",
-                        style = titleTextStyle.copy(color = Color.Black),
-                        modifier = Modifier.align(Alignment.CenterHorizontally)
-                    )
-                    Spacer(Modifier.height(spacer))
-                    Text(
-                        text = "동화 보러 가기",
-                        modifier = Modifier.align(Alignment.End),
-                        style = textStyle.copy(
-                            color = orangeColor,
-                            fontWeight = SemiBold,
-                            textDecoration = Underline),
-                    )
+                Text(
+                    text = "동화 보러 가기",
+                    modifier = Modifier.align(Alignment.End),
+                    style = linkTextStyle
+                )
 
+                Spacer(Modifier.height(spacer*2)) // 간격
 
-                    // -- 시도 횟수 영역
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // 도움말 터치 영역
+                Box(modifier = Modifier.fillMaxWidth()
+                    .wrapContentHeight().padding(horizontal = verticalPadding)) {
+//                    if (isMore) {
+//                        Column(modifier = Modifier
+//                            .matchParentSize()
+//                            .zIndex(10f)
+//                            .background(lGreenColor)) {
+//                            story.newWords.forEach { word ->
+//                                Text(
+//                                    text = "• $word",
+//                                    style = subTitleTextStyle
+//                                )
+//                            }
+//
+//                            Text(
+//                                text = "닫기",
+//                                style = linkTextStyle,
+//                                modifier = Modifier.clickable { isMore = false }
+//                            )
+//                        }
+//                    }
 
-                        Spacer(Modifier.height(spacer*2))
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .size(48.dp)
-                                .pointerInput(Unit) {
-                                    awaitPointerEventScope {
-                                        while (true) {
-                                            awaitFirstDown()
-                                            attemptPressed = true
-
-                                            // Up 또는 Cancel 대기
+                    Column{
+                        // -- 1. 시도 횟수 영역
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            // 도움말 터치 영역
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .size(48.dp)
+                                    .pointerInput(Unit) {
+                                        awaitPointerEventScope {
                                             while (true) {
-                                                val event = awaitPointerEvent()
-                                                if (event.changes.all { !it.pressed }) {
-                                                    break
-                                                }
-                                            }
+                                                awaitFirstDown()
+                                                attemptPressed = true
 
-                                            attemptPressed = false
+                                                // Up 또는 Cancel 대기
+                                                while (true) {
+                                                    val event = awaitPointerEvent()
+                                                    if (event.changes.all { !it.pressed }) {
+                                                        break
+                                                    }
+                                                }
+
+                                                attemptPressed = false
+                                            }
                                         }
+                                    },
+                                contentAlignment = Alignment.TopEnd
+                            ) {
+                                // 원형 도움말
+                                DashboardHelpButton()
+                            }
+                            Box {
+                                if (attemptPressed) {
+                                    Box(
+                                        modifier = Modifier
+                                            .background(borderColor)
+                                            .zIndex(20f)
+                                    ) {
+                                        Text("터치 중")
                                     }
-                                },
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            // 원형 도움말
-                            DashboardHelpButton()
-                        }
-                        Box {
-                            if (attemptPressed) {
-                                Box(
-                                    modifier = Modifier.background(borderColor).zIndex(20f)
-                                ) {
-                                    Text("터치 중")
+                                }
+                                // 평균 값
+                                Column{
+                                    Text("평균 시도 횟수: ${story.avgAttemptPerStage}회", style = subTitleTextStyle)
+                                    Spacer(Modifier.height(spacer))
+
+
+                                    // 기승전결
+                                    Attempt.values().forEach { attempt ->
+
+                                        DashboardAttemptRow(
+                                            title = attempt.label,
+                                            count = story.attempts[attempt] ?: 1,
+                                            subTextStyle = summaryTextStyle,
+                                        )
+                                    }
                                 }
                             }
-                            // 평균 값
-                            Column{
-                                Text("평균 답변 길이: ${story.avgAnswerLength}자", style = textStyle)
-                                Spacer(Modifier.height(spacer))
-                                Text("평균 시도 횟수: ${story.avgAttemptPerStage}회", style = textStyle)
+                        }
 
-                                Spacer(Modifier.height(spacer*2))
+                        // -- 2. 새 단어 분석
+                        Spacer(Modifier.height(cardCorner))
+                        Box(modifier = Modifier.fillMaxWidth()) {
+                            // 도움말 터치 영역
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .size(48.dp)
+                                    .pointerInput(Unit) {
+                                        awaitPointerEventScope {
+                                            while (true) {
+                                                awaitFirstDown()
+                                                wordPressed = true
 
-                                // 기승전결
-                                Attempt.values().forEach { attempt ->
+                                                // Up 또는 Cancel 대기
+                                                while (true) {
+                                                    val event = awaitPointerEvent()
+                                                    if (event.changes.all { !it.pressed }) {
+                                                        break
+                                                    }
+                                                }
 
-                                    DashboardAttemptRow(
-                                        title = attempt.label,
-                                        count = story.attempts[attempt] ?: 1,
-                                        subTextStyle = subTextStyle,
+                                                wordPressed = false
+                                            }
+                                        }
+                                    },
+                                contentAlignment = Alignment.TopEnd
+                            ) {
+                                // 원형 도움말
+                                DashboardHelpButton()
+                            }
+                            Box {
+                                if (wordPressed) {
+                                    Box(
+                                        modifier = Modifier
+                                            .background(borderColor)
+                                            .zIndex(20f)
+                                    ) {
+                                        Text("터치 중")
+                                    }
+                                }
+                                Column {
+                                    Text("평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
+                                    Text("획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
+                                    Text(
+                                        text = if (isMore) "닫기" else "자세히 보기",
+                                        style = linkTextStyle,
+                                        modifier = Modifier.clickable { isMore = !isMore }
                                     )
                                 }
                             }
                         }
-                    }
-
-                    // -- 정서 분석
-                    Column(
-                        modifier = Modifier.fillMaxWidth()
-                    ) {
-                        // 도움말 터치 영역
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .size(48.dp)
-                                .pointerInput(Unit) {
-                                    awaitPointerEventScope {
-                                        while (true) {
-                                            awaitFirstDown()
-                                            emotionPressed = true
-
-                                            // Up 또는 Cancel 대기
-                                            while (true) {
-                                                val event = awaitPointerEvent()
-                                                if (event.changes.all { !it.pressed }) {
-                                                    break
-                                                }
-                                            }
-
-                                            emotionPressed = false
-                                        }
-                                    }
-                                },
-                            contentAlignment = Alignment.TopEnd
-                        ) {
-                            // 원형 도움말
-                            DashboardHelpButton()
-                        }
+                        Spacer(Modifier.height(4.dp))
 
                         Box {
-                            if (emotionPressed) {
-                                Box(
-                                    modifier = Modifier.background(borderColor).zIndex(20f)
-                                ) {
-                                    Text("터치 중")
+                            if (isMore) {
+                                Box (modifier = Modifier
+                                    .matchParentSize()
+                                    .zIndex(10f)
+                                    .border(
+                                        width = 2.dp,
+                                        color = borderColor,
+                                        shape = RoundedCornerShape(cardCorner)
+                                    )
+                                    .background(lGreenColor, shape = RoundedCornerShape(cardCorner)))
+                                {
+                                    FlowRow(
+                                        modifier = Modifier
+                                            .verticalScroll(scrollState) // 스크롤
+                                            .padding(8.dp, 16.dp),
+                                        horizontalArrangement = Arrangement.spacedBy(4.dp),
+                                        verticalArrangement = Arrangement.spacedBy(8.dp)
+                                    ) {
+                                        story.newWords.forEach { word ->
+                                            // 버블
+                                            Box(
+                                                modifier = Modifier
+                                                    .background(
+                                                        color = Color.White,
+                                                        shape = CircleShape
+                                                    )
+                                                    .border(
+                                                        width = 2.dp,
+                                                        color = borderColor,
+                                                        shape = CircleShape
+                                                    )
+                                                    .padding(horizontal = 12.dp, vertical = 6.dp)
+                                            ) {
+                                                // 단어
+                                                Text(
+                                                    text = word,
+                                                    style = linkTextStyle.copy(
+                                                        textDecoration = None
+                                                    )
+                                                )
+                                            }
+                                        }
+                                    }
+
+                                    // 스크롤 가능 여부 효과
+                                    if (scrollState.canScrollForward) {
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(24.dp)
+                                                .align(Alignment.BottomCenter)
+                                                .background(
+                                                    Brush.verticalGradient(
+                                                        colors = listOf(
+                                                            Color.Transparent,
+                                                            Color.Gray.copy(alpha = 0.5f)
+                                                        )
+                                                    ),
+                                                    shape = RoundedCornerShape(cardCorner)
+                                                )
+                                        )
+                                    }
                                 }
                             }
 
-                            // 정서 차트
-                            Column(
-                                modifier = Modifier.fillMaxWidth(),
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                DashboardDonutChart(story.emotions,modifier = Modifier.fillMaxWidth() )
-                                Text(story.summary, style = subTextStyle, textAlign = TextAlign.Center)
-                                Text(story.createdAt, style = textStyle.copy(fontWeight = SemiBold), textAlign = TextAlign.Center)
+                            // -- 3. 정서 분석
+                            Spacer(Modifier.height(10.dp))
+                            Column(modifier = Modifier.fillMaxWidth()) {
+                                // 도움말 터치 영역
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .size(48.dp)
+                                        .pointerInput(Unit) {
+                                            awaitPointerEventScope {
+                                                while (true) {
+                                                    awaitFirstDown()
+                                                    emotionPressed = true
+
+                                                    // Up 또는 Cancel 대기
+                                                    while (true) {
+                                                        val event = awaitPointerEvent()
+                                                        if (event.changes.all { !it.pressed }) {
+                                                            break
+                                                        }
+                                                    }
+
+                                                    emotionPressed = false
+                                                }
+                                            }
+                                        },
+                                    contentAlignment = Alignment.TopEnd
+                                ) {
+                                    // 원형 도움말
+                                    DashboardHelpButton()
+                                }
+
+                                Box {
+                                    if (emotionPressed) {
+                                        Box(
+                                            modifier = Modifier
+                                                .background(borderColor)
+                                                .zIndex(20f)
+                                        ) {
+                                            Text("터치 중")
+                                        }
+                                    }
+
+                                    // 정서 분석
+                                    Column(
+                                        modifier = Modifier.fillMaxWidth(),
+                                        horizontalAlignment = Alignment.CenterHorizontally
+                                    ) {
+                                        // 막대 리스트
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.Bottom,
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            story.emotions.forEach { item ->
+                                                Column(
+                                                    modifier = Modifier.weight(1f),
+                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                                ) {
+                                                    BoxWithConstraints(
+                                                        modifier = Modifier
+                                                            .fillMaxWidth()
+                                                            .height(barHeight)
+                                                    ) {
+                                                        val height = maxHeight * item.ratio // item별 막대 높이
+
+                                                        // 퍼센트
+                                                        if (item.ratio > 0) {
+                                                            Text(
+                                                                text = "${(item.ratio * 100).toInt()}%",
+                                                                modifier = Modifier
+                                                                    .align(Alignment.BottomCenter)
+                                                                    .offset(y = -(height + spacer)),
+                                                                textAlign = TextAlign.Center
+                                                            )
+                                                        }
+
+                                                        // 막대 그래프
+                                                        Box(
+                                                            modifier = Modifier
+                                                                .align(Alignment.BottomCenter)
+                                                                .fillMaxWidth(0.5f)
+                                                                .height(height)
+                                                                .background(
+                                                                    color = orangeColor,
+                                                                    shape = RoundedCornerShape(
+                                                                        topStart = 4.dp,
+                                                                        topEnd = 4.dp
+                                                                    )
+                                                                )
+                                                        )
+                                                    }
+                                                }
+                                            }
+                                        }
+
+                                        // x축 선
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth()
+                                                .height(2.dp)
+                                                .background(borderColor)
+                                        )
+
+                                        // x축:
+                                        Row(
+                                            modifier = Modifier.fillMaxWidth(),
+                                            verticalAlignment = Alignment.Bottom,
+                                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                        ) {
+                                            story.emotions.forEach { item ->
+                                                Text(text = item.name,
+                                                    style = subTitleTextStyle, modifier = Modifier.weight(1f))
+                                            }
+                                        }
+
+                                        Box(
+                                            modifier = Modifier
+                                                .fillMaxWidth().height(textHeight),
+                                            contentAlignment = Alignment.Center
+                                        ) {
+                                            Text(story.summary + "\n\n" + story.createdAt,
+                                                style = summaryTextStyle, textAlign = TextAlign.Center)
+                                        }
+                                    }
+                                }
                             }
-
                         }
-                    }
 
+                    }
                 }
+
             }
         }
     }

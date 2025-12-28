@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -30,7 +31,6 @@ import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.dashboard.component.DashBoardStaticsCard
 import com.veryshinnam.myapp.feature.dashboard.component.DashboardStoryCard
 import com.veryshinnam.myapp.feature.dashboard.component.DashboardParentCard
-import com.veryshinnam.myapp.feature.dashboard.component.DashboardWordsCard
 
 /** 메인 대시보드 화면 */
 @Composable
@@ -46,6 +46,8 @@ fun DashboardScreen(
 ) {
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle() // 화면 전체 ui
+
+    // ui 변수
 
     // 세로 모드 고정
     SideEffect {
@@ -108,13 +110,12 @@ fun DashboardScreen(
                 is DashboardUiState.Success -> {
                     Column(
                         modifier = Modifier
-                            .verticalScroll(rememberScrollState())
-                            .padding(horizontal = horizontalPadding),
+                            .verticalScroll(rememberScrollState()),
                         verticalArrangement = Arrangement.spacedBy(spacer)
                     ) {
                         // 대시보드 상단
                         UserInfo(
-                            modifier = Modifier.fillMaxHeight(.12f),
+                            modifier = Modifier.fillMaxHeight(.12f).padding(horizontal = horizontalPadding),
                             isItem = false, // 아이템 설명 존재
                             animalImage = painterResource(R.drawable.img_fox_cut),
                             animalDescription = "보관함 설명 여우 이미지",
@@ -123,6 +124,7 @@ fun DashboardScreen(
                         )
 
                         Row(
+                            modifier = Modifier.padding(horizontal = horizontalPadding),
                             horizontalArrangement = Arrangement.spacedBy(spacer)
                         ) {
                             // 왼쪽 테마
@@ -143,20 +145,63 @@ fun DashboardScreen(
                         }
 
                         Spacer(Modifier.height(sectionSpacer))
-                        // 섹션 2: 스토리별 언어 + 감정 분석
-                        DashboardStoryCard(
-                            story = state.storyAnalysis[state.storyIndex],
-                            onPrevClick = { vm.prevStory() },
-                            onNextClick = { vm.nextStory() },
-                            titleTextStyle = titleTextStyle,
-                            modifier = Modifier
-                        )
+                        // 섹션 2: 스토리별 언어 + 단어 리스트 + 감정 분석
+                        // 이동 버튼
+                        Box{
+                            Row(
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(horizontal = 4.dp)
+                                    .height(800.dp)
+                                    .zIndex(10f),
+                                horizontalArrangement = Arrangement.SpaceBetween,
+                                verticalAlignment = Alignment.CenterVertically
+                            ) {
+                                // ▶ 다음 버튼
+                                Button(
+                                    onClick = { vm.prevStory() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = colorResource(R.color.main_orange).copy(0.5f),
+                                        contentColor = Color.White
+                                    ),
+                                    border = BorderStroke(
+                                        2.dp,
+                                        colorResource(R.color.main_orange)
+                                    ),
+                                    contentPadding = PaddingValues(0.dp),
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Text(
+                                        text = "◀",
+                                    )
+                                }
 
-                        // 스토리 전체 막대 그래프
-                        DashboardWordsCard(
-                            wordsList = state.wordsAnalysis,
-                            modifier = Modifier
-                        )
+                                // ▶ 다음 버튼
+                                Button(
+                                    onClick = { vm.nextStory() },
+                                    colors = ButtonDefaults.buttonColors(
+                                        containerColor = colorResource(R.color.main_orange).copy(0.5f),
+                                        contentColor = Color.White
+                                    ),
+                                    border = BorderStroke(
+                                        2.dp,
+                                        colorResource(R.color.main_orange)
+                                    ),
+                                    contentPadding = PaddingValues(0.dp),
+                                    modifier = Modifier.size(48.dp)
+                                ) {
+                                    Text(
+                                        text = "▶",
+                                    )
+                                }
+                            }
+
+                            DashboardStoryCard(
+                                story = state.storyAnalysis[state.storyIndex],
+                                titleTextStyle = titleTextStyle,
+                                modifier = Modifier
+                            )
+                        }
 
                         Spacer(Modifier.height(sectionSpacer))
                         // 섹션 3: 부모 조언 분석
