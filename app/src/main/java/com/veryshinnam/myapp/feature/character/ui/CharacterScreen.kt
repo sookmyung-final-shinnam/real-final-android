@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.character.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image

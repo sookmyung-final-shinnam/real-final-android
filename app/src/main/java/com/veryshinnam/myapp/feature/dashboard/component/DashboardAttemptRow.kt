@@ -26,7 +26,9 @@ import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.StrokeTitle
 
 @Composable
 fun DashboardAttemptRow(
@@ -49,10 +51,7 @@ fun DashboardAttemptRow(
     ) {
 
         // 기, 승, 전, 결 라벨
-        Text(
-            text = title,
-            style = titleTextStyle
-        )
+        Text(text = title, style = titleTextStyle)
 
         Spacer(Modifier.width(spacer))
 
@@ -98,6 +97,14 @@ fun DashboardAttemptRow(
         }
 
         // 횟수
-        Text(text = "${count}회", style = subTextStyle.copy(color = successColor))
+        StrokeTitle(
+            titleText = "${count}회",
+            titleColor = Color.White,
+            strokeColor = successColor,
+            titleTextStyle = subTextStyle.copy(letterSpacing = 1.5.sp),
+            strokeWidth = 12f,
+            modifier = Modifier
+                .align(Alignment.CenterVertically)
+        )
     }
 }

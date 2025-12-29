@@ -22,6 +22,7 @@ fun StrokeTitle(
     titleTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
     titleColor: Color,
     strokeColor: Color,
+    softWrap: Boolean = true,
     strokeWidth: Float = 2f,
     verticalPadding: Dp = 4.dp,
 ) {
@@ -33,6 +34,7 @@ fun StrokeTitle(
         Text(
             text = titleText,
             textAlign = TextAlign.Center,
+            softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = strokeColor,
@@ -44,6 +46,7 @@ fun StrokeTitle(
         Text(
             text = titleText,
             textAlign = TextAlign.Center,
+            softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = titleColor

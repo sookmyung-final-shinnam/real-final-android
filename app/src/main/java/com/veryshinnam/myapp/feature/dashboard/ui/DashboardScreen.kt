@@ -37,11 +37,9 @@ import com.veryshinnam.myapp.feature.dashboard.component.DashboardParentCard
 fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
-    onCharacterNavigate: (Long) -> Unit,
-    titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(color = Color.White, fontWeight = Bold),
+    onCharacter: (Long) -> Unit,
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 16.dp,
-    sectionSpacer: Dp = 26.dp,
     vm: DashboardViewModel = hiltViewModel(),
 ) {
     // 상태 구독
@@ -124,7 +122,8 @@ fun DashboardScreen(
                         )
 
                         Row(
-                            modifier = Modifier.padding(horizontal = horizontalPadding),
+                            modifier = Modifier
+                                .fillMaxWidth().padding(horizontal = horizontalPadding),
                             horizontalArrangement = Arrangement.spacedBy(spacer)
                         ) {
                             // 왼쪽 테마
@@ -144,15 +143,14 @@ fun DashboardScreen(
                             )
                         }
 
-                        Spacer(Modifier.height(sectionSpacer))
                         // 섹션 2: 스토리별 언어 + 단어 리스트 + 감정 분석
                         // 이동 버튼
                         Box{
                             Row(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .matchParentSize()
                                     .padding(horizontal = 4.dp)
-                                    .height(800.dp)
                                     .zIndex(10f),
                                 horizontalArrangement = Arrangement.SpaceBetween,
                                 verticalAlignment = Alignment.CenterVertically
@@ -198,11 +196,13 @@ fun DashboardScreen(
 
                             DashboardStoryCard(
                                 story = state.storyAnalysis[state.storyIndex],
+                                onStoryClick = { storyId ->
+                                    onCharacter(storyId)
+                                },
                                 modifier = Modifier
                             )
                         }
 
-                        Spacer(Modifier.height(sectionSpacer))
                         // 섹션 3: 부모 조언 분석
                         DashboardParentCard(
                             username = "username",

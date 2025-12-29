@@ -77,7 +77,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         launchSingleTop = true
                     }
                 },
-                onCharacterNavigate = { characterId ->
+                onCharacter = { characterId ->
                     navController.navigate("character/$characterId")
                 }
             )

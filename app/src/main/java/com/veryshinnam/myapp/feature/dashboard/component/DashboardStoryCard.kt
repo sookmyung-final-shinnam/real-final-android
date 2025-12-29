@@ -1,13 +1,9 @@
 package com.veryshinnam.myapp.feature.dashboard.component
 
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.gestures.awaitFirstDown
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -19,7 +15,6 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -37,7 +32,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -51,12 +45,14 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.dashboard.model.Attempt
 import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
 
 @Composable
 fun DashboardStoryCard(
     story: StoryAnalysisData,
+    onStoryClick: (Long) -> Unit,
     spacer: Dp = 6.dp,
     verticalPadding: Dp = 24.dp,
     cardCorner: Dp = 16.dp,
@@ -67,21 +63,31 @@ fun DashboardStoryCard(
     orangeColor: Color = colorResource(R.color.main_orange),
     lGreenColor: Color = colorResource(R.color.light_green),
     imageWidth: Float = 0.25f,
-    titleTextStyle: TextStyle= MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     subTitleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     linkTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = orangeColor, fontWeight = SemiBold, textDecoration = Underline),
     summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
     modifier: Modifier
 ) {
 
+    // ui 변수
     var titlePressed by remember { mutableStateOf(false) }
     var attemptPressed by remember { mutableStateOf(false) }
     var emotionPressed by remember { mutableStateOf(false) }
     var wordPressed by remember { mutableStateOf(false) }
     var isMore by remember { mutableStateOf(false) }
+
     val scrollState = rememberScrollState()
     val textHeight = summaryTextStyle.lineHeight.value.dp * 6
-    val barHeight = 100.dp
+    val barHeight = 180.dp
+
+    val colors = listOf(
+        colorResource(R.color.emotion_1),
+        colorResource(R.color.emotion_2),
+        colorResource(R.color.emotion_3),
+        colorResource(R.color.emotion_4),
+        colorResource(R.color.emotion_5),
+        lGreenColor
+    )
 
     Column(
         modifier = Modifier
@@ -158,18 +164,21 @@ fun DashboardStoryCard(
                 // -- 동화 제목
                 Text(
                     text = "storyIdstoryIdstoryId: ${story.storyId}",
-                    style = titleTextStyle.copy(color = Color.Black),
+                    style = summaryTextStyle.copy(fontWeight = Bold, fontSize = summaryTextStyle.fontSize*1.2f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(Modifier.height(spacer))
 
                 Text(
                     text = "동화 보러 가기",
-                    modifier = Modifier.align(Alignment.End),
+                    modifier = Modifier.align(Alignment.End)
+                        .clickable {
+                            onStoryClick(story.storyId)
+                        },
                     style = linkTextStyle
                 )
 
-                Spacer(Modifier.height(spacer*2)) // 간격
+                Spacer(Modifier.height(cardCorner*2)) // 간격
 
                 Box(modifier = Modifier
                     .fillMaxWidth()
@@ -183,8 +192,7 @@ fun DashboardStoryCard(
                                 onPress = {pressed ->
                                     attemptPressed = pressed
                                 },
-                                modifier = Modifier
-
+                                modifier = Modifier.align(Alignment.TopEnd)
                             )
 
                             Box {
@@ -199,7 +207,7 @@ fun DashboardStoryCard(
                                 }
                                 // 평균 값
                                 Column{
-                                    Text("평균 시도 횟수: ${story.avgAttemptPerStage}회", style = subTitleTextStyle)
+                                    Text("• 평균 시도 횟수: ${story.avgAttemptPerStage}회", style = subTitleTextStyle)
                                     Spacer(Modifier.height(spacer))
 
 
@@ -217,15 +225,14 @@ fun DashboardStoryCard(
                         }
 
                         // -- 2. 새 단어 분석
-                        Spacer(Modifier.height(cardCorner))
+                        Spacer(Modifier.height(verticalPadding*2))
                         Box(modifier = Modifier.fillMaxWidth()) {
                             // 원형 도움말
                             DashboardHelpButton(
                                 onPress = {pressed ->
                                     wordPressed = pressed
                                 },
-                                modifier = Modifier
-
+                                modifier = Modifier.align(Alignment.TopEnd)
                             )
 
                             Box {
@@ -239,8 +246,8 @@ fun DashboardStoryCard(
                                     }
                                 }
                                 Column {
-                                    Text("평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
-                                    Text("획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
+                                    Text("• 평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
+                                    Text("• 획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
                                     Text(
                                         text = if (isMore) "닫기" else "자세히 보기",
                                         style = linkTextStyle,
@@ -249,7 +256,7 @@ fun DashboardStoryCard(
                                 }
                             }
                         }
-                        Spacer(Modifier.height(4.dp))
+                        Spacer(Modifier.height(spacer))
 
                         Box {
                             if (isMore) {
@@ -301,7 +308,7 @@ fun DashboardStoryCard(
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
-                                                .height(24.dp)
+                                                .height(48.dp)
                                                 .align(Alignment.BottomCenter)
                                                 .background(
                                                     Brush.verticalGradient(
@@ -318,17 +325,16 @@ fun DashboardStoryCard(
                             }
 
                             // -- 3. 정서 분석
-                            Spacer(Modifier.height(10.dp))
                             Column(modifier = Modifier.fillMaxWidth()) {
+                                Spacer(Modifier.height(verticalPadding*2))
+
                                 // 원형 도움말
                                 DashboardHelpButton(
                                     onPress = {pressed ->
                                         emotionPressed = pressed
                                     },
-                                    modifier = Modifier
-
+                                    modifier = Modifier.align(Alignment.End)
                                 )
-
 
                                 Box {
                                     if (emotionPressed) {
@@ -346,50 +352,48 @@ fun DashboardStoryCard(
                                         modifier = Modifier.fillMaxWidth(),
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
-                                        // 막대 리스트
+                                        // 막대 바
                                         Row(
                                             modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.Bottom,
-                                            horizontalArrangement = Arrangement.spacedBy(16.dp)
+                                            verticalAlignment = Alignment.Bottom
                                         ) {
-                                            story.emotions.forEach { item ->
-                                                Column(
-                                                    modifier = Modifier.weight(1f),
-                                                    horizontalAlignment = Alignment.CenterHorizontally
+                                            story.emotions.forEachIndexed { index, item ->
+                                                val barColor = colors[index]
+
+                                                BoxWithConstraints(
+                                                    modifier = Modifier
+                                                        .weight(1f)
+                                                        .height(barHeight)
                                                 ) {
-                                                    BoxWithConstraints(
-                                                        modifier = Modifier
-                                                            .fillMaxWidth()
-                                                            .height(barHeight)
-                                                    ) {
-                                                        val height = maxHeight * item.ratio // item별 막대 높이
+                                                    val height = maxHeight * item.ratio // item별 막대 높이
 
-                                                        // 퍼센트
-                                                        if (item.ratio > 0) {
-                                                            Text(
-                                                                text = "${(item.ratio * 100).toInt()}%",
-                                                                modifier = Modifier
-                                                                    .align(Alignment.BottomCenter)
-                                                                    .offset(y = -(height + spacer)),
-                                                                textAlign = TextAlign.Center
-                                                            )
-                                                        }
-
-                                                        // 막대 그래프
-                                                        Box(
+                                                    // 퍼센트
+                                                    if (item.ratio > 0) {
+                                                        Text(
+                                                            text = "${(item.ratio * 100).toInt()}%",
+                                                            style = linkTextStyle.copy(color = barColor, textDecoration = None),
+                                                            softWrap = false,
                                                             modifier = Modifier
                                                                 .align(Alignment.BottomCenter)
-                                                                .fillMaxWidth(0.5f)
-                                                                .height(height)
-                                                                .background(
-                                                                    color = orangeColor,
-                                                                    shape = RoundedCornerShape(
-                                                                        topStart = 4.dp,
-                                                                        topEnd = 4.dp
-                                                                    )
-                                                                )
+                                                                .offset(y = -(height + spacer)),
+                                                            textAlign = TextAlign.Center
                                                         )
                                                     }
+
+                                                    // 막대 그래프
+                                                    Box(
+                                                        modifier = Modifier
+                                                            .align(Alignment.BottomCenter)
+                                                            .fillMaxWidth(0.6f)
+                                                            .height(height)
+                                                            .background(
+                                                                color = barColor ,
+                                                                shape = RoundedCornerShape(
+                                                                    topStart = 4.dp,
+                                                                    topEnd = 4.dp
+                                                                )
+                                                            )
+                                                    )
                                                 }
                                             }
                                         }
@@ -402,21 +406,34 @@ fun DashboardStoryCard(
                                                 .background(borderColor)
                                         )
 
-                                        // x축:
+                                        // x축
                                         Row(
-                                            modifier = Modifier.fillMaxWidth(),
+                                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
                                             verticalAlignment = Alignment.Bottom,
-                                            horizontalArrangement = Arrangement.spacedBy(16.dp)
                                         ) {
-                                            story.emotions.forEach { item ->
-                                                Text(text = item.name,
-                                                    style = subTitleTextStyle, modifier = Modifier.weight(1f))
+                                            story.emotions.forEachIndexed { index, item ->
+                                                val barColor = colors[index]
+
+                                                StrokeTitle(
+                                                    titleText = item.name,
+                                                    titleColor = Color.White,
+                                                    strokeColor = barColor,
+                                                    titleTextStyle = linkTextStyle.copy(textDecoration = None),
+                                                    strokeWidth = 10f,
+                                                    softWrap = false,
+                                                    modifier = Modifier
+                                                        .graphicsLayer { rotationZ = -30f }
+                                                        .weight(1f)
+                                                        .align(Alignment.CenterVertically)
+                                                )
                                             }
                                         }
 
+                                        // 요약 및 날짜
                                         Box(
                                             modifier = Modifier
                                                 .fillMaxWidth()
+                                                .padding(top = cardCorner)
                                                 .height(textHeight),
                                             contentAlignment = Alignment.Center
                                         ) {
@@ -427,10 +444,8 @@ fun DashboardStoryCard(
                                 }
                             }
                         }
-
                     }
                 }
-
             }
         }
     }
