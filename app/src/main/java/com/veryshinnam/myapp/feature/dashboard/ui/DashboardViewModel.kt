@@ -25,6 +25,10 @@ class DashboardViewModel @Inject constructor(
     private val _uiState = MutableStateFlow<DashboardUiState>(DashboardUiState.Loading)
     val uiState = _uiState.asStateFlow()
 
+    // 유저 닉네임
+    private val _username = MutableStateFlow("")
+    val username = _username.asStateFlow()
+
     init {
         fetchDashboard()
     }

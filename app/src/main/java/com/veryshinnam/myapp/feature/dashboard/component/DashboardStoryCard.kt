@@ -11,6 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
@@ -24,15 +25,20 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.layout.positionInParent
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -41,6 +47,7 @@ import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration.Companion.None
 import androidx.compose.ui.text.style.TextDecoration.Companion.Underline
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -68,17 +75,24 @@ fun DashboardStoryCard(
     summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
     modifier: Modifier
 ) {
+    // 화면 밀도 정보
+    val density = LocalDensity.current
 
-    // ui 변수
+    // 도움말 관련 변수
     var titlePressed by remember { mutableStateOf(false) }
     var attemptPressed by remember { mutableStateOf(false) }
-    var emotionPressed by remember { mutableStateOf(false) }
     var wordPressed by remember { mutableStateOf(false) }
-    var isMore by remember { mutableStateOf(false) }
+    var emotionPressed by remember { mutableStateOf(false) }
+    var attemptTop by remember { mutableFloatStateOf(0f) }
+    var wordTop by remember { mutableFloatStateOf(0f) }
+    var emotionTop by remember { mutableFloatStateOf(0f) }
+    var eHelpHeight by remember { mutableStateOf<Float?>(null) }
 
+    // ui 변수
     val scrollState = rememberScrollState()
     val textHeight = summaryTextStyle.lineHeight.value.dp * 6
     val barHeight = 180.dp
+    var isMore by remember { mutableStateOf(false) }
 
     val colors = listOf(
         colorResource(R.color.emotion_1),
@@ -134,7 +148,7 @@ fun DashboardStoryCard(
             )
         }
 
-        // 시도횟수 및 감정분석
+        // 섹션 내용
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -149,10 +163,15 @@ fun DashboardStoryCard(
             if (titlePressed) {
                 Box(
                     modifier = Modifier
-                        .background(borderColor)
-                        .zIndex(20f)
+                        .zIndex(10f)
+                        .padding(horizontal = cardCorner, vertical = verticalPadding)
                 ) {
-                    Text("터치 중")
+                    DashboardHelpText(
+                        text = "최신 동화 5개 기반으로 한 언어 발달 학습 분석과 정서 분석입니다.\n\n" +
+                                "언어 발달 정도를 확인할 수 있습니다.\n\n" +
+                                "정서 분석으로 동화 스토리에 반영된 아이의 정서를 6가지 감정(기쁨, 슬픔, 화남, 두려움, 놀람, 평온)을 확인할 수 있습니다.",
+                        modifier = Modifier.wrapContentHeight()
+                    )
                 }
             }
 
@@ -163,7 +182,9 @@ fun DashboardStoryCard(
             ) {
                 // -- 동화 제목
                 Text(
-                    text = "storyIdstoryIdstoryId: ${story.storyId}",
+                    text = "storyIdstoryIdstoryIdstoryIdstoryIdstoryId: ${story.storyId}",
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     style = summaryTextStyle.copy(fontWeight = Bold, fontSize = summaryTextStyle.fontSize*1.2f),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
@@ -180,10 +201,30 @@ fun DashboardStoryCard(
 
                 Spacer(Modifier.height(cardCorner*2)) // 간격
 
-                Box(modifier = Modifier
-                    .fillMaxWidth()
-                    .wrapContentHeight()
-                    .padding(horizontal = verticalPadding)) {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .wrapContentHeight()
+                        .padding(horizontal = verticalPadding)
+                ) {
+                    if (attemptPressed) {
+                        DashboardHelpText(
+                            text = "스토리는 기-승-전-결의 구조로 되어있습니다.\n" +
+                                    "기 ~~~~~~~~~~~~\n" +
+                                    "승: ~~~~~~~~\n" +
+                                    "전: ~~~~~~~~~~\n" +
+                                    "결: ~~~~~~~~~~~\n\n" +
+                                    "다음 동화 생성 시에도 각 단계의 설명을 잘 떠올린 후 질문에 답변해 보세요!"
+                            ,
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    y = with(density) { attemptTop.toDp() }
+                                )
+                                .wrapContentHeight()
+                                .zIndex(10f)
+                        )
+                    }
+
                     Column{
                         // -- 1. 시도 횟수 영역
                         Box(modifier = Modifier.fillMaxWidth()) {
@@ -195,29 +236,22 @@ fun DashboardStoryCard(
                                 modifier = Modifier.align(Alignment.TopEnd)
                             )
 
-                            Box {
-                                if (attemptPressed) {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(borderColor)
-                                            .zIndex(20f)
-                                    ) {
-                                        Text("터치 중")
+                            // 평균 값
+                            Column{
+                                Text("• 평균 시도 횟수: ${story.avgAttemptPerStage}회", style = subTitleTextStyle)
+                                Spacer(Modifier.height(spacer))
+
+                                // 기승전결
+                                Column(
+                                    modifier = Modifier.onGloballyPositioned { coords ->
+                                        attemptTop = coords.positionInParent().y
                                     }
-                                }
-                                // 평균 값
-                                Column{
-                                    Text("• 평균 시도 횟수: ${story.avgAttemptPerStage}회", style = subTitleTextStyle)
-                                    Spacer(Modifier.height(spacer))
-
-
-                                    // 기승전결
+                                ) {
                                     Attempt.values().forEach { attempt ->
-
                                         DashboardAttemptRow(
                                             title = attempt.label,
                                             count = story.attempts[attempt] ?: 1,
-                                            subTextStyle = summaryTextStyle,
+                                            subTextStyle = summaryTextStyle
                                         )
                                     }
                                 }
@@ -235,33 +269,35 @@ fun DashboardStoryCard(
                                 modifier = Modifier.align(Alignment.TopEnd)
                             )
 
-                            Box {
-                                if (wordPressed) {
-                                    Box(
-                                        modifier = Modifier
-                                            .background(borderColor)
-                                            .zIndex(20f)
-                                    ) {
-                                        Text("터치 중")
-                                    }
-                                }
-                                Column {
-                                    Text("• 평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
-                                    Text("• 획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
-                                    Text(
-                                        text = if (isMore) "닫기" else "자세히 보기",
-                                        style = linkTextStyle,
-                                        modifier = Modifier.clickable { isMore = !isMore }
-                                    )
-                                }
+                            Column {
+                                Text("• 평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
+                                Text("• 획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
+                                Text(
+                                    text = if (isMore) "닫기" else "자세히 보기",
+                                    style = linkTextStyle,
+                                    modifier = Modifier.clickable { isMore = !isMore }
+                                )
                             }
                         }
                         Spacer(Modifier.height(spacer))
 
                         Box {
+                            if (wordPressed) {
+                                DashboardHelpText(
+                                    text = "동화를 만들면서 획득한 단어 분석이에요. 자세히 보기를 클릭해서 자세한 단어 목록을 확인할 수 있어요",
+                                    modifier = Modifier
+                                        .absoluteOffset(
+                                            y = with(density) { wordTop.toDp() })
+                                        .wrapContentHeight()
+                                        .zIndex(20f)
+                                )
+                            }
+
                             if (isMore) {
                                 Box (modifier = Modifier
                                     .matchParentSize()
+                                    .onGloballyPositioned { coords ->
+                                        wordTop = coords.positionInParent().y }
                                     .zIndex(10f)
                                     .border(
                                         width = 2.dp,
@@ -324,6 +360,25 @@ fun DashboardStoryCard(
                                 }
                             }
 
+                            if (emotionPressed) {
+                                DashboardHelpText(
+                                    text = "정서 분석으로 동화 스토리에 반영된 아이의 정서를 6가지 정서를 확인할 수 있습니다." +
+                                            "\n평온의 경우 앞 5가지 정서에 포함되지 않는 중립적인 감정이라고 생각하시면 됩니다.",
+                                    modifier = Modifier
+                                        .wrapContentHeight()
+                                        .onGloballyPositioned { coords ->
+                                            eHelpHeight = coords.size.height.toFloat()
+                                        }
+                                        .absoluteOffset(
+                                            y = with(density) {
+                                                eHelpHeight?.let { (emotionTop - it).toDp() } ?: 0.dp
+                                            }
+                                        )
+                                        .alpha(if (eHelpHeight != null) 1f else 0f)
+                                        .zIndex(20f)
+                                )
+                            }
+
                             // -- 3. 정서 분석
                             Column(modifier = Modifier.fillMaxWidth()) {
                                 Spacer(Modifier.height(verticalPadding*2))
@@ -333,20 +388,13 @@ fun DashboardStoryCard(
                                     onPress = {pressed ->
                                         emotionPressed = pressed
                                     },
-                                    modifier = Modifier.align(Alignment.End)
+                                    modifier = Modifier
+                                        .align(Alignment.End)
+                                        .onGloballyPositioned { coords ->
+                                            emotionTop = coords.positionInParent().y }
                                 )
 
                                 Box {
-                                    if (emotionPressed) {
-                                        Box(
-                                            modifier = Modifier
-                                                .background(borderColor)
-                                                .zIndex(20f)
-                                        ) {
-                                            Text("터치 중")
-                                        }
-                                    }
-
                                     // 정서 분석
                                     Column(
                                         modifier = Modifier.fillMaxWidth(),

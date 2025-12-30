@@ -93,7 +93,7 @@ fun DashboardParentCard(
             )
         }
 
-        // 부모 조언
+        // 부모 조언 카드
         Box(
             modifier = modifier
                 .fillMaxWidth()
@@ -104,18 +104,21 @@ fun DashboardParentCard(
                     shape = RoundedCornerShape(cardCorner)
                 )
         ) {
+            Box(
+                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding)
+            ) {
+                // 텍스트
             Text(
                 text = advice,
-                style = adviceTextStyle,
-                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding)
+                style = adviceTextStyle
             )
 
             if (helpPressed) {
-                Box( modifier = modifier
-                    .background(borderColor)
-                ) {
-                    Text("터치 중")
-                }
+                DashboardHelpText(
+                    text = "최신 동화 5개 기반으로 한 부모 조언입니다",
+                    modifier = Modifier.matchParentSize()
+                )
+            }
             }
         }
     }

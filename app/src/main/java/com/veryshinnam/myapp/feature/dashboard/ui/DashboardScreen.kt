@@ -2,7 +2,9 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
@@ -12,6 +14,7 @@ import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
@@ -46,6 +49,11 @@ fun DashboardScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle() // 화면 전체 ui
 
     // ui 변수
+    val scrollState = rememberScrollState()
+    val logoAlpha by animateFloatAsState(
+        targetValue = if (scrollState.value > 8) 0f else 1f,
+        label = "logoAlpha"
+    )
 
     // 세로 모드 고정
     SideEffect {
@@ -58,34 +66,34 @@ fun DashboardScreen(
     BackHandler { onBack() }
 
     // 대시보드 ui
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = {
-            // 상태바 만큼 여백 & 상단 로고
-            Column {
+    Box {
+        // 로고 + 백버튼 ui
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .zIndex(20f)
+        ) {
+            Column(
+                modifier = Modifier.alpha(logoAlpha)
+            ) {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
                 LogoBar(onLogoClick = onLogoClick)
             }
-        },
-        bottomBar = {
-            // 네비게이션바 만큼 여백
-            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
+
             // 뒤로 가기 버튼
             BackButton(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
+                    .align(Alignment.Start)
                     .zIndex(1f),
                 onBackClick = onBack
             )
+        }
 
+        Column (
+            modifier = Modifier
+                .fillMaxSize()
+                .background(colorResource(R.color.background_yellow))
+        ) {
             when (val state = uiState) {
                 // 조회 로딩
                 is DashboardUiState.Loading -> {
@@ -108,7 +116,7 @@ fun DashboardScreen(
                 is DashboardUiState.Success -> {
                     Column(
                         modifier = Modifier
-                            .verticalScroll(rememberScrollState()),
+                            .verticalScroll(scrollState),
                         verticalArrangement = Arrangement.spacedBy(spacer)
                     ) {
                         // 대시보드 상단
@@ -209,6 +217,9 @@ fun DashboardScreen(
                             advice = state.advice,
                             modifier = Modifier
                         )
+
+                        // 네비게이션바 만큼 여백
+                        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                     }
                 }
             }

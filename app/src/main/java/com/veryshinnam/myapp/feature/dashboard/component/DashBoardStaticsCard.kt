@@ -9,8 +9,10 @@ import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.rememberLazyListState
@@ -33,6 +35,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.dashboard.model.ChartStatData
@@ -127,7 +130,15 @@ fun DashBoardStaticsCard(
             // --- 도움말 텍스트 + 파이 차트 + 리스트
             Box {
                 if (helpPressed) {
-                    Text("터치중")
+                    DashboardHelpText(
+                        text = "지금까지 생성한 동화의 $title 통계 목록입니다.\n\n" +
+                                "스크롤하여 더 자세한 내용을 확인해 보세요!",
+                        modifier = Modifier
+                            .wrapContentHeight()
+                            .padding(horizontal = spacer)
+                            .offset(y = (-16).dp)
+                            .zIndex(10f)
+                    )
                 }
 
                 // --- 파이 차트 + 리스트

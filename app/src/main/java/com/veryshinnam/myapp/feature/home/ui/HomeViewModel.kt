@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private val _isNewUser = MutableStateFlow(false)
     val isNewUser = _isNewUser.asStateFlow()
 
-    //
+    // 유저 닉네임
     private val _username = MutableStateFlow("")
     val username = _username.asStateFlow()
 
