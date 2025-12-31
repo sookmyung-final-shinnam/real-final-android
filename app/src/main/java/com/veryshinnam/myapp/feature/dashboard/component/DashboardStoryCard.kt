@@ -32,10 +32,13 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
@@ -60,6 +63,7 @@ import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
 fun DashboardStoryCard(
     story: StoryAnalysisData,
     onStoryClick: (Long) -> Unit,
+    onHelpRect: (Rect) -> Unit,
     spacer: Dp = 6.dp,
     verticalPadding: Dp = 24.dp,
     cardCorner: Dp = 16.dp,
@@ -128,7 +132,15 @@ fun DashboardStoryCard(
                     onPress = {pressed ->
                         titlePressed = pressed
                     },
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = spacer*2)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = spacer*2)
+                        .onGloballyPositioned { coords ->
+                            val rect = coords.boundsInRoot()
+                            if (rect.width > 0 && rect.height > 0) {
+                                onHelpRect(rect)
+                            }
+                        }
                 )
             }
 

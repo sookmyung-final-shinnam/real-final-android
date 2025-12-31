@@ -117,47 +117,48 @@ class CollectionViewModel @Inject constructor(
         ManualData("앗! 같이 만들었던 동화가 여기 있네요. 장신남 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.IMAGE),
     )
 
+    // 매뉴얼용 더미 더미테이터
+    val dummyList = listOf(
+        CollectionData(
+            id = -1,
+            name = "최강혁",
+            image = ImageType.Resource(R.drawable.img_character_1),
+            gender = Gender.FEMALE,
+            isFavorite = true
+        ),
+        CollectionData(
+            id = -1,
+            name = "베네딕트",
+            image = ImageType.Resource(R.drawable.img_character_2),
+            gender = Gender.FEMALE,
+            isFavorite = false
+        ),
+        CollectionData(
+            id = -1,
+            name = "준",
+            image = ImageType.Resource(R.drawable.img_character_3),
+            gender = Gender.FEMALE,
+            isFavorite = false
+        ),
+        CollectionData(
+            id = -1,
+            name = "여름",
+            image = ImageType.Resource(R.drawable.img_character_4),
+            gender = Gender.FEMALE,
+            isFavorite = true
+        ),
+        CollectionData(
+            id = -1,
+            name = "장신남",
+            image = ImageType.Resource(R.drawable.img_character_5),
+            gender = Gender.MALE,
+            isFavorite = true
+        )
+    )
+
     fun startManual() {
         _manualStep.value = 0
         manualManager.update(manuals[0].message)
-
-        val dummyList = listOf(
-            CollectionData(
-                id = -1,
-                name = "최강혁",
-                image = ImageType.Resource(R.drawable.img_character_1),
-                gender = Gender.FEMALE,
-                isFavorite = true
-            ),
-            CollectionData(
-                id = -1,
-                name = "베네딕트",
-                image = ImageType.Resource(R.drawable.img_character_2),
-                gender = Gender.FEMALE,
-                isFavorite = false
-            ),
-            CollectionData(
-                id = -1,
-                name = "준",
-                image = ImageType.Resource(R.drawable.img_character_3),
-                gender = Gender.FEMALE,
-                isFavorite = false
-            ),
-            CollectionData(
-                id = -1,
-                name = "여름",
-                image = ImageType.Resource(R.drawable.img_character_4),
-                gender = Gender.FEMALE,
-                isFavorite = true
-            ),
-            CollectionData(
-                id = -1,
-                name = "장신남",
-                image = ImageType.Resource(R.drawable.img_character_5),
-                gender = Gender.MALE,
-                isFavorite = true
-            )
-        )
 
         // 스크린에서 매뉴얼 UI로 전환
         _isEmpty.value = false

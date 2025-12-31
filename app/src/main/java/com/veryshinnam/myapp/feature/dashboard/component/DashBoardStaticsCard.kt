@@ -26,11 +26,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.boundsInWindow
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -47,6 +51,7 @@ import kotlin.math.sin
 @Composable
 fun DashBoardStaticsCard(
     title: String,
+    onHelpRect: (Rect) -> Unit = {},
     chartStats: List<ChartStatData>, // 비육
     listStats: List<StatData>,       // 횟수
     modifier: Modifier,
@@ -123,7 +128,15 @@ fun DashBoardStaticsCard(
                     onPress = { pressed ->
                         helpPressed = pressed
                     },
-                    modifier = Modifier.align(Alignment.CenterEnd).padding(end = spacer)
+                    modifier = Modifier
+                        .align(Alignment.CenterEnd)
+                        .padding(end = spacer)
+                        .onGloballyPositioned { coords ->
+                            val rect = coords.boundsInRoot()
+                            if (rect.width > 0 && rect.height > 0) {
+                                onHelpRect(rect)
+                            }
+                        }
                 )
             }
 

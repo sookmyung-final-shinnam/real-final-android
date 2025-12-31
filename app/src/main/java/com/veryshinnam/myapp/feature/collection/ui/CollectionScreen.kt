@@ -99,10 +99,10 @@ fun CollectionScreen(
 
     // 매뉴얼 > 강조할 좌표
     val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
-    var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 토끼 이미지
-    var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
-    var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
-    var characterRect by remember { mutableStateOf<Rect?>(null) } // 캐릭터 박스
+    var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
+    var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스
+    var characterRect by remember { mutableStateOf<Rect?>(null) }   // 캐릭터 박스
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
@@ -278,12 +278,7 @@ fun CollectionScreen(
                                     }
                                 },
                                 onItemClick = { item ->
-//                                    if (item.image.isNullOrBlank()) {
-//                                        isSimpleWarning = true
-//                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
-//                                    } else {
                                     onItemClick(item.id)
-//                                    }
                                 },
                                 cellPadding = spacerPadding / 2,
                                 modifier = Modifier.fillMaxSize(),

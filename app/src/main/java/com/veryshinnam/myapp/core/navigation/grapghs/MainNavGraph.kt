@@ -77,8 +77,13 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         launchSingleTop = true
                     }
                 },
-                onCharacter = { characterId ->
+                goToCharacter = { characterId ->
                     navController.navigate("character/$characterId")
+                },
+                goToNextManual = {
+                    navController.navigate(MainRoutes.HOME) {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                    }
                 }
             )
         }
@@ -127,6 +132,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 },
                 goToNextManual = {
                     navController.navigate(MainRoutes.ATTENDANCE) {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
                         launchSingleTop = true
                     }
                 }

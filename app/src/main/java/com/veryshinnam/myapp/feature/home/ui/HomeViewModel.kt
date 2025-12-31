@@ -169,18 +169,6 @@ class HomeViewModel @Inject constructor(
         }
     }
 
-    fun updatePoint(newPoint: Int) {
-        val currentState = _homeUiState.value
-        if (currentState is HomeUiState.Success) {
-            val updatedHomeData = currentState.homeData.copy(
-                points = newPoint
-            )
-            _homeUiState.value = currentState.copy(
-                homeData = updatedHomeData
-            )
-        }
-    }
-
     // --- 매뉴얼 관련 ---
     // 홈 화면 사용 매뉴얼
     val manuals = listOf(
