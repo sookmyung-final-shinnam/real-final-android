@@ -244,7 +244,7 @@ fun ConversationScreen(
                                             ) { isWarning = true } // 홈으로
 
                                             ConversationStoryContent(
-                                                nextStory = state.nextStory,
+                                                nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
                                                     if (isManual) vm.nextManual()
@@ -264,7 +264,7 @@ fun ConversationScreen(
                                                 enabled = manualState == ManualState.NONE
                                             ) { isWarning = true } // 홈으로
                                             ConversationStoryContent(
-                                                nextStory = state.nextStory,
+                                                nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
                                                     if (isManual) vm.nextManual()
@@ -285,7 +285,7 @@ fun ConversationScreen(
                                                 enabled = manualState == ManualState.NONE
                                             ) { vm.goToPreviousStep() }
                                             ConversationQuestionContent(
-                                                question = state.questionData.question,
+                                                question = if (isManual) manualMessage else state.questionData.question,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
                                                     if (isManual) vm.nextManual()
@@ -340,7 +340,7 @@ fun ConversationScreen(
                                             }
 
                                             ConversationFeedbackContent(
-                                                feedback = state.feedbackData,
+                                                feedback =  if (isManual) state.feedbackData.copy(text = manualMessage) else state.feedbackData,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
                                                     if (isManual) vm.nextManual()
@@ -414,99 +414,4 @@ fun ConversationScreen(
             }
         )
     }
-
-//    if (manualState != ManualState.NONE) {
-//        Box(
-//            modifier = Modifier
-//                .fillMaxSize()
-//                .zIndex(2f)
-//                .background(
-//                    if (manualStep == 0 || manualStep == 1 || manualStep == 5)
-//                        Color.Black.copy(alpha = 0.5f)
-//                    else
-//                        Color.Transparent
-//                )
-//                대.then(
-////                    if (manualStep == 6) {
-////                        Modifier // answer 기
-//                    } else {
-//                        when (manualState) {
-//                            ManualState.START -> Modifier.pointerInput(Unit) {
-//                                detectTapGestures { vm.nextManual() }
-//                            }
-//
-//                            ManualState.STOP -> Modifier.pointerInput(Unit) {
-//                                detectTapGestures { onStopManual() }
-//                            }
-//
-//                            else -> Modifier
-//                        }
-//                    }
-//                )
-//        ) {
-//
-//            Text(
-//                text = "그만 들을래요.",
-//                color = colorResource(R.color.main_orange),
-//                modifier = Modifier
-//                    .align(Alignment.TopEnd)
-//                    .padding(30.dp)
-//                    .clickable {
-//                        when (manualState) {
-//                            ManualState.START -> {
-//                                vm.stopManual()
-//                            }
-//
-//                            ManualState.STOP -> {
-//                                onStopManual()
-//                            }
-//
-//                            else -> {}
-//                        }
-//                    }
-//                    .zIndex(11f)
-//            )
-//
-//            when (manualStep) {
-//                0, 1 -> {
-//                    Column(
-//                        modifier = Modifier
-//                            .fillMaxSize()
-//                            .systemBarsPadding()
-//                            .padding(horizontal = horizontalPadding),
-//                    ) {
-//                        Spacer(Modifier.height(logoHeight))
-//                        ConversationStoryContent(
-//                            nextStory = manualMessage,
-//                            isTtsSpeaking = false,
-//                            onReplayClick = { vm.nextManual() },
-//                            onNextClick = { vm.nextManual() },
-//                            nextEnabled = true,
-//                            modifier = Modifier
-//                                .clickable(
-//                                    indication = null,
-//                                    interactionSource = remember { MutableInteractionSource() }
-//                                ) { vm.nextManual() }
-//                        )
-//                    }
-//                }
-//
-//                5 -> {
-//                    textRect?.let { it ->
-//                        TargetConvText(
-//                            it,
-//                            density, onClick = { vm.nextManual() }
-//                            , text = manualMessage
-//                        )
-//                    }
-//                    imageRect?.let { it ->
-//                        TargetImage(it, painterResource(R.drawable.img_llm_question))
-//                    }
-//                    recordRect?.let { it ->
-//                        TargetConvRecord(it, density, onClick = { vm.nextManual() })
-//                    }
-//                }
-//            }
-//        }
-//    }
 }
