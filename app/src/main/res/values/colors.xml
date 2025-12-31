@@ -32,8 +32,20 @@
     <!-- 앱컬러(대시보드) -->
     <color name="deep_green">#99CB53</color>
     <color name="light_green">#AFD37D</color>
-    <color name="light_orange">#FBC36A</color>
 
+    <color name="chart_1">#FFA93C</color>
+    <color name="chart_2">#FFB86A</color>
+    <color name="chart_3">#FFBE55</color>
+    <color name="chart_4">#FFD066</color>
+    <color name="chart_5">#FFDC85</color>
+    <color name="chart_6">#FFE29A</color>
+    <color name="chart_7">#FFE6A6</color>
+
+    <color name="emotion_1">#FAD474</color>
+    <color name="emotion_2">#8FB7D8</color>
+    <color name="emotion_3">#E89A9A</color>
+    <color name="emotion_4">#B8A6D9</color>
+    <color name="emotion_5">#F6C085</color>
 
     <!-- 앱컬러(출석체크) -->
     <color name="deep_pink">#FEA17F</color>

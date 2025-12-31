@@ -57,7 +57,6 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
@@ -74,6 +73,7 @@ import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
+import org.threeten.bp.YearMonth
 
 @Composable
 fun CollectionScreen(
@@ -97,15 +97,12 @@ fun CollectionScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // 캐릭터 상세 > 보관함 화면: 세로 모드
-//    val context = LocalContext.current
-//    SideEffect { (context as? Activity)?.requestedOrientation = ActivityInfo.SCREEN_ORIENTATION_PORTRAIT }
-
     // 매뉴얼 > 강조할 좌표
-    var rabbitRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
-    var messageRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
-    var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
-    var characterRect by remember { mutableStateOf<Rect?>(null) } // 캐릭터 박스
+    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
+    var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
+    var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스
+    var characterRect by remember { mutableStateOf<Rect?>(null) }   // 캐릭터 박스
 
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var SimpleWarningText by remember { mutableStateOf("") }
@@ -118,10 +115,14 @@ fun CollectionScreen(
     }
 
     LaunchedEffect(manualState) {
-        if (manualState != ManualState.NONE) {
-            vm.startManual()               // 매뉴얼용 더미 데이터
-        } else {
-            vm.fetchCollection(Gender.ALL) // 실제 데이터
+        when (manualState) {
+            ManualState.NONE -> {
+                vm.fetchCollection(Gender.ALL)
+            } // 실제 데이터
+            ManualState.START -> {
+                vm.startManual()
+            } // 매뉴얼 시작일 때만 더미 데이터
+            else -> {}
         }
     }
 
@@ -134,6 +135,7 @@ fun CollectionScreen(
     // 뒤로 가기
     BackHandler { onBack() }
 
+    // 보관함 ui
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
         topBar = {
@@ -195,12 +197,12 @@ fun CollectionScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.collectionDataList.size,
-                            itemImage =  painterResource(R.drawable.img_character_yellow),
+                            itemImage = painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
                             animalDescription = "보관함 설명 토끼 이미지",
                             cardColor = colorResource(R.color.blue_gray),
-                            cardText =  "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
+                            cardText = "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
                             spanText = "캐릭터 5명",
                             spanColor = colorResource(R.color.blue_sky),
                             onItemRect = { rect ->
@@ -209,7 +211,7 @@ fun CollectionScreen(
                                 }
                             },
                             onAnimalRect = { rect ->
-                                if (manualState == ManualState.START  && rabbitRect == null) {
+                                if (manualState == ManualState.START && rabbitRect == null) {
                                     rabbitRect = rect
                                 }
                             },
@@ -229,7 +231,7 @@ fun CollectionScreen(
                         )
 
                         // 캐릭터 아이템 그리드 (3*3)
-                        Spacer(Modifier.height(spacerPadding /2))
+                        Spacer(Modifier.height(spacerPadding / 2))
 
                         if (isEmpty) { // 비어있는 경우 > 캐릭터 생성으로
                             Column(
@@ -262,7 +264,7 @@ fun CollectionScreen(
                                             fontSize = emptyTextStyle.fontSize * 1.2f,
                                             fontWeight = Bold
                                         ),
-                                        modifier = Modifier.padding(vertical = spacerPadding/2)
+                                        modifier = Modifier.padding(vertical = spacerPadding / 2)
                                     )
                                 }
                             }
@@ -276,12 +278,7 @@ fun CollectionScreen(
                                     }
                                 },
                                 onItemClick = { item ->
-//                                    if (item.image.isNullOrBlank()) {
-//                                        isSimpleWarning = true
-//                                        SimpleWarningText = "아직 캐릭터와 동화가 만들어지고 있어요.\n조금만 기다려주세요!"
-//                                    } else {
                                     onItemClick(item.id)
-//                                    }
                                 },
                                 cellPadding = spacerPadding / 2,
                                 modifier = Modifier.fillMaxSize(),
@@ -301,7 +298,7 @@ fun CollectionScreen(
     if (isSimpleWarning) {
         WarningSheet(
             warningText = SimpleWarningText,
-            onDismiss = { isSimpleWarning = false}
+            onDismiss = { isSimpleWarning = false }
         )
     }
 
@@ -312,7 +309,8 @@ fun CollectionScreen(
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(
-                    Color.Black.copy(alpha = 0.5f))
+                    Color.Black.copy(alpha = 0.5f)
+                )
                 .then(
                     when (manualState) {
                         ManualState.START -> Modifier.pointerInput(Unit) {
@@ -320,7 +318,7 @@ fun CollectionScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { onStopManual() }
                         }
 
                         else -> Modifier
@@ -335,8 +333,9 @@ fun CollectionScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
+
                             else -> {}
                         }
                     }
@@ -360,22 +359,71 @@ fun CollectionScreen(
                 )
             }
 
+            if (manualStep >= 3) {
+                characterRect?.let { it ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { it.left.toDp() },
+                                y = with(density) { it.top.toDp() }
+                            )
+                            .size(
+                                with(density) { it.width.toDp() },
+                                with(density) { it.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                            .border(
+                                2.dp,
+                                colorResource(id = R.color.blue_gray),
+                                RoundedCornerShape(16.dp)
+                            )
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_character_5),
+                            contentDescription = "캐릭터 이미지",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop,
+                        )
+                        // 즐찾 버튼
+                        FavoriteButton(
+                            modifier = Modifier
+                                .fillMaxWidth(0.44f)
+                                .aspectRatio(1f)
+                                .align(Alignment.TopStart)
+                                .padding(4.dp),
+                            characterId = -1,
+                            isFavorite = true,
+                            onFavoriteClick = { }
+                        )
+                        // 캐릭터 이름
+                        StrokeTitle(
+                            titleText = "장신남",
+                            titleColor = Color.White,
+                            strokeColor = Color.Black,
+                            titleTextStyle = MaterialTheme.typography.titleLarge,
+                            strokeWidth = 4f,
+                            modifier = Modifier
+                                .align(Alignment.BottomCenter)
+                                .padding(bottom = 8.dp) // 아래 패딩
+                        )
+                    }
+                }
+            }
+
             when (manualStep) {
                 1 -> {
                     itemRect?.let {
                         TargetItem(
                             it, density,
-                            image = painterResource(R.drawable.img_character_yellow),
+                            image = painterResource(R.drawable.ic_character),
                             imageDescription = "캐릭터 수",
                             value = 5,
                             boxColor = colorResource(R.color.blue_gray)
                         )
                     }
                 }
-                2-> {
 
-                }
-                3 -> {
+                2 -> {
                     characterRect?.let { it ->
                         Box(
                             modifier = Modifier
@@ -388,41 +436,18 @@ fun CollectionScreen(
                                     with(density) { it.height.toDp() }
                                 )
                                 .clip(RoundedCornerShape(16.dp))
-                                .border(
-                                    2.dp,
-                                    colorResource(id = R.color.blue_gray),
-                                    RoundedCornerShape(16.dp)
-                                )
                         ) {
-                            Image(
-                                painter = painterResource(R.drawable.img_dummy_character_1),
-                                contentDescription = "캐릭터 이미지",
-                                modifier = Modifier.fillMaxSize(),
-                                contentScale = ContentScale.Crop,
-                            )
-
                             // 즐찾 버튼
-                            FavoriteButton (
+                            FavoriteButton(
                                 modifier = Modifier
                                     .fillMaxWidth(0.44f)
                                     .aspectRatio(1f)
                                     .align(Alignment.TopStart)
-                                    .padding(4.dp),
+                                    .padding(4.dp)
+                                    .zIndex(20f),
                                 characterId = -1,
-                                isFavorite = false,
-                                onFavoriteClick = {  }
-                            )
-
-                            // 캐릭터 이름
-                            StrokeTitle(
-                                titleText = "카리나",
-                                titleColor = Color.White,
-                                strokeColor = Color.Black,
-                                titleTextStyle = MaterialTheme.typography.titleLarge,
-                                strokeWidth = 4f,
-                                modifier = Modifier
-                                    .align(Alignment.BottomCenter)
-                                    .padding(bottom = 8.dp) // 아래 패딩
+                                isFavorite = true,
+                                onFavoriteClick = { vm.manualStep }
                             )
                         }
                     }

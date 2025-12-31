@@ -11,6 +11,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -21,6 +22,7 @@ fun StrokeTitle(
     titleTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
     titleColor: Color,
     strokeColor: Color,
+    softWrap: Boolean = true,
     strokeWidth: Float = 2f,
     verticalPadding: Dp = 4.dp,
 ) {
@@ -31,6 +33,8 @@ fun StrokeTitle(
         // 윤곽선
         Text(
             text = titleText,
+            textAlign = TextAlign.Center,
+            softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = strokeColor,
@@ -41,6 +45,8 @@ fun StrokeTitle(
         // 실제 텍스트
         Text(
             text = titleText,
+            textAlign = TextAlign.Center,
+            softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
                 color = titleColor

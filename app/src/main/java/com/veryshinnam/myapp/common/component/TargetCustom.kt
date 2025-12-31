@@ -80,7 +80,7 @@ fun TargetCustom(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
-                    painter = painterResource(id = R.drawable.img_keyboard),
+                    painter = painterResource(id = R.drawable.ic_keyboard),
                     contentDescription = "직접 추가 이미지", // 접근성 내용 제거
                     contentScale = ContentScale.Fit,
                     modifier = Modifier

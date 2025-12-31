@@ -11,7 +11,7 @@ import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.model.CharacterData
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.StoryStatus
+import com.veryshinnam.myapp.feature.character.model.VideoStatus
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -119,12 +119,12 @@ class CharacterViewModel @Inject constructor(
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
         ManualData("만들어진 캐릭터의 사진과 정보를 자세히 볼 수 있어요.", ManualTarget.NONE),
-        ManualData("저희가 만든 미니니는 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
+        ManualData("저희가 만든 장신남은 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
         ManualData("저기 Tab 버튼을 한번 눌러 보실래요?", ManualTarget.BUTTON),
         ManualData("바로 카드 뒷 장에서 동화를 확인할 수 있고", ManualTarget.NONE),
         ManualData("도토리 1개를 사용하여 잠금을 해제하면", ManualTarget.NONE),
         ManualData("동화를 움직이는 형태로도 볼 수 있답니다.", ManualTarget.NONE),
-        ManualData("만든 동화를 친구들에게도 공유할 수 있다는 것도 잊지마세요!", ManualTarget.IMAGE),
+        ManualData("만든 동화를 친구들에게도 공유할 수 있다는 것도 잊지 마세요!", ManualTarget.IMAGE),
     )
 
     fun startManual() {
@@ -133,18 +133,18 @@ class CharacterViewModel @Inject constructor(
 
         val dummy = CharacterData(
             id = -1,
-            name = "릭터",
+            name = "장신남",
             gender = Gender.FEMALE,
             age = 11,
-            image = ImageType.Resource(R.drawable.img_dummy_character_1),
-            personality = "릭터 용감하고 호기심이 많은 성격으로, 친구를 돕는 데 힘을 쏟습니다.",
-            birth = "2020-01-11",
+            image = ImageType.Resource(R.drawable.img_character_5),
+            personality = "용감하고 호기심이 많은 성격으로, 친구를 돕는 데 힘을 쏟습니다.",
+            birth = "2025-11-13",
             isFavorite = false,
             stories = StoriesData(
                 storyId = -1,
-                title = "릭터와 노란 새의 모험",
-                imageUrl = ImageType.Resource(R.drawable.img_dummy_character_1),
-                storyStatus = StoryStatus.NONE,
+                title = "장신남과 노란 새의 모험",
+                imageUrl = ImageType.Resource(R.drawable.img_dummy_page),
+                videoStatus = VideoStatus.NONE,
                 videoUrl = null ,
                 imageYLink = "https://www.youtube.com/shorts/w5M0pxr-u-k",
                 videoYLink= null

@@ -35,8 +35,8 @@ fun ConversationFeedbackContent(
         ConversationNeedsText(
                 feedback = feedback.text,
                 tryNum = feedback.tryNum,
-                painter = if (feedback.isPositive) painterResource(R.drawable.img_feedback_positive)
-                          else painterResource(R.drawable.img_feedback_negative),
+                painter = if (feedback.isPositive) painterResource(R.drawable.img_llm_feedback_positive)
+                          else painterResource(R.drawable.img_llm_feedback_negative),
                 modifier = Modifier
                     .weight(1f)
                     .align(Alignment.CenterHorizontally),

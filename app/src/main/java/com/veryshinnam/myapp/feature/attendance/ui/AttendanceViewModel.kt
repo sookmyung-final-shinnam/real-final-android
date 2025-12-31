@@ -123,34 +123,39 @@ class AttendanceViewModel @Inject constructor(
 
 
     // --- 매뉴얼 관련 ---
-    // 생성 전 선택 화면 사용 매뉴얼
+    // 출석 체크 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("동화가 완성되면 여기 보관함에서 확인할 수 있어요.", ManualTarget.NONE),
-        ManualData("이건 지금까지 만든 동화 수이자 캐릭터 수에요!", ManualTarget.NONE),
-        ManualData("같이 만들었던 동화가 여기 있네요. 해당 캐릭터를 눌러 같이 한번 확인해 볼까요?", ManualTarget.NONE),
+        ManualData("이곳에서 하루에 한 번 출석 체크를 하고, 지금까지 출석한 날짜를 확인할 수 있어요.", ManualTarget.NONE),
+        ManualData("출석 체크를 하면 도장이 하나씩 찍혀요.", ManualTarget.ITEM),
+        ManualData("지금까지 모은 도장 수이고,\n도장 10개를 모으면 도토리 1개로 바꿀 수 있어요!", ManualTarget.ITEM),
+        ManualData("도토리는 새로운 동화를 만들고,\n만든 동화를 움직이는 영상으로 만들 때 필요해요.", ManualTarget.NONE),
+        ManualData("출석 체크를 하면서 도토리를 차곡차곡 모아 보세요!", ManualTarget.NONE),
     )
+
+    val today: LocalDate = LocalDate.now()
+    val manualAttendances = listOf(
+        LocalDate.of(today.year, today.month, 1),
+        LocalDate.of(today.year, today.month, 2),
+        LocalDate.of(today.year, today.month, 5),
+        LocalDate.of(today.year, today.month, 9),
+        LocalDate.of(today.year, today.month, 13),
+        LocalDate.of(today.year, today.month, 14),
+        LocalDate.of(today.year, today.month, 17),
+        LocalDate.of(today.year, today.month, 27),
+    )
+
+    val manualDate: LocalDate = LocalDate.of(today.year, today.month, 5)
 
     fun startManual() {
         _manualStep.value = 0
         manualManager.update(manuals[0].message)
 
-        val today = LocalDate.now()
-
         val attendanceDummy = AttendanceData(
             stamps = 5,
             isTodayAttendance = true,
             attendanceCounts = 5,
-            attendanceDates = listOf(
-                LocalDate.of(today.year, today.month, 1),
-                LocalDate.of(today.year, today.month, 2),
-                LocalDate.of(today.year, today.month, 5),
-                LocalDate.of(today.year, today.month, 9),
-                LocalDate.of(today.year, today.month, 13),
-                LocalDate.of(today.year, today.month, 14),
-                LocalDate.of(today.year, today.month, 17),
-                LocalDate.of(today.year, today.month, 27),
-            ),
-            lastExchangeDate = LocalDate.of(today.year, today.month, 5)
+            attendanceDates = manualAttendances,
+            lastExchangeDate = manualDate
         )
 
         _attendanceUiState.value = AttendanceUiState.Success(

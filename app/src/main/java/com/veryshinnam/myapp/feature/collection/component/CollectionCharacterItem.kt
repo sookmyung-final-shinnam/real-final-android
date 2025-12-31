@@ -46,9 +46,6 @@ fun CollectionCharacterItem(
                 colorResource(id = R.color.blue_gray),
                 RoundedCornerShape(16.dp))
     ) {
-        // 1. 동화 완성인 경우
-//        if (!cImage.isNullOrEmpty()) {
-
         // 캐릭터 이미지
         when (cImage) {
             is ImageType.Url -> {
@@ -90,49 +87,8 @@ fun CollectionCharacterItem(
             titleTextStyle = textStyle,
             strokeWidth = 4f,
             modifier = Modifier
-                .fillMaxWidth()
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 4.dp) // 아래 패딩
         )
     }
-//    else {
-//            // 2. 동화 미완인 경우
-//
-//            // 기본 마네킹 이미지
-//            Image(
-//                painter = painterResource(id = R.drawable.img_character),
-//                contentDescription = "기본 이미지",
-//                modifier = Modifier.fillMaxWidth(0.8f).align(Alignment.Center),
-//                contentScale = ContentScale.Fit
-//            )
-//
-//            // 오버레이 (검정 50% 투명)
-//            Box(
-//                modifier = Modifier
-//                    .matchParentSize()
-//                    .background(Color.Black.copy(alpha = 0.5f))
-//            )
-//
-//            // 물음표 이미지
-//            Image(
-//                modifier = Modifier
-//                    .fillMaxHeight(0.5f)
-//                    .align(Alignment.TopCenter)
-//                    .padding(top = 16.dp), // 아래 패딩
-//                painter = painterResource(id = R.drawable.img_question),
-//                contentDescription = "미완성 아이콘",
-//            )
-//
-//            // 캐릭터 이름
-//            StrokeTitle(
-//                modifier = Modifier.align(Alignment.BottomCenter)
-//                    .padding(bottom = 8.dp), // 아래 패딩
-//                titleText = cName,
-//                titleColor = Color.White,
-//                strokeColor = Color.Black,
-//                strokeWidth = 4f,
-//                titleTextStyle = textStyle
-//            )
-//        }
-//    }
 }

@@ -38,7 +38,7 @@ fun ConversationRecordButton(
         shape = CircleShape
     ) {
         Image(
-            painter = painterResource(R.drawable.img_mike_on),
+            painter = painterResource(R.drawable.ic_mike),
             contentDescription = "Record",
             modifier = Modifier
                 .fillMaxSize(),

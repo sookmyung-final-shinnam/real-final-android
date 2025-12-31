@@ -10,14 +10,17 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -29,8 +32,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
@@ -42,6 +50,9 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.TargetItem
+import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
@@ -58,14 +69,25 @@ fun AttendanceScreen(
     horizontalPadding: Dp = 16.dp,
     vm: AttendanceViewModel = hiltViewModel()
 ) {
+    val density = LocalDensity.current
+    val configuration = LocalConfiguration.current
+
     // 상태 구독
     val uiState by vm.attendanceUiState.collectAsStateWithLifecycle()
     val isLoading by vm.isLoading.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
+    // ui 변수
     var isTodayStamp by remember { mutableStateOf(false) }
     var isExchangeable by remember { mutableStateOf(false) }
+
+    // 매뉴얼 > 강조할 좌표
+    var pigRect by remember { mutableStateOf<Rect?>(null) } // 돼지 이미지
+    var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
+    var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
+    var calendarRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
 
     // 세로 모드 고정
     SideEffect {
@@ -76,14 +98,24 @@ fun AttendanceScreen(
 
     // 캐릭터 id 바뀌면 재로딩
     LaunchedEffect(manualState) {
-        if (manualState != ManualState.NONE) {
-            vm.startManual()
-        } else {
-            val now = YearMonth.now()
-            vm.fetchAttendance(yearMonth = now)
+        when (manualState) {
+            ManualState.NONE -> {
+                val now = YearMonth.now()
+                vm.fetchAttendance(yearMonth = now)
+            }
+            ManualState.START -> { vm.startManual() } // 매뉴얼 시작일 때만 더미 데이터
+            else -> { }
         }
     }
 
+    // 화면 가로 > 세로 이동 후, 매뉴얼 변수 초기화
+    LaunchedEffect(configuration.orientation) {
+        pigRect = null
+        messageRect = null
+        itemRect = null
+        calendarRect = null
+    }
+    
     LaunchedEffect(manualStep) {
         if (manualStep == vm.manuals.size) {
             goToNextManual()
@@ -166,7 +198,7 @@ fun AttendanceScreen(
                             modifier = Modifier,
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.attendanceData.stamps,
-                            itemImage =  painterResource(R.drawable.img_stamp),
+                            itemImage =  painterResource(R.drawable.ic_stamp),
                             itemDescription = "모은 도장 수",
                             animalImage = painterResource(R.drawable.img_pig_cut),
                             animalDescription = "출석체크 설명 돼지 이미지",
@@ -174,7 +206,22 @@ fun AttendanceScreen(
                             cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
                                     "도장 10 개당 도토리 1 개라는 걸 잊지 마세요~!",
                             spanText = "${state.attendanceData.attendanceCounts}번",
-                            spanColor = colorResource(R.color.light_pink)
+                            spanColor = colorResource(R.color.light_pink),
+                            onItemRect = { rect ->
+                                if (manualState == ManualState.START && itemRect == null) {
+                                    itemRect = rect
+                                }
+                            },
+                            onAnimalRect = { rect ->
+                                if (manualState == ManualState.START  && pigRect == null) {
+                                    pigRect = rect
+                                }
+                            },
+                            onMessageRect = { rect ->
+                                if (manualState == ManualState.START && messageRect == null) {
+                                    messageRect = rect
+                                }
+                            }
                         )
 
                         Spacer(Modifier.height(spacerPadding))
@@ -193,7 +240,12 @@ fun AttendanceScreen(
                                 lastExchangeDate = state.attendanceData.lastExchangeDate,
                                 onPrevMonth = { vm.fetchPreviousMonth() },
                                 onNextMonth = { vm.fetchNextMonth() },
-                                modifier = Modifier.fillMaxSize(),
+                                modifier = Modifier.fillMaxSize()
+                                    .onGloballyPositioned { it ->
+                                        if (manualState == ManualState.START && calendarRect == null) {
+                                            calendarRect = it.boundsInRoot()
+                                        }
+                                    }
                             )
 
                             if (isLoading) {
@@ -299,6 +351,89 @@ fun AttendanceScreen(
                     }
                     .zIndex(11f)
             )
+
+            pigRect?.let { rect ->
+                TargetImage(
+                    rect,
+                    painterResource(R.drawable.img_pig_cut)
+                )
+            }
+
+            messageRect?.let { rect ->
+                TargetMessage(
+                    rect = rect,
+                    message = manualMessage,
+                    messageStyle = MaterialTheme.typography.titleMedium,
+                    messagePadding = 16.dp,
+                    boxColor = colorResource(R.color.deep_pink),
+                )
+            }
+
+            if (manualStep >= 2) {
+                itemRect?.let {
+                    TargetItem(
+                        it, density,
+                        image = painterResource(R.drawable.ic_stamp),
+                        imageDescription = "도장 수",
+                        value = 5,
+                        boxColor = colorResource(R.color.deep_pink)
+                    )
+                }
+                if (manualStep >= 4) {
+                    calendarRect?.let { rect ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { rect.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { rect.width.toDp() },
+                                    with(density) { rect.height.toDp() }
+                                )
+                                .zIndex(20f)
+                        ) {
+                            AttendanceCalender(
+                                attendances = vm.manualAttendances,
+                                yearMonth =YearMonth.from(vm.today),
+                                lastExchangeDate = vm.manualDate,
+                                onPrevMonth = { vm.nextManual() },
+                                onNextMonth = { vm.nextManual() },
+                                isManual = true,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+            }
+            when (manualStep) {
+                1 -> {
+                    calendarRect?.let { rect ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { rect.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { rect.width.toDp() },
+                                    with(density) { rect.height.toDp() }
+                                )
+                                .zIndex(20f)
+                        ) {
+                            AttendanceCalender(
+                                attendances = vm.manualAttendances,
+                                yearMonth =YearMonth.from(vm.today),
+                                lastExchangeDate = vm.manualDate,
+                                onPrevMonth = { vm.nextManual() },
+                                onNextMonth = { vm.nextManual() },
+                                isManual = true,
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
+                    }
+                }
+            }
         }
     }
 }

@@ -38,12 +38,13 @@ fun CharacterCardRight(
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String?) -> Unit,
+    onKakaoClick: (String?) -> Unit,
     onTabRect: (Rect) -> Unit,
-    onLockerRect: (Rect) -> Unit,
+    onStoryRect: (Rect) -> Unit,
+    onVideoRect: (Rect) -> Unit,
     cardPadding: Dp = 24.dp,
     tabPadding: Dp = 12.dp,
-    modifier: Modifier = Modifier // 부모가 넘겨준 크기
+    modifier: Modifier // 부모가 넘겨준 크기
 ) {
     val density = LocalDensity.current.density
     val cameraDistancePx = 20 * density * 100f // 원근감
@@ -57,7 +58,7 @@ fun CharacterCardRight(
         )
     )
 
-    Box(modifier = modifier) {
+    Box (modifier = modifier) {
         Card(
             modifier = modifier
                 .fillMaxSize()
@@ -120,8 +121,9 @@ fun CharacterCardRight(
                             onStoryClick = onStoryClick,
                             onLockerClick = onLockerClick,
                             onMakingClick = onMakingClick,
-                            onShareClick = onShareClick,
-                            onLockerRect = onLockerRect,
+                            onKakaoClick = onKakaoClick,
+                            onStoryRect = onStoryRect,
+                            onVideoRect = onVideoRect,
                             rotation = rotation
                         )
 

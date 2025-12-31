@@ -4,22 +4,16 @@ import android.util.Log
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxHeight
-import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
@@ -30,22 +24,24 @@ import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.StoryStatus
+import com.veryshinnam.myapp.feature.character.model.VideoStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
-import kotlinx.coroutines.delay
 
 @Composable
 fun CharacterRightBack(
     modifier: Modifier,
-    stories: StoriesData,             // 동화 정보 (종이책+영상)
+    stories: StoriesData,             // 동화 정보 (종이책 + 영상)
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
-    onShareClick: (String?) -> Unit,
-    onLockerRect: (Rect) -> Unit,
+    onKakaoClick: (String?) -> Unit,
+    onStoryRect: (Rect) -> Unit,
+    onVideoRect: (Rect) -> Unit,
     rotation: Float,
+    storyInfo: String = "동화 보러 가기",
+    videoInfo: String = "움직이는 동화 보러 가기",
     titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
-    infoTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.Bold),
+    infoTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
 ) {
     Column(modifier = modifier) {
         // --- 동화 제목
@@ -58,12 +54,15 @@ fun CharacterRightBack(
             modifier = Modifier.fillMaxWidth()
         )
 
+        Spacer(Modifier.height(8.dp))
+
         // --- 동화 보러 가기
         Row(
             modifier = Modifier.fillMaxWidth().weight(1f),
             horizontalArrangement = Arrangement.SpaceAround,
             verticalAlignment = Alignment.Bottom
         ) {
+
             // 종이 동화
             Column(
                 modifier = Modifier.weight(1f),
@@ -72,23 +71,30 @@ fun CharacterRightBack(
             ) {
                 CharacterStoryButton(
                     storyId = stories.storyId,
-                    storyType = StoryType.IMAGE,
-                    storyTypeText = "동화",
-                    storyUrl = stories.imageUrl,
-                    storyYLink = stories.imageYLink,
-                    storyStatus = StoryStatus.COMPLETED,
+                    imageUrl = stories.imageUrl,
+                    youTubeLink = stories.imageYLink,
+                    infoText = storyInfo,
                     onStoryClick = onStoryClick,
-                    onShareClick = onShareClick,
+                    onKakaoClick = onKakaoClick,
                     modifier = Modifier.weight(1f)
+                        .onGloballyPositioned { it ->
+                            if (rotation == 180f) {
+                                val rect = it.boundsInWindow()
+                                onStoryRect(rect)
+                                Log.d("manual", "story rect update: $rect")
+                            }
+                        }
                 )
 
                 Text(
-                    text = "동화 보러 가기",
+                    text = storyInfo,
                     style = infoTextStyle,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1
                 )
             }
+
 
             // 움직이는 동화
             Column(
@@ -96,37 +102,35 @@ fun CharacterRightBack(
                 verticalArrangement = Arrangement.spacedBy(5.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-
-                CharacterStoryButton(
+                CharacterVideoButton(
                     storyId = stories.storyId,
-                    storyType = StoryType.VIDEO,
-                    storyTypeText = "움직이는 동화",
                     videoUrl = stories.videoUrl,
-                    storyYLink = stories.videoYLink,
-                    storyStatus = stories.storyStatus,
+                    videoStatus = stories.videoStatus,
+                    youTubeLink = stories.videoYLink,
+                    infoText = videoInfo,
                     onStoryClick = onStoryClick,
                     onMakingClick = onMakingClick,
                     onLockerClick = onLockerClick,
-                    onShareClick = onShareClick,
+                    onKakaoClick = onKakaoClick,
                     modifier = Modifier.weight(1f)
                         .onGloballyPositioned { it ->
                             if (rotation == 180f) {
                                 val rect = it.boundsInWindow()
-                                onLockerRect(rect)
-                                Log.d("manual", "rect update: $rect")
+                                onVideoRect(rect)
+                                Log.d("manual", "video rect update: $rect")
                             }
                         }
                 )
 
-
                 Text(
-                    text = "움직이는 동화 보러 가기",
+                    text = videoInfo,
                     style = infoTextStyle,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth(),
+                    maxLines = 1
                 )
             }
+
         }
     }
-
 }

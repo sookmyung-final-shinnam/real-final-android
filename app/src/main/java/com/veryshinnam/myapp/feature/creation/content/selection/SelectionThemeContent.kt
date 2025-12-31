@@ -15,6 +15,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
@@ -37,7 +38,7 @@ fun SelectionThemeContent(
     spacePadding: Dp = 24.dp
 ) {
     var customInput by remember { mutableStateOf("") }
-    val initThemes = listOf("모험", "일상", "사랑", "우정", "공포", "추리")
+    val initThemes = DashboardInit.THEMES
 
     Column(
         modifier = modifier,

@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.character.ui
 
 import android.content.Intent
 import android.content.pm.ActivityInfo
-import android.util.Log
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
@@ -62,7 +61,7 @@ import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ShareSheet
-import com.veryshinnam.myapp.common.component.TargetImage
+import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.model.ManualState
@@ -71,6 +70,7 @@ import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
+import org.threeten.bp.YearMonth
 
 
 @Composable
@@ -110,9 +110,10 @@ fun CharacterScreen(
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
 
     // 매뉴얼 변수
+    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
-    var lockerRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
-
+    var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
+    var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
 
     // 가로 모드 고정
     SideEffect {
@@ -122,11 +123,15 @@ fun CharacterScreen(
     }
 
     // 캐릭터 id 바뀌면 재로딩
-    LaunchedEffect(id, manualState) {
-        if (manualState != ManualState.NONE || id == -1L) {
-            vm.startManual()
-        } else {
-            vm.fetchCharacter(id)
+    LaunchedEffect(id) {
+        if (manualState == ManualState.NONE) {
+            vm.fetchCharacter(id) // 실제 데이터
+        }
+    }
+
+    LaunchedEffect(manualState) {
+        if (manualState == ManualState.START) {
+            vm.startManual() // 매뉴얼 시작일 때만 더미 데이터
         }
     }
 
@@ -220,7 +225,7 @@ fun CharacterScreen(
                             isWarning = true
                             warnedStoryId = storyId },
                         onMakingClick = { isVideoMaking = true },
-                        onShareClick = { storyYLink ->
+                        onKakaoClick = { storyYLink ->
                             if (!storyYLink.isNullOrBlank()) {
                                 isLinkSharing = true
                                 youtubeLink = storyYLink
@@ -234,11 +239,16 @@ fun CharacterScreen(
                                 tabRect = rect
                             }
                         },
-                        onLockerRect = { rect ->
+                        onStoryRect = { rect ->
                             if (manualState == ManualState.START
-                                && manualStep == 3 && lockerRect == null) {
-                                lockerRect = rect
-                                Log.d("manual", "rect final update: $rect")
+                                && manualStep == 3 && storyRect == null) {
+                                storyRect = rect
+                            }
+                        },
+                        onVideoRect = { rect ->
+                            if (manualState == ManualState.START
+                                && manualStep == 3 && videoRect == null) {
+                                videoRect = rect
                             }
                         },
                         modifier = Modifier
@@ -324,7 +334,7 @@ fun CharacterScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { onStopManual() }
                         }
 
                         else -> Modifier
@@ -339,8 +349,8 @@ fun CharacterScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual }
                             else -> {}
                         }
                     }
@@ -386,6 +396,87 @@ fun CharacterScreen(
                 }
             }
 
+            // 동영상
+            if (manualStep >= 5) {
+                videoRect?.let { rect ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { rect.top.toDp() }
+                            )
+                            .size(
+                                with(density) { rect.width.toDp() },
+                                with(density) { rect.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        VideoPlayer(
+                            videoUrl = "android.resource://${context.packageName}/${R.raw.dummy_page}",
+                            modifier = Modifier.fillMaxSize()
+                        )
+
+                        if (manualStep >= 6) {
+
+                            // 오버레이
+                            Box(
+                                modifier = Modifier
+                                    .matchParentSize()
+                                    .background(Color.Black.copy(alpha = 0.5f))
+                            )
+
+                            // 오른쪽 카톡 버튼
+                            Image(
+                                painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                                contentDescription = "카카오 이미지",
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(
+                                        with(density) { rect.width.toDp() * 0.35f },
+                                        with(density) { rect.height.toDp() * 0.35f }
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .zIndex(1f),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+                }
+            }
+
+            // 왼쪽 카톡 버튼
+            if (manualStep >= 6) {
+                storyRect?.let { rect ->
+                    Box(
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { rect.top.toDp() }
+                            )
+                            .size(
+                                with(density) { rect.width.toDp() },
+                                with(density) { rect.height.toDp() }
+                            )
+                            .clip(RoundedCornerShape(16.dp))
+                    ) {
+                        Image(
+                            painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                            contentDescription = "카카오 이미지",
+                            modifier = Modifier
+                                .align(Alignment.TopEnd)
+                                .size(
+                                    with(density) { rect.width.toDp() * 0.35f },
+                                    with(density) { rect.height.toDp() * 0.35f }
+                                )
+                                .clip(RoundedCornerShape(12.dp))
+                                .zIndex(1f),
+                            contentScale = ContentScale.Fit
+                        )
+                    }
+                }
+            }
+
+            // 그외 강조 요소
             when (manualStep) {
                 2 -> { tabRect?.let { it ->
                     // 탭버튼
@@ -398,15 +489,15 @@ fun CharacterScreen(
                             .size(
                                 with(density) { it.width.toDp() },
                                 with(density) { it.height.toDp() }
-                            ),
+                            )
+                            .zIndex(10f),
                         onClick = {
                             vm.nextManual()
                         },
                         alpha = 0.5f,
                     )
-                }
-                }
-                4 -> { lockerRect?.let { it ->
+                } }
+                4 -> { videoRect?.let { it ->
                     // 잠금 해제
                     Box(
                         modifier = Modifier
@@ -426,29 +517,7 @@ fun CharacterScreen(
                             contentScale = ContentScale.Fit
                         )
                     }
-                }
-                }
-                5 -> { lockerRect?.let { it ->
-                    // 도토리
-                    Box(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { it.left.toDp() },
-                                y = with(density) { it.top.toDp() })
-                            .size(
-                                with(density) { it.width.toDp() },
-                                with(density) { it.height.toDp() }
-                            )
-                            .clip(RoundedCornerShape(16.dp))   // 여기에 clip
-                    ) {
-
-                    }
-                }
-                }
-                6 -> {
-                    // 카톡 버튼
-
-                }
+                } }
             }
         }
     }

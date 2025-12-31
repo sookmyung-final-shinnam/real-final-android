@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -22,6 +23,7 @@ import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -42,7 +44,6 @@ fun UserInfo(
     itemImage: Painter? = null,
     itemDescription: String = "",
     animalImage: Painter,
-    animalAlignment: Alignment = Alignment.BottomCenter,
     animalDescription: String,
     bottomPadding: Dp = 10.dp,
     cardPadding: Dp = 16.dp,
@@ -56,11 +57,14 @@ fun UserInfo(
     onAnimalRect: (Rect) -> Unit = {},
     onMessageRect: (Rect) -> Unit = {},
 ) {
+    // 이미지 높이: 기기 높이 * 0.12
+    val imageHeight = (LocalConfiguration.current.screenHeightDp * 0.12f).dp
+
     Column(modifier = modifier) {
+        // 이미지 + 아이템
         Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .fillMaxHeight(0.12f) // 화면의 12% 고정
+            modifier = Modifier.fillMaxWidth()
+                .height(imageHeight) // 대시보드 고려 고정 사이즈
         ) {
             Image(
                 painter = animalImage,
@@ -82,7 +86,7 @@ fun UserInfo(
                     color = cardColor,
                     modifier = Modifier
                         .padding(bottom = bottomPadding)
-                        .align(animalAlignment)
+                        .align(Alignment.BottomCenter)
                         .fillMaxWidth(0.3f)
                         .fillMaxHeight(0.6f)
                         .onGloballyPositioned { onItemRect(it.boundsInRoot()) }

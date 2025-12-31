@@ -202,7 +202,7 @@ fun HomeScreen(
 
                                 // 나침반 수
                                 UserItem(
-                                    painter = painterResource(R.drawable.img_dotory),
+                                    painter = painterResource(R.drawable.ic_dotory),
                                     contentDescription = "모은 나침반 수",
                                     value = "$points",
                                     color = colorResource(R.color.main_orange),
@@ -368,7 +368,7 @@ fun HomeScreen(
             text = "신규 유저 보상\n도토리 5개",
             onReceiveClick = {
                 vm.updateNewUser()
-//                vm.showManual() // 매뉴얼 진행
+                vm.showManual() // 매뉴얼 진행
             },
             modifier = Modifier
                 .fillMaxSize()

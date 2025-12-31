@@ -404,10 +404,11 @@ class ConversationViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 끝나면 제가 이전에 고른 내용들을 바탕으로 이야기를 만들어 나갈 거예요.\n제 질문에 답을 하며 저희 함께 동화를 만들어나가요!"),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 루미는 고민이 있었답니다."),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "루미는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 진우를 닯은 사람을 발견했어요."),
-        ManualScriptData(step = ConversationStep.QUESTION,  question = "루미는 그 사람을 보고 어떻게 행동했을까?"),
+        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 모두 끝나면,\n지금까지 고른 내용으로 제가 4번에 걸쳐 이야기를 만들어 줄 거예요." +
+                "\n\n제 질문에 하나씩 답하면서 우리 함께 재미있는 동화를 만들어 봐요!"),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 장신남은 고민이 있었답니다."),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "장신남은 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 장신남은 닯은 사람을 발견했어요."),
+        ManualScriptData(step = ConversationStep.QUESTION,  question = "장신남은 그 사람을 보고 어떻게 행동했을까?"),
         ManualScriptData(step = ConversationStep.QUESTION, question = "제 질문에 대한 답을 생각했다면\n아래의 마이크를 눌러서 대답해 주세요!"),
         ManualScriptData(step = ConversationStep.ANSWER),
         ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요, 앞으로도 그렇게 대답 해주면 돼요.", 1)),

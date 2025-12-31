@@ -6,7 +6,7 @@ import com.veryshinnam.myapp.feature.admin.data.api.AdminStoryApi
 import com.veryshinnam.myapp.feature.attendance.data.api.AttendanceApi
 import com.veryshinnam.myapp.feature.character.data.api.CharacterApi
 import com.veryshinnam.myapp.feature.creation.data.api.ConversationApi
-import com.veryshinnam.myapp.feature.dashboard.data.DashboardApi
+import com.veryshinnam.myapp.feature.dashboard.data.api.DashboardApi
 import com.veryshinnam.myapp.feature.home.data.api.HomeApi
 import com.veryshinnam.myapp.feature.permit.data.api.PermitApi
 import com.veryshinnam.myapp.feature.settings.data.api.UserApi

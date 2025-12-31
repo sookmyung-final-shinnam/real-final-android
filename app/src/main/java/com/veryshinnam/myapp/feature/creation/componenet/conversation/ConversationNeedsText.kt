@@ -19,10 +19,14 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.boundsInRoot
+import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -39,6 +43,7 @@ fun ConversationNeedsText(
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,
     modifier: Modifier,
+    horizontalPadding: Dp = 16.dp,
     verticalPadding: Dp = 24.dp,
     spacePadding: Dp = 12.dp,
     tryTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
@@ -72,10 +77,25 @@ fun ConversationNeedsText(
             }
 
             // 피드백 텍스트
+            /*
+            *
+            * Image(
+                        painter = painter,
+                        contentDescription = "다람쥐 이미지",
+                        modifier = Modifier
+                            .alpha(0.5f)
+                            .fillMaxHeight()
+                            .scale(1.4f)
+                            .align(Alignment.BottomStart)  // Box 아래쪽
+//                            .offset(y = 40.dp)
+//                            .onGloballyPositioned { onImageRect(it.boundsInRoot()) }
+                            ,
+                        contentScale = ContentScale.Fit
+                    )*/
             Card(
                 modifier = Modifier.fillMaxWidth()
-                    .weight(1f)
-                    .padding(bottom = 20.dp, start = 16.dp, end = 16.dp),
+                    .weight(1f),
+//                    .padding(bottom = 20.dp, start = 16.dp, end = 16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(32.dp),
                 border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -83,20 +103,35 @@ fun ConversationNeedsText(
                 Box(
                     modifier = Modifier
                         .fillMaxSize()
-                        .padding(verticalPadding)
+                        .padding(vertical = verticalPadding)
                 ) {
+                    Image(
+                        painter = painter,
+                        contentDescription = "다람쥐 이미지",
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .align(Alignment.BottomStart)
+                            .offset((-80).dp, 120.dp)
+                            .alpha(0.3f),
+                        contentScale = ContentScale.Fit
+                    )
+
                     // 피드백 텍스트
                     Text(
                         text = feedback,
                         style = textStyle,
-                        modifier = Modifier.align(Alignment.Center)
+                        modifier = Modifier
+                            .padding(horizontal = horizontalPadding)
+                            .align(Alignment.Center)
                     )
 
                     // 다시듣기
                     ConversationReplayButton(
                         isTtsSpeaking = isTtsSpeaking,
                         onReplayClick = onReplayClick,
-                        modifier = Modifier.align(Alignment.BottomEnd)
+                        modifier = Modifier
+                            .padding(end = verticalPadding)
+                            .align(Alignment.BottomEnd)
                     )
                 }
             }

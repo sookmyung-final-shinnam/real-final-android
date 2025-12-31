@@ -56,11 +56,7 @@ fun CollectionFilterButtons(
                 contentAlignment = Alignment.Center
             ) {
                 Text(
-                    text = when (filter) {
-                        Gender.ALL -> "전체"
-                        Gender.FEMALE -> "여자"
-                        Gender.MALE -> "남자"
-                    },
+                    text = filter.type,
                     style = textStyle.copy(
                         fontWeight = FontWeight.Bold,
                         color = textColor

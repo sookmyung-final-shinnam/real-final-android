@@ -98,6 +98,7 @@ fun ConversationScreen(
     var isWarning by remember { mutableStateOf(false) }   // 경고창
 
     //  매뉴얼
+    val onStopManual: () -> Unit = { vm.hideManual(); onBack() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
     var textRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
     var imageRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
@@ -174,10 +175,12 @@ fun ConversationScreen(
                     // 진행바 (START, END 제외)
                     if (state.conversationStep != ConversationStep.START && state.conversationStep != ConversationStep.END) {
                         StepProgressBar(
+                            radius = 0.068f,
+                            line = 24f,
                             steps = 4,                        // 총 반복 횟수
                             currentStep = state.loopStep,     // 현재 진행 단계
                             modifier = Modifier
-                                .fillMaxWidth(0.7f)  // 진행 바 길이
+                                .fillMaxWidth(0.75f)  // 진행 바 길이
                                 .fillMaxHeight(0.15f)
                                 .zIndex(2f)
                                 .align(Alignment.TopCenter),
@@ -342,9 +345,11 @@ fun ConversationScreen(
                             ManualState.START -> Modifier.pointerInput(Unit) {
                                 detectTapGestures { vm.nextManual() }
                             }
+
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.hideManual() }
+                                detectTapGestures { onStopManual() }
                             }
+
                             else -> Modifier
                         }
                     }
@@ -359,8 +364,8 @@ fun ConversationScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }

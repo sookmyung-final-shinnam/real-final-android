@@ -38,7 +38,7 @@ class HomeViewModel @Inject constructor(
     private val _isNewUser = MutableStateFlow(false)
     val isNewUser = _isNewUser.asStateFlow()
 
-    //
+    // 유저 닉네임
     private val _username = MutableStateFlow("")
     val username = _username.asStateFlow()
 
@@ -63,11 +63,11 @@ class HomeViewModel @Inject constructor(
     // --- ui 이벤트 관련 ---
     // 신규 유저 확인
     private fun checkNewUser() {
-        viewModelScope.launch {
-            val newUser = sessionManager.isNewUser()
-            _isNewUser.value = newUser
-        }
-//        _isNewUser.value = true
+//        viewModelScope.launch {
+//            val newUser = sessionManager.isNewUser()
+//            _isNewUser.value = newUser
+//        }
+        _isNewUser.value = true
     }
 
     // 신규 유저 업데이트
@@ -168,34 +168,6 @@ class HomeViewModel @Inject constructor(
             )
         }
     }
-
-    fun updatePoint(newPoint: Int) {
-        val currentState = _homeUiState.value
-        if (currentState is HomeUiState.Success) {
-            val updatedHomeData = currentState.homeData.copy(
-                points = newPoint
-            )
-            _homeUiState.value = currentState.copy(
-                homeData = updatedHomeData
-            )
-        }
-    }
-//    private fun getDummyUser(): UserData {
-//        return UserData(
-//            username = "짱신남",
-//            points = 99,
-//            characters = 5
-//        )
-//    }
-
-//    private fun getDummyFavorites(): List<FavoriteData> {
-//        return listOf(
-//            FavoriteData(id = 11, name = "지우", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_1.png"),
-//            FavoriteData(id = 20,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_20.png"),
-//            FavoriteData(id = 19,  name = "미니", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_19.png"),
-//            FavoriteData(id = 18,  name = "민수", image = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/characters/character_18.png")
-//        )
-//    }
 
     // --- 매뉴얼 관련 ---
     // 홈 화면 사용 매뉴얼
