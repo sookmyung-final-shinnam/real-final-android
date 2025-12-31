@@ -462,5 +462,5 @@ class ConversationViewModel @Inject constructor(
 
     fun stopManual() = manualManager.stop()
 
-    fun hideManual() = manualManager.clear()
+    fun clearManual() = manualManager.clear()
 }

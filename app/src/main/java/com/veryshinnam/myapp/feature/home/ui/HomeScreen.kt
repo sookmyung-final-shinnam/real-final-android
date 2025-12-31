@@ -110,7 +110,7 @@ fun HomeScreen(
     }
 
     LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) {
+        if (manualStep == vm.firstManuals.size) {
             onCreationClick()
         }
     }
@@ -193,7 +193,8 @@ fun HomeScreen(
                                         .align(Alignment.BottomStart)  // start 정렬
                                         .padding(start = 26.dp)
                                         .onGloballyPositioned {
-                                            if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && squirrelRect == null) {
+                                            if ((manualState == ManualState.REQUEST || manualState == ManualState.START || manualState == ManualState.FINISH)
+                                                && squirrelRect == null) {
                                                 squirrelRect = it.boundsInRoot()
                                             }
                                         },
@@ -225,7 +226,8 @@ fun HomeScreen(
                                         colorResource(R.color.main_orange),
                                         RoundedCornerShape(messageCorner))
                                     .onGloballyPositioned {
-                                        if ((manualState == ManualState.START || manualState == ManualState.REQUEST) && messageRect == null) {
+                                        if ((manualState == ManualState.REQUEST || manualState == ManualState.START || manualState == ManualState.FINISH)
+                                            && messageRect == null) {
                                             messageRect = it.boundsInRoot()
                                         }
                                     }
@@ -368,7 +370,7 @@ fun HomeScreen(
             text = "신규 유저 보상\n도토리 5개",
             onReceiveClick = {
                 vm.updateNewUser()
-                vm.showManual() // 매뉴얼 진행
+                vm.requestManual() // 매뉴얼 진행
             },
             modifier = Modifier
                 .fillMaxSize()
@@ -386,15 +388,12 @@ fun HomeScreen(
                 .then(
                     when (manualState) {
                         ManualState.REQUEST -> Modifier.pointerInput(Unit) {}
-
-                        ManualState.START -> Modifier.pointerInput(Unit) {
+                        ManualState.START, ManualState.FINISH -> Modifier.pointerInput(Unit) {
                             detectTapGestures { vm.nextManual() }
                         }
-
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { vm.clearManual() }
                         }
-
                         else -> Modifier
                     }
                 )

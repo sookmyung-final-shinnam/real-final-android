@@ -98,7 +98,7 @@ fun CollectionScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
-    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
     var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스

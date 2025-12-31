@@ -329,7 +329,7 @@ fun AttendanceScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.hideManual() }
+                            detectTapGestures { vm.clearManual() }
                         }
 
                         else -> Modifier
@@ -345,7 +345,7 @@ fun AttendanceScreen(
                     .clickable {
                         when (manualState) {
                             ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.hideManual()
+                            ManualState.STOP -> vm.clearManual()
                             else -> {}
                         }
                     }

@@ -110,7 +110,7 @@ fun CharacterScreen(
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
 
     // 매뉴얼 변수
-    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치

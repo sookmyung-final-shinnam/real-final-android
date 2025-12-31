@@ -79,7 +79,7 @@ fun DashboardScreen(
     var tHelpRect by remember { mutableStateOf<Rect?>(null) }   // 테마 도움말 위치
     var bHelpRect by remember { mutableStateOf<Rect?>(null) }   // 배경 도움말 위치
     var sHelpRect by remember { mutableStateOf<Rect?>(null) }   // 동화 도움말 위치
-    val onStopManual: () -> Unit = { vm.hideManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
 
     // -- 세로 모드 고정
     SideEffect {
@@ -103,6 +103,7 @@ fun DashboardScreen(
 
     LaunchedEffect(manualStep) {
         if (manualStep == vm.manuals.size) {
+            vm.finishManual()
             goToNextManual()
         }
     }
@@ -208,7 +209,7 @@ fun DashboardScreen(
                                         .clickable {
                                             when (manualState) {
                                                 ManualState.START -> vm.stopManual()
-                                                ManualState.STOP -> vm.hideManual()
+                                                ManualState.STOP -> vm.clearManual()
                                                 else -> {}
                                             }
                                         }

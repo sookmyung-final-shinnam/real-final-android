@@ -280,7 +280,13 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun finishManual() {
+        manualManager.finish()
+        _manualStep.value = 0 // step 초기화
+    }
+
+
     fun stopManual() = manualManager.stop()
 
-    fun hideManual() = manualManager.clear()
+    fun clearManual() = manualManager.clear()
 }

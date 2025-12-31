@@ -30,12 +30,12 @@ class ManualManager @Inject constructor() {
 
     fun finish() {
         _state.value = ManualState.FINISH
-        _message.value = "지금까지 긴 설명을 듣느라 수고하셨어요!\n이제 스토릭터를 자유롭게 사용해 보세요!"
+        _message.value = "지금까지 긴 설명을 따라오느라 수고했어요!"
     }
 
     fun stop() {
         _state.value = ManualState.STOP
-        _message.value = "그래요!\n나중에도 설명이 필요하다면 환경 설정에서 버튼을 통해 언제든지 다시 들을 수 있어요."
+        _message.value = "그래요!\n스토릭터 사용법은 홈 화면의 환경설정에서 언제든 다시 볼 수 있어요."
     }
 
     fun clear() {

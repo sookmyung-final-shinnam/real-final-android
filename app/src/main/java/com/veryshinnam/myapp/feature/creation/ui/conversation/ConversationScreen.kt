@@ -98,7 +98,7 @@ fun ConversationScreen(
     var isWarning by remember { mutableStateOf(false) }   // 경고창
 
     //  매뉴얼
-    val onStopManual: () -> Unit = { vm.hideManual(); onBack() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onBack() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
     var textRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
     var imageRect by remember { mutableStateOf<Rect?>(null) } // 마이크 이미지
