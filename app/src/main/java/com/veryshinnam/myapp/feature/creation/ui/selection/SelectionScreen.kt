@@ -475,7 +475,6 @@ fun SelectionScreen(
 
             if (manualState == ManualState.START) {
                 when (manualStep) {
-                    0 -> {}
                     1 -> progressRect?.let { TargetProgressBar(it, 6) }
                     2 -> firstBRect?.let { TargetButton(it) }
                     3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }

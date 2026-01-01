@@ -93,9 +93,11 @@ fun ConversationScreen(
     val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
 
-    // ui 변수
+    // -- ui 변수
     var isWarning by remember { mutableStateOf(false) }   // 경고창
-    val onRecordClick: () -> Unit = {
+    val onRecordClick: () -> Unit = {   // 녹음 권한 여부
+
+        // 녹음 권한 확인
         val granted = ContextCompat.checkSelfPermission(
             context,
             recordAudioPermission
@@ -193,7 +195,7 @@ fun ConversationScreen(
 
                     // 매뉴얼 진행 중
                     manualState == ManualState.START -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { vm.nextManual() }
+                        detectTapGestures { onRecordClick() }
                     }
 
                     manualState == ManualState.STOP -> Modifier.pointerInput(Unit) {
@@ -353,8 +355,7 @@ fun ConversationScreen(
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
                                                     when {
-                                                        manualStep == 5 -> onRecordClick()
-                                                        isManual -> vm.nextManual()
+                                                        isManual -> onRecordClick()
                                                         else -> vm.startTts()
                                                     }
                                                 },
