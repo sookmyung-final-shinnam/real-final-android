@@ -358,7 +358,7 @@ fun CharacterScreen(
                     .clickable {
                         when (manualState) {
                             ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual }
+                            ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }

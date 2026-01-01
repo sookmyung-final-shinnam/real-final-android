@@ -35,7 +35,7 @@ class ManualManager @Inject constructor() {
 
     fun stop() {
         _state.value = ManualState.STOP
-        _message.value = "알겠어요!\n사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!"
+        _message.value = "알았어요!\n사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!"
     }
 
     fun clear() {
