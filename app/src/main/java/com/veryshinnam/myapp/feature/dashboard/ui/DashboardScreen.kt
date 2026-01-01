@@ -160,7 +160,9 @@ fun DashboardScreen(
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .background(colorResource(R.color.background_yellow))
+                .background(colorResource(R.color.background_yellow)),
+            verticalArrangement = Arrangement.Center,
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
             when (val state = uiState) {
                 // 조회 로딩
