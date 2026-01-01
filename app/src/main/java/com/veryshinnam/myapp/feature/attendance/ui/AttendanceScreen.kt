@@ -407,8 +407,14 @@ fun AttendanceScreen(
                                 attendances = vm.manualAttendances,
                                 yearMonth =YearMonth.from(vm.today),
                                 lastExchangeDate = vm.manualDate,
-                                onPrevMonth = { vm.nextManual() },
-                                onNextMonth = { vm.nextManual() },
+                                onPrevMonth = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                },
+                                onNextMonth = { },
                                 isManual = true,
                                 modifier = Modifier.fillMaxSize()
                             )
@@ -435,8 +441,14 @@ fun AttendanceScreen(
                                 attendances = vm.manualAttendances,
                                 yearMonth =YearMonth.from(vm.today),
                                 lastExchangeDate = vm.manualDate,
-                                onPrevMonth = { vm.nextManual() },
-                                onNextMonth = { vm.nextManual() },
+                                onPrevMonth = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                },
+                                onNextMonth = { },
                                 isManual = true,
                                 modifier = Modifier.fillMaxSize()
                             )
