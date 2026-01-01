@@ -123,7 +123,7 @@ fun CollectionScreen(
         }
     }
 
-    // 뒤로 가기
+    // -- 백핸들러 설정
     BackHandler {
         // 매뉴얼: 뒤로가기 차단
         if (isManual) {

@@ -110,6 +110,7 @@ fun CharacterScreen(
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
 
     // 매뉴얼 변수
+    val isManual = manualState != ManualState.NONE
     val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
@@ -144,8 +145,15 @@ fun CharacterScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        onBack()
+    }
 
     Box(
         modifier = Modifier

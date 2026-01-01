@@ -239,7 +239,7 @@ class DashboardViewModel @Inject constructor(
     val dummyStory = listOf(
         StoryAnalysisData(
             storyId = -1L,
-            storyTitle = "비밀의 학교와 친구들",
+            storyTitle = "장신남과 노란 새의 모험",
             createdAt = "2025-01-01",
             attempts = mapOf(
                 Attempt.GI to 2,
