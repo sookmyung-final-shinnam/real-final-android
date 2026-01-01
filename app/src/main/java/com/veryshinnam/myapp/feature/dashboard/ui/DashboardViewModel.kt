@@ -206,7 +206,7 @@ class DashboardViewModel @Inject constructor(
         ManualData("와~ 이제 마지막 설명이에요!\n여기는 대시보드예요", ManualTarget.NONE),
         ManualData("여기에서는 좋아했던 테마와 배경이 기록되고,", ManualTarget.NONE),
         ManualData("동화를 만들며 도전한 횟수와 그때의 기분도 남아요.", ManualTarget.NONE),
-        ManualData("이건 미리 보여주는 화면이에요.\n앞으로 ${username}가 만든 동화로 바뀔 거예요!", ManualTarget.NONE),
+        ManualData("이건 미리 보여주는 화면이에요.\n앞으로 새로 만드는 동화 이야기들이 이곳을 채울 거예요!", ManualTarget.NONE),
         ManualData("이 버튼들을 누르면 더 자세한 설명을 볼 수 있으니,\n궁금할 때 언제든 눌러보세요~", ManualTarget.NONE),
     )
 
