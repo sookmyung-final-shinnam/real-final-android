@@ -72,6 +72,9 @@ class DashboardViewModel @Inject constructor(
                 )
 
                 _uiState.value = DashboardUiState.Success(
+                    username = dashboard.username,
+                    maxTheme = dashboard.maxTheme,
+                    maxBackground = dashboard.maxBackground,
                     themeChart = toChartStats(themeChart),
                     themeList = dashboard.themeStats,
                     backgroundChart = toChartStats(backgroundChart),
@@ -149,6 +152,7 @@ class DashboardViewModel @Inject constructor(
 
             StoryAnalysisData(
                 storyId = language.storyId,
+                storyTitle = language.storyName,
                 createdAt = language.createdAt,
                 attempts = language.attempts,
                 avgAttemptPerStage = language.avgAttemptPerStage,
@@ -229,6 +233,7 @@ class DashboardViewModel @Inject constructor(
     val dummyStory = listOf(
         StoryAnalysisData(
             storyId = -1L,
+            storyTitle = "비밀의 학교와 친구들",
             createdAt = "2025-01-01",
             attempts = mapOf(
                 Attempt.GI to 2,
@@ -256,6 +261,9 @@ class DashboardViewModel @Inject constructor(
         manualManager.update(manuals[0].message)
 
         _uiState.value = DashboardUiState.Success(
+            username = "더미",
+            maxTheme = "",
+            maxBackground = "",
             themeChart = dummyTCharts,
             themeList = dummyTStats,
             backgroundChart = dummyBCharts,

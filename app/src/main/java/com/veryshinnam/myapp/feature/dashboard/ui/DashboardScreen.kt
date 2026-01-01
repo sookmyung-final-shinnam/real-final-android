@@ -281,83 +281,85 @@ fun DashboardScreen(
                         }
 
                         // 섹션 2: 스토리별 언어 + 단어 리스트 + 감정 분석
-                        Box(
-                            modifier = Modifier.fillMaxWidth()
-                                .then(
-                                    // 매뉴얼일 때, 1, 2, 3 강조
-                                    if (isManual && 0 < manualStep && manualStep < 4)
-                                        Modifier.background(Color.Black.copy(alpha = 0.5f))
-                                    else Modifier
-                                )
-                        ){
-                            // 이동 버튼
-                            Row(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .matchParentSize()
-                                    .padding(horizontal = 4.dp)
-                                    .zIndex(10f),
-                                horizontalArrangement = Arrangement.SpaceBetween,
-                                verticalAlignment = Alignment.CenterVertically
-                            ) {
-                                // ▶ 다음 버튼
-                                Button(
-                                    onClick = { vm.prevStory() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(R.color.main_orange).copy(0.5f),
-                                        contentColor = Color.White
-                                    ),
-                                    border = BorderStroke(
-                                        2.dp,
-                                        colorResource(R.color.main_orange)
-                                    ),
-                                    contentPadding = PaddingValues(0.dp),
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Text(
-                                        text = "◀",
+                        if (state.storyAnalysis.isNotEmpty()) {
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .then(
+                                        // 매뉴얼일 때, 1, 2, 3 강조
+                                        if (isManual && 0 < manualStep && manualStep < 4)
+                                            Modifier.background(Color.Black.copy(alpha = 0.5f))
+                                        else Modifier
                                     )
-                                }
-
-                                // ▶ 다음 버튼
-                                Button(
-                                    onClick = { vm.nextStory() },
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(R.color.main_orange).copy(0.5f),
-                                        contentColor = Color.White
-                                    ),
-                                    border = BorderStroke(
-                                        2.dp,
-                                        colorResource(R.color.main_orange)
-                                    ),
-                                    contentPadding = PaddingValues(0.dp),
-                                    modifier = Modifier.size(48.dp)
-                                ) {
-                                    Text(
-                                        text = "▶",
-                                    )
-                                }
-                            }
-
-                            DashboardStoryCard(
-                                story = state.storyAnalysis[state.storyIndex],
-                                onStoryClick = { storyId ->
-                                    goToCharacter(storyId)
-                                },
-                                onHelpRect = {
-                                    if (manualState == ManualState.START && sHelpRect == null) {
-                                        sHelpRect = it }},
-                                modifier = Modifier
-                            )
-
-                            // 매뉴얼일 때, 1, 2 강조
-                            if (isManual && (manualStep == 0 || manualStep >= 4)) {
-                                Box(
+                            ){
+                                // 이동 버튼
+                                Row(
                                     modifier = Modifier
+                                        .fillMaxWidth()
                                         .matchParentSize()
-                                        .background(Color.Black.copy(alpha = 0.5f))
-                                        .zIndex(1f)
-                                )
+                                        .padding(horizontal = 4.dp)
+                                        .zIndex(10f),
+                                    horizontalArrangement = Arrangement.SpaceBetween,
+                                    verticalAlignment = Alignment.CenterVertically
+                                ) {
+                                    // ▶ 다음 버튼
+                                    Button(
+                                        onClick = { vm.prevStory() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colorResource(R.color.main_orange).copy(0.5f),
+                                            contentColor = Color.White
+                                        ),
+                                        border = BorderStroke(
+                                            2.dp,
+                                            colorResource(R.color.main_orange)
+                                        ),
+                                        contentPadding = PaddingValues(0.dp),
+                                        modifier = Modifier.size(48.dp)
+                                    ) {
+                                        Text(
+                                            text = "◀",
+                                        )
+                                    }
+
+                                    // ▶ 다음 버튼
+                                    Button(
+                                        onClick = { vm.nextStory() },
+                                        colors = ButtonDefaults.buttonColors(
+                                            containerColor = colorResource(R.color.main_orange).copy(0.5f),
+                                            contentColor = Color.White
+                                        ),
+                                        border = BorderStroke(
+                                            2.dp,
+                                            colorResource(R.color.main_orange)
+                                        ),
+                                        contentPadding = PaddingValues(0.dp),
+                                        modifier = Modifier.size(48.dp)
+                                    ) {
+                                        Text(
+                                            text = "▶",
+                                        )
+                                    }
+                                }
+
+                                    DashboardStoryCard(
+                                        story = state.storyAnalysis[state.storyIndex],
+                                        onStoryClick = { storyId ->
+                                            goToCharacter(storyId)
+                                        },
+                                        onHelpRect = {
+                                            if (manualState == ManualState.START && sHelpRect == null) {
+                                                sHelpRect = it }},
+                                        modifier = Modifier
+                                    )
+
+                                // 매뉴얼일 때, 1, 2 강조
+                                if (isManual && (manualStep == 0 || manualStep >= 4)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .background(Color.Black.copy(alpha = 0.5f))
+                                            .zIndex(1f)
+                                    )
+                                }
                             }
                         }
 

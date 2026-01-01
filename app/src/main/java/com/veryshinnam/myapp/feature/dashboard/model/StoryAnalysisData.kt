@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.dashboard.model
 
 data class StoryAnalysisData(
     val storyId: Long,
+    val storyTitle: String,
     val createdAt: String,
     val attempts: Map<Attempt, Int>,
     val avgAttemptPerStage: Double,
