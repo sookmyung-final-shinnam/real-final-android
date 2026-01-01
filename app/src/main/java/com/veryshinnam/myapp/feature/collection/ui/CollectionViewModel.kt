@@ -28,6 +28,7 @@ class CollectionViewModel @Inject constructor(
     private val _selectedFilter = MutableStateFlow(Gender.ALL)
     val selectedFilter = _selectedFilter.asStateFlow()
 
+    // 캐릭터 콜렉션 비어 있는지
     private val _isEmpty = MutableStateFlow(false)
     val isEmpty: StateFlow<Boolean> = _isEmpty
 
@@ -62,7 +63,7 @@ class CollectionViewModel @Inject constructor(
                     selectedFilter = gender
                 )
 
-                // 보관함 여부 확인
+                // 빈 리스트 여부 확인
                 if (gender == Gender.ALL) {
                     _isEmpty.value = characters.isEmpty()
                 }

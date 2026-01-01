@@ -60,6 +60,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.EmptyView
 import com.veryshinnam.myapp.common.component.FavoriteButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.StrokeTitle
@@ -80,13 +81,11 @@ fun CollectionScreen(
     onBack: () -> Unit,
     onItemClick: (Long) -> Unit,
     onLogoClick: () -> Unit,
-    onCreateClick: () -> Unit,
+    goToCreation: () -> Unit,
     goToNextManual: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
-    vm: CollectionViewModel = hiltViewModel(),
-    emptyText: String = "보관함이 비어 있네요!\n같이 보관함을 채우러 가볼까요?",
-    emptyTextStyle: TextStyle = MaterialTheme.typography.titleSmall
+    vm: CollectionViewModel = hiltViewModel()
 ) {
     val density = LocalDensity.current
 
@@ -234,40 +233,12 @@ fun CollectionScreen(
                         Spacer(Modifier.height(spacerPadding / 2))
 
                         if (isEmpty) { // 비어있는 경우 > 캐릭터 생성으로
-                            Column(
-                                modifier = Modifier.fillMaxSize(),
-                                verticalArrangement = Arrangement.Center,
-                                horizontalAlignment = Alignment.CenterHorizontally
-                            ) {
-                                Text(
-                                    text = emptyText,
-                                    style = emptyTextStyle.copy(
-                                        color = colorResource(R.color.main_orange),
-                                        fontWeight = SemiBold,
-                                        textAlign = Center
-                                    )
-                                )
-
-                                Spacer(Modifier.height(spacerPadding * 2))
-
-                                Button(
-                                    onClick = onCreateClick,
-                                    colors = ButtonDefaults.buttonColors(
-                                        containerColor = colorResource(R.color.main_orange),
-                                        contentColor = Color.White
-                                    ),
-                                    shape = CircleShape,
-                                ) {
-                                    Text(
-                                        text = "캐릭터 만들러 가기",
-                                        style = emptyTextStyle.copy(
-                                            fontSize = emptyTextStyle.fontSize * 1.2f,
-                                            fontWeight = Bold
-                                        ),
-                                        modifier = Modifier.padding(vertical = spacerPadding / 2)
-                                    )
-                                }
-                            }
+                            EmptyView(
+                                emptyText = "보관함이 비어 있네요!\n같이 보관함을 채우러 가볼까요?",
+                                buttonText = "캐릭터 만들러 가기",
+                                onButtonClick = goToCreation,
+                                modifier = Modifier
+                            )
                         } else { // 존재하는 경우
                             CollectionCharacterGrid(
                                 data = state.collectionDataList,

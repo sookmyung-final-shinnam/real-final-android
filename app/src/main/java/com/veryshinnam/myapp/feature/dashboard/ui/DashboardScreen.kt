@@ -33,6 +33,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.EmptyView
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.UserInfo
@@ -49,9 +50,11 @@ fun DashboardScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     goToCharacter: (Long) -> Unit,
+    goToCreation: () -> Unit,
     goToNextManual: () -> Unit,
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 16.dp,
+    greenColor: Color = colorResource(R.color.deep_green),
     vm: DashboardViewModel = hiltViewModel(),
 ) {
     // 화면 밀도 정보
@@ -59,12 +62,12 @@ fun DashboardScreen(
 
     // -- 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle() // 화면 전체 ui
+    val isEmpty by vm.isEmpty.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // -- ui 변수
-    val cardText = "\${username}의 최대 관심사야! \${interest1} & \${interest2}"
     val scrollState = rememberScrollState() // 대시보드 스크롤
     val logoAlpha by animateFloatAsState(
         targetValue = if (scrollState.value > 8) 0f else 1f,
@@ -141,6 +144,15 @@ fun DashboardScreen(
                             bBTop = with(density) { it.boundsInRoot().top.toDp() }
                         },
                     onBackClick = onBack
+                )
+            }
+
+            if (isEmpty) {
+                EmptyView(
+                    emptyText = "대시보드가 비어 있네요!\n같이 대시보드를 채우러 가볼까요?",
+                    buttonText = "동화 만들러 가기",
+                    onButtonClick = goToCreation,
+                    modifier = Modifier.fillMaxSize()
                 )
             }
         }
@@ -224,64 +236,68 @@ fun DashboardScreen(
                                 isItem = false, // 아이템 설명 존재
                                 animalImage = painterResource(R.drawable.img_fox_cut),
                                 animalDescription = "보관함 설명 여우 이미지",
-                                cardColor = colorResource(R.color.deep_green),
-                                cardText =  if (isManual) manualMessage else cardText,
+                                cardColor = greenColor,
+                                cardText =  if (isManual) manualMessage
+                                    else if (isEmpty) "아직 ${state.username}의\n최대 관심사를 찾을 수 없어요!"
+                                    else "${state.username}의 최대 관심사예요! \n{${state.maxTheme}}, {${state.maxBackground}}",
+                                spanText = "최대 관심사",
+                                spanColor = greenColor
                             )
                         }
 
-                        // 섹션 1: 테마 + 배경 통계 분석
-                        Box(
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .then(
-                                    // 매뉴얼일 때, 1, 2, 3 강조
-                                    if (isManual && 0 < manualStep && manualStep < 4)
-                                        Modifier.background(Color.Black.copy(alpha = 0.5f))
-                                    else Modifier
-                                )
-                        ) {
-                            Row(
+                         if (!isEmpty) {
+                            // 섹션 1: 테마 + 배경 통계 분석
+                            Box(
                                 modifier = Modifier
                                     .fillMaxWidth()
-                                    .padding(top = spacer, start = horizontalPadding, end = horizontalPadding),
-                                horizontalArrangement = Arrangement.spacedBy(spacer)
+                                    .then(
+                                        // 매뉴얼일 때, 1, 2, 3 강조
+                                        if (isManual && 0 < manualStep && manualStep < 4)
+                                            Modifier.background(Color.Black.copy(alpha = 0.5f))
+                                        else Modifier
+                                    )
                             ) {
-                                // 왼쪽 테마
-                                DashBoardStaticsCard(
-                                    title = "주제",
-                                    chartStats = state.themeChart,
-                                    listStats = state.themeList,
-                                    onHelpRect = {
-                                        if (manualState == ManualState.START && tHelpRect == null) {
-                                            tHelpRect = it }},
-                                    modifier = Modifier.weight(1f)
-                                )
-
-                                // 오른쪽 배경
-                                DashBoardStaticsCard(
-                                    title = "배경",
-                                    chartStats = state.backgroundChart,
-                                    listStats = state.backgroundList,
-                                    onHelpRect = {
-                                        if (manualState == ManualState.START && bHelpRect == null) {
-                                            bHelpRect = it }},
-                                    modifier = Modifier.weight(1f)
-                                )
-                            }
-
-                            // 매뉴얼일 때, 0, 3이상만 어두운 배경
-                            if (isManual && (manualStep == 0 || manualStep >= 4)) {
-                                Box(
+                                Row(
                                     modifier = Modifier
-                                        .matchParentSize()
-                                        .background(Color.Black.copy(alpha = 0.5f))
-                                        .zIndex(1f)
-                                )
-                            }
-                        }
+                                        .fillMaxWidth()
+                                        .padding(top = spacer, start = horizontalPadding, end = horizontalPadding),
+                                    horizontalArrangement = Arrangement.spacedBy(spacer)
+                                ) {
+                                    // 왼쪽 테마
+                                    DashBoardStaticsCard(
+                                        title = "주제",
+                                        chartStats = state.themeChart,
+                                        listStats = state.themeList,
+                                        onHelpRect = {
+                                            if (manualState == ManualState.START && tHelpRect == null) {
+                                                tHelpRect = it }},
+                                        modifier = Modifier.weight(1f)
+                                    )
 
-                        // 섹션 2: 스토리별 언어 + 단어 리스트 + 감정 분석
-                        if (state.storyAnalysis.isNotEmpty()) {
+                                    // 오른쪽 배경
+                                    DashBoardStaticsCard(
+                                        title = "배경",
+                                        chartStats = state.backgroundChart,
+                                        listStats = state.backgroundList,
+                                        onHelpRect = {
+                                            if (manualState == ManualState.START && bHelpRect == null) {
+                                                bHelpRect = it }},
+                                        modifier = Modifier.weight(1f)
+                                    )
+                                }
+
+                                // 매뉴얼일 때, 0, 3이상만 어두운 배경
+                                if (isManual && (manualStep == 0 || manualStep >= 4)) {
+                                    Box(
+                                        modifier = Modifier
+                                            .matchParentSize()
+                                            .background(Color.Black.copy(alpha = 0.5f))
+                                            .zIndex(1f)
+                                    )
+                                }
+                            }
+
+                            // 섹션 2: 스토리별 언어 + 단어 리스트 + 감정 분석
                             Box(
                                 modifier = Modifier.fillMaxWidth()
                                     .then(
@@ -340,16 +356,16 @@ fun DashboardScreen(
                                     }
                                 }
 
-                                    DashboardStoryCard(
-                                        story = state.storyAnalysis[state.storyIndex],
-                                        onStoryClick = { storyId ->
-                                            goToCharacter(storyId)
-                                        },
-                                        onHelpRect = {
-                                            if (manualState == ManualState.START && sHelpRect == null) {
-                                                sHelpRect = it }},
-                                        modifier = Modifier
-                                    )
+                                DashboardStoryCard(
+                                    story = state.storyAnalysis[state.storyIndex],
+                                    onStoryClick = { storyId ->
+                                        goToCharacter(storyId)
+                                    },
+                                    onHelpRect = {
+                                        if (manualState == ManualState.START && sHelpRect == null) {
+                                            sHelpRect = it }},
+                                    modifier = Modifier
+                                )
 
                                 // 매뉴얼일 때, 1, 2 강조
                                 if (isManual && (manualStep == 0 || manualStep >= 4)) {
@@ -361,17 +377,17 @@ fun DashboardScreen(
                                     )
                                 }
                             }
+
+                            // 섹션 3: 부모 조언 분석
+                            DashboardParentCard(
+                                username = state.username,
+                                advice = state.advice,
+                                modifier = Modifier
+                            )
+
+                            // 네비게이션바 만큼 여백
+                            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                         }
-
-                        // 섹션 3: 부모 조언 분석
-                        DashboardParentCard(
-                            username = "username",
-                            advice = state.advice,
-                            modifier = Modifier
-                        )
-
-                        // 네비게이션바 만큼 여백
-                        Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
                     }
                 }
             }

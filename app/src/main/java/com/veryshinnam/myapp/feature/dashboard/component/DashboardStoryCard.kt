@@ -194,7 +194,7 @@ fun DashboardStoryCard(
             ) {
                 // -- 동화 제목
                 Text(
-                    text = "storyIdstoryIdstoryIdstoryIdstoryIdstoryId: ${story.storyId}",
+                    text = story.storyTitle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
                     style = summaryTextStyle.copy(fontWeight = Bold, fontSize = summaryTextStyle.fontSize*1.2f),

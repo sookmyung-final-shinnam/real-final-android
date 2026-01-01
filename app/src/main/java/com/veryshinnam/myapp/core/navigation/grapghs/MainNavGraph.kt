@@ -80,6 +80,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 goToCharacter = { characterId ->
                     navController.navigate("character/$characterId")
                 },
+                goToCreation = {
+                    navController.navigate(NavGraphs.CREATION) {
+                        popUpTo(NavGraphs.MAIN) { inclusive = false }
+                    }
+                },
                 goToNextManual = {
                     navController.navigate(MainRoutes.HOME) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
@@ -99,7 +104,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                         launchSingleTop = true
                     }
                 },
-                onCreateClick = {
+                goToCreation = {
                     navController.navigate(NavGraphs.CREATION) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                     }
