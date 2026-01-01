@@ -501,7 +501,11 @@ fun CharacterScreen(
                             )
                             .zIndex(10f),
                         onClick = {
-                            vm.nextManual()
+                            when (manualState) {
+                                ManualState.START -> { vm.nextManual() }
+                                ManualState.STOP -> { onStopManual() }
+                                else -> {}
+                            }
                         },
                         alpha = 0.5f,
                     )
