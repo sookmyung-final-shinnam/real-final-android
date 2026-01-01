@@ -74,6 +74,7 @@ fun CollectionScreen(
     onLogoClick: () -> Unit,
     goToCreation: () -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: CollectionViewModel = hiltViewModel()
@@ -89,7 +90,7 @@ fun CollectionScreen(
 
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스

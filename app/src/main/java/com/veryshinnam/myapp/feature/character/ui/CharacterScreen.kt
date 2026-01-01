@@ -80,6 +80,7 @@ fun CharacterScreen(
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     xMoving: Dp = 60.dp,
     verticalPadding: Dp = 10.dp,
     manualTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
@@ -111,7 +112,7 @@ fun CharacterScreen(
 
     // 매뉴얼 변수
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치

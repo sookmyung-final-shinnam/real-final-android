@@ -23,7 +23,6 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
     private val adminRepository: AdminStoryRepository,
-    private val sessionManager: SessionManager,
     private val manualManager: ManualManager
 ) : ViewModel() {
 
@@ -184,7 +183,7 @@ class HomeViewModel @Inject constructor(
     // 마지막 문구
     val lastManuals = listOf(
     "스토릭터에 대한 설명은 홈 화면의 환경설정에서 다시 볼 수 있어요.",
-    "혹시 놓친 설명이 있어도 언제든 다시 확인할 수 있어요.",
+    "혹시 놓친 설명이 있어도 홈 화면의 설정에서 언제든 다시 확인할 수 있어요.",
     "그럼 이제 스토릭터를 자유롭게 즐겨보세요!"
     )
 

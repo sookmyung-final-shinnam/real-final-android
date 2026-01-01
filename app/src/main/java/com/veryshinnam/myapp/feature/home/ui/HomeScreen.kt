@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.home.ui
 
 import android.content.pm.ActivityInfo
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -93,6 +94,7 @@ fun HomeScreen(
     val imageHeight = (LocalConfiguration.current.screenHeightDp * 0.12f).dp
 
     // 매뉴얼 > 강조할 좌표
+    val isManual = manualState != ManualState.NONE
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
     var creationRect by remember { mutableStateOf<Rect?>(null) }  // 생성
@@ -138,6 +140,14 @@ fun HomeScreen(
             )
         }
         return
+    }
+
+    // -- 백핸들러 설정
+    // 매뉴얼 중이면 뒤로가기 차단
+    if (isManual) {
+        BackHandler {
+            return@BackHandler
+        }
     }
 
     Scaffold(
@@ -380,7 +390,7 @@ fun HomeScreen(
     }
 
     // 매뉴얼 진행
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation.grapghs
+package com.veryshinnam.myapp.core.navigation.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -7,6 +7,9 @@ import androidx.navigation.compose.composable
 import androidx.navigation.navArgument
 import androidx.navigation.navigation
 import com.veryshinnam.myapp.core.navigation.routes.MainRoutes
+import com.veryshinnam.myapp.core.navigation.utils.navigateTo
+import com.veryshinnam.myapp.core.navigation.utils.navigateToHome
+import com.veryshinnam.myapp.core.navigation.utils.resetToHome
 import com.veryshinnam.myapp.feature.attendance.ui.AttendanceScreen
 import com.veryshinnam.myapp.feature.character.ui.CharacterScreen
 import com.veryshinnam.myapp.feature.collection.ui.CollectionScreen
@@ -16,7 +19,9 @@ import com.veryshinnam.myapp.feature.settings.ui.SettingsScreen
 import com.veryshinnam.myapp.feature.story.model.StoryType
 import com.veryshinnam.myapp.feature.story.ui.StoryScreen
 
-fun NavGraphBuilder.mainNavGraph(navController: NavController) {
+fun NavGraphBuilder.mainNavGraph(
+    navController: NavController
+) {
     navigation(
         startDestination = MainRoutes.HOME,
         route = NavGraphs.MAIN
@@ -40,12 +45,7 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable(MainRoutes.SETTINGS) {
             SettingsScreen(
                 onBack = { navController.popBackStack() },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                }
+                onLogoClick = { navController.navigateToHome() }
             )
         }
 
@@ -53,17 +53,9 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable(MainRoutes.ATTENDANCE) {
             AttendanceScreen(
                 onBack = { navController.popBackStack() },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
-                goToNextManual = {
-                    navController.navigate(MainRoutes.DASHBOARD) {
-                        launchSingleTop = true
-                    }
-                }
+                onLogoClick = { navController.navigateToHome() },
+                goToNextManual = { navController.navigateTo(MainRoutes.DASHBOARD) },
+                onManualStop = { navController.resetToHome() }
             )
         }
 
@@ -71,25 +63,16 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable(MainRoutes.DASHBOARD) {
             DashboardScreen(
                 onBack = { navController.popBackStack() },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
+                onLogoClick = { navController.navigateToHome() },
                 goToCharacter = { characterId ->
-                    navController.navigate("character/$characterId")
+                    navController.navigateTo("character/$characterId")
                 },
                 goToCreation = {
                     navController.navigate(NavGraphs.CREATION) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                     }
                 },
-                goToNextManual = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                    }
-                }
+                onManualStop = { navController.resetToHome() }
             )
         }
 
@@ -97,23 +80,15 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         composable(MainRoutes.COLLECTION) {
             CollectionScreen(
                 onBack = { navController.popBackStack() },
+                onLogoClick = { navController.navigateToHome() },
                 onItemClick = { id -> navController.navigate("character/$id") },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
                 goToCreation = {
                     navController.navigate(NavGraphs.CREATION) {
                         popUpTo(NavGraphs.MAIN) { inclusive = false }
                     }
                 },
-                goToNextManual = {
-                    navController.navigate("character/-1") {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                    }
-                }
+                goToNextManual = { navController.navigateTo("character/-1") },
+                onManualStop = { navController.resetToHome() }
             )
         }
 
@@ -127,20 +102,11 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
                 id = id,
                 onBack = { navController.popBackStack() },
                 onStoryClick = { storyId, type ->
-                    navController.navigate("story/$storyId/${type.name}")
+                    navController.navigateTo("story/$storyId/${type.name}")
                 },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
-                goToNextManual = {
-                    navController.navigate(MainRoutes.ATTENDANCE) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                }
+                onLogoClick = { navController.navigateToHome() },
+                goToNextManual = { navController.navigateTo(MainRoutes.ATTENDANCE) },
+                onManualStop = { navController.resetToHome() }
             )
         }
 
@@ -154,23 +120,14 @@ fun NavGraphBuilder.mainNavGraph(navController: NavController) {
         ) { backStackEntry ->
             val storyId = backStackEntry.arguments?.getLong("id") ?: return@composable
             val storyType = backStackEntry.arguments?.getString("type")
-                ?.let { StoryType.valueOf(it) } ?: StoryType.IMAGE
+                ?.let { StoryType.valueOf(it) }
+                ?: StoryType.IMAGE
+
             StoryScreen(
                 storyId = storyId,
                 storyType = storyType,
                 onBack = { navController.popBackStack() },
-                onHome = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                },
-                onLogoClick = {
-                    navController.navigate(MainRoutes.HOME) {
-                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-                        launchSingleTop = true
-                    }
-                }
+                onLogoClick = { navController.navigateToHome() }
             )
         }
     }

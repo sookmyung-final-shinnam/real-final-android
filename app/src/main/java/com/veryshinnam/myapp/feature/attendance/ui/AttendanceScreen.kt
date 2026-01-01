@@ -65,6 +65,7 @@ fun AttendanceScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: AttendanceViewModel = hiltViewModel()
@@ -85,7 +86,7 @@ fun AttendanceScreen(
 
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var pigRect by remember { mutableStateOf<Rect?>(null) } // 돼지 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스

@@ -51,7 +51,7 @@ fun DashboardScreen(
     onLogoClick: () -> Unit,
     goToCharacter: (Long) -> Unit,
     goToCreation: () -> Unit,
-    goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 16.dp,
     greenColor: Color = colorResource(R.color.deep_green),
@@ -79,7 +79,7 @@ fun DashboardScreen(
 
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var tHelpRect by remember { mutableStateOf<Rect?>(null) }   // 테마 도움말 위치
     var bHelpRect by remember { mutableStateOf<Rect?>(null) }   // 배경 도움말 위치
     var sHelpRect by remember { mutableStateOf<Rect?>(null) }   // 동화 도움말 위치
@@ -107,11 +107,10 @@ fun DashboardScreen(
     LaunchedEffect(manualStep) {
         if (manualStep == vm.manuals.size) {
             vm.finishManual()
-            goToNextManual()
+            onManualStop()
         }
     }
 
-    // 뒤로 가기
     // -- 백핸들러 설정
     BackHandler {
         // 매뉴얼: 뒤로가기 차단
@@ -119,7 +118,7 @@ fun DashboardScreen(
             return@BackHandler
         }
 
-        onBack()
+        onBack() // 나머지
     }
 
     // 대시보드 ui

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation.grapghs
+package com.veryshinnam.myapp.core.navigation.graphs
 
 import android.util.Log
 import androidx.compose.runtime.LaunchedEffect
@@ -17,7 +17,9 @@ import com.veryshinnam.myapp.feature.creation.data.dto.toStartRequest
 import com.veryshinnam.myapp.feature.creation.ui.selection.SelectionScreen
 
 // 캐릭터 및 동화 생성 플로우 네비게이션 그래프
-fun NavGraphBuilder.creationNavGraph(navController: NavController) {
+fun NavGraphBuilder.creationNavGraph(
+    navController: NavController
+) {
     navigation(
         route = NavGraphs.CREATION,
         startDestination = CreationRoutes.SELECTION
@@ -66,7 +68,7 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
                     vm.startConversation(req) // api 호출, 동화 세선 시작
                 }
                 else {
-                    vm.startManual()            // ← 매뉴얼 모드 시작
+                    vm.startManual()            // 매뉴얼 모드 시작
                 }
             }
 
