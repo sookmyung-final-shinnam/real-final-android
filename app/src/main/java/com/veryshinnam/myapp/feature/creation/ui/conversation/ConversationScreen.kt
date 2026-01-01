@@ -90,11 +90,29 @@ fun ConversationScreen(
 
     //  매뉴얼
     val isManual = manualState != ManualState.NONE
+    val isManualStart = manualState == ManualState.START
+    val isManualStop = manualState == ManualState.STOP
     val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
 
     // -- ui 변수
     var isWarning by remember { mutableStateOf(false) }   // 경고창
+    val onReplayClick: () -> Unit = {
+        when {
+            isManualStart -> { vm.nextManual() }
+            isManualStop -> { onStopManual() }
+            else -> { vm.startTts() }
+        }
+    }
+
+    val onNextClick: () -> Unit = {
+        when {
+            isManualStart -> { vm.nextManual() }
+            isManualStop -> { onStopManual() }
+            else -> { vm.goToNextStep() }
+        }
+    }
+
     val onRecordClick: () -> Unit = {   // 녹음 권한 여부
 
         // 녹음 권한 확인
@@ -104,13 +122,15 @@ fun ConversationScreen(
         ) == PackageManager.PERMISSION_GRANTED
 
         when {
+            isManualStop -> { onStopManual() }
+
             manualStep == 5 -> {
                 // manualStep 5 전용
                 if (granted) vm.nextManual()
                 else launcher.launch(recordAudioPermission)
             }
 
-            isManual -> { vm.nextManual() }
+            isManualStart -> { vm.nextManual() }
 
             else -> {
                 if (granted) vm.goToNextStep()
@@ -194,11 +214,11 @@ fun ConversationScreen(
                     }
 
                     // 매뉴얼 진행 중
-                    manualState == ManualState.START -> Modifier.pointerInput(Unit) {
+                    isManualStart -> Modifier.pointerInput(Unit) {
                         detectTapGestures { onRecordClick() }
                     }
 
-                    manualState == ManualState.STOP -> Modifier.pointerInput(Unit) {
+                    isManualStop -> Modifier.pointerInput(Unit) {
                         detectTapGestures { onStopManual() }
                     }
 
@@ -318,14 +338,8 @@ fun ConversationScreen(
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
-                                                onReplayClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.startTts()
-                                                },
-                                                onNextClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.goToNextStep()
-                                                },
+                                                onReplayClick = onReplayClick,
+                                                onNextClick = onNextClick,
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
                                             )
@@ -335,14 +349,8 @@ fun ConversationScreen(
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
-                                                onReplayClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.startTts()
-                                                },
-                                                onNextClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.goToNextStep()
-                                                },
+                                                onReplayClick = onReplayClick,
+                                                onNextClick = onNextClick,
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
                                             )
@@ -353,12 +361,7 @@ fun ConversationScreen(
                                             ConversationQuestionContent(
                                                 question = if (isManual) manualMessage else state.questionData.question,
                                                 isTtsSpeaking = isTtsSpeaking,
-                                                onReplayClick = {
-                                                    when {
-                                                        isManual -> onRecordClick()
-                                                        else -> vm.startTts()
-                                                    }
-                                                },
+                                                onReplayClick = onReplayClick,
                                                 onRecordClick = onRecordClick,
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
@@ -373,10 +376,7 @@ fun ConversationScreen(
                                             ConversationAnswerContent(
                                                 answerData = state.answerData,
                                                 onRecordStop = { vm.stopStt() },
-                                                onFeedback = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.goToNextStep()
-                                                },
+                                                onFeedback = onNextClick,
                                                 modifier = Modifier
                                             )
                                         }
@@ -385,13 +385,13 @@ fun ConversationScreen(
                                             ConversationFeedbackContent(
                                                 feedback =  if (isManual) state.feedbackData.copy(text = manualMessage) else state.feedbackData,
                                                 isTtsSpeaking = isTtsSpeaking,
-                                                onReplayClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.startTts()
-                                                },
+                                                onReplayClick = onReplayClick,
                                                 onButtonClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.goFromFeedback()
+                                                    when {
+                                                        isManualStart -> { vm.nextManual() }
+                                                        isManualStop -> { onStopManual() }
+                                                        else -> { vm.goFromFeedback() }
+                                                    }
                                                 }, // Answer 또는 Next Story(또는 종료)
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
@@ -436,8 +436,8 @@ fun ConversationScreen(
                     .clickable {
                         when {
                             manualStep == 6 -> { } // 사용자 답변: 클릭 무시
-                            manualState == ManualState.START -> { vm.stopManual() }
-                            manualState == ManualState.STOP -> { onStopManual() }
+                            isManualStart -> { vm.stopManual() }
+                            isManualStop -> { onStopManual() }
                             else -> {}
                         }
                     }
