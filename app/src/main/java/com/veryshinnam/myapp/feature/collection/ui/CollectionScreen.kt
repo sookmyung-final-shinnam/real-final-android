@@ -88,9 +88,11 @@ fun CollectionScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // 매뉴얼 > 강조할 좌표
+    // 매뉴얼
     val isManual = manualState != ManualState.NONE
     val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
+
+    // 강조할 좌표
     var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스
@@ -311,7 +313,6 @@ fun CollectionScreen(
                         when (manualState) {
                             ManualState.START -> { vm.stopManual() }
                             ManualState.STOP -> { onStopManual() }
-
                             else -> {}
                         }
                     }
@@ -369,7 +370,13 @@ fun CollectionScreen(
                                 .padding(4.dp),
                             characterId = -1,
                             isFavorite = true,
-                            onFavoriteClick = { }
+                            onFavoriteClick = {
+                                when (manualState) {
+                                    ManualState.START -> { vm.nextManual() }
+                                    ManualState.STOP -> { onStopManual() }
+                                    else -> {}
+                                }
+                            }
                         )
                         // 캐릭터 이름
                         StrokeTitle(
@@ -423,7 +430,13 @@ fun CollectionScreen(
                                     .zIndex(20f),
                                 characterId = -1,
                                 isFavorite = true,
-                                onFavoriteClick = { vm.manualStep }
+                                onFavoriteClick = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                }
                             )
                         }
                     }
