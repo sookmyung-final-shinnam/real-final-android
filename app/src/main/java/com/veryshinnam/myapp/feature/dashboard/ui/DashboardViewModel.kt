@@ -18,6 +18,7 @@ import com.veryshinnam.myapp.feature.dashboard.model.StatData
 import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
@@ -35,6 +36,10 @@ class DashboardViewModel @Inject constructor(
     // 유저 닉네임
     private val _username = MutableStateFlow("")
     val username = _username.asStateFlow()
+
+    // 분석 리스트 비어 있는지
+    private val _isEmpty = MutableStateFlow(false)
+    val isEmpty: StateFlow<Boolean> = _isEmpty
 
     // ManualManager 구독
     val manualState = manualManager.state
@@ -72,6 +77,9 @@ class DashboardViewModel @Inject constructor(
                 )
 
                 _uiState.value = DashboardUiState.Success(
+                    username = dashboard.username,
+                    maxTheme = dashboard.maxTheme,
+                    maxBackground = dashboard.maxBackground,
                     themeChart = toChartStats(themeChart),
                     themeList = dashboard.themeStats,
                     backgroundChart = toChartStats(backgroundChart),
@@ -83,6 +91,11 @@ class DashboardViewModel @Inject constructor(
                     advice = dashboard.parentAdvice
                 )
 
+                // 유저 닉네임 저장
+                _username.value = dashboard.username
+
+                // 빈 리스트 여부 확인
+                _isEmpty.value = storyAnalysis.isEmpty()
             } catch (e: Exception) {
                 _uiState.value = DashboardUiState.Error("대시보드 불러오기 실패: ${e.message}")
             }
@@ -149,6 +162,7 @@ class DashboardViewModel @Inject constructor(
 
             StoryAnalysisData(
                 storyId = language.storyId,
+                storyTitle = language.storyName,
                 createdAt = language.createdAt,
                 attempts = language.attempts,
                 avgAttemptPerStage = language.avgAttemptPerStage,
@@ -192,12 +206,8 @@ class DashboardViewModel @Inject constructor(
         ManualData("와~ 이제 마지막 설명이에요!\n여기는 대시보드예요", ManualTarget.NONE),
         ManualData("여기에서는 좋아했던 테마와 배경이 기록되고,", ManualTarget.NONE),
         ManualData("동화를 만들며 도전한 횟수와 그때의 기분도 남아요.", ManualTarget.NONE),
-        ManualData("이건 미리 보여주는 화면이에요.\n앞으로 \${username}가 만든 동화로 바뀔 거예요!", ManualTarget.NONE),
+        ManualData("이건 미리 보여주는 화면이에요.\n앞으로 ${username}가 만든 동화로 바뀔 거예요!", ManualTarget.NONE),
         ManualData("이 버튼들을 누르면 더 자세한 설명을 볼 수 있으니,\n궁금할 때 언제든 눌러보세요~", ManualTarget.NONE),
-//        ManualData("지금까지 긴 설명을 따라오느라 수고하셨어요!", ManualTarget.NONE),
-//        ManualData("스토릭터에 대한 설명은 홈 화면의 환경설정 메뉴에서 다시 클릭하여 볼 수 있으니,", ManualTarget.NONE),
-//        ManualData("혹시 못 놏쳤던 설명이 있다면 언제든 ?", ManualTarget.NONE),
-//        ManualData("그러면 이제 저희 스토릭터를 자유롭게 즐겨보세요!", ManualTarget.NONE),
     )
 
     // 매뉴얼용 더미 더미테이터
@@ -229,6 +239,7 @@ class DashboardViewModel @Inject constructor(
     val dummyStory = listOf(
         StoryAnalysisData(
             storyId = -1L,
+            storyTitle = "비밀의 학교와 친구들",
             createdAt = "2025-01-01",
             attempts = mapOf(
                 Attempt.GI to 2,
@@ -256,6 +267,9 @@ class DashboardViewModel @Inject constructor(
         manualManager.update(manuals[0].message)
 
         _uiState.value = DashboardUiState.Success(
+            username = "더미",
+            maxTheme = "",
+            maxBackground = "",
             themeChart = dummyTCharts,
             themeList = dummyTStats,
             backgroundChart = dummyBCharts,
@@ -280,7 +294,13 @@ class DashboardViewModel @Inject constructor(
         }
     }
 
+    fun finishManual() {
+        manualManager.finish()
+        _manualStep.value = 0 // step 초기화
+    }
+
+
     fun stopManual() = manualManager.stop()
 
-    fun hideManual() = manualManager.clear()
+    fun clearManual() = manualManager.clear()
 }

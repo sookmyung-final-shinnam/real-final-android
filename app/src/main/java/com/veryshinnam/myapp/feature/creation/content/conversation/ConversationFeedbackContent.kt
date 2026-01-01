@@ -2,13 +2,14 @@ package com.veryshinnam.myapp.feature.creation.content.conversation
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationNeedsText
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationNextButton
@@ -29,9 +30,6 @@ fun ConversationFeedbackContent(
         verticalArrangement = Arrangement.SpaceBetween,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- 진행바 높이
-        Spacer(Modifier.fillMaxHeight(0.15f))
-
         ConversationNeedsText(
                 feedback = feedback.text,
                 tryNum = feedback.tryNum,
@@ -39,6 +37,7 @@ fun ConversationFeedbackContent(
                           else painterResource(R.drawable.img_llm_feedback_negative),
                 modifier = Modifier
                     .weight(1f)
+                    .padding(bottom = 6.dp)
                     .align(Alignment.CenterHorizontally),
                 isTtsSpeaking = isTtsSpeaking,
                 onReplayClick = onReplayClick

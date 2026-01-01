@@ -97,7 +97,7 @@ fun SelectionScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
-    val onStopManual: () -> Unit = { vm.hideManual(); onHome() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
     var progressRect by remember { mutableStateOf<Rect?>(null) } // 진행바

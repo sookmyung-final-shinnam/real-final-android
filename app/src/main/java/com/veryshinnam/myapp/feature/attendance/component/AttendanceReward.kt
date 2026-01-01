@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
@@ -17,6 +18,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -34,13 +36,15 @@ fun AttendanceReward(
     text: String,
     buttonText: String = "받기",
     onReceiveClick: () -> Unit,
-    modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = FontWeight.Bold),
     spacePadding: Dp = 15.dp, // 요소 간격 패딩
-    textPadding: Dp = 10.dp   // 버튼 텍스트 모든 방향 패딩
+    textPadding: Dp = 10.dp,   // 버튼 텍스트 모든 방향 패딩
+    modifier: Modifier = Modifier
 ) {
     Column(
-        modifier = modifier.fillMaxSize(),
+        modifier = modifier
+            .fillMaxSize()
+            .offset(y = spacePadding * 5),
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -49,18 +53,19 @@ fun AttendanceReward(
             painter = painter,
             contentDescription = "보상 이미지",
             modifier = Modifier
-                .fillMaxWidth(0.7f),
+                .fillMaxWidth()
+                .graphicsLayer(1.8f, 1.8f),
             contentScale = ContentScale.Fit
         )
 
-        Spacer(Modifier.height(spacePadding*2))
+        Spacer(Modifier.height(spacePadding * 6))
 
         StrokeTitle(
             modifier = Modifier,
             titleText = text,
             titleColor = Color.White,
             strokeColor = colorResource(R.color.clear_blue),
-            strokeWidth = 12f,
+            strokeWidth = 16f,
             titleTextStyle = textStyle.copy(
                 fontSize = textStyle.fontSize * 1.4f,
                 textAlign = Center,

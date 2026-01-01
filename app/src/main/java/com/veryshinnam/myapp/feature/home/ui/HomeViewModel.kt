@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.home.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.ManualData
+import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
@@ -72,10 +73,11 @@ class HomeViewModel @Inject constructor(
 
     // 신규 유저 업데이트
     fun updateNewUser() {
-        viewModelScope.launch {
-            sessionManager.removeNewUser()
+//        viewModelScope.launch {
+//            sessionManager.removeNewUser()
+//            _isNewUser.value = false
+//        }
             _isNewUser.value = false
-        }
     }
 
     fun checkAdminStatus() {
@@ -170,36 +172,59 @@ class HomeViewModel @Inject constructor(
     }
 
     // --- 매뉴얼 관련 ---
-    // 홈 화면 사용 매뉴얼
-    val manuals = listOf(
-        ManualData("반가워요 {username}!\n스토릭터에 온 걸 환영해요.", ManualTarget.NONE),
-        ManualData("여기 캐릭터 생성 버튼에서 직접 동화의 내용을 하나씩 만들어가며 나만의 동화와 캐릭터를 만들 수 있어요!", ManualTarget.IMAGE),
-        ManualData("보관함에서는 만든 동화와 캐릭터를 다시 볼 수 있어요!", ManualTarget.IMAGE),
-        ManualData("대시보드에선 동화를 만들며 발견되었던 {username}만의 특징을 확인할 수 있고", ManualTarget.IMAGE),
-        ManualData("출석 체크를 통해 스토릭터를 사용하며 다양한 도움이 되는 포인트를 얻을 수 있어요.", ManualTarget.IMAGE)
+    // 시작 문구
+    val firstManuals = listOf(
+        "반가워요 {username}!\n스토릭터에 온 걸 환영해요.",
+        "여기 캐릭터 생성 버튼에서 직접 동화의 내용을 하나씩 만들어가며 나만의 동화와 캐릭터를 만들 수 있어요!",
+        "대시보드에선 동화를 만들며 발견되었던 {username}만의 특징을 확인할 수 있고",
+        "출석 체크를 통해 스토릭터를 사용하며 다양한 도움이 되는 포인트를 얻을 수 있어요."
     )
 
-    fun showManual() = manualManager.request()
+    // 마지막 문구
+    val lastManuals = listOf(
+    "스토릭터에 대한 설명은 홈 화면의 환경설정에서 다시 볼 수 있어요.",
+    "혹시 놓친 설명이 있어도 언제든 다시 확인할 수 있어요.",
+    "그럼 이제 스토릭터를 자유롭게 즐겨보세요!"
+    )
+
+    fun requestManual() = manualManager.request()
 
     fun startManual() {
         _manualStep.value = 0
         manualManager.start()
-        manualManager.update(manuals[0].message)
+        manualManager.update(firstManuals[0])
     }
 
     fun nextManual() {
         val current = _manualStep.value
 
-        if (current < manuals.lastIndex) {
-            val next = current + 1
-            _manualStep.value = next
-            manualManager.update(manuals[next].message)
-        } else if (current == manuals.lastIndex) {
-            _manualStep.value = manuals.size
+        when (manualManager.state.value) {
+
+            ManualState.START -> {
+                if (current < firstManuals.lastIndex) {
+                    val next = current + 1
+                    _manualStep.value = next
+                    manualManager.update(firstManuals[next])
+                } else {
+                    _manualStep.value = firstManuals.size   // 다음 스크린
+                }
+            }
+
+            ManualState.FINISH -> {
+                if (current < lastManuals.lastIndex) {
+                    val next = current + 1
+                    _manualStep.value = next
+                    manualManager.update(lastManuals[next])
+                } else {
+                    clearManual()   // 매뉴얼 종료
+                }
+            }
+
+            else -> {}
         }
     }
 
     fun stopManual() = manualManager.stop()
 
-    fun hideManual() = manualManager.clear()
+    fun clearManual() = manualManager.clear()
 }

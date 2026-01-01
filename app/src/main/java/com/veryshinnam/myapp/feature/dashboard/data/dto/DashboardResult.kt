@@ -1,12 +1,15 @@
 package com.veryshinnam.myapp.feature.dashboard.data.dto
 
 data class DashboardResult(
-    val dashboardId: Long,
+    val username: String,
+    val dashboardId: Long?,     // null 가능
+    val maxTheme: String?,      // null 가능
+    val maxBackground: String?, // null 가능
     val backgroundStats: List<StatItemResult>,
     val themeStats: List<StatItemResult>,
-    val languageStats: List<LanguageItemResult>,
-    val emotionsStats: List<EmotionItemResult>,
-    val parentAdvice: String
+    val languageStats: List<LanguageItemResult>, // 최근 10개
+    val emotionsStats: List<EmotionItemResult>,  // 최근 10개
+    val parentAdvice: String?   // null 가능
 )
 
 data class StatItemResult(
@@ -17,6 +20,7 @@ data class StatItemResult(
 
 data class LanguageItemResult(
     val storyId: Long,
+    val storyName: String,
     val createdAt: String,
     val attemptStats: AttemptStats,
     val avgAttemptPerStage: Double,

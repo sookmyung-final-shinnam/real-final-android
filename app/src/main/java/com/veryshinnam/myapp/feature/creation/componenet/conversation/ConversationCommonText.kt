@@ -18,12 +18,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -44,17 +41,14 @@ fun ConversationCommonText(
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(
         fontWeight = Bold,
         textAlign = TextAlign.Center
-    ),
-    onTextRect: (Rect) -> Unit,
-    onImageRect: (Rect) -> Unit,
+    )
 ) {
     Box(modifier = modifier) {
         // 질문 텍스트
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter)
-                .onGloballyPositioned { onTextRect(it.boundsInRoot()) }, // Box 위쪽
+                .align(Alignment.TopCenter),
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(32.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -89,8 +83,7 @@ fun ConversationCommonText(
                 .fillMaxHeight()
                 .scale(1.4f)
                 .align(Alignment.BottomCenter)  // Box 아래쪽
-                .offset(y = 40.dp)
-                .onGloballyPositioned { onImageRect(it.boundsInRoot()) },
+                .offset(y = 40.dp),
             contentScale = ContentScale.Fit
         )
     }

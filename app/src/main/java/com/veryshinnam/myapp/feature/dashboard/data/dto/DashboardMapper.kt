@@ -9,15 +9,14 @@ import com.veryshinnam.myapp.feature.dashboard.model.StatData
 
 fun DashboardResult.toDashboardData(): DashboardData {
     return DashboardData(
+        username = username,
+        maxTheme = maxTheme?: "",           // null > 빈 문자열
+        maxBackground = maxBackground?: "", // null > 빈 문자열
         backgroundStats = backgroundStats.map { it.toStatData() },
         themeStats = themeStats.map { it.toStatData() },
-        languageList = languageStats
-            .take(5)    // 5개 제한
-            .map { it.toLanguageData() },
-        emotionList = emotionsStats
-            .take(5)    // 5개 제한
-            .map { it.toEmotionData() },
-        parentAdvice = parentAdvice
+        languageList = languageStats.map { it.toLanguageData() },
+        emotionList = emotionsStats.map { it.toEmotionData() },
+        parentAdvice = parentAdvice?: ""   // null > 빈 문자열
     )
 }
 
@@ -31,6 +30,7 @@ fun StatItemResult.toStatData(): StatData {
 fun LanguageItemResult.toLanguageData(): LanguageData {
     return LanguageData(
         storyId = storyId,
+        storyName = storyName,
         createdAt = createdAt.substring(0, 10),
         attempts =  mapOf(
             Attempt.GI to attemptStats.giCount,

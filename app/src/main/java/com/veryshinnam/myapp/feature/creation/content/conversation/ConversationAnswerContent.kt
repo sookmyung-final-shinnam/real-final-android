@@ -73,14 +73,11 @@ fun ConversationAnswerContent(
         verticalArrangement = Arrangement.spacedBy(verticalPadding),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        // --- 진행바 높이
-        Spacer(Modifier.fillMaxHeight(0.15f))
-
         // --- 다람쥐 이미지
         Image(
             painter = painterResource(R.drawable.img_llm_question),
             contentDescription = "다람쥐 이미지",
-            modifier = Modifier.fillMaxHeight(0.5f),
+            modifier = Modifier.fillMaxHeight(0.7f),
             contentScale = ContentScale.Fit
         )
 

@@ -404,16 +404,16 @@ class ConversationViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들기 위한 선택이 모두 끝나면,\n지금까지 고른 내용으로 제가 4번에 걸쳐 이야기를 만들어 줄 거예요." +
-                "\n\n제 질문에 하나씩 답하면서 우리 함께 재미있는 동화를 만들어 봐요!"),
+        ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들 준비가 모두 끝났어요!\n지금까지 고른 내용으로\n제가 4번에 나누어 재미있는 이야기를 만들어 줄게요."),
+        ManualScriptData(step = ConversationStep.START, nextStory = "\n제가 질문을 하나씩 할 거예요.\n천천히 생각하면서 함께 멋진 동화를 만들어 봐요!"),
         ManualScriptData(step = ConversationStep.STORY, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 장신남은 고민이 있었답니다."),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "장신남은 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 장신남은 닯은 사람을 발견했어요."),
-        ManualScriptData(step = ConversationStep.QUESTION,  question = "장신남은 그 사람을 보고 어떻게 행동했을까?"),
-        ManualScriptData(step = ConversationStep.QUESTION, question = "제 질문에 대한 답을 생각했다면\n아래의 마이크를 눌러서 대답해 주세요!"),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "스토릭터는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 장신남은 닯은 사람을 발견했어요."),
+        ManualScriptData(step = ConversationStep.QUESTION,  question = "스토릭터는 그 사람을 보고 어떻게 행동했을까요?"),
+        ManualScriptData(step = ConversationStep.QUESTION, question = "생각이 떠올랐나요?\n제 아래에 있는 마이크 버튼을 눌러서 말해 주세요!"),
         ManualScriptData(step = ConversationStep.ANSWER),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요, 앞으로도 그렇게 대답 해주면 돼요.", 1)),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 안맞는 답변이나 나쁜 말을 사용하면 다시 답변해야 해요.", 2)),
-        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "답변은 총 세번이니 잘 생각해보고 답변해 주세요!", 3)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요! 정말 잘했어요.\n그렇게 대답해 주면 돼요!", 1)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 맞지 않는 답변이나 좋지 않은 말이 나오면,\n제가 다시 대답해 달라고 말할 거예요.", 2)),
+        ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "각 질문마다\n세 번까지 대답할 수 있어요.\n천천히 생각해서 말해 주세요!", 3)),
     )
 
     private fun updateManual(index: Int) {
@@ -421,7 +421,7 @@ class ConversationViewModel @Inject constructor(
         val script = manuals[index]
 
         val message = when (script.step) {
-            ConversationStep.STORY -> script.nextStory
+            ConversationStep.START, ConversationStep.STORY -> script.nextStory
             ConversationStep.QUESTION -> script.question
             ConversationStep.FEEDBACK -> script.feedback.text
             else -> ""
@@ -442,9 +442,10 @@ class ConversationViewModel @Inject constructor(
         )
     }
 
+    // Nav에서 분기 처리에 사용
     fun startManual() {
         _manualStep.value = 0
-        manualManager.update(manuals[0].nextStory)
+        updateManual(0)
     }
 
     fun nextManual() {
@@ -462,5 +463,5 @@ class ConversationViewModel @Inject constructor(
 
     fun stopManual() = manualManager.stop()
 
-    fun hideManual() = manualManager.clear()
+    fun clearManual() = manualManager.clear()
 }
