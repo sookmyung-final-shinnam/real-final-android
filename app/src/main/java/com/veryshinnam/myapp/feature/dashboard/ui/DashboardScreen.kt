@@ -112,15 +112,27 @@ fun DashboardScreen(
     }
 
     // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        onBack()
+    }
 
     // 대시보드 ui
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.background_yellow))
+    ) {
         // 로고 + 백버튼 ui
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(20f)
+                .zIndex(if (isManual) 0f else 20f)
                 .alpha(logoAlpha)
         ) {
             Column {
@@ -158,9 +170,6 @@ fun DashboardScreen(
         }
 
         Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.background_yellow)),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
