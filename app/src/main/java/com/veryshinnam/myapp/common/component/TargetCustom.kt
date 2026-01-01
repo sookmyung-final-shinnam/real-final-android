@@ -37,6 +37,7 @@ import com.veryshinnam.myapp.R
 @Composable
 fun TargetCustom(
     rect: Rect,
+    onCustomClick: () -> Unit,
     containerColor: Color = colorResource(R.color.lemon_yellow),
     contentColor: Color =  colorResource(R.color.main_orange),
     btnCorner: Dp = 20.dp,
@@ -59,7 +60,7 @@ fun TargetCustom(
     ) {
         // 버튼을 항상 렌더링하여 높이-공간 확보
         Button(
-            onClick = { },
+            onClick = onCustomClick ,
             modifier = Modifier.fillMaxHeight().aspectRatio(1f),
             shape = RoundedCornerShape(btnCorner),
             colors = ButtonDefaults.buttonColors(

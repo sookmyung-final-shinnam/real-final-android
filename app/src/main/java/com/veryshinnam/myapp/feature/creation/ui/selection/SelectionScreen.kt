@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -89,13 +87,14 @@ fun SelectionScreen(
     var confirmText by remember { mutableStateOf("") }
     var confirmAction by remember { mutableStateOf<() -> Unit>({}) }
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
-    var SimpleWarningText by remember { mutableStateOf("") }
+    var simpleWarningText by remember { mutableStateOf("") }
 
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
+    val isManual = manualState != ManualState.NONE
     val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
@@ -183,8 +182,20 @@ fun SelectionScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { handleBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        // 경고창: 뒤로가기 차단
+        if (isWarning) {
+            return@BackHandler
+        }
+
+        handleBack()
+    }
 
     // ui 화면
     Scaffold(
@@ -194,7 +205,7 @@ fun SelectionScreen(
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
                 LogoBar(onLogoClick = {
-                    handleBack()
+                    if (!isManual) isWarning = true // 경고창
                 })
             }
         },
@@ -271,7 +282,7 @@ fun SelectionScreen(
                             onThemeSelect = { vm.selectTheme(it) },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             onFirstBRect = { rect ->
@@ -302,7 +313,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -318,7 +329,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -335,7 +346,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -351,7 +362,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -370,7 +381,7 @@ fun SelectionScreen(
                             onSelectHairStyle = { vm.selectHairStyle(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             onWarning = {  wText, cText -> // 테마에서 뒤로가기, 이야기 시작 직전
@@ -403,13 +414,13 @@ fun SelectionScreen(
 
     if (isSimpleWarning) {
         WarningSheet(
-            warningText = SimpleWarningText,
+            warningText = simpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )
     }
 
     // 매뉴얼 진행
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -467,7 +478,7 @@ fun SelectionScreen(
                     0 -> {}
                     1 -> progressRect?.let { TargetProgressBar(it, 6) }
                     2 -> firstBRect?.let { TargetButton(it) }
-                    3 -> customBRect?.let { TargetCustom(it) }
+                    3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
                 }
             }
 
