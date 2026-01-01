@@ -71,20 +71,15 @@ fun NavGraphBuilder.creationNavGraph(navController: NavController) {
             }
 
             ConversationScreen(
-                onBack = {
-                    // 선택 화면 스택 정리 후 홈으로
-                    navController.popBackStack(CreationRoutes.SELECTION, inclusive = true)
+                onHome = {
+                    // 선택 화면 스택 모두 제거
                     navController.navigate(MainRoutes.HOME) {
+                        popUpTo(NavGraphs.MAIN) {
+                            inclusive = false
+                        }
                         launchSingleTop = true
                     }
                 },
-//                onLogoClick = {
-//                    navController.popBackStack("selection", inclusive = true)
-//                    navController.navigate(MainRoutes.HOME) {
-//                        popUpTo(NavGraphs.MAIN) { inclusive = false }
-//                        launchSingleTop = true
-//                    }
-//                },
                 goToNextManual = {
                     navController.navigate(MainRoutes.COLLECTION) {
                         launchSingleTop = true

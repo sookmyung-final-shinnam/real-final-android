@@ -63,7 +63,7 @@ import com.veryshinnam.myapp.feature.creation.model.ConversationStep
 // 캐릭터 생성 > 대화 진입점
 @Composable
 fun ConversationScreen(
-    onBack: () -> Unit,
+    onHome: () -> Unit,
     goToNextManual: () -> Unit,
     horizontalPadding: Dp = 16.dp,
     vm: ConversationViewModel
@@ -88,13 +88,34 @@ fun ConversationScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // ui 변수
-    var isWarning by remember { mutableStateOf(false) }   // 경고창
-
     //  매뉴얼
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onBack() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var logoHeight by remember { mutableStateOf(0.dp) }   // 로고바 높이
+
+    // ui 변수
+    var isWarning by remember { mutableStateOf(false) }   // 경고창
+    val onRecordClick: () -> Unit = {
+        val granted = ContextCompat.checkSelfPermission(
+            context,
+            recordAudioPermission
+        ) == PackageManager.PERMISSION_GRANTED
+
+        when {
+            manualStep == 5 -> {
+                // manualStep 5 전용
+                if (granted) vm.nextManual()
+                else launcher.launch(recordAudioPermission)
+            }
+
+            isManual -> { vm.nextManual() }
+
+            else -> {
+                if (granted) vm.goToNextStep()
+                else launcher.launch(recordAudioPermission)
+            }
+        }
+    }
 
     // 세로 모드 고정
     SideEffect {
@@ -109,25 +130,77 @@ fun ConversationScreen(
         }
     }
 
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        // 경고창: 뒤로가기 차단
+        if (isWarning) {
+            return@BackHandler
+        }
+
+        // 대화 단계별 뒤로가기 처리
+        when (uiState) {
+            is ConversationUiState.Success -> {
+                when ((uiState as ConversationUiState.Success).conversationStep) {
+                    // 이야기 진행
+                    ConversationStep.START,
+                    ConversationStep.STORY -> {
+                        isWarning = true // 경고창 on
+                    }
+
+                    // llm 질문, 사용자 답변
+                    ConversationStep.QUESTION,
+                    ConversationStep.ANSWER -> {
+                        vm.goToPreviousStep() // 이전 단계
+                    }
+
+                    // llm 피드백
+                    ConversationStep.FEEDBACK -> {
+                        val feedback = (uiState as ConversationUiState.Success).feedbackData
+                        if (feedback.isPositive) {
+                            isWarning = true  // 긍정: 경고창 on
+                        } else {
+                            vm.goToPreviousStep()  // 부정: 이전 단계
+                        }
+                    }
+
+                    // 대화 끝
+                    ConversationStep.END -> {
+                        onHome() // 홈으로
+                    }
+                }
+            }
+
+            else -> {
+                onHome()
+            }
+        }
+    }
+
     Box(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow))
             .then(
-                if (manualStep == 6) {
-                        Modifier // answer 3초 대기
-                    } else {
-                    // 매뉴얼일 때만 터치 가로채기
-                    when (manualState) {
-                        ManualState.START -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.nextManual() }
-                        }
-
-                        ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { onStopManual() }
-                        }
-
-                        else -> Modifier
+                when {
+                    // 사용자 답변: 대기
+                    manualStep == 6 -> Modifier.pointerInput(Unit) {
+                        detectTapGestures { }
                     }
+
+                    // 매뉴얼 진행 중
+                    manualState == ManualState.START -> Modifier.pointerInput(Unit) {
+                        detectTapGestures { vm.nextManual() }
+                    }
+
+                    manualState == ManualState.STOP -> Modifier.pointerInput(Unit) {
+                        detectTapGestures { onStopManual() }
+                    }
+
+                    else -> Modifier
                 }
             )
     ) {
@@ -136,14 +209,16 @@ fun ConversationScreen(
             Box(
                 Modifier.fillMaxWidth()
                     .onGloballyPositioned {
-                        // px > dp
+                        // px > dp 변환
                         logoHeight = with(density) { it.boundsInRoot().top.toDp() }
                     }
             ) {
                 Column {
                     Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
                     LogoBar(
-                        onLogoClick = { isWarning = true }, // 경고창
+                        onLogoClick = {
+                            if (!isManual) isWarning = true // 경고창
+                        },
                         modifier = Modifier
                     )
                 }
@@ -173,7 +248,6 @@ fun ConversationScreen(
                     }
                     // 조회 오류
                     is ConversationUiState.Error -> {
-                        BackHandler { onBack() }
                         LoadErrorView(
                             message = state.message,
                             onRetry = { }
@@ -182,7 +256,7 @@ fun ConversationScreen(
                     // 조회 성공
                     is ConversationUiState.Success -> {
                         LaunchedEffect(state.conversationStep) {
-                            if (manualState == ManualState.NONE) {
+                            if (!isManual) {
                                 vm.startTts()
                             }
                         }
@@ -239,10 +313,6 @@ fun ConversationScreen(
                                 ) {
                                     when (state.conversationStep) {
                                         ConversationStep.START -> { // 대화 시작 (다음 이야기)
-                                            BackHandler(
-                                                enabled = manualState == ManualState.NONE
-                                            ) { isWarning = true } // 홈으로
-
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
@@ -260,9 +330,6 @@ fun ConversationScreen(
                                         }
 
                                         ConversationStep.STORY -> { // 다음 이야기
-                                            BackHandler(
-                                                enabled = manualState == ManualState.NONE
-                                            ) { isWarning = true } // 홈으로
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
                                                 isTtsSpeaking = isTtsSpeaking,
@@ -281,40 +348,23 @@ fun ConversationScreen(
 
                                         // llm 질문 (STORY 단계에서 이동 가능)
                                         ConversationStep.QUESTION -> {
-                                            BackHandler(
-                                                enabled = manualState == ManualState.NONE
-                                            ) { vm.goToPreviousStep() }
                                             ConversationQuestionContent(
                                                 question = if (isManual) manualMessage else state.questionData.question,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = {
-                                                    if (isManual) vm.nextManual()
-                                                    else vm.startTts()
-                                                },
-                                                onRecordClick = {
-                                                    val granted =
-                                                        ContextCompat.checkSelfPermission(
-                                                            context,
-                                                            recordAudioPermission
-                                                        ) == PackageManager.PERMISSION_GRANTED
-
-                                                    if (granted) {  // 이미 권한 있으면 녹음 시작
-                                                        if (isManual) vm.nextManual()
-                                                        else vm.goToNextStep()
-                                                    } else { // 권한 없으면 런처 실행
-                                                        launcher.launch(recordAudioPermission)
+                                                    when {
+                                                        manualStep == 5 -> onRecordClick()
+                                                        isManual -> vm.nextManual()
+                                                        else -> vm.startTts()
                                                     }
                                                 },
+                                                onRecordClick = onRecordClick,
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
                                             )
                                         }
 
                                         ConversationStep.ANSWER -> { // 사용자 대답 (QUESTION 단계 이동 가능)
-                                            BackHandler(
-                                                enabled = manualState == ManualState.NONE
-                                            ) { vm.goToPreviousStep() }
-
                                             LaunchedEffect(state.conversationStep) {
                                                 vm.startStt(context)
                                             }
@@ -331,14 +381,6 @@ fun ConversationScreen(
                                         }
 
                                         ConversationStep.FEEDBACK -> { // llm 피드백 (QUESTION 단계 이동 가능)
-                                            BackHandler(
-                                                enabled = manualState == ManualState.NONE
-                                            ) { // 긍정 > 홈으로, 부정 > QUESTION 단계로 back
-                                                if (state.feedbackData.isPositive) {
-                                                    isWarning = true
-                                                } else vm.goToPreviousStep()
-                                            }
-
                                             ConversationFeedbackContent(
                                                 feedback =  if (isManual) state.feedbackData.copy(text = manualMessage) else state.feedbackData,
                                                 isTtsSpeaking = isTtsSpeaking,
@@ -356,9 +398,8 @@ fun ConversationScreen(
                                         }
 
                                         ConversationStep.END -> { // 대화 종료
-                                            BackHandler { onBack() }
                                             ConversationEndContent(
-                                                { onBack() }
+                                                { onHome() }
                                             )
                                         }
                                     }
@@ -392,9 +433,10 @@ fun ConversationScreen(
                     .align(Alignment.TopEnd)
                     .padding(30.dp)
                     .clickable {
-                        when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.clearManual()
+                        when {
+                            manualStep == 6 -> { } // 사용자 답변: 클릭 무시
+                            manualState == ManualState.START -> { vm.stopManual() }
+                            manualState == ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }
@@ -410,7 +452,7 @@ fun ConversationScreen(
             onDismiss = { isWarning = false },
             onConfirm = {
                 isWarning = false
-                onBack()
+                onHome()
             }
         )
     }

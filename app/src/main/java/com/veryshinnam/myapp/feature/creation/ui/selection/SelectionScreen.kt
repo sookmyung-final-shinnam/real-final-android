@@ -69,7 +69,6 @@ import com.veryshinnam.myapp.feature.creation.content.selection.SelectionGenderC
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionNameContent
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionThemeContent
 
-
 // 캐릭터 생성 > 선택 진입점
 @Composable
 fun SelectionScreen(
@@ -124,7 +123,7 @@ fun SelectionScreen(
     fun getInfoText(step: SelectionStep, isInputMode: Boolean): String {
         return if (isInputMode) {
             when (step) {
-                SelectionStep.THEME -> "원하는 주제를 입력해 주세요!"
+                SelectionStep.THEME -> "원하는 주제를 입력해 주세요!\n"
                 SelectionStep.BACKGROUND -> "원하는 배경을 입력해 주세요!"
                 else -> ""
             }
@@ -456,7 +455,8 @@ fun SelectionScreen(
             messageRect?.let { rect ->
                 TargetMessage(
                     rect = rect,
-                    message = manualMessage,
+                    message = if (manualState == ManualState.START) manualMessage
+                        else "사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!",
                     messageStyle = MaterialTheme.typography.titleSmall,
                     messagePadding = 16.dp
                 )
