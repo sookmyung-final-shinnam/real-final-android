@@ -2,9 +2,7 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.veryshinnam.myapp.common.model.ManualData
 import com.veryshinnam.myapp.common.model.ManualState
-import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.core.session.SessionManager
@@ -23,6 +21,7 @@ import javax.inject.Inject
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
     private val adminRepository: AdminStoryRepository,
+    private val sessionManager: SessionManager,
     private val manualManager: ManualManager
 ) : ViewModel() {
 
@@ -63,20 +62,18 @@ class HomeViewModel @Inject constructor(
     // --- ui 이벤트 관련 ---
     // 신규 유저 확인
     private fun checkNewUser() {
-//        viewModelScope.launch {
-//            val newUser = sessionManager.isNewUser()
-//            _isNewUser.value = newUser
-//        }
-        _isNewUser.value = true
+        viewModelScope.launch {
+            val newUser = sessionManager.isNewUser()
+            _isNewUser.value = newUser
+        }
     }
 
     // 신규 유저 업데이트
     fun updateNewUser() {
-//        viewModelScope.launch {
-//            sessionManager.removeNewUser()
-//            _isNewUser.value = false
-//        }
+        viewModelScope.launch {
+            sessionManager.removeNewUser()
             _isNewUser.value = false
+        }
     }
 
     fun checkAdminStatus() {
