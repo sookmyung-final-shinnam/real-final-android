@@ -29,9 +29,10 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
+// llm 질문 텍스트
 @Composable
 fun ConversationCommonText(
-    text: String, // 질문 또는 피드백 긍정 텍스트
+    text: String, // 질문 텍스트
     painter: Painter,
     isTtsSpeaking: Boolean,
     onReplayClick: () -> Unit,

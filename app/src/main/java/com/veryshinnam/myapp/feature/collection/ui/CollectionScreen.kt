@@ -7,7 +7,6 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -23,10 +22,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
@@ -48,10 +44,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
-import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -74,7 +66,6 @@ import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.feature.collection.component.CollectionCharacterGrid
 import com.veryshinnam.myapp.feature.collection.component.CollectionFilterButtons
-import org.threeten.bp.YearMonth
 
 @Composable
 fun CollectionScreen(
@@ -83,6 +74,7 @@ fun CollectionScreen(
     onLogoClick: () -> Unit,
     goToCreation: () -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: CollectionViewModel = hiltViewModel()
@@ -96,8 +88,11 @@ fun CollectionScreen(
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
-    // 매뉴얼 > 강조할 좌표
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    // 매뉴얼
+    val isManual = manualState != ManualState.NONE
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
+
+    // 강조할 좌표
     var rabbitRect by remember { mutableStateOf<Rect?>(null) }      // 토끼 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }     // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) }        // 아이템 박스
@@ -131,8 +126,20 @@ fun CollectionScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        // 경고창: 뒤로가기 차단
+        if (isSimpleWarning) {
+            return@BackHandler
+        }
+
+        onBack()
+    }
 
     // 보관함 ui
     Scaffold(
@@ -274,7 +281,7 @@ fun CollectionScreen(
     }
 
 
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -306,7 +313,6 @@ fun CollectionScreen(
                         when (manualState) {
                             ManualState.START -> { vm.stopManual() }
                             ManualState.STOP -> { onStopManual() }
-
                             else -> {}
                         }
                     }
@@ -364,7 +370,13 @@ fun CollectionScreen(
                                 .padding(4.dp),
                             characterId = -1,
                             isFavorite = true,
-                            onFavoriteClick = { }
+                            onFavoriteClick = {
+                                when (manualState) {
+                                    ManualState.START -> { vm.nextManual() }
+                                    ManualState.STOP -> { onStopManual() }
+                                    else -> {}
+                                }
+                            }
                         )
                         // 캐릭터 이름
                         StrokeTitle(
@@ -418,7 +430,13 @@ fun CollectionScreen(
                                     .zIndex(20f),
                                 characterId = -1,
                                 isFavorite = true,
-                                onFavoriteClick = { vm.manualStep }
+                                onFavoriteClick = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                }
                             )
                         }
                     }

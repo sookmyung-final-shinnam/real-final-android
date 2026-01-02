@@ -80,6 +80,7 @@ fun CharacterScreen(
     onLogoClick: () -> Unit,
     onStoryClick: (Long, StoryType) -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     xMoving: Dp = 60.dp,
     verticalPadding: Dp = 10.dp,
     manualTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold),
@@ -110,7 +111,8 @@ fun CharacterScreen(
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
 
     // 매뉴얼 변수
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val isManual = manualState != ManualState.NONE
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var tabRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var storyRect by remember { mutableStateOf<Rect?>(null) }  // 탭 버튼 위치
     var videoRect by remember { mutableStateOf<Rect?>(null) } // 움직이는 동화 잠금 위치
@@ -144,8 +146,15 @@ fun CharacterScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        onBack()
+    }
 
     Box(
         modifier = Modifier
@@ -350,7 +359,7 @@ fun CharacterScreen(
                     .clickable {
                         when (manualState) {
                             ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual }
+                            ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }
@@ -492,7 +501,11 @@ fun CharacterScreen(
                             )
                             .zIndex(10f),
                         onClick = {
-                            vm.nextManual()
+                            when (manualState) {
+                                ManualState.START -> { vm.nextManual() }
+                                ManualState.STOP -> { onStopManual() }
+                                else -> {}
+                            }
                         },
                         alpha = 0.5f,
                     )

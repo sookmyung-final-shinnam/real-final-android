@@ -82,7 +82,7 @@ class ConversationViewModel @Inject constructor(
         viewModelScope.launch {
             try {
                 val res = repository.startConversation(req) // api 호출
-//                val res = dummyStart()
+//                val res = dummyStart() // 더미 테스트
 
                 // 초기화
                 _conversationUiState.value = ConversationUiState.Success(

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation.grapghs
+package com.veryshinnam.myapp.core.navigation.graphs
 
 object NavGraphs {
     const val PERMIT = "permit_graph"

@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.core.navigation.grapghs
+package com.veryshinnam.myapp.core.navigation.graphs
 
 import androidx.navigation.NavController
 import androidx.navigation.NavGraphBuilder
@@ -11,7 +11,9 @@ import com.veryshinnam.myapp.feature.permit.ui.LoginScreen
 import com.veryshinnam.myapp.feature.permit.ui.SignUpScreen
 import com.veryshinnam.myapp.feature.permit.ui.SplashScreen
 
-fun NavGraphBuilder.permitNavGraph(navController: NavController) {
+fun NavGraphBuilder.permitNavGraph(
+    navController: NavController
+) {
     navigation(
         startDestination = PermitRoutes.SPLASH,
         route = NavGraphs.PERMIT

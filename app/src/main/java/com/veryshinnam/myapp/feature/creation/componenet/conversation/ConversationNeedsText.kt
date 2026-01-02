@@ -2,7 +2,6 @@ package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -20,13 +19,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -34,6 +29,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.StrokeTitle
 
 @Composable
 fun ConversationNeedsText(
@@ -76,26 +72,9 @@ fun ConversationNeedsText(
                 }
             }
 
-            // 피드백 텍스트
-            /*
-            *
-            * Image(
-                        painter = painter,
-                        contentDescription = "다람쥐 이미지",
-                        modifier = Modifier
-                            .alpha(0.5f)
-                            .fillMaxHeight()
-                            .scale(1.4f)
-                            .align(Alignment.BottomStart)  // Box 아래쪽
-//                            .offset(y = 40.dp)
-//                            .onGloballyPositioned { onImageRect(it.boundsInRoot()) }
-                            ,
-                        contentScale = ContentScale.Fit
-                    )*/
             Card(
                 modifier = Modifier.fillMaxWidth()
                     .weight(1f),
-//                    .padding(bottom = 20.dp, start = 16.dp, end = 16.dp),
                 colors = CardDefaults.cardColors(containerColor = Color.White),
                 shape = RoundedCornerShape(32.dp),
                 border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -117,9 +96,20 @@ fun ConversationNeedsText(
                     )
 
                     // 피드백 텍스트
-                    Text(
-                        text = feedback,
-                        style = textStyle,
+//                    Text(
+//                        text = feedback,
+//                        style = textStyle,
+//                        modifier = Modifier
+//                            .padding(horizontal = horizontalPadding)
+//                            .align(Alignment.Center)
+//                    )
+
+                    StrokeTitle(
+                        titleText = feedback,
+                        titleColor = Color.Black,
+                        strokeColor = Color.White,
+                        titleTextStyle = textStyle,
+                        strokeWidth = 8f,
                         modifier = Modifier
                             .padding(horizontal = horizontalPadding)
                             .align(Alignment.Center)

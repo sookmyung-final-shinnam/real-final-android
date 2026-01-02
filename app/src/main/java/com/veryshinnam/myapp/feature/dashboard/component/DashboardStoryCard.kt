@@ -62,6 +62,8 @@ import com.veryshinnam.myapp.feature.dashboard.model.StoryAnalysisData
 @Composable
 fun DashboardStoryCard(
     story: StoryAnalysisData,
+    total: Int = 10,
+    index: Int,
     onStoryClick: (Long) -> Unit,
     onHelpRect: (Rect) -> Unit,
     spacer: Dp = 6.dp,
@@ -179,7 +181,7 @@ fun DashboardStoryCard(
                         .padding(horizontal = cardCorner, vertical = verticalPadding)
                 ) {
                     DashboardHelpText(
-                        text = "최신 동화 5개 기반으로 한 언어 발달 학습 분석과 정서 분석입니다.\n\n" +
+                        text = "최신 10개까지의 동화를 대상으로 한 언어 발달 학습 분석과 정서 분석입니다.\n\n" +
                                 "언어 발달 정도를 확인할 수 있습니다.\n\n" +
                                 "정서 분석으로 동화 스토리에 반영된 아이의 정서를 6가지 감정(기쁨, 슬픔, 화남, 두려움, 놀람, 평온)을 확인할 수 있습니다.",
                         modifier = Modifier.wrapContentHeight()
@@ -374,8 +376,13 @@ fun DashboardStoryCard(
 
                             if (emotionPressed) {
                                 DashboardHelpText(
-                                    text = "정서 분석으로 동화 스토리에 반영된 아이의 정서를 6가지 정서를 확인할 수 있습니다." +
-                                            "\n평온의 경우 앞 5가지 정서에 포함되지 않는 중립적인 감정이라고 생각하시면 됩니다.",
+                                    text = "분석된 감정에 대한 설명입니다." +
+                                        "기쁨:~~~~~~ \n" +
+                                            "슬픔:~~~~~~ \n" +
+                                            "화남:~~~~~~ \n" +
+                                            "두려움:~~~~~~ \n" +
+                                            "놀람:~~~~~~ \n" +
+                                            "평온: 위 5가지 정서에 포함되지 않는 중립적인 감정",
                                     modifier = Modifier
                                         .wrapContentHeight()
                                         .onGloballyPositioned { coords ->
@@ -500,6 +507,21 @@ fun DashboardStoryCard(
                                             Text(story.summary + "\n\n" + story.createdAt,
                                                 style = summaryTextStyle, textAlign = TextAlign.Center)
                                         }
+
+                                        // 인덱스
+                                        Row {
+                                            Text(
+                                                "$index"
+                                                , style = summaryTextStyle.copy(color = borderColor
+                                                )
+                                            )
+                                            Text(
+                                                " / $total",
+                                                color = borderColor
+                                            )
+
+                                        }
+
                                     }
                                 }
                             }

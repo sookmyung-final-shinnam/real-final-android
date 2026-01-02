@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.home.ui
 
 import android.content.pm.ActivityInfo
+import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
@@ -23,6 +24,7 @@ import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
@@ -52,7 +54,7 @@ import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
  * 홈 화면
  * : 유저 정보와 즐찾 캐릭터 정보 조회
  *
- * - onSettingsClick: 버튼 클릭 시, 환경설정 화면(SettingsScreen)으로 이동
+ * - onSettingsClick: 버튼 클릭 시, 설정 화면(SettingsScreen)으로 이동
  * - onAttendanceClick: 버튼 클릭 시, 출석체크 화면(AttendanceScreen)으로 이동
  * - onCharacterClick: 버튼 클릭 시, 캐릭터 상세 화면(CharacterScreen)으로 이동
  * - onDashboardClick: 버튼 클릭 시, 대시보드 화면(DashboardScreen)으로 이동
@@ -87,7 +89,12 @@ fun HomeScreen(
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
     val username by vm.username.collectAsStateWithLifecycle()
 
+    // -- ui 변수
+    // 이미지 높이: 기기 높이 * 0.12
+    val imageHeight = (LocalConfiguration.current.screenHeightDp * 0.12f).dp
+
     // 매뉴얼 > 강조할 좌표
+    val isManual = manualState != ManualState.NONE
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
     var creationRect by remember { mutableStateOf<Rect?>(null) }  // 생성
@@ -107,6 +114,12 @@ fun HomeScreen(
         vm.checkAdminStatus() // 관리자 여부 확인
         vm.reload()        // 홈 데이터 다시 불러오기
         vm.changeMessage() // 랜덤 메시지도 갱신
+    }
+
+    LaunchedEffect(manualState) {
+        if (manualState == ManualState.START) {
+            vm.loadManual()
+        }
     }
 
     LaunchedEffect(manualStep) {
@@ -133,6 +146,14 @@ fun HomeScreen(
             )
         }
         return
+    }
+
+    // -- 백핸들러 설정
+    // 매뉴얼 중이면 뒤로가기 차단
+    if (isManual) {
+        BackHandler {
+            return@BackHandler
+        }
     }
 
     Scaffold(
@@ -179,11 +200,7 @@ fun HomeScreen(
                     Column(modifier = Modifier.fillMaxSize()) {
                         Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
                             // 유저 정보 - 생성한 캐릭터 수, 포인트
-                            Box(
-                                modifier = Modifier
-                                    .fillMaxWidth()
-                                    .fillMaxHeight(0.12f) // 화면의 40% 고정
-                            ) {
+                            Box(modifier = Modifier.fillMaxWidth().height(imageHeight)) {
                                 // 다람쥐 이미지
                                 Image(
                                     painter = painterResource(R.drawable.img_home_squirrel),
@@ -235,7 +252,7 @@ fun HomeScreen(
                                 contentAlignment = Alignment.Center
                             ) {
                                 Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                                    // 닉네임 + 환경설정 버튼
+                                    // 닉네임 + 설정 버튼
                                     Row(
                                         modifier = Modifier
                                             .fillMaxWidth()
@@ -255,13 +272,13 @@ fun HomeScreen(
                                                 .clickable(onClick = onSettingsClick)
                                         ) {
                                             Text(
-                                                text = "환경설정",
+                                                text = "설정",
                                                 style = settingsTextStyle
                                             )
 
                                             Icon(
                                                 imageVector = Icons.Default.Settings,
-                                                contentDescription = "환경설정 아이콘",
+                                                contentDescription = "설정 아이콘",
                                                 tint = colorResource(id = R.color.main_orange),
                                                 modifier = Modifier
                                                     .padding(start = 2.dp)
@@ -379,7 +396,7 @@ fun HomeScreen(
     }
 
     // 매뉴얼 진행
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -409,11 +426,7 @@ fun HomeScreen(
                 TargetMessage(
                     rect = rect,
                     message = manualMessage.replace("{username}", username),
-                    messageStyle =
-                        if (manualState == ManualState.START)
-                            MaterialTheme.typography.titleMedium
-                        else
-                            MaterialTheme.typography.titleLarge
+                    messageStyle = MaterialTheme.typography.titleSmall
                 )
             }
 

@@ -12,6 +12,7 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 
@@ -22,6 +23,8 @@ fun StrokeTitle(
     titleTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
     titleColor: Color,
     strokeColor: Color,
+    maxLines: Int = Int.MAX_VALUE,
+    overflow: TextOverflow = TextOverflow.Clip,
     softWrap: Boolean = true,
     strokeWidth: Float = 2f,
     verticalPadding: Dp = 4.dp,
@@ -34,6 +37,8 @@ fun StrokeTitle(
         Text(
             text = titleText,
             textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            overflow = overflow,
             softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,
@@ -46,6 +51,8 @@ fun StrokeTitle(
         Text(
             text = titleText,
             textAlign = TextAlign.Center,
+            maxLines = maxLines,
+            overflow = overflow,
             softWrap = softWrap,
             style = titleTextStyle.copy(
                 fontWeight = FontWeight.Bold,

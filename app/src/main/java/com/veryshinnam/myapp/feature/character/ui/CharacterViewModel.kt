@@ -127,33 +127,33 @@ class CharacterViewModel @Inject constructor(
         ManualData("만든 동화를 친구들에게도 공유할 수 있다는 것도 잊지 마세요!", ManualTarget.IMAGE),
     )
 
+    val manualDummy = CharacterData(
+        id = -1,
+        name = "장신남",
+        gender = Gender.FEMALE,
+        age = 11,
+        image = ImageType.Resource(R.drawable.img_character_5),
+        personality = "용감하고 호기심이 많은 성격으로, 친구를 돕는 데 힘을 쏟습니다.",
+        birth = "2025-11-13",
+        isFavorite = true,
+        stories = StoriesData(
+            storyId = -1,
+            title = "장신남과 노란 새의 모험",
+            imageUrl = ImageType.Resource(R.drawable.img_dummy_page),
+            videoStatus = VideoStatus.NONE,
+            videoUrl = null ,
+            imageYLink = "",
+            videoYLink= null
+        )
+    )
+
     fun startManual() {
         _manualStep.value = 0
         manualManager.update(manuals[0].message)
 
-        val dummy = CharacterData(
-            id = -1,
-            name = "장신남",
-            gender = Gender.FEMALE,
-            age = 11,
-            image = ImageType.Resource(R.drawable.img_character_5),
-            personality = "용감하고 호기심이 많은 성격으로, 친구를 돕는 데 힘을 쏟습니다.",
-            birth = "2025-11-13",
-            isFavorite = false,
-            stories = StoriesData(
-                storyId = -1,
-                title = "장신남과 노란 새의 모험",
-                imageUrl = ImageType.Resource(R.drawable.img_dummy_page),
-                videoStatus = VideoStatus.NONE,
-                videoUrl = null ,
-                imageYLink = "https://www.youtube.com/shorts/w5M0pxr-u-k",
-                videoYLink= null
-            )
-        )
-
         // 스크린에서 매뉴얼 UI로 전환
         _uiState.value = CharacterUiState.Success(
-            characterData = dummy
+            characterData = manualDummy
         )
     }
 

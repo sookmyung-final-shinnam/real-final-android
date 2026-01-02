@@ -51,7 +51,7 @@ fun DashboardScreen(
     onLogoClick: () -> Unit,
     goToCharacter: (Long) -> Unit,
     goToCreation: () -> Unit,
-    goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 16.dp,
     greenColor: Color = colorResource(R.color.deep_green),
@@ -79,7 +79,7 @@ fun DashboardScreen(
 
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
-    val onStopManual: () -> Unit = { vm.clearManual(); onLogoClick() }
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var tHelpRect by remember { mutableStateOf<Rect?>(null) }   // 테마 도움말 위치
     var bHelpRect by remember { mutableStateOf<Rect?>(null) }   // 배경 도움말 위치
     var sHelpRect by remember { mutableStateOf<Rect?>(null) }   // 동화 도움말 위치
@@ -105,22 +105,30 @@ fun DashboardScreen(
     }
 
     LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) {
-            vm.finishManual()
-            goToNextManual()
-        }
+        if (manualStep == vm.manuals.size) { onStopManual() }
     }
 
-    // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        onBack() // 나머지
+    }
 
     // 대시보드 ui
-    Box {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorResource(R.color.background_yellow))
+    ) {
         // 로고 + 백버튼 ui
         Column (
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(20f)
+                .zIndex(if (isManual) 0f else 20f)
                 .alpha(logoAlpha)
         ) {
             Column {
@@ -158,9 +166,7 @@ fun DashboardScreen(
         }
 
         Column (
-            modifier = Modifier
-                .fillMaxSize()
-                .background(colorResource(R.color.background_yellow)),
+            modifier = Modifier.fillMaxSize(),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -188,18 +194,6 @@ fun DashboardScreen(
                         modifier = Modifier
                             // 매뉴얼일 때 스크롤 제한
                             .verticalScroll(scrollState, enabled = !isManual)
-                            .then(
-                                // 매뉴얼일 때만 터치 가로채기
-                                when (manualState) {
-                                    ManualState.START -> Modifier.pointerInput(Unit) {
-                                        detectTapGestures { vm.nextManual() }
-                                    }
-                                    ManualState.STOP -> Modifier.pointerInput(Unit) {
-                                        detectTapGestures { onStopManual() }
-                                    }
-                                    else -> Modifier
-                                }
-                            )
                     ) {
                         // 섹션 0: 대시보드 상단
                         Box(
@@ -211,25 +205,6 @@ fun DashboardScreen(
                                     else Modifier
                                 ),
                         ) {
-                            // 매뉴얼일 때
-                            if (isManual) {
-                                Text(
-                                    text = "그만 들을래요.",
-                                    color = colorResource(R.color.main_orange),
-                                    modifier = Modifier
-                                        .align(Alignment.TopEnd)
-                                        .padding(30.dp)
-                                        .clickable {
-                                            when (manualState) {
-                                                ManualState.START -> vm.stopManual()
-                                                ManualState.STOP -> vm.clearManual()
-                                                else -> {}
-                                            }
-                                        }
-                                        .zIndex(11f)
-                                )
-                            }
-
                             UserInfo(
                                 modifier = Modifier
                                     .padding(
@@ -272,8 +247,9 @@ fun DashboardScreen(
                                         listStats = state.themeList,
                                         onHelpRect = {
                                             if (manualState == ManualState.START && tHelpRect == null) {
-                                                tHelpRect = it }},
-                                        modifier = Modifier.weight(1f)
+                                                tHelpRect = it } },
+                                        modifier = Modifier
+                                            .weight(1f)
                                     )
 
                                     // 오른쪽 배경
@@ -360,6 +336,8 @@ fun DashboardScreen(
 
                                 DashboardStoryCard(
                                     story = state.storyAnalysis[state.storyIndex],
+                                    total = state.storyAnalysis.size,
+                                    index = state.storyIndex +1,
                                     onStoryClick = { storyId ->
                                         goToCharacter(storyId)
                                     },
@@ -396,42 +374,80 @@ fun DashboardScreen(
         }
     }
 
-    // 다시 그릴 매뉴얼 강조 요소
-    if (isManual && manualStep == 4) {
-        tHelpRect?.let { rect ->
-            DashboardHelpButton(
-                onPress = {  },
+    // 매뉴얼 창 > 터치 가로챔
+    if (isManual) {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .then(
+                    when (manualState) {
+                        ManualState.START -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { vm.nextManual() }
+                        }
+                        ManualState.STOP -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { onStopManual() }
+                        }
+                        else -> Modifier.pointerInput(Unit) {
+                        }
+                    }
+                )
+                .zIndex(10f)
+        ) {
+            // 매뉴얼일 때
+            Text(
+                text = "그만 들을래요.",
+                color = colorResource(R.color.main_orange),
                 modifier = Modifier
-                    .absoluteOffset(
-                        x = with(density) { rect.left.toDp() },
-                        y = with(density) { (rect.top + logoHeight).toDp()}
-                    )
-                    .zIndex(2f)
+                    .align(Alignment.TopEnd)
+                    .padding(30.dp)
+                    .clickable {
+                        when (manualState) {
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
+                            else -> {}
+                        }
+                    }
+                    .zIndex(11f)
             )
-        }
 
-        bHelpRect?.let { rect ->
-            DashboardHelpButton(
-                onPress = {  },
-                modifier = Modifier
-                    .absoluteOffset(
-                        x = with(density) { rect.left.toDp() },
-                        y = with(density) { (rect.top + logoHeight).toDp()}
+            // 다시 그릴 매뉴얼 강조 요소
+            if (manualStep == 4) {
+                tHelpRect?.let { rect ->
+                    DashboardHelpButton(
+                        onPress = { },
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { (rect.top + logoHeight).toDp()}
+                            )
+                            .zIndex(2f)
                     )
-                    .zIndex(2f)
-            )
-        }
+                }
 
-        sHelpRect?.let { rect ->
-            DashboardHelpButton(
-                onPress = {  },
-                modifier = Modifier
-                    .absoluteOffset(
-                        x = with(density) { rect.left.toDp() },
-                        y = with(density) { (rect.top + logoHeight).toDp()}
+                bHelpRect?.let { rect ->
+                    DashboardHelpButton(
+                        onPress = { },
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { (rect.top + logoHeight).toDp()}
+                            )
+                            .zIndex(2f)
                     )
-                    .zIndex(2f)
-            )
+                }
+
+                sHelpRect?.let { rect ->
+                    DashboardHelpButton(
+                        onPress = { },
+                        modifier = Modifier
+                            .absoluteOffset(
+                                x = with(density) { rect.left.toDp() },
+                                y = with(density) { (rect.top + logoHeight).toDp()}
+                            )
+                            .zIndex(2f)
+                    )
+                }
+            }
         }
     }
 }

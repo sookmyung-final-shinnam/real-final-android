@@ -65,6 +65,7 @@ fun AttendanceScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     goToNextManual: () -> Unit,
+    onManualStop: () -> Unit,
     spacerPadding: Dp = 10.dp,
     horizontalPadding: Dp = 16.dp,
     vm: AttendanceViewModel = hiltViewModel()
@@ -84,6 +85,8 @@ fun AttendanceScreen(
     var isExchangeable by remember { mutableStateOf(false) }
 
     // 매뉴얼 > 강조할 좌표
+    val isManual = manualState != ManualState.NONE
+    val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
     var pigRect by remember { mutableStateOf<Rect?>(null) } // 돼지 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
     var itemRect by remember { mutableStateOf<Rect?>(null) } // 메세지 박스
@@ -122,8 +125,15 @@ fun AttendanceScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { onBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        onBack()
+    }
 
     Scaffold(
         containerColor = colorResource(id = R.color.background_yellow),
@@ -316,7 +326,7 @@ fun AttendanceScreen(
         )
     }
 
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -329,7 +339,7 @@ fun AttendanceScreen(
                         }
 
                         ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.clearManual() }
+                            detectTapGestures { onStopManual() }
                         }
 
                         else -> Modifier
@@ -344,8 +354,8 @@ fun AttendanceScreen(
                     .padding(30.dp)
                     .clickable {
                         when (manualState) {
-                            ManualState.START -> vm.stopManual()
-                            ManualState.STOP -> vm.clearManual()
+                            ManualState.START -> { vm.stopManual() }
+                            ManualState.STOP -> { onStopManual() }
                             else -> {}
                         }
                     }
@@ -397,8 +407,14 @@ fun AttendanceScreen(
                                 attendances = vm.manualAttendances,
                                 yearMonth =YearMonth.from(vm.today),
                                 lastExchangeDate = vm.manualDate,
-                                onPrevMonth = { vm.nextManual() },
-                                onNextMonth = { vm.nextManual() },
+                                onPrevMonth = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                },
+                                onNextMonth = { },
                                 isManual = true,
                                 modifier = Modifier.fillMaxSize()
                             )
@@ -425,8 +441,14 @@ fun AttendanceScreen(
                                 attendances = vm.manualAttendances,
                                 yearMonth =YearMonth.from(vm.today),
                                 lastExchangeDate = vm.manualDate,
-                                onPrevMonth = { vm.nextManual() },
-                                onNextMonth = { vm.nextManual() },
+                                onPrevMonth = {
+                                    when (manualState) {
+                                        ManualState.START -> { vm.nextManual() }
+                                        ManualState.STOP -> { onStopManual() }
+                                        else -> {}
+                                    }
+                                },
+                                onNextMonth = { },
                                 isManual = true,
                                 modifier = Modifier.fillMaxSize()
                             )

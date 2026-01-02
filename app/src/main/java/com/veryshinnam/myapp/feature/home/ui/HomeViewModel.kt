@@ -2,9 +2,7 @@ package com.veryshinnam.myapp.feature.home.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.veryshinnam.myapp.common.model.ManualData
 import com.veryshinnam.myapp.common.model.ManualState
-import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.core.session.SessionManager
@@ -64,20 +62,18 @@ class HomeViewModel @Inject constructor(
     // --- ui 이벤트 관련 ---
     // 신규 유저 확인
     private fun checkNewUser() {
-//        viewModelScope.launch {
-//            val newUser = sessionManager.isNewUser()
-//            _isNewUser.value = newUser
-//        }
-        _isNewUser.value = true
+        viewModelScope.launch {
+            val newUser = sessionManager.isNewUser()
+            _isNewUser.value = newUser
+        }
     }
 
     // 신규 유저 업데이트
     fun updateNewUser() {
-//        viewModelScope.launch {
-//            sessionManager.removeNewUser()
-//            _isNewUser.value = false
-//        }
+        viewModelScope.launch {
+            sessionManager.removeNewUser()
             _isNewUser.value = false
+        }
     }
 
     fun checkAdminStatus() {
@@ -175,23 +171,25 @@ class HomeViewModel @Inject constructor(
     // 시작 문구
     val firstManuals = listOf(
         "반가워요 {username}!\n스토릭터에 온 걸 환영해요.",
-        "여기 캐릭터 생성 버튼에서 직접 동화의 내용을 하나씩 만들어가며 나만의 동화와 캐릭터를 만들 수 있어요!",
-        "대시보드에선 동화를 만들며 발견되었던 {username}만의 특징을 확인할 수 있고",
-        "출석 체크를 통해 스토릭터를 사용하며 다양한 도움이 되는 포인트를 얻을 수 있어요."
+        "여기서 캐릭터를 만들고,\n동화 이야기를 하나씩 만들어갈 수 있어요!",
+        "여기는 보관함이에요!\n만든 캐릭터와 동화가 여기 모여 있어요!",
+        "대시보드에서는 동화를 만들며 알게 된 {username}만의 특징을 볼 수 있어요!",
+        "출석 체크를 하면 스토릭터를 사용하는 데 도움이 되는 포인트를 받을 수 있어요!"
     )
 
     // 마지막 문구
     val lastManuals = listOf(
     "스토릭터에 대한 설명은 홈 화면의 환경설정에서 다시 볼 수 있어요.",
-    "혹시 놓친 설명이 있어도 언제든 다시 확인할 수 있어요.",
+    "혹시 놓친 설명이 있어도 홈 화면의 설정에서 언제든 다시 확인할 수 있어요.",
     "그럼 이제 스토릭터를 자유롭게 즐겨보세요!"
     )
 
     fun requestManual() = manualManager.request()
 
-    fun startManual() {
+    fun startManual() = manualManager.start()
+
+    fun loadManual() {
         _manualStep.value = 0
-        manualManager.start()
         manualManager.update(firstManuals[0])
     }
 

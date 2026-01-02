@@ -13,10 +13,10 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.veryshinnam.myapp.common.theme.MyTheme
-import com.veryshinnam.myapp.core.navigation.grapghs.NavGraphs
-import com.veryshinnam.myapp.core.navigation.grapghs.creationNavGraph
-import com.veryshinnam.myapp.core.navigation.grapghs.mainNavGraph
-import com.veryshinnam.myapp.core.navigation.grapghs.permitNavGraph
+import com.veryshinnam.myapp.core.navigation.graphs.NavGraphs
+import com.veryshinnam.myapp.core.navigation.graphs.creationNavGraph
+import com.veryshinnam.myapp.core.navigation.graphs.mainNavGraph
+import com.veryshinnam.myapp.core.navigation.graphs.permitNavGraph
 import com.veryshinnam.myapp.core.orientation.OrientationManager
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager

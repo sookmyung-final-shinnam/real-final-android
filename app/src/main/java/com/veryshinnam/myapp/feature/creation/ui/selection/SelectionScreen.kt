@@ -10,14 +10,12 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
@@ -69,7 +67,6 @@ import com.veryshinnam.myapp.feature.creation.content.selection.SelectionGenderC
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionNameContent
 import com.veryshinnam.myapp.feature.creation.content.selection.SelectionThemeContent
 
-
 // 캐릭터 생성 > 선택 진입점
 @Composable
 fun SelectionScreen(
@@ -90,13 +87,21 @@ fun SelectionScreen(
     var confirmText by remember { mutableStateOf("") }
     var confirmAction by remember { mutableStateOf<() -> Unit>({}) }
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
-    var SimpleWarningText by remember { mutableStateOf("") }
+    var simpleWarningText by remember { mutableStateOf("") }
+
+    val onWarning: () -> Unit = {
+        warningText = "홈으로 돌아갈까요?\n지금까지 선택한 내역은 저장되지 않아요!"
+        confirmText = "홈으로"
+        confirmAction = { onHome() }
+        isWarning = true
+    }
 
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
+    val isManual = manualState != ManualState.NONE
     val onStopManual: () -> Unit = { vm.clearManual(); onHome() }
     var squirrelRect by remember { mutableStateOf<Rect?>(null) } // 다람쥐 이미지
     var messageRect by remember { mutableStateOf<Rect?>(null) }  // 메세지 박스
@@ -110,10 +115,7 @@ fun SelectionScreen(
             isInputMode = false // 입력모드 해제
         } else {
             if (uiState.selectionStep == SelectionStep.THEME) {
-                warningText = "홈으로 돌아갈까요?\n지금까지 선택한 내역은 저장되지 않아요!"
-                confirmText = "홈으로"
-                confirmAction = { onHome() }
-                isWarning = true
+                onWarning()
             } else {
                 vm.goToPrevStep()
             }
@@ -124,7 +126,7 @@ fun SelectionScreen(
     fun getInfoText(step: SelectionStep, isInputMode: Boolean): String {
         return if (isInputMode) {
             when (step) {
-                SelectionStep.THEME -> "원하는 주제를 입력해 주세요!"
+                SelectionStep.THEME -> "원하는 주제를 입력해 주세요!\n"
                 SelectionStep.BACKGROUND -> "원하는 배경을 입력해 주세요!"
                 else -> ""
             }
@@ -184,8 +186,15 @@ fun SelectionScreen(
         }
     }
 
-    // 뒤로 가기
-    BackHandler { handleBack() }
+    // -- 백핸들러 설정
+    BackHandler {
+        // 매뉴얼: 뒤로가기 차단
+        if (isManual) {
+            return@BackHandler
+        }
+
+        handleBack() // 그 외
+    }
 
     // ui 화면
     Scaffold(
@@ -195,7 +204,7 @@ fun SelectionScreen(
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
                 LogoBar(onLogoClick = {
-                    handleBack()
+                    if (!isManual) { onWarning() } // 경고창
                 })
             }
         },
@@ -212,9 +221,7 @@ fun SelectionScreen(
         ) {
             // 뒤로 가기 버튼
             BackButton(
-                onBackClick = {
-                    handleBack()
-                },
+                onBackClick = { handleBack() },
                 modifier = Modifier.align(Alignment.TopStart)
             )
 
@@ -272,7 +279,7 @@ fun SelectionScreen(
                             onThemeSelect = { vm.selectTheme(it) },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             onFirstBRect = { rect ->
@@ -303,7 +310,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -319,7 +326,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -336,7 +343,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -352,7 +359,7 @@ fun SelectionScreen(
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
                             modifier = Modifier.fillMaxWidth()
@@ -371,10 +378,10 @@ fun SelectionScreen(
                             onSelectHairStyle = { vm.selectHairStyle(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onSimpleWarning = { text ->  // 경고 문구
-                                SimpleWarningText = text
+                                simpleWarningText = text
                                 isSimpleWarning = true
                             },
-                            onWarning = {  wText, cText -> // 테마에서 뒤로가기, 이야기 시작 직전
+                            onWarning = {  wText, cText -> // 이야기 시작 직전
                                 warningText = wText
                                 confirmText = cText
                                 confirmAction = { onFinish(uiState.selectionData) }
@@ -404,13 +411,13 @@ fun SelectionScreen(
 
     if (isSimpleWarning) {
         WarningSheet(
-            warningText = SimpleWarningText,
+            warningText = simpleWarningText,
             onDismiss = { isSimpleWarning = false}
         )
     }
 
     // 매뉴얼 진행
-    if (manualState != ManualState.NONE) {
+    if (isManual) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
@@ -456,7 +463,8 @@ fun SelectionScreen(
             messageRect?.let { rect ->
                 TargetMessage(
                     rect = rect,
-                    message = manualMessage,
+                    message = if (manualState == ManualState.START) manualMessage
+                        else "사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!",
                     messageStyle = MaterialTheme.typography.titleSmall,
                     messagePadding = 16.dp
                 )
@@ -464,10 +472,9 @@ fun SelectionScreen(
 
             if (manualState == ManualState.START) {
                 when (manualStep) {
-                    0 -> {}
                     1 -> progressRect?.let { TargetProgressBar(it, 6) }
-                    2 -> firstBRect?.let { TargetButton(it) }
-                    3 -> customBRect?.let { TargetCustom(it) }
+                    2 -> firstBRect?.let { TargetButton(it, onButtonClick = {vm.nextManual()}) }
+                    3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
                 }
             }
 

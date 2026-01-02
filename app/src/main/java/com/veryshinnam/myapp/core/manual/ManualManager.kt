@@ -17,7 +17,7 @@ class ManualManager @Inject constructor() {
 
     fun request() {
         _state.value = ManualState.REQUEST
-        _message.value = "스토릭터에 처음 오신 것 같은데, 스토릭터를 사용하는 방법을 들을래요?"
+        _message.value = "스토릭터에 처음 오셨네요!\n사용하는 방법을 같이 알아볼까요?"
     }
 
     fun start() {
@@ -35,7 +35,7 @@ class ManualManager @Inject constructor() {
 
     fun stop() {
         _state.value = ManualState.STOP
-        _message.value = "그래요!\n스토릭터 사용법은 홈 화면의 환경설정에서 언제든 다시 볼 수 있어요."
+        _message.value = "알았어요!\n사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!"
     }
 
     fun clear() {

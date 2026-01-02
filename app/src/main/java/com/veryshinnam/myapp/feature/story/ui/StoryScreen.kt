@@ -35,7 +35,6 @@ fun StoryScreen(
     storyId: Long,        // 동화 아이디
     storyType: StoryType, // 동화 타입
     onBack: () -> Unit,
-    onHome: () -> Unit,
     onLogoClick: () -> Unit,
     vm: StoryViewModel = hiltViewModel()
 ) {
@@ -114,7 +113,7 @@ fun StoryScreen(
                         isTtsMode = state.isTtsMode,
                         isReady = isTtsReady,
                         onTtsModeChange = { vm.changeTtsMode() },
-                        onHome = onHome,
+                        onHome = onLogoClick,
                         onPrologue = { vm.goToPrologue() },
                         onSpeakPage = { vm.speakPage(it) },
                         onStopSpeaking = { vm.stopSpeaking() }
