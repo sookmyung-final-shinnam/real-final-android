@@ -10,6 +10,7 @@ import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -203,6 +204,7 @@ fun ConversationScreen(
         }
     }
 
+    // screen ui
     Box(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow))
@@ -257,7 +259,11 @@ fun ConversationScreen(
 
             // 2. content 별 화면
             Column(
-                modifier = Modifier.weight(1f) // 1, 3 제외 나머지 공간 차지
+                modifier = Modifier
+                    .weight(1f) // 1, 3 제외 나머지 공간 차지
+                    .fillMaxSize(),
+                verticalArrangement = Arrangement.Center,
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 when (val state = uiState) {
                     // 조회 로딩 중
@@ -284,9 +290,7 @@ fun ConversationScreen(
                         }
 
                         Column {
-                            Box(
-                                modifier = Modifier.fillMaxWidth()
-                            ) {
+                            Box(modifier = Modifier.fillMaxWidth()) {
                                 // 진행바 (START, END는 공간만 차지)
                                 StepProgressBar(
                                     radius = 0.068f,
