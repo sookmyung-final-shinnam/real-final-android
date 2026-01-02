@@ -75,7 +75,7 @@ fun SettingsScreen(
     onBack: () -> Unit,
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
-    verticalPadding: Dp = 20.dp,
+    verticalPadding: Dp = 24.dp,
     footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
     vm: SettingsViewModel = hiltViewModel()
 ) {
@@ -139,7 +139,7 @@ fun SettingsScreen(
             Card(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .fillMaxHeight(0.52f)
+                    .fillMaxHeight(0.62f)
                     .padding(horizontalPadding),
                 colors = CardDefaults.cardColors(
                     containerColor = Color.White
@@ -188,12 +188,12 @@ fun SettingsScreen(
                         text = "회원 탈퇴"
                     )
 
-                    // 앱 사용 매뉴얼 버튼
-//                    CircleButton(
-//                        modifier = Modifier.fillMaxWidth(),
-//                        onClick = {},
-//                        text = "사용 설명 다시 보기"
-//                    )
+//                     앱 사용 매뉴얼 버튼
+                    CircleButton(
+                        modifier = Modifier.fillMaxWidth(),
+                        onClick = {},
+                        text = "사용 설명 다시 보기"
+                    )
 
                     // 문의하기
                     CircleButton(

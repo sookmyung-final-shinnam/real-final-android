@@ -89,6 +89,13 @@ fun SelectionScreen(
     var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
     var simpleWarningText by remember { mutableStateOf("") }
 
+    val onWarning: () -> Unit = {
+        warningText = "홈으로 돌아갈까요?\n지금까지 선택한 내역은 저장되지 않아요!"
+        confirmText = "홈으로"
+        confirmAction = { onHome() }
+        isWarning = true
+    }
+
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
@@ -108,10 +115,7 @@ fun SelectionScreen(
             isInputMode = false // 입력모드 해제
         } else {
             if (uiState.selectionStep == SelectionStep.THEME) {
-                warningText = "홈으로 돌아갈까요?\n지금까지 선택한 내역은 저장되지 않아요!"
-                confirmText = "홈으로"
-                confirmAction = { onHome() }
-                isWarning = true
+                onWarning()
             } else {
                 vm.goToPrevStep()
             }
@@ -189,12 +193,7 @@ fun SelectionScreen(
             return@BackHandler
         }
 
-        // 경고창: 뒤로가기 차단
-        if (isWarning) {
-            return@BackHandler
-        }
-
-        handleBack()
+        handleBack() // 그 외
     }
 
     // ui 화면
@@ -205,7 +204,7 @@ fun SelectionScreen(
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
                 LogoBar(onLogoClick = {
-                    if (!isManual) isWarning = true // 경고창
+                    if (!isManual) { onWarning() } // 경고창
                 })
             }
         },
@@ -222,9 +221,7 @@ fun SelectionScreen(
         ) {
             // 뒤로 가기 버튼
             BackButton(
-                onBackClick = {
-                    handleBack()
-                },
+                onBackClick = { handleBack() },
                 modifier = Modifier.align(Alignment.TopStart)
             )
 
@@ -384,7 +381,7 @@ fun SelectionScreen(
                                 simpleWarningText = text
                                 isSimpleWarning = true
                             },
-                            onWarning = {  wText, cText -> // 테마에서 뒤로가기, 이야기 시작 직전
+                            onWarning = {  wText, cText -> // 이야기 시작 직전
                                 warningText = wText
                                 confirmText = cText
                                 confirmAction = { onFinish(uiState.selectionData) }

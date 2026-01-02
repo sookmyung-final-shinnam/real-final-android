@@ -160,11 +160,6 @@ fun ConversationScreen(
             return@BackHandler
         }
 
-        // 경고창: 뒤로가기 차단
-        if (isWarning) {
-            return@BackHandler
-        }
-
         // 대화 단계별 뒤로가기 처리
         when (uiState) {
             is ConversationUiState.Success -> {
