@@ -189,9 +189,10 @@ class HomeViewModel @Inject constructor(
 
     fun requestManual() = manualManager.request()
 
-    fun startManual() {
+    fun startManual() = manualManager.start()
+
+    fun loadManual() {
         _manualStep.value = 0
-        manualManager.start()
         manualManager.update(firstManuals[0])
     }
 

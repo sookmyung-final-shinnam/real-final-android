@@ -116,6 +116,12 @@ fun HomeScreen(
         vm.changeMessage() // 랜덤 메시지도 갱신
     }
 
+    LaunchedEffect(manualState) {
+        if (manualState == ManualState.START) {
+            vm.loadManual()
+        }
+    }
+
     LaunchedEffect(manualStep) {
         if (manualStep == vm.firstManuals.size) {
             onCreationClick()

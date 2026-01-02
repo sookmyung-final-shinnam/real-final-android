@@ -5,6 +5,7 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.WarningConfirmState
 import com.veryshinnam.myapp.common.model.WarningState
+import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.settings.data.repository.UserRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,7 +19,8 @@ import javax.inject.Inject
 @HiltViewModel
 class SettingsViewModel @Inject constructor(
     private val repository: UserRepository,
-    private val sessionManager: SessionManager
+    private val sessionManager: SessionManager,
+    private val manualManager: ManualManager
 ) : ViewModel() {
 
     // 화면 전체 ui 상태
@@ -32,6 +34,9 @@ class SettingsViewModel @Inject constructor(
     // 단순 경고창 상태
     private val _warningState = MutableStateFlow(WarningState())
     val warningState = _warningState.asStateFlow()
+
+    // ManualManager 구독
+    val manualState = manualManager.state
 
     // --- ui 이벤트 관련 ---
     // 확인 버튼이 있는 경고창 열기
@@ -101,4 +106,7 @@ class SettingsViewModel @Inject constructor(
             }
         }
     }
+
+    // 매뉴얼 on
+    fun startManual() = manualManager.start()
 }

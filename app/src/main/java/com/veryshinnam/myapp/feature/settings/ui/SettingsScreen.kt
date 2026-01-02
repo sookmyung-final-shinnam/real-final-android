@@ -72,7 +72,7 @@ import kotlinx.coroutines.delay
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SettingsScreen(
-    onBack: () -> Unit,
+    onBack: () -> Unit, // 뒤로, 홈으로
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
     verticalPadding: Dp = 24.dp,
@@ -191,7 +191,10 @@ fun SettingsScreen(
 //                     앱 사용 매뉴얼 버튼
                     CircleButton(
                         modifier = Modifier.fillMaxWidth(),
-                        onClick = {},
+                        onClick = {
+                            vm.startManual()
+                            onBack()
+                        },
                         text = "사용 설명 다시 보기"
                     )
 
