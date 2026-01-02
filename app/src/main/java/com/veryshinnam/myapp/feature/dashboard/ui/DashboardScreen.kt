@@ -336,6 +336,8 @@ fun DashboardScreen(
 
                                 DashboardStoryCard(
                                     story = state.storyAnalysis[state.storyIndex],
+                                    total = state.storyAnalysis.size,
+                                    index = state.storyIndex +1,
                                     onStoryClick = { storyId ->
                                         goToCharacter(storyId)
                                     },
