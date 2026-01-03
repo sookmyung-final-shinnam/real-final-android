@@ -38,6 +38,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.alpha
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
@@ -58,7 +59,9 @@ import com.veryshinnam.myapp.common.component.CircleButton
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
+import com.veryshinnam.myapp.core.session.ReviewToken
 import kotlinx.coroutines.delay
+import org.threeten.bp.LocalDateTime
 
 /**
  * 설정 화면
@@ -89,6 +92,11 @@ fun SettingsScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val confirmWarningState by vm.confirmWarningState.collectAsStateWithLifecycle()
     val warningState by vm.warningState.collectAsStateWithLifecycle()
+
+    val isEnabled =
+        LocalDateTime.now().isAfter(
+            LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
+        )
 
     // 세로 모드 고정
     SideEffect {
@@ -155,7 +163,10 @@ fun SettingsScreen(
                 ) {
                     // 로그아웃 버튼
                     CircleButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isEnabled,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(if (isEnabled) 1f else 0f),
                         onClick =  {
                             vm.showConfirmWarning(
                                 warningText = "정말 로그아웃 하시겠어요?",
@@ -171,7 +182,10 @@ fun SettingsScreen(
 
                     // 회원 탈퇴 버튼
                     CircleButton(
-                        modifier = Modifier.fillMaxWidth(),
+                        enabled = isEnabled,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .alpha(if (isEnabled) 1f else 0f),
                         onClick =  {
                             vm.showConfirmWarning(
                                 warningText =

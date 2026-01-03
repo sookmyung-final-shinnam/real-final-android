@@ -76,10 +76,15 @@ fun SplashScreen(
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT, // 원본 비율 유지
             onVideoEnd = {
                 // 상태가 결정된 후 이동
-                if (state is PermitUiState.Success) {
-                    onHome()
-                } else if (state is PermitUiState.Error) {
-                    onLogin()
+                when (state) {
+                    is PermitUiState.Success,
+                    is PermitUiState.Loading -> {
+                        onHome()
+                    }
+                    is PermitUiState.Error -> {
+                        onLogin()
+                    }
+                    else -> {}
                 }
             }
         )
