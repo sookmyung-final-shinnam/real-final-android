@@ -119,7 +119,7 @@ class CharacterViewModel @Inject constructor(
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
         ManualData("만들어진 캐릭터의 사진과 정보를 자세히 볼 수 있어요.", ManualTarget.NONE),
-        ManualData("저희가 만든 장신남은 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
+        ManualData("저희가 만든 짱신남은 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
         ManualData("저기 Tab 버튼을 한번 눌러 보실래요?", ManualTarget.BUTTON),
         ManualData("바로 카드 뒷 장에서 동화를 확인할 수 있고", ManualTarget.NONE),
         ManualData("도토리 1개를 사용하여 잠금을 해제하면", ManualTarget.NONE),
@@ -129,7 +129,7 @@ class CharacterViewModel @Inject constructor(
 
     val manualDummy = CharacterData(
         id = -1,
-        name = "장신남",
+        name = "짱신남",
         gender = Gender.FEMALE,
         age = 11,
         image = ImageType.Resource(R.drawable.img_character_5),
@@ -138,7 +138,7 @@ class CharacterViewModel @Inject constructor(
         isFavorite = true,
         stories = StoriesData(
             storyId = -1,
-            title = "장신남과 노란 새의 모험",
+            title = "짱신남과 요정 스토릭터의 모험",
             imageUrl = ImageType.Resource(R.drawable.img_dummy_page),
             videoStatus = VideoStatus.NONE,
             videoUrl = null ,

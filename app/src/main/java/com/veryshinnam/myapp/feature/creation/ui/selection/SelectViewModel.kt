@@ -188,7 +188,7 @@ class SelectViewModel @Inject constructor(
     val manuals = listOf(
         ManualData("이곳에서 동화와 캐릭터를 만들 수 있어요.", ManualTarget.NONE),
         ManualData("동화의 주제·배경부터 캐릭터의 성별·나이·이름·외형까지 고를 수 있어요!", ManualTarget.PROGRESSBAR),
-        ManualData("저는 스토릭터의 여행 이야기가 떠올라서 모험을 골라볼게요.", ManualTarget.BUTTON),
+        ManualData("함께 떠나는 여정 이야기를 만들어 보고 싶어서 이 주제를 골라볼게요!", ManualTarget.BUTTON),
         ManualData("만약 주제를 직접 선택하고 싶다면 아래 키보드를 눌러 입력해도 돼요!", ManualTarget.CUSTOM),
     )
 
