@@ -78,7 +78,7 @@ fun DashboardStoryCard(
     imageWidth: Float = 0.25f,
     subTitleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     linkTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = orangeColor, fontWeight = SemiBold, textDecoration = Underline),
-    summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    summaryTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = SemiBold),
     modifier: Modifier
 ) {
     // 화면 밀도 정보
@@ -104,21 +104,19 @@ fun DashboardStoryCard(
         또, 아이가 자주 사용하는 단어와 말하는 습관도 함께 볼 수 있어요.
 
         • 정서 분석
-        동화 속 이야기에 담긴 아이의 감정을
-        기쁨, 슬픔, 화남, 두려움, 놀람, 평온
-        여섯 가지로 나누어 살펴볼 수 있어요.
+        동화 속 이야기에 담긴 아이의 감정을 기쁨, 슬픔, 화남, 두려움, 놀람, 평온 여섯 가지로 나누어 살펴볼 수 있어요.
     """.trimIndent()
     val aHelpText = """
-        • 기가 어려웠다면,
+        기가 어려웠다면,
         누가 나오고, 어디에서 이야기가 시작되는지 천천히 떠올려 보세요.
 
-        • 승이 어려웠다면,
+        승이 어려웠다면,
         그다음에 어떤 일이 일어났을지 이야기를 이어서 생각해 보세요.
 
-        • 전이 어려웠다면,
+        전이 어려웠다면,
         문제나 예상하지 못한 사건을 하나 더 추가해 보세요.
 
-        • 결이 어려웠다면,
+        결이 어려웠다면,
         이야기가 어떻게 끝나면 좋을지 차분히 정리해 보세요.
         
         다음 동화를 만들 때, 각 단계의 설명을 떠올리며 질문에 하나씩 답해 보세요!
@@ -132,20 +130,14 @@ fun DashboardStoryCard(
     """.trimIndent()
 
     val eHelpText = """
-        각 정서의 비율은 동화 속에서 사용된 언어 표현을 바탕으로 계산돼요.
-        (모든 정서의 비율을 합하면 100%가 됩니다.)
+        각 정서의 비율은 동화 속에서 사용된 말과 표현을 바탕으로 계산돼요. (총합 100%)
         
-        • 기쁨: 즐거움, 만족, 행복이 느껴지는 표현이에요.
-        
-        • 슬픔: 속상함, 아쉬움, 외로움이 담긴 표현이에요.
-        
-        • 화남: 짜증, 분노, 불만이 드러나는 표현이에요.
-        
-        • 두려움: 걱정, 무서움, 불안이 느껴지는 표현이에요.
-        
-        • 놀람: 예상하지 못한 일에 대한 반응이에요.
-        
-        • 평온: 차분하고 안정된 감정 상태를 나타내는 표현이에요.
+        • 기쁨: 즐겁고 행복한 느낌의 표현
+        • 슬픔: 속상하거나 외로운 느낌의 표현
+        • 화남: 짜증이나 화가 난 표현
+        • 두려움: 걱정되거나 무서운 느낌의 표현
+        • 놀람: 예상하지 못한 일에 대한 반응
+        • 평온: 차분하고 안정된 느낌의 표현
     """.trimIndent()
 
     // ui 변수
@@ -251,7 +243,7 @@ fun DashboardStoryCard(
                     text = story.storyTitle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = summaryTextStyle.copy(fontWeight = Bold, fontSize = summaryTextStyle.fontSize*1.2f),
+                    style = summaryTextStyle.copy(fontWeight = Bold),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(Modifier.height(spacer))
@@ -545,15 +537,16 @@ fun DashboardStoryCard(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(story.summary + "\n\n" + story.createdAt,
-                                                style = summaryTextStyle, textAlign = TextAlign.Center)
+                                                style = subTitleTextStyle.copy(
+                                                    fontWeight = SemiBold
+                                                ), textAlign = TextAlign.Center)
                                         }
 
                                         // 인덱스
-                                        Row {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
                                                 "$index"
-                                                , style = summaryTextStyle.copy(color = borderColor
-                                                )
+                                                , style = summaryTextStyle.copy(color = borderColor)
                                             )
                                             Text(
                                                 " / $total",

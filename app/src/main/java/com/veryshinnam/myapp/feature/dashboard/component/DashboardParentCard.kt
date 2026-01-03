@@ -41,7 +41,7 @@ fun DashboardParentCard(
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 22.dp,
     verticalPadding: Dp = 18.dp,
-    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    adviceTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = SemiBold),
     cardCorner: Dp = 16.dp,
     cardColor: Color = Color.White,
     borderWidth: Dp = 4.dp,

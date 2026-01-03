@@ -98,7 +98,7 @@ fun DashBoardStaticsCard(
         지금까지 동화를 만들면서
         어떤 ${title}의 동화를 자주 선택했는지 알 수 있어요.
         
-        아래로 내리면서 더 자세한 $title 이름을 볼 수 있어요
+        아래로 내리면서 더 자세한 $title 이름을 볼 수 있어요.
     """.trimIndent()
     var helpPressed by remember { mutableStateOf(false) }
 

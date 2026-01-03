@@ -150,6 +150,7 @@ fun UserInfo(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Left,
                     lineBreak = LineBreak.Simple,
+                    lineHeight = cardTextStyle.lineHeight * 1.2f
                 ),
                 softWrap = true
             )
