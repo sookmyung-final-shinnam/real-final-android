@@ -94,6 +94,12 @@ fun DashBoardStaticsCard(
     val listState = rememberLazyListState()
     val listHeight = 180.dp
 
+    val helpText ="""
+        지금까지 동화를 만들면서
+        어떤 ${title}의 동화를 자주 선택했는지 알 수 있어요.
+        
+        아래로 내리면서 더 자세한 $title 이름을 볼 수 있어요
+    """.trimIndent()
     var helpPressed by remember { mutableStateOf(false) }
 
     Column(
@@ -144,8 +150,7 @@ fun DashBoardStaticsCard(
             Box {
                 if (helpPressed) {
                     DashboardHelpText(
-                        text = "지금까지 생성한 동화의 $title 통계 목록입니다.\n\n" +
-                                "스크롤하여 더 자세한 내용을 확인해 보세요!",
+                        text = helpText,
                         modifier = Modifier
                             .wrapContentHeight()
                             .padding(horizontal = spacer)
