@@ -76,7 +76,7 @@ fun LoginErrorContent(
             ) {
                 Text("뒤로 가기",
                     style = MaterialTheme.typography.titleMedium.copy(fontWeight = Bold),
-                    modifier = Modifier.padding(vertical = 20.dp)
+                    modifier = Modifier.padding(vertical = 12.dp)
                 )
             }
         }
