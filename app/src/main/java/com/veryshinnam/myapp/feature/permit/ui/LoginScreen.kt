@@ -1,11 +1,13 @@
 package com.veryshinnam.myapp.feature.permit.ui
 
+import android.content.Context
 import android.content.pm.ActivityInfo
+import android.net.ConnectivityManager
+import android.net.NetworkCapabilities
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -13,7 +15,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -24,6 +25,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -31,6 +33,8 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoTitle
 import com.veryshinnam.myapp.core.orientation.OrientationManager
+import com.veryshinnam.myapp.feature.permit.content.LoginErrorContent
+import com.veryshinnam.myapp.feature.permit.content.LoginKakaoContent
 
 /**
  * 로그인 화면
@@ -46,7 +50,17 @@ fun LoginScreen(
     vm: PermitViewModel = hiltViewModel()
 ) {
     val state by vm.permitUiState.collectAsStateWithLifecycle()
+
+    val context = LocalContext.current
+    fun canAccessNetwork(context: Context): Boolean {
+        val cm = context.getSystemService(Context.CONNECTIVITY_SERVICE) as ConnectivityManager
+        val network = cm.activeNetwork ?: return false
+        val caps = cm.getNetworkCapabilities(network) ?: return false
+        return caps.hasCapability(NetworkCapabilities.NET_CAPABILITY_INTERNET)
+    }
+    var isOffline by remember { mutableStateOf(false) }
     var isKakaoLogin by remember { mutableStateOf(false) } // 카카오 로그인 웹뷰 띄우기
+
 
     // 세로 모드 고정
     SideEffect {
@@ -65,70 +79,91 @@ fun LoginScreen(
         }
     }
 
-    // 카카오 로그인 UI
-    if (isKakaoLogin) { // 로그인 버튼 클릭 시 활성화
-        BackHandler { isKakaoLogin = false } // 뒤로가기
+    // 백핸들러 설정
+    BackHandler {
+        when {
+            isKakaoLogin -> isKakaoLogin = false
+            isOffline -> isOffline = false
+        }
+    }
 
-        LoginKakaoContent(
-            modifier = Modifier.fillMaxSize(),
-            onTempCodeReceived = { tempCode, isNewUser, isAgreedToTerms ->
-                // 신규 유저 + 약관 미동의
-                if (isNewUser || !isAgreedToTerms) {
-                    onSignup(tempCode)
-                } else {
-                    // 약관 동의한 기존 유저
-                    vm.login(tempCode)
-                }
-            }
-        )
-    } else {
-        // 카카오 로그인 진행 이전 UI
-        Column(
-            modifier = Modifier.fillMaxSize()
-                .background(colorResource(R.color.background_yellow)),
-            verticalArrangement = Arrangement.SpaceBetween,
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-
-            Spacer(Modifier.fillMaxHeight(0.15f))
-            // 로고
-            LogoTitle(modifier = Modifier)
-
-
-            // 이미지
-            Spacer(Modifier.fillMaxHeight(0.17f))
-            Box(
-                modifier = Modifier.weight(1f),
-                contentAlignment = Alignment.Center // 중앙 정렬
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.img_login),
-                    contentDescription = "로그인 이미지",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Fit
-                )
-            }
-
-            // 로그인 버튼
-            Box(
+    when {
+        isOffline -> {
+            LoginErrorContent(
                 modifier = Modifier
-                    .fillMaxHeight(0.2f)
-                    .fillMaxWidth(0.8f),
-                contentAlignment = Alignment.Center // 중앙 정렬
-            ) {
-                Image(
-                    painter = painterResource(R.drawable.img_kakao_login),
-                    contentDescription = "카카오 로그인",
-                    modifier = Modifier.fillMaxSize()
-                        .clickable(
-                            indication = null,  // ripple 제거로 충돌 방지
-                            interactionSource = remember { MutableInteractionSource() }
-                        ) { isKakaoLogin = true }, // 로그인 버튼 클릭시 활성화
-                    contentScale = ContentScale.Fit
-                )
-            }
+                    .fillMaxSize()
+                    .background(colorResource(R.color.background_yellow)),
+                onBack = { isOffline = false }
+            )
+        }
 
-            Spacer(Modifier.fillMaxHeight(0.15f))
+        isKakaoLogin -> {
+            LoginKakaoContent(
+                modifier = Modifier.fillMaxSize(),
+                onTempCodeReceived = { tempCode, isNewUser, isAgreedToTerms ->
+                    // 신규 유저 + 약관 미동의
+                    if (isNewUser || !isAgreedToTerms) {
+                        onSignup(tempCode)
+                    } else {
+                        // 약관 동의한 기존 유저
+                        vm.login(tempCode)
+                    }
+                }
+            )
+        }
+
+        else -> {
+            // 카카오 로그인 진행 이전 UI
+            Column(
+                modifier = Modifier.fillMaxSize()
+                    .background(colorResource(R.color.background_yellow)),
+                verticalArrangement = Arrangement.SpaceBetween,
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+
+                Spacer(Modifier.fillMaxHeight(0.15f))
+                // 로고
+                LogoTitle(modifier = Modifier)
+
+
+                // 이미지
+                Spacer(Modifier.fillMaxHeight(0.17f))
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.Center // 중앙 정렬
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.img_login),
+                        contentDescription = "로그인 이미지",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                // 로그인 버튼
+                Box(
+                    modifier = Modifier
+                        .fillMaxHeight(0.2f)
+                        .fillMaxWidth(0.8f),
+                    contentAlignment = Alignment.Center // 중앙 정렬
+                ) {
+                    Image(
+                        painter = painterResource(R.drawable.img_kakao_login),
+                        contentDescription = "카카오 로그인",
+                        modifier = Modifier.fillMaxSize()
+                            .clickable{
+                                if (canAccessNetwork(context)) {
+                                    isKakaoLogin = true
+                                } else {
+                                    isOffline = true
+                                }
+                            }, // 로그인 버튼 클릭시 활성화
+                        contentScale = ContentScale.Fit
+                    )
+                }
+
+                Spacer(Modifier.fillMaxHeight(0.15f))
+            }
         }
     }
 }

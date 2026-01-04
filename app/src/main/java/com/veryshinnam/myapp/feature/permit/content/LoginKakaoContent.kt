@@ -1,4 +1,4 @@
-package com.veryshinnam.myapp.feature.permit.ui
+package com.veryshinnam.myapp.feature.permit.content
 
 import android.net.http.SslError
 import android.view.ViewGroup
@@ -8,11 +8,8 @@ import android.webkit.WebResourceRequest
 import android.webkit.WebSettings
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import android.widget.TextView
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.viewinterop.AndroidView
 import com.veryshinnam.myapp.core.network.BaseUrls
 

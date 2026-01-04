@@ -43,7 +43,11 @@ fun ConversationNeedsText(
     verticalPadding: Dp = 24.dp,
     spacePadding: Dp = 12.dp,
     tryTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold, textAlign = TextAlign.Center),
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = Bold,
+        textAlign = TextAlign.Center,
+        lineHeight = MaterialTheme.typography.titleLarge.lineHeight * 1.2f
+    ),
 ) {
     Box(modifier = modifier) {
         Column(

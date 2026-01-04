@@ -34,7 +34,10 @@ fun ConversationStoryText(
     imageStartPadding: Dp = 20.dp,
     verticalPadding: Dp = 24.dp,
     spacePadding: Dp = 12.dp,
-    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(
+        fontWeight = Bold,
+        lineHeight = MaterialTheme.typography.titleLarge.lineHeight * 1.2f
+    ),
 ) {
     Column(
         modifier = modifier

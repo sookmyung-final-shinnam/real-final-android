@@ -41,7 +41,8 @@ fun ConversationCommonText(
     spacePadding: Dp = 12.dp,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(
         fontWeight = Bold,
-        textAlign = TextAlign.Center
+        textAlign = TextAlign.Center,
+        lineHeight = MaterialTheme.typography.titleLarge.lineHeight * 1.2f
     )
 ) {
     Box(modifier = modifier) {

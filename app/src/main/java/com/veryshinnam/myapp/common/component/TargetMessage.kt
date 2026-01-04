@@ -62,7 +62,7 @@ fun TargetMessage(
     ) {
         Text(
             text = message.replace("", "\u200B" ),
-            style = messageStyle.copy(fontWeight = Bold),
+            style = messageStyle.copy(fontWeight = Bold, lineHeight = messageStyle.lineHeight * 1.2f),
             modifier = Modifier.fillMaxWidth()
         )
     }

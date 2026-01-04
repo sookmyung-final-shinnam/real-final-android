@@ -18,9 +18,11 @@ import com.veryshinnam.myapp.core.navigation.graphs.creationNavGraph
 import com.veryshinnam.myapp.core.navigation.graphs.mainNavGraph
 import com.veryshinnam.myapp.core.navigation.graphs.permitNavGraph
 import com.veryshinnam.myapp.core.orientation.OrientationManager
+import com.veryshinnam.myapp.core.session.ReviewToken
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import dagger.hilt.android.AndroidEntryPoint
+import org.threeten.bp.LocalDateTime
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -54,9 +56,12 @@ class MainActivity : ComponentActivity() {
                 val requireLogin by sessionManager.requireLogin.collectAsStateWithLifecycle()
 
                 LaunchedEffect(requireLogin) {
-                    if (requireLogin) {
+                    val now = LocalDateTime.now()
+                    val reviewExpireAt = LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
+
+                    if (requireLogin && now.isAfter(reviewExpireAt)) {
                         navController.navigate(NavGraphs.PERMIT) {
-                            popUpTo(0) { inclusive = true } // 스택 전체 비우기
+                            popUpTo(0) { inclusive = true }
                         }
                     }
                 }

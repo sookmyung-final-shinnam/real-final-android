@@ -19,6 +19,7 @@ import com.veryshinnam.myapp.R
 @Composable
 fun CircleButton(
     modifier: Modifier = Modifier,
+    enabled: Boolean = true,
     text: String,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     textPadding: Dp = 8.dp,
@@ -26,6 +27,7 @@ fun CircleButton(
 ) {
     Button(
         onClick = onClick,
+        enabled = enabled,
         colors = ButtonDefaults.buttonColors(
             containerColor = colorResource(R.color.main_orange),
             contentColor = Color.White

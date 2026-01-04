@@ -80,6 +80,7 @@ fun DashboardScreen(
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
     val onStopManual: () -> Unit = { vm.clearManual(); onManualStop() }
+    val onFinishManual: () -> Unit = { vm.finishManual(); onManualStop() }
     var tHelpRect by remember { mutableStateOf<Rect?>(null) }   // 테마 도움말 위치
     var bHelpRect by remember { mutableStateOf<Rect?>(null) }   // 배경 도움말 위치
     var sHelpRect by remember { mutableStateOf<Rect?>(null) }   // 동화 도움말 위치
@@ -105,7 +106,7 @@ fun DashboardScreen(
     }
 
     LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) { onStopManual() }
+        if (manualStep == vm.manuals.size) { onFinishManual() }
     }
 
     // -- 백핸들러 설정

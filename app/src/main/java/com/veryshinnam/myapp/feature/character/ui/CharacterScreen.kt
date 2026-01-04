@@ -394,7 +394,7 @@ fun CharacterScreen(
                         )
                         .padding(16.dp)
                         .zIndex(50f),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         text = manualMessage.replace("", "\u200B"),

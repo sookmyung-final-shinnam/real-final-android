@@ -2,12 +2,17 @@ package com.veryshinnam.myapp.feature.permit.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.veryshinnam.myapp.core.session.ReviewToken
+import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_ACCESS_TOKEN
+import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_EXPIRE_AT
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
+import org.threeten.bp.LocalDateTime
+import org.threeten.bp.format.DateTimeFormatter
 import javax.inject.Inject
 
 @HiltViewModel
@@ -16,6 +21,15 @@ class PermitViewModel @Inject constructor(
     private val sessionManager: SessionManager
 ) : ViewModel() {
 
+    // 심사 기간 확인
+    private fun isReviewPeriod(): Boolean {
+        val expireAt = LocalDateTime.parse(
+            ReviewToken.REVIEW_EXPIRE_AT,
+            DateTimeFormatter.ISO_LOCAL_DATE_TIME
+        )
+        return LocalDateTime.now().isBefore(expireAt)
+    }
+
     private val _permitUiState = MutableStateFlow<PermitUiState>(PermitUiState.Idle)
     val permitUiState: StateFlow<PermitUiState> = _permitUiState
 
@@ -23,6 +37,18 @@ class PermitViewModel @Inject constructor(
     fun checkAccessToken() {
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
+
+            // 심사 기간용
+            if (isReviewPeriod()) {
+                sessionManager.saveToken(
+                    access = REVIEW_ACCESS_TOKEN,
+                    refresh = "",
+                    expired = REVIEW_EXPIRE_AT
+                )
+                _permitUiState.value = PermitUiState.Success
+                return@launch
+            }
+
             try {
                 val token = sessionManager.getToken() // 액세스 토큰 조회
                 val isExpired = sessionManager.isTokenExpired() // 토큰 만료 확인
@@ -51,6 +77,7 @@ class PermitViewModel @Inject constructor(
     fun saveToken(tempCode: String, isNewUser: Boolean) {
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
+
             try {
                 val jwt = repository.login(tempCode) // api 호출
 
