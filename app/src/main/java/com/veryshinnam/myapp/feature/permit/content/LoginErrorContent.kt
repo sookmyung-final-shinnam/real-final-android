@@ -60,7 +60,7 @@ fun LoginErrorContent(
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Text(
-                "앱을 사용하려면\n네트워크 연결이 필요해요!",
+                "인터넷 연결이 필요해요.\n연결 후 다시 시도해주세요.",
                 style = MaterialTheme.typography.titleMedium.copy(fontWeight = Bold),
                 modifier = Modifier.padding(20.dp),
                 textAlign = TextAlign.Center
