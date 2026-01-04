@@ -80,51 +80,56 @@ fun StoryInfoFade(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(start = 16.dp, bottom = 16.dp)
                 .background(colorResource(R.color.main_orange))
         ) {
-            Column(
+            Box(
                 modifier = Modifier
-                    .verticalScroll(scrollState)
-                    .align(Alignment.TopStart)
-                    .padding(top = 60.dp, start = 16.dp, end = 16.dp)
+                    .fillMaxSize()
+                    .padding(start = 16.dp, bottom = 16.dp)
             ) {
-                Text( // 제목
-                    text = story.title,
-                    style = titleTextStyle.copy(
-                        lineHeight = titleTextStyle.lineHeight * 1.2f
-                    )
-                )
-                Spacer(modifier = Modifier.height(spacerPadding))
-                Text( // 태그
-                    text = story.tags,
-                    style = tagTextStyle.copy(
-                        lineHeight = titleTextStyle.lineHeight * 1.1f
-                    )
-                )
-                Spacer(modifier = Modifier.height(spacerPadding * 2))
-                Text( // 줄거리
-                    text = story.description.replace("", "\u200B"),
-                    style = descTextStyle
-                )
-            }
-
-            if (scrollState.canScrollForward) {
-                Box(
+                Column(
                     modifier = Modifier
-                        .clip(RoundedCornerShape(bottomStart  = 16.dp, bottomEnd  = 16.dp))
-                        .fillMaxWidth()
-                        .height(60.dp)
-                        .align(Alignment.BottomCenter)
-                        .background(
-                            Brush.verticalGradient(
-                                listOf(
-                                    Color.Transparent,
-                                    Color.Gray.copy(alpha = 0.4f)
+                        .verticalScroll(scrollState)
+                        .align(Alignment.TopStart)
+                        .padding(top = 60.dp, start = 16.dp, end = 16.dp)
+                ) {
+                    Text( // 제목
+                        text = story.title,
+                        style = titleTextStyle.copy(
+                            lineHeight = titleTextStyle.lineHeight * 1.2f
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(spacerPadding))
+                    Text( // 태그
+                        text = story.tags,
+                        style = tagTextStyle.copy(
+                            lineHeight = titleTextStyle.lineHeight * 1.1f
+                        )
+                    )
+                    Spacer(modifier = Modifier.height(spacerPadding * 2))
+                    Text( // 줄거리
+                        text = story.description.replace("", "\u200B"),
+                        style = descTextStyle
+                    )
+                }
+
+                if (scrollState.canScrollForward) {
+                    Box(
+                        modifier = Modifier
+                            .clip(RoundedCornerShape(bottomStart  = 16.dp, bottomEnd  = 16.dp))
+                            .fillMaxWidth()
+                            .height(60.dp)
+                            .align(Alignment.BottomCenter)
+                            .background(
+                                Brush.verticalGradient(
+                                    listOf(
+                                        Color.Transparent,
+                                        Color.Gray.copy(alpha = 0.4f)
+                                    )
                                 )
                             )
-                        )
-                )
+                    )
+                }
             }
         }
     }
