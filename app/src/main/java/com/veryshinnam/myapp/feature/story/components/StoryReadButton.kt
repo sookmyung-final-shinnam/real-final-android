@@ -40,7 +40,7 @@ fun StoryReadButton(
     modifier: Modifier
 ) {
     Row(
-        modifier = modifier,
+        modifier = modifier.clickable { onButtonClick() },
         verticalAlignment = Alignment.Bottom,
         horizontalArrangement = Arrangement.Center
     ) {
@@ -51,19 +51,16 @@ fun StoryReadButton(
             modifier = Modifier
                 .zIndex(1f)
                 .fillMaxHeight()
-                .clickable(
-                    indication = null, // 클릭 ripple 효과 제거
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { onButtonClick() }
                 .offset(30.dp)
                 .graphicsLayer {
-                    scaleX = -1f }, // 좌우 반전
+                    scaleX = -1f // 좌우 반전
+                },
             contentScale = ContentScale.Fit
         )
 
         // 보러가기 버튼
         Button(
-            onClick =  onButtonClick,
+            onClick = onButtonClick,
             colors = ButtonDefaults.buttonColors(
                 containerColor = colorResource(R.color.blue_sky),
                 contentColor = Color.Black

@@ -39,6 +39,7 @@ fun StoryScreen(
     vm: StoryViewModel = hiltViewModel()
 ) {
     val uiState by vm.storyUiState.collectAsStateWithLifecycle()
+    val isPrologue by vm.isPrologue.collectAsStateWithLifecycle()
     val isTtsReady by vm.isTtsReady.collectAsStateWithLifecycle()
 
     // 가로 모드 고정
@@ -54,7 +55,7 @@ fun StoryScreen(
     }
 
     // 뒤로 가기
-    BackHandler { onBack() }
+    BackHandler { if (isPrologue) onBack() else vm.goToPrologue() }
 
     Box(
         modifier = Modifier.fillMaxSize(),
@@ -76,7 +77,7 @@ fun StoryScreen(
                 .align(Alignment.TopStart)
                 .padding(WindowInsets.statusBars.asPaddingValues())
                 .zIndex(1f),
-            onBackClick = onBack
+            onBackClick = { if (isPrologue) onBack() else vm.goToPrologue() }
         )
 
         when (val state = uiState) {
@@ -99,7 +100,7 @@ fun StoryScreen(
             is StoryUiState.Success -> {
 
                 // 맨 처음 프롤로그 화면
-                if (state.isPrologue) {
+                if (isPrologue) {
                     StoryPrologueContent(
                         story = state.storyData,
                         storyType = storyType,

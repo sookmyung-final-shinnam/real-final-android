@@ -261,7 +261,7 @@ fun CharacterScreen(
                             }
                         },
                         modifier = Modifier
-                            .aspectRatio(2f) // 카드 비율
+                            .aspectRatio(1.78f) // 카드 비율
                             .zIndex(1f)
                     )
                 }

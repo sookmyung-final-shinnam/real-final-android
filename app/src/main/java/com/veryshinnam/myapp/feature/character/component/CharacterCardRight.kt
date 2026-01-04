@@ -43,6 +43,7 @@ fun CharacterCardRight(
     onStoryRect: (Rect) -> Unit,
     onVideoRect: (Rect) -> Unit,
     cardPadding: Dp = 24.dp,
+    textPadding: Dp = 20.dp,
     tabPadding: Dp = 12.dp,
     modifier: Modifier // 부모가 넘겨준 크기
 ) {
@@ -84,7 +85,7 @@ fun CharacterCardRight(
                     CharacterRightFront(
                         modifier = Modifier
                             .fillMaxSize()
-                            .padding(vertical = cardPadding, horizontal = cardPadding / 2),
+                            .padding(vertical = cardPadding, horizontal = textPadding),
                         character = character
                     )
 

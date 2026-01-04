@@ -23,6 +23,10 @@ class StoryViewModel @Inject constructor(
     private val _storyUiState = MutableStateFlow<StoryUiState>(StoryUiState.Loading)
     val storyUiState = _storyUiState.asStateFlow()
 
+    // 동화 진행 단계
+    private val _isPrologue = MutableStateFlow(true)
+    val isPrologue = _isPrologue.asStateFlow()
+
     val isTtsReady = ttsManager.isReady
     val isTtsSpeaking = ttsManager.isSpeaking
 
@@ -34,17 +38,17 @@ class StoryViewModel @Inject constructor(
                 // api 호출
                 val prologue = repository.getPrologue(storyId, storyType)
                 val pages = repository.getPages(storyId, 4, storyType)
-//
+
 //                val prologue = dummyPrologue()
 //                val pages = dummyPages()
 
                     _storyUiState.value = StoryUiState.Success(
                     storyData = prologue,
                     pagesData = pages,
-                    isPrologue = true,
                     isTtsMode = true
                 )
 
+                _isPrologue.value = true // 프롤로그
             } catch (e: Exception) {
                 _storyUiState.value =
                     StoryUiState.Error("동화($storyId) 불러오기 실패: ${e.message}")
@@ -54,19 +58,13 @@ class StoryViewModel @Inject constructor(
 
     // 프롤로그 스크린 이동
     fun goToPrologue() {
-        val current = _storyUiState.value
-        if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isPrologue = true)
-        }
+        _isPrologue.value = true
         stopSpeaking() // tts 재생 중단
     }
 
     // 동화보기 스크린 이동
     fun goToReader() {
-        val current = _storyUiState.value
-        if (current is StoryUiState.Success) {
-            _storyUiState.value = current.copy(isPrologue = false)
-        }
+        _isPrologue.value = false
     }
 
     fun changeTtsMode() {
@@ -101,7 +99,7 @@ class StoryViewModel @Inject constructor(
      StoryData(
             id = 16L,
             title = "사막의 빛과 우정",
-            tags = "모험, 판타지, 숲",
+            tags = "#모험, #판타지, #숲",
             description = "옛날 옛적, 작은 마을에 사는 아이가 신비한 숲으로 모험을 떠나는 이야기입니다.",
             thumbnail = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/16/page_4.png"
         )

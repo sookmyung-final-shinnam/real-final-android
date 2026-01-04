@@ -35,7 +35,7 @@ fun DashboardAttemptRow(
     spacer: Dp = 12.dp,
     horizontalPadding: Dp = 16.dp,
     successColor: Color = colorResource(R.color.main_orange),
-    failColor: Color = Color.LightGray,
+    failColor: Color = colorResource(R.color.light_gray),
     titleTextStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = Bold),
     subTextStyle: TextStyle,
     modifier: Modifier = Modifier

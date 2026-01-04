@@ -32,6 +32,7 @@
     <!-- 앱컬러(대시보드) -->
     <color name="deep_green">#99CB53</color>
     <color name="light_green">#AFD37D</color>
+    <color name="light_gray">#E0E0E0</color>
 
     <color name="chart_1">#FFA93C</color>
     <color name="chart_2">#FFB86A</color>
