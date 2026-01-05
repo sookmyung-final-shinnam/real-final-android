@@ -3,12 +3,10 @@ package com.veryshinnam.myapp.feature.home.ui
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,6 +25,12 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -111,28 +115,30 @@ fun HomeScreen(
 
     // HomeScreen 진입 시 한번만  실행
     LaunchedEffect(Unit) {
-        vm.checkAdminStatus() // 관리자 여부 확인
-        vm.reload()        // 홈 데이터 다시 불러오기
-        vm.changeMessage() // 랜덤 메시지도 갱신
+        vm.checkAdminStatus()   // 관리자 여부 확인
+        vm.reload()             // 홈 데이터 다시 불러오기
+        vm.changeMessage()      // 랜덤 메시지도 갱신
     }
 
+    // 매뉴얼 상태 잡기
     LaunchedEffect(manualState) {
         if (manualState == ManualState.START) {
-            vm.loadManual()
+            vm.loadFirstManual()
         }
     }
 
+    // 다음 매뉴얼로 이동
     LaunchedEffect(manualStep) {
         if (manualStep == vm.firstManuals.size) {
             onCreationClick()
         }
     }
 
+    // -- 관리자 화면 관련
     if (isAdmin == true) {
         AdminStoryScreen(navController = navController)
         return
     }
-
     if (isAdmin == null) {
         // 관리자 여부 로딩 중일 때 로딩 표시
         Box(
@@ -204,10 +210,10 @@ fun HomeScreen(
                                 // 다람쥐 이미지
                                 Image(
                                     painter = painterResource(R.drawable.img_home_squirrel),
-                                    contentDescription = "다람쥐 이미지",
+                                    contentDescription = null, // 장식용 - 대체 텍스트 제거
                                     modifier = Modifier
                                         .fillMaxHeight()
-                                        .align(Alignment.BottomStart)  // start 정렬
+                                        .align(Alignment.BottomStart)
                                         .padding(start = 26.dp)
                                         .onGloballyPositioned {
                                             if ((manualState == ManualState.REQUEST || manualState == ManualState.START || manualState == ManualState.FINISH)
@@ -218,10 +224,10 @@ fun HomeScreen(
                                     contentScale = ContentScale.Fit
                                 )
 
-                                // 나침반 수
+                                // 도토리 수
                                 UserItem(
                                     painter = painterResource(R.drawable.ic_dotory),
-                                    contentDescription = "모은 나침반 수",
+                                    contentDesc = "모은 도토리 수",
                                     value = "$points",
                                     color = colorResource(R.color.main_orange),
                                     modifier = Modifier
@@ -249,50 +255,42 @@ fun HomeScreen(
                                         }
                                     }
                                     .padding(all = messagePadding),
-                                contentAlignment = Alignment.Center
+                                contentAlignment = Alignment.TopStart
                             ) {
-                                Column(verticalArrangement = Arrangement.SpaceEvenly) {
-                                    // 닉네임 + 설정 버튼
-                                    Row(
-                                        modifier = Modifier
-                                            .fillMaxWidth()
-                                            .wrapContentHeight(),
-                                        verticalAlignment = Alignment.Top,
-                                        horizontalArrangement = Arrangement.SpaceBetween
-                                    ) {
+                                    // 닉네임 + 랜덤 메시지
                                         Text(
-                                            text = "반가워요 ${username}!",
+                                            text = "반가워요 ${username}!\n${state.randomMessage}",
                                             style = textStyle
                                         )
-
+                                // 설정 버튼
                                         Row(
                                             verticalAlignment = Alignment.CenterVertically,
                                             modifier = Modifier
                                                 .height(IntrinsicSize.Min)
                                                 .clickable(onClick = onSettingsClick)
+                                                .align(Alignment.TopEnd)
+                                                .semantics(true) {
+                                                    traversalIndex = 0f
+                                                    contentDescription = "설정"      // 자식 묶어서 대체 텍스트 설정
+                                                    role = Role.Button              // 버튼으로 인식
+                                                }
                                         ) {
                                             Text(
                                                 text = "설정",
-                                                style = settingsTextStyle
+                                                style = settingsTextStyle,
+                                                modifier = Modifier.clearAndSetSemantics { } // 대체 텍스트 제거
                                             )
 
                                             Icon(
                                                 imageVector = Icons.Default.Settings,
-                                                contentDescription = "설정 아이콘",
+                                                contentDescription = null,  // 대체 텍스트 제거
                                                 tint = colorResource(id = R.color.main_orange),
                                                 modifier = Modifier
                                                     .padding(start = 2.dp)
                                                     .fillMaxHeight()
                                             )
                                         }
-                                    }
 
-                                    // 랜덤 메시지
-                                    Text(
-                                        text = state.randomMessage,
-                                        style = textStyle
-                                    )
-                                }
                             }
                         }
 
@@ -345,7 +343,7 @@ fun HomeScreen(
                     // 출석체크 버튼
                     Image(
                         painter = painterResource(R.drawable.img_home_check),
-                        contentDescription = "출석체크",
+                        contentDescription = null, // 이미지 설명 제거
                         modifier = Modifier
                             .fillMaxHeight(0.08f)
                             .padding(horizontal = 16.dp)
@@ -355,10 +353,11 @@ fun HomeScreen(
                                     attendanceRect = it.boundsInRoot()
                                 }
                             }
-                            .clickable(
-                                indication = LocalIndication.current,
-                                interactionSource = remember { MutableInteractionSource() }
-                            ) { onAttendanceClick() }
+                            .clickable { onAttendanceClick() }
+                            .semantics {            // 새 대체 텍스트 추가
+                                contentDescription = "출석 체크"
+                                role = Role.Button  // 버튼으로 인식
+                            }
                     )
                 }
             }

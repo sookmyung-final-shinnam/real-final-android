@@ -43,6 +43,7 @@ fun UserInfo(
     itemCount: Int = 0,
     itemImage: Painter? = null,
     itemDescription: String = "",
+    isCollection: Boolean = false,
     animalImage: Painter,
     animalDescription: String,
     bottomPadding: Dp = 10.dp,
@@ -81,7 +82,8 @@ fun UserInfo(
             if (isItem && itemImage != null) {
                 UserItem(
                     painter = itemImage,
-                    contentDescription = itemDescription,
+                    contentDesc = itemDescription,
+                    isCollection = isCollection,
                     value = "$itemCount",
                     color = cardColor,
                     modifier = Modifier
