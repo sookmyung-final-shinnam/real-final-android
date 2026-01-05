@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.dashboard.component
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
@@ -11,8 +10,8 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.Cancel
-import androidx.compose.material.icons.outlined.CheckCircle
+import androidx.compose.material.icons.rounded.Cancel
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -23,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -37,7 +35,7 @@ fun DashboardAttemptRow(
     spacer: Dp = 12.dp,
     horizontalPadding: Dp = 16.dp,
     successColor: Color = colorResource(R.color.main_orange),
-    failColor: Color = Color.LightGray,
+    failColor: Color = colorResource(R.color.light_gray),
     titleTextStyle: TextStyle = MaterialTheme.typography.headlineMedium.copy(fontWeight = Bold),
     subTextStyle: TextStyle,
     modifier: Modifier = Modifier
@@ -78,7 +76,7 @@ fun DashboardAttemptRow(
 
                     // 마지막 횟수는 체크, 나머지 엑스
                     Icon(
-                        imageVector = if (isLast) Icons.Outlined.CheckCircle else Icons.Outlined.Cancel,
+                        imageVector = if (isLast) Icons.Rounded.CheckCircle else Icons.Rounded.Cancel,
                         contentDescription = null,
                         tint = if (isLast) successColor else failColor,
                         modifier = Modifier.fillMaxSize(0.8f)

@@ -261,7 +261,7 @@ fun CharacterScreen(
                             }
                         },
                         modifier = Modifier
-                            .aspectRatio(2f) // 카드 비율
+                            .aspectRatio(1.78f) // 카드 비율
                             .zIndex(1f)
                     )
                 }
@@ -394,7 +394,7 @@ fun CharacterScreen(
                         )
                         .padding(16.dp)
                         .zIndex(50f),
-                    contentAlignment = Alignment.Center
+                    contentAlignment = Alignment.CenterStart
                 ) {
                     Text(
                         text = manualMessage.replace("", "\u200B"),

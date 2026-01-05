@@ -15,8 +15,8 @@ android {
         applicationId = "com.veryshinnam.myapp"
         minSdk = 24
         targetSdk = 36
-        versionCode = 6
-        versionName = "1.5.0"
+        versionCode = 9
+        versionName = "1.5.3"
 
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
     }

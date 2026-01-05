@@ -41,7 +41,7 @@ fun DashboardParentCard(
     spacer: Dp = 6.dp,
     horizontalPadding: Dp = 22.dp,
     verticalPadding: Dp = 18.dp,
-    adviceTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    adviceTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = SemiBold),
     cardCorner: Dp = 16.dp,
     cardColor: Color = Color.White,
     borderWidth: Dp = 4.dp,
@@ -50,6 +50,9 @@ fun DashboardParentCard(
     modifier: Modifier
 ) {
     var helpPressed by remember { mutableStateOf(false) }
+    val helpText = """
+        아이가 최근에 만든 동화 5개에 담긴 이야기 표현과 감정 흐름을 바탕으로, 부모님께 전해드리는 작은 조언이에요!
+    """.trimIndent()
 
     Column(
         modifier = modifier.fillMaxWidth().padding(horizontal = cardCorner),
@@ -105,7 +108,8 @@ fun DashboardParentCard(
                 )
         ) {
             Box(
-                modifier = Modifier.padding(horizontal = horizontalPadding, vertical = verticalPadding)
+                modifier = Modifier
+                    .padding(horizontal = horizontalPadding, vertical = verticalPadding)
             ) {
                 // 텍스트
             Text(
@@ -113,12 +117,12 @@ fun DashboardParentCard(
                 style = adviceTextStyle
             )
 
-            if (helpPressed) {
-                DashboardHelpText(
-                    text = "최신 동화 5개 기반으로 한 부모 조언입니다",
-                    modifier = Modifier.matchParentSize()
-                )
-            }
+                if (helpPressed) {
+                    DashboardHelpText(
+                        text = helpText,
+                        modifier = Modifier.fillMaxWidth()
+                    )
+                }
             }
         }
     }

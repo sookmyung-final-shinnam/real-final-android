@@ -13,6 +13,7 @@ import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.veryshinnam.myapp.R
@@ -44,6 +45,8 @@ fun CharacterRightFront(
                     strokeColor = colorResource(R.color.main_orange),
                     titleTextStyle = nameTextStyle,
                     strokeWidth = 8f,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis,
                     modifier = Modifier
                 )
                 Text(
@@ -67,6 +70,8 @@ fun CharacterRightFront(
                 ) {
                     Text(
                         text = character.personality,
+                        maxLines = 4,
+                        overflow = TextOverflow.Ellipsis,
                         style = mainTextStyle.copy(
                             lineHeight = (mainTextStyle.fontSize.value * 1.1).sp
                         )

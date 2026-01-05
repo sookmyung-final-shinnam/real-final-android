@@ -380,7 +380,7 @@ fun CollectionScreen(
                         )
                         // 캐릭터 이름
                         StrokeTitle(
-                            titleText = "장신남",
+                            titleText = "짱신남",
                             titleColor = Color.White,
                             strokeColor = Color.Black,
                             titleTextStyle = MaterialTheme.typography.titleLarge,

@@ -78,7 +78,7 @@ fun DashboardStoryCard(
     imageWidth: Float = 0.25f,
     subTitleTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
     linkTextStyle: TextStyle = MaterialTheme.typography.bodyMedium.copy(color = orangeColor, fontWeight = SemiBold, textDecoration = Underline),
-    summaryTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = SemiBold),
+    summaryTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = SemiBold),
     modifier: Modifier
 ) {
     // 화면 밀도 정보
@@ -93,6 +93,52 @@ fun DashboardStoryCard(
     var wordTop by remember { mutableFloatStateOf(0f) }
     var emotionTop by remember { mutableFloatStateOf(0f) }
     var eHelpHeight by remember { mutableStateOf<Float?>(null) }
+    val tHelpText = """
+        최근에 만든 동화 10개를 바탕으로
+        아이의 이야기 말하기와 감정 표현을 살펴볼 수 있어요.
+
+        • 언어 분석
+        동화는 ‘기-승-전-결’ 네 단계로 만들어져요.
+        각 단계에서 아이가 몇 번씩 시도했는지를 살펴보며,
+        어떤 부분을 어려워하고, 어떤 부분을 잘하는지 알 수 있어요.
+        또, 아이가 자주 사용하는 단어와 말하는 습관도 함께 볼 수 있어요.
+
+        • 정서 분석
+        동화 속 이야기에 담긴 아이의 감정을 기쁨, 슬픔, 화남, 두려움, 놀람, 평온 여섯 가지로 나누어 살펴볼 수 있어요.
+    """.trimIndent()
+    val aHelpText = """
+        기가 어려웠다면,
+        누가 나오고, 어디에서 이야기가 시작되는지 천천히 떠올려 보세요.
+
+        승이 어려웠다면,
+        그다음에 어떤 일이 일어났을지 이야기를 이어서 생각해 보세요.
+
+        전이 어려웠다면,
+        문제나 예상하지 못한 사건을 하나 더 추가해 보세요.
+
+        결이 어려웠다면,
+        이야기가 어떻게 끝나면 좋을지 차분히 정리해 보세요.
+        
+        다음 동화를 만들 때, 각 단계의 설명을 떠올리며 질문에 하나씩 답해 보세요!
+    """.trimIndent()
+
+    val wHelpText = """
+        새 단어는 아이에게 익숙한 단어를 제외하고,
+        동화를 만들면서 새롭게 사용한 단어만을 기준으로 해요.
+        
+        이를 통해 아이가 새로 배운 단어를 확인할 수 있어요.
+    """.trimIndent()
+
+    val eHelpText = """
+        각 정서의 비율은 동화 속에서 사용된 말과 표현을 바탕으로 계산돼요. (총합 100%)
+        
+        • 기쁨: 즐겁고 행복한 느낌의 표현
+        • 슬픔: 속상하거나 외로운 느낌의 표현
+        • 화남: 짜증이나 화가 난 표현
+        • 두려움: 걱정되거나 무서운 느낌의 표현
+        • 놀람: 예상하지 못한 일에 대한 반응
+        • 평온: 차분하고 안정된 느낌의 표현
+    """.trimIndent()
 
     // ui 변수
     val scrollState = rememberScrollState()
@@ -181,9 +227,7 @@ fun DashboardStoryCard(
                         .padding(horizontal = cardCorner, vertical = verticalPadding)
                 ) {
                     DashboardHelpText(
-                        text = "최신 10개까지의 동화를 대상으로 한 언어 발달 학습 분석과 정서 분석입니다.\n\n" +
-                                "언어 발달 정도를 확인할 수 있습니다.\n\n" +
-                                "정서 분석으로 동화 스토리에 반영된 아이의 정서를 6가지 감정(기쁨, 슬픔, 화남, 두려움, 놀람, 평온)을 확인할 수 있습니다.",
+                        text = tHelpText,
                         modifier = Modifier.wrapContentHeight()
                     )
                 }
@@ -199,7 +243,7 @@ fun DashboardStoryCard(
                     text = story.storyTitle,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    style = summaryTextStyle.copy(fontWeight = Bold, fontSize = summaryTextStyle.fontSize*1.2f),
+                    style = summaryTextStyle.copy(fontWeight = Bold),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
                 )
                 Spacer(Modifier.height(spacer))
@@ -223,13 +267,7 @@ fun DashboardStoryCard(
                 ) {
                     if (attemptPressed) {
                         DashboardHelpText(
-                            text = "스토리는 기-승-전-결의 구조로 되어있습니다.\n" +
-                                    "기 ~~~~~~~~~~~~\n" +
-                                    "승: ~~~~~~~~\n" +
-                                    "전: ~~~~~~~~~~\n" +
-                                    "결: ~~~~~~~~~~~\n\n" +
-                                    "다음 동화 생성 시에도 각 단계의 설명을 잘 떠올린 후 질문에 답변해 보세요!"
-                            ,
+                            text = aHelpText,
                             modifier = Modifier
                                 .absoluteOffset(
                                     y = with(density) { attemptTop.toDp() }
@@ -298,7 +336,7 @@ fun DashboardStoryCard(
                         Box {
                             if (wordPressed) {
                                 DashboardHelpText(
-                                    text = "동화를 만들면서 획득한 단어 분석이에요. 자세히 보기를 클릭해서 자세한 단어 목록을 확인할 수 있어요",
+                                    text = wHelpText,
                                     modifier = Modifier
                                         .absoluteOffset(
                                             y = with(density) { wordTop.toDp() })
@@ -376,13 +414,7 @@ fun DashboardStoryCard(
 
                             if (emotionPressed) {
                                 DashboardHelpText(
-                                    text = "분석된 감정에 대한 설명입니다." +
-                                        "기쁨:~~~~~~ \n" +
-                                            "슬픔:~~~~~~ \n" +
-                                            "화남:~~~~~~ \n" +
-                                            "두려움:~~~~~~ \n" +
-                                            "놀람:~~~~~~ \n" +
-                                            "평온: 위 5가지 정서에 포함되지 않는 중립적인 감정",
+                                    text = eHelpText,
                                     modifier = Modifier
                                         .wrapContentHeight()
                                         .onGloballyPositioned { coords ->
@@ -505,15 +537,16 @@ fun DashboardStoryCard(
                                             contentAlignment = Alignment.Center
                                         ) {
                                             Text(story.summary + "\n\n" + story.createdAt,
-                                                style = summaryTextStyle, textAlign = TextAlign.Center)
+                                                style = subTitleTextStyle.copy(
+                                                    fontWeight = SemiBold
+                                                ), textAlign = TextAlign.Center)
                                         }
 
                                         // 인덱스
-                                        Row {
+                                        Row(verticalAlignment = Alignment.CenterVertically) {
                                             Text(
                                                 "$index"
-                                                , style = summaryTextStyle.copy(color = borderColor
-                                                )
+                                                , style = summaryTextStyle.copy(color = borderColor)
                                             )
                                             Text(
                                                 " / $total",

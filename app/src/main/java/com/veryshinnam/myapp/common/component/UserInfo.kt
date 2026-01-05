@@ -146,10 +146,12 @@ fun UserInfo(
 
             Text(
                 text = annotatedText,
+                minLines = 2,
                 style = cardTextStyle.copy(
                     fontWeight = FontWeight.Bold,
                     textAlign = TextAlign.Left,
                     lineBreak = LineBreak.Simple,
+                    lineHeight = cardTextStyle.lineHeight * 1.2f
                 ),
                 softWrap = true
             )

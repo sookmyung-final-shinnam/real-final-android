@@ -23,13 +23,13 @@ fun NavGraphBuilder.permitNavGraph(
             SplashScreen(
                 onLogin = {
                     navController.navigate(PermitRoutes.LOGIN) {
-                        popUpTo(NavGraphs.PERMIT) { inclusive = true } // 스플래시 백스택 제거
+                        popUpTo(PermitRoutes.SPLASH) { inclusive = true } // 스플래시 백스택 제거
                         launchSingleTop = true // 이미 login 있으면 재사용
                     }
                 },
                 onHome = {
                     navController.navigate(NavGraphs.MAIN) {
-                        popUpTo(NavGraphs.PERMIT) { inclusive = true } // 스플래시 백스택 제거
+                        popUpTo(PermitRoutes.SPLASH) { inclusive = true } // 스플래시 백스택 제거
                         launchSingleTop = true // 이미 home 있으면 재사용
                     }
                 }

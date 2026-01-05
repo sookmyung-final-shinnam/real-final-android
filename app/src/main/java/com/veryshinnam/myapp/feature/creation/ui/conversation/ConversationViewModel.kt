@@ -406,9 +406,9 @@ class ConversationViewModel @Inject constructor(
     val manuals = listOf(
         ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들 준비가 모두 끝났어요!\n지금까지 고른 내용으로\n제가 4번에 나누어 재미있는 이야기를 만들어 줄게요."),
         ManualScriptData(step = ConversationStep.START, nextStory = "\n제가 질문을 하나씩 할 거예요.\n천천히 생각하면서 함께 멋진 동화를 만들어 봐요!"),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "옛날 옛적 헌트릭스와 사자보이즈의 전쟁 이후 한국은 평화로운 나날이 이어지고 있었어요. 하지만 장신남은 고민이 있었답니다."),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "스토릭터는 이마트24에서 신라면을 먹을지 삼양 라면을 먹을지 고민하고 있었어요. 거기서 죽은 장신남은 닯은 사람을 발견했어요."),
-        ManualScriptData(step = ConversationStep.QUESTION,  question = "스토릭터는 그 사람을 보고 어떻게 행동했을까요?"),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "갈색 곱슬머리의 짱신남은 숲 속에서 새로운 모험을 찾기 위해 친구들과 함께 떠날 준비를 하고 있었어요."),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "그때 신비한 요정 스토릭터는 짱신남에게 말했어요. \"어디 가는거니?\""),
+        ManualScriptData(step = ConversationStep.QUESTION,  question = "짱신남은 요정 스토릭터에게 무슨 말을 했을까요?"),
         ManualScriptData(step = ConversationStep.QUESTION, question = "생각이 떠올랐나요?\n제 아래에 있는 마이크 버튼을 눌러서 말해 주세요!"),
         ManualScriptData(step = ConversationStep.ANSWER),
         ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요! 정말 잘했어요.\n그렇게 대답해 주면 돼요!", 1)),
