@@ -4,25 +4,24 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.asPaddingValues
-import androidx.compose.foundation.layout.aspectRatio
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.pager.PagerState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -32,6 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.CircleNextButton
 import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -85,7 +85,9 @@ fun StoryReaderPage(
                 horizontalArrangement = Arrangement.spacedBy(horizontalPadding/2)
             ) {
                 // ◀ 이전 버튼
-                Button(
+                CircleNextButton(
+                    icon = Icons.Rounded.ChevronLeft,
+                    desc = "이전",
                     onClick = {
                         if (pagerState.currentPage > 0) {
                             coroutineScope.launch {
@@ -93,25 +95,12 @@ fun StoryReaderPage(
                             }
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.main_orange),
-                        contentColor = Color.White
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .weight(0.08f)
-                        .aspectRatio(1f)
-                ) {
-                    Text(
-                        text = "◀",
-                        style = textStyle.copy(fontSize = textStyle.fontSize * 1.2f)
-                    )
-                }
+                    modifier = Modifier.fillMaxHeight(0.24f)
+                )
 
                 // 줄거리 내용
                 Box(
                     modifier = Modifier
-//                        .fillMaxWidth(.12f)
                         .weight(1f)
                         .background(
                             color = colorResource(R.color.background_yellow).copy(alpha = 0.5f),
@@ -124,37 +113,27 @@ fun StoryReaderPage(
                 ) {
                     Text(
                         modifier = Modifier
-                            .padding(horizontalPadding ),
+                            .padding(horizontalPadding),
                         text = page.content,
                         style = textStyle
                     )
                 }
 
                 // ▶ 다음 버튼
-                Button(
+                CircleNextButton(
+                    icon = Icons.Rounded.ChevronRight,
+                    desc = "다음",
                     onClick = {
                         if (pagerState.currentPage < pageCount - 1) {
                             coroutineScope.launch {
                                 pagerState.animateScrollToPage(pagerState.currentPage + 1)
                             }
-                        }  else {
+                        } else {
                             onEndingPage()
                         }
                     },
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.main_orange),
-                        contentColor = Color.White
-                    ),
-                    contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier
-                        .weight(0.08f)
-                        .aspectRatio(1f)
-                ) {
-                    Text(
-                        text = "▶",
-                        style = textStyle.copy(fontSize = textStyle.fontSize * 1.2f)
-                    )
-                }
+                    modifier = Modifier.fillMaxHeight(0.24f)
+                )
             }
         }
     }
