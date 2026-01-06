@@ -14,11 +14,16 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.traceEventStart
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -28,7 +33,8 @@ import androidx.compose.ui.unit.dp
 fun UserItem(
     modifier: Modifier,
     painter: Painter,
-    contentDescription: String,
+    contentDesc: String,
+    isCollection: Boolean = false,
     value: String,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     color: Color,
@@ -42,22 +48,24 @@ fun UserItem(
             .border(
                 width = 4.dp,
                 color = color,
-                shape = CircleShape),
+                shape = CircleShape
+            )
+          .semantics {
+              contentDescription =  "$contentDesc $value${if (isCollection) "명" else "개"}"
+          },
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.65f)
-//            .fillMaxSize()
+                .fillMaxWidth(0.7f)
                 .padding( vertical = verticalPadding),
-//            .padding(horizontal = verticalPadding*4, vertical = verticalPadding),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
             // 아이콘 이미지
             Image(
                 painter = painter,
-                contentDescription = contentDescription,
+                contentDescription = null,
                 modifier = Modifier.fillMaxHeight(0.8f),
                 contentScale = ContentScale.Fit
             )
@@ -66,7 +74,9 @@ fun UserItem(
                 // 개수
                 text = value,
                 style = textStyle.copy(
-                    fontWeight = FontWeight.Bold)
+                    fontWeight = FontWeight.Bold),
+                modifier = Modifier
+                    .clearAndSetSemantics { }
             )
         }
     }

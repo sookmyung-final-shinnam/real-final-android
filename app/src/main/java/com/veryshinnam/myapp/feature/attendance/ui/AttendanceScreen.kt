@@ -379,7 +379,7 @@ fun AttendanceScreen(
                 )
             }
 
-            if (manualStep >= 2) {
+            if (manualStep >= 3) {
                 itemRect?.let {
                     TargetItem(
                         it, density,
@@ -389,7 +389,7 @@ fun AttendanceScreen(
                         boxColor = colorResource(R.color.deep_pink)
                     )
                 }
-                if (manualStep >= 4) {
+                if (manualStep >= 5) {
                     calendarRect?.let { rect ->
                         Box(
                             modifier = Modifier
@@ -423,7 +423,7 @@ fun AttendanceScreen(
                 }
             }
             when (manualStep) {
-                1 -> {
+                2 -> {
                     calendarRect?.let { rect ->
                         Box(
                             modifier = Modifier

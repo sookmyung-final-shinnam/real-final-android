@@ -12,6 +12,10 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
+/**
+ * 로고 제목
+ * : 스플래시, 로그인 화면에서 사용
+ */
 @Composable
 fun LogoTitle(
     modifier: Modifier,
@@ -33,7 +37,7 @@ fun LogoTitle(
             )
         )
 
-        // 로고
+        // 로고 (터치 기능 X)
         LogoBar(
             logoText = mainText,
             logoTextStyle = mainTextStyle,

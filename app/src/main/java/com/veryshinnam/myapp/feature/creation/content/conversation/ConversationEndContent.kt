@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -27,7 +28,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
@@ -39,70 +39,76 @@ import kotlinx.coroutines.delay
 fun ConversationEndContent(
     onHomeClick: () -> Unit,
     textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold, textAlign = TextAlign.Center),
-    spacePadding: Float = .12f,
     verticalPadding: Dp = 24.dp,
 ) {
 
+    // 3초 뒤 자동 홈으로
     LaunchedEffect(Unit) {
-        delay(3000L) // 3초 뒤 자동 홈으로
+        delay(3000L)
         onHomeClick()
     }
+
+    // ui
     Column(
         modifier = Modifier.fillMaxSize(),
         horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.SpaceAround
+        verticalArrangement = Arrangement.Center
     ){
-        Spacer(Modifier.fillMaxHeight(spacePadding))
-
-        Image(
-            painter = painterResource(R.drawable.img_login),
-            contentDescription = "다람쥐 이미지",
-            modifier = Modifier
-                .fillMaxHeight(0.5f),
-            contentScale = ContentScale.Fit
-        )
-
-        // 완료 텍스트
-        Card(
-            modifier = Modifier.fillMaxWidth(),
-            colors = CardDefaults.cardColors(containerColor = Color.White),
-            shape = RoundedCornerShape(32.dp),
-            border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
+        Box(modifier = Modifier.fillMaxHeight(0.5f)){
+            Image(
+                painter = painterResource(R.drawable.img_login),
+                contentDescription = "다람쥐 이미지",
+                modifier = Modifier.fillMaxSize(),
+                contentScale = ContentScale.Fit
+            )
+        }
+        Column(
+            modifier = Modifier.weight(1f),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Top
         ) {
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(verticalPadding, verticalPadding),
-                contentAlignment = Alignment.Center
+            Spacer(Modifier.height(verticalPadding))
+
+            // 완료 텍스트
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = Color.White),
+                shape = RoundedCornerShape(32.dp),
+                border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
             ) {
-                // 질문 텍스트
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(verticalPadding, verticalPadding),
+                    contentAlignment = Alignment.Center
+                ) {
+                    // 질문 텍스트
+                    Text(
+                        text = "다 끝났어!\n\n이제 동화가 생성 중이야.\n" +
+                                "5분 뒤에 보관함에서 보자!",
+                        style = textStyle
+                    )
+                }
+            }
+            Spacer(Modifier.height(verticalPadding))
+            // 홈 버튼
+            Button(
+                modifier = Modifier.fillMaxWidth(0.7f),
+                onClick = { onHomeClick() },
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = colorResource(R.color.main_orange)
+                ),
+                shape = CircleShape,
+            ) {
                 Text(
-                    text = "다 끝났어!\n\n이제 동화가 생성 중이야.\n" +
-                            "5분 뒤에 보관함에서 보자!",
-                    style = textStyle
+                    text = "홈으로",
+                    modifier = Modifier.padding(8.dp),
+                    style =textStyle.copy(
+                        color = Color.White,
+                        fontSize = textStyle.fontSize * 1.4f
+                    )
                 )
             }
         }
-
-        // 홈 버튼
-        Button(
-            modifier = Modifier.fillMaxWidth(0.7f),
-            onClick = { onHomeClick() },
-            colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.main_orange)
-            ),
-            shape = CircleShape,
-        ) {
-            Text(
-                text = "홈으로",
-                modifier = Modifier.padding(8.dp),
-                style =textStyle.copy(
-                    color = Color.White,
-                    fontSize = textStyle.fontSize * 1.4f
-                )
-            )
-        }
-
-        Spacer(Modifier.fillMaxHeight(spacePadding*2))
     }
 }

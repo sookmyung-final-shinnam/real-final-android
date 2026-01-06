@@ -1,13 +1,10 @@
 package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
-import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
-import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 
 @Composable
@@ -15,7 +12,7 @@ fun ConversationAnswerText(
     answerData: AnswerData,
     isFinal: Boolean,
     modifier: Modifier,
-    answerTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(R.color.main_orange))
+    answerTextStyle: TextStyle
 ) {
     val answer = if (isFinal) {
         answerData.userAnswer // userAnswer 고정

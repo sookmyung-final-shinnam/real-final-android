@@ -36,7 +36,7 @@ fun ConversationRecordButton(
     ) {
         Image(
             painter = painterResource(R.drawable.ic_mike),
-            contentDescription = "Record",
+            contentDescription = null, // 장식용
             modifier = Modifier
                 .fillMaxSize(),
             contentScale = ContentScale.Fit,

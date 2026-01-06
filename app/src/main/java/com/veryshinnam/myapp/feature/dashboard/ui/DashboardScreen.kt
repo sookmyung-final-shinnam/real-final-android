@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
@@ -11,6 +10,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.runtime.getValue
@@ -33,6 +35,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.common.component.EmptyView
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.LogoBar
@@ -290,49 +293,33 @@ fun DashboardScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
+                                        .padding(horizontal = 2.dp)
                                         .matchParentSize()
-                                        .padding(horizontal = 4.dp)
                                         .zIndex(10f),
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
-                                    // ▶ 다음 버튼
-                                    Button(
+                                    // 이전 버튼
+                                    CircleIconButton(
+                                        icon = Icons.Rounded.ChevronLeft,
+                                        desc = "이전\n동화 분석",
                                         onClick = { vm.prevStory() },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = colorResource(R.color.main_orange).copy(0.5f),
-                                            contentColor = Color.White
-                                        ),
-                                        border = BorderStroke(
-                                            2.dp,
-                                            colorResource(R.color.main_orange)
-                                        ),
-                                        contentPadding = PaddingValues(0.dp),
-                                        modifier = Modifier.size(48.dp)
-                                    ) {
-                                        Text(
-                                            text = "◀",
+                                        modifier = Modifier.height(88.dp),
+                                        containerColor = colorResource(R.color.main_orange).copy(
+                                            0.5f
                                         )
-                                    }
+                                    )
 
-                                    // ▶ 다음 버튼
-                                    Button(
+                                    // 다음 버튼
+                                    CircleIconButton(
+                                        icon = Icons.Rounded.ChevronRight,
+                                        desc = "다음\n동화 분석",
                                         onClick = { vm.nextStory() },
-                                        colors = ButtonDefaults.buttonColors(
-                                            containerColor = colorResource(R.color.main_orange).copy(0.5f),
-                                            contentColor = Color.White
-                                        ),
-                                        border = BorderStroke(
-                                            2.dp,
-                                            colorResource(R.color.main_orange)
-                                        ),
-                                        contentPadding = PaddingValues(0.dp),
-                                        modifier = Modifier.size(48.dp)
-                                    ) {
-                                        Text(
-                                            text = "▶",
+                                        modifier = Modifier.height(88.dp),
+                                        containerColor = colorResource(R.color.main_orange).copy(
+                                            0.5f
                                         )
-                                    }
+                                    )
                                 }
 
                                 DashboardStoryCard(

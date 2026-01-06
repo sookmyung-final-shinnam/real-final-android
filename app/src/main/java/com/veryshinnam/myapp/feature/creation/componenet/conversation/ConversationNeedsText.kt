@@ -100,14 +100,6 @@ fun ConversationNeedsText(
                     )
 
                     // 피드백 텍스트
-//                    Text(
-//                        text = feedback,
-//                        style = textStyle,
-//                        modifier = Modifier
-//                            .padding(horizontal = horizontalPadding)
-//                            .align(Alignment.Center)
-//                    )
-
                     StrokeTitle(
                         titleText = feedback,
                         titleColor = Color.Black,
