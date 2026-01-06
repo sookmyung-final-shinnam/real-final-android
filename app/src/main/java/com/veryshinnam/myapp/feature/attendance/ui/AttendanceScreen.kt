@@ -12,7 +12,6 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.padding
@@ -380,7 +379,7 @@ fun AttendanceScreen(
                 )
             }
 
-            if (manualStep >= 2) {
+            if (manualStep >= 3) {
                 itemRect?.let {
                     TargetItem(
                         it, density,
@@ -390,7 +389,7 @@ fun AttendanceScreen(
                         boxColor = colorResource(R.color.deep_pink)
                     )
                 }
-                if (manualStep >= 4) {
+                if (manualStep >= 5) {
                     calendarRect?.let { rect ->
                         Box(
                             modifier = Modifier
@@ -424,7 +423,7 @@ fun AttendanceScreen(
                 }
             }
             when (manualStep) {
-                1 -> {
+                2 -> {
                     calendarRect?.let { rect ->
                         Box(
                             modifier = Modifier
