@@ -16,8 +16,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -59,6 +61,7 @@ fun HomeBottomButtons(
                     onDashboardRect(it.boundsInRoot()) }
                 .clickable { onDashboardClick() }
                 .semantics {            // 새 대체 텍스트 추가
+                    traversalIndex = 0f
                     contentDescription = "대시보드"
                     role = Role.Button  // 버튼으로 인식
                 }
@@ -74,6 +77,7 @@ fun HomeBottomButtons(
                 .onGloballyPositioned { onCreationRect(it.boundsInRoot()) }
                 .clickable { onCreationClick() }
                 .semantics {            // 새 대체 텍스트 추가
+                    traversalIndex = 1f
                     contentDescription = "캐릭터와 동화 생성"
                     role = Role.Button  // 버튼으로 인식
                 }
@@ -89,6 +93,7 @@ fun HomeBottomButtons(
                 .onGloballyPositioned { onCollectionRect(it.boundsInRoot()) }
                 .clickable { onCollectionClick() }
                 .semantics {            // 새 대체 텍스트 추가
+                    traversalIndex = 2f
                     contentDescription = "캐릭터와 동화 보관함"
                     role = Role.Button  // 버튼으로 인식
                 }

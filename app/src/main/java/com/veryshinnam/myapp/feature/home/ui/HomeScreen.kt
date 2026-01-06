@@ -28,6 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
@@ -168,7 +169,9 @@ fun HomeScreen(
             // 상태바 만큼 여백 & 상단 로고
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar()
+                LogoBar(
+                    modifier = Modifier.clearAndSetSemantics { } // 홈은 로고 대체 텍스트 제거
+                )
             }
         },
         bottomBar = {
@@ -203,10 +206,22 @@ fun HomeScreen(
                 // 조회 성공
                 is HomeUiState.Success -> {
                     val (username, points, favorites) = state.homeData
-                    Column(modifier = Modifier.fillMaxSize()) {
-                        Column(modifier = Modifier.padding(horizontal = horizontalPadding)) {
-                            // 유저 정보 - 생성한 캐릭터 수, 포인트
-                            Box(modifier = Modifier.fillMaxWidth().height(imageHeight)) {
+                    val message = "반가워요, ${username}!\n${state.randomMessage}"
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                            .semantics {
+                                isTraversalGroup = true
+                            }
+                    ) {
+                        Column(
+                            modifier = Modifier
+                                .padding(horizontal = horizontalPadding)
+                        ) {
+                            // 다람쥐 이미지 + 도토리 수
+                            Box(
+                                modifier = Modifier.fillMaxWidth()
+                                    .height(imageHeight)
+                            ) {
                                 // 다람쥐 이미지
                                 Image(
                                     painter = painterResource(R.drawable.img_home_squirrel),
@@ -257,39 +272,42 @@ fun HomeScreen(
                                     .padding(all = messagePadding),
                                 contentAlignment = Alignment.TopStart
                             ) {
-                                    // 닉네임 + 랜덤 메시지
-                                        Text(
-                                            text = "반가워요 ${username}!\n${state.randomMessage}",
-                                            style = textStyle
-                                        )
-                                // 설정 버튼
-                                        Row(
-                                            verticalAlignment = Alignment.CenterVertically,
-                                            modifier = Modifier
-                                                .height(IntrinsicSize.Min)
-                                                .clickable(onClick = onSettingsClick)
-                                                .align(Alignment.TopEnd)
-                                                .semantics(true) {
-                                                    traversalIndex = 0f
-                                                    contentDescription = "설정"      // 자식 묶어서 대체 텍스트 설정
-                                                    role = Role.Button              // 버튼으로 인식
-                                                }
-                                        ) {
-                                            Text(
-                                                text = "설정",
-                                                style = settingsTextStyle,
-                                                modifier = Modifier.clearAndSetSemantics { } // 대체 텍스트 제거
-                                            )
+                                // 닉네임 + 랜덤 메시지
+                                Text(
+                                    text = message,
+                                    style = textStyle,
+                                    modifier = Modifier.clearAndSetSemantics {
+                                        contentDescription = "사용자 메시지, $message"
+                                    }
+                                )
 
-                                            Icon(
-                                                imageVector = Icons.Default.Settings,
-                                                contentDescription = null,  // 대체 텍스트 제거
-                                                tint = colorResource(id = R.color.main_orange),
-                                                modifier = Modifier
-                                                    .padding(start = 2.dp)
-                                                    .fillMaxHeight()
-                                            )
+                                // 설정 버튼
+                                Row(
+                                    verticalAlignment = Alignment.CenterVertically,
+                                    modifier = Modifier
+                                        .height(IntrinsicSize.Min)
+                                        .clickable(onClick = onSettingsClick)
+                                        .align(Alignment.TopEnd)
+                                        .semantics(true) {
+                                            contentDescription = "설정"      // 자식 묶어서 대체 텍스트 설정
+                                            role = Role.Button              // 버튼으로 인식
                                         }
+                                ) {
+                                    Text(
+                                        text = "설정",
+                                        style = settingsTextStyle,
+                                        modifier = Modifier.clearAndSetSemantics { } // 대체 텍스트 제거
+                                    )
+
+                                    Icon(
+                                        imageVector = Icons.Default.Settings,
+                                        contentDescription = null,  // 대체 텍스트 제거
+                                        tint = colorResource(id = R.color.main_orange),
+                                        modifier = Modifier
+                                            .padding(start = 2.dp)
+                                            .fillMaxHeight()
+                                    )
+                                }
 
                             }
                         }
@@ -299,17 +317,20 @@ fun HomeScreen(
                                 .fillMaxWidth()
                                 .weight(1f, fill = true)
                         ) {
-                            // 캐러셀 (남은 공간 중 대부분)
+                            // 캐러셀 (남은 공간의 80%)
                             HomeFavoriteCarousel(
                                 modifier = Modifier
                                     .fillMaxWidth()
+                                    .semantics {
+                                        traversalIndex = 0f
+                                    }
                                     .weight(8f),
                                 characters = favorites,
                                 lastSelectedId = state.lastSelectedCharacter,
                                 onCharacterClick = onCharacterClick
                             )
 
-                            // 바텀 버튼 (남은 공간의 1.5 비율)
+                            // 바텀 버튼 (남은 공간의 20%)
                             HomeBottomButtons(
                                 onDashboardClick = onDashboardClick,
                                 onCreationClick = {
@@ -336,6 +357,9 @@ fun HomeScreen(
                                     .fillMaxWidth()
                                     .weight(2f)
                                     .padding(vertical = 8.dp)
+                                    .semantics {
+                                        traversalIndex = 1f
+                                    }
                             )
                         }
                     }

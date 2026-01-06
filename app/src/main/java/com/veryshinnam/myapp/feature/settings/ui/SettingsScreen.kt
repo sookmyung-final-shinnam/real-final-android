@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -45,6 +46,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
@@ -133,6 +140,9 @@ fun SettingsScreen(
         // --- 설정 화면 UI
         Column(
             modifier = Modifier
+                .semantics{
+                    traversalIndex = 0f
+                }
                 .fillMaxWidth()
                 .padding(innerPadding),
             verticalArrangement = Arrangement.Center
@@ -209,7 +219,7 @@ fun SettingsScreen(
                             vm.startManual()
                             onBack()
                         },
-                        text = "사용 설명 다시 보기"
+                        text = "앱 사용 설명 다시 보기"
                     )
 
                     // 문의하기
@@ -240,7 +250,7 @@ fun SettingsScreen(
             // --- 다람쥐 이미지
             Image(
                 painter = painterResource(R.drawable.img_llm_question),
-                contentDescription = "다람쥐 이미지",
+                contentDescription = null, // 장식용 이미지
                 modifier = Modifier
                     .fillMaxHeight()
                     .weight(1f) // 남은 공간 차지

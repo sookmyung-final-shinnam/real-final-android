@@ -51,17 +51,14 @@ fun UserItem(
                 shape = CircleShape
             )
           .semantics {
-              traversalIndex = 0f
-              contentDescription = contentDesc
+              contentDescription =  "$contentDesc $value${if (isCollection) "명" else "개"}"
           },
         contentAlignment = Alignment.Center
     ) {
         Row(
             modifier = Modifier
-                .fillMaxWidth(0.65f)
-//            .fillMaxSize()
+                .fillMaxWidth(0.7f)
                 .padding( vertical = verticalPadding),
-//            .padding(horizontal = verticalPadding*4, vertical = verticalPadding),
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
@@ -79,10 +76,7 @@ fun UserItem(
                 style = textStyle.copy(
                     fontWeight = FontWeight.Bold),
                 modifier = Modifier
-                    .clearAndSetSemantics {
-                        traversalIndex = 1f
-                        contentDescription = value + if (isCollection) "명" else "개"
-                    }
+                    .clearAndSetSemantics { }
             )
         }
     }

@@ -76,11 +76,11 @@ fun LogoBar(
                     indication = null,  // 클릭 효과 X
                     interactionSource = remember { MutableInteractionSource() }
                 ) { onLogoClick() }
+                    .clearAndSetSemantics {
+                        contentDescription = "홈 화면으로 이동" // 대체 텍스트
+                        role = Role.Button                    // 버튼으로 인식
+                    }
             } else Modifier
-                .clearAndSetSemantics {
-                    contentDescription = "홈 화면으로 이동" // 대체 텍스트
-                    role = Role.Button                    // 버튼으로 인식
-                }
         )
     }
 }

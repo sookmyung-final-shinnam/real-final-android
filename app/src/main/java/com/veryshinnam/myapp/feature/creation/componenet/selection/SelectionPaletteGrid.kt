@@ -4,7 +4,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
@@ -30,7 +29,7 @@ fun SelectionPaletteGrid(
     selectedColorName: String,
     onSelect: (String) -> Unit,
     modifier: Modifier,
-    titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
+    titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = Bold),
 ) {
     val topPadding = 8.dp
     val horizontalPadding = 10.dp
@@ -52,21 +51,16 @@ fun SelectionPaletteGrid(
         ) {
             LazyRow(
                 modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp),
-                contentPadding = PaddingValues(
-                    vertical = verticalPadding,
-                    horizontal = horizontalPadding
-                )
+                horizontalArrangement = Arrangement.spacedBy(24.dp),
+                contentPadding = PaddingValues(vertical = verticalPadding, horizontal = horizontalPadding)
             ) {
                 items(colors) { (label, resId) ->
-                    val color = colorResource(resId)
-                    val selected = label == selectedColorName
                     SelectionPaletteButton(
-                        color = color,
-                        selected = selected,
+                        color = colorResource(resId),
+                        label = label,
+                        selected = label == selectedColorName,
                         onClick = { onSelect(label) },
-                        modifier = Modifier
-                            .aspectRatio(1f) // 정사각형
+                        modifier = Modifier.weight(1f)
                     )
                 }
             }
