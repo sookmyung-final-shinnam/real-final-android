@@ -19,6 +19,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
@@ -28,13 +29,11 @@ fun SelectionPaletteGrid(
     colors: List<Pair<String, Int>>,
     selectedColorName: String,
     onSelect: (String) -> Unit,
-    modifier: Modifier,
+    horizontalPadding: Dp = 10.dp,
+    verticalPadding: Dp = 8.dp,
     titleTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(fontWeight = Bold),
+    modifier: Modifier
 ) {
-    val topPadding = 8.dp
-    val horizontalPadding = 10.dp
-    val verticalPadding = 16.dp
-
     Column(modifier) {
         // 팔레트 위 제목
         Text(title,
@@ -44,7 +43,7 @@ fun SelectionPaletteGrid(
 
         // 팔레트
         Card(
-            modifier = Modifier.fillMaxSize().padding(top=topPadding),
+            modifier = Modifier.fillMaxSize().padding(top=verticalPadding),
             colors = CardDefaults.cardColors(containerColor = colorResource(R.color.lemon_yellow)),
             shape = RoundedCornerShape(24.dp),
             border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
