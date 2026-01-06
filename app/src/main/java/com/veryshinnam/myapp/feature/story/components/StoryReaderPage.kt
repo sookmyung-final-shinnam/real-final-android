@@ -31,7 +31,7 @@ import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.common.component.CircleNextButton
+import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -85,7 +85,7 @@ fun StoryReaderPage(
                 horizontalArrangement = Arrangement.spacedBy(horizontalPadding/2)
             ) {
                 // ◀ 이전 버튼
-                CircleNextButton(
+                CircleIconButton(
                     icon = Icons.Rounded.ChevronLeft,
                     desc = "이전",
                     onClick = {
@@ -120,7 +120,7 @@ fun StoryReaderPage(
                 }
 
                 // ▶ 다음 버튼
-                CircleNextButton(
+                CircleIconButton(
                     icon = Icons.Rounded.ChevronRight,
                     desc = "다음",
                     onClick = {

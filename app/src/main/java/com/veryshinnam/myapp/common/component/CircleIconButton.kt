@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.common.component
 
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -25,7 +26,7 @@ import com.veryshinnam.myapp.R
 
 // 원형 아이콘 버튼
 @Composable
-fun CircleNextButton(
+fun CircleIconButton(
     icon: ImageVector,
     desc: String,
     onClick: () -> Unit,
@@ -47,6 +48,9 @@ fun CircleNextButton(
             colors = ButtonDefaults.buttonColors(
                 containerColor = containerColor,
                 contentColor = contentColor
+            ),
+            border = BorderStroke(
+                2.dp, containerColor
             ),
             contentPadding = PaddingValues(0.dp),
             modifier = Modifier.weight(1f)
