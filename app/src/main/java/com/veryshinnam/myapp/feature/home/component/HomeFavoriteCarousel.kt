@@ -26,6 +26,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.ScrollAxisRange
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.horizontalScrollAxisRange
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -44,8 +52,6 @@ fun HomeFavoriteCarousel(
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
-
-
     // 즐찾 캐릭터가 없는 경우
     if (characters.isEmpty()) {
         Box(
@@ -56,8 +62,12 @@ fun HomeFavoriteCarousel(
                 shape = RoundedCornerShape(12.dp),
                 colors = CardDefaults.cardColors(colorResource(R.color.main_orange)),
                 modifier = Modifier
+                    .semantics { }
                     .fillMaxWidth(0.6f)   // 가로는 60% 정도
                     .aspectRatio(3f / 4f) // 비율 유지 (3:4)
+                    .clearAndSetSemantics {
+                        contentDescription = "즐겨찾기한 캐릭터 없음. 보관함에서 즐겨찾기 버튼으로 캐릭터를 추가하세요!"
+                    }
             ) {
                 HomeNullCard(modifier = Modifier.fillMaxSize().padding(16.dp))
             }
@@ -65,7 +75,7 @@ fun HomeFavoriteCarousel(
         return
     }
 
-// 부족한 건 null로 채워서 카드 다섯개 맞추기
+    // 부족한 건 null로 채워서 카드 다섯 개 맞추기
     val favorites: List<FavoriteData?> =
         if (characters.size < 5) {
             characters + List(5 - characters.size) { null }
@@ -77,18 +87,18 @@ fun HomeFavoriteCarousel(
     val baseIndex = (loopCount / 2) - ((loopCount / 2) % n) // 스크롤 상태 관리 (첫 인덱스에서 시작)
     val listState = rememberLazyListState()
 
-// 현재 중앙 아이템 인덱스 계산
+    // 현재 중앙 아이템 인덱스 계산
     val layoutInfo = listState.layoutInfo           // 현재 리스트 레이아웃 정보
     val visibleItems = layoutInfo.visibleItemsInfo  // 현재 보이는 아이템들 정보
     val screenCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.width / 2
 
 
-// 보이는 아이템 중 "화면 중앙에 가장 가까운 아이템" 찾기
+    // 보이는 아이템 중 화면 중앙에 가장 가까운 아이템 찾기
     val centerItem = visibleItems.minByOrNull { item ->
         abs((item.offset + item.size / 2) - screenCenter)
     }
 
-// 그 아이템의 index를 n(데이터 크기)로 나눈 값 → 실제 데이터 인덱스
+    // 그 아이템의 index를 n(데이터 크기)로 나눈 값 → 실제 데이터 인덱스
     val currentIndex = centerItem?.index?.rem(n)?.let { (it + n) % n } ?: 0
 
     LaunchedEffect(lastSelectedId) {
@@ -104,11 +114,13 @@ fun HomeFavoriteCarousel(
         }
     }
 
+    // 즐찾 캐릭터 하나라도 있는 경우
     Column(
         modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,           // 세로 중앙
-        horizontalAlignment = Alignment.CenterHorizontally  // 가로 중앙
+        verticalArrangement = Arrangement.Center,
+        horizontalAlignment = Alignment.CenterHorizontally
     ) {
+
         // 캐러셀
         LazyRow(
             state = listState,
@@ -138,13 +150,15 @@ fun HomeFavoriteCarousel(
 
                 HomeFavoriteCard(
                     character = character,
+                    index = currentIndex + 1,
                     modifier = Modifier
                         .fillMaxHeight(0.8f)         // 세로 크기 기준
                         .aspectRatio(3f / 4f)        // 가로:세로 = 3:4
                         .graphicsLayer { // 중앙 강조 효과
                             scaleX = scale
                             scaleY = scale
-                            this.alpha = alpha }
+                            this.alpha = alpha
+                        }
                         .border(
                             width = 2.dp,
                             color = colorResource(id = R.color.main_orange),
@@ -174,7 +188,8 @@ fun HomeFavoriteCarousel(
             },
             style = textStyle.copy(
                 color = colorResource(R.color.main_orange)
-            )
+            ),
+            modifier = Modifier.clearAndSetSemantics { } // 장식용
         )
     }
 }

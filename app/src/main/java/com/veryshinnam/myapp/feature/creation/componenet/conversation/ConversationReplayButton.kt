@@ -9,7 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Replay
+import androidx.compose.material.icons.rounded.Replay
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
@@ -53,7 +53,7 @@ fun ConversationReplayButton(
             )
 
             Icon(
-                imageVector = Icons.Default.Replay,
+                imageVector = Icons.Rounded.Replay,
                 contentDescription = "다시듣기 아이콘",
                 tint = colorResource(id = R.color.main_orange),
                 modifier = Modifier

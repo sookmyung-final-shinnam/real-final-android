@@ -70,7 +70,6 @@ import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
-import org.threeten.bp.YearMonth
 
 
 @Composable
@@ -138,7 +137,7 @@ fun CharacterScreen(
     }
 
     LaunchedEffect(manualStep) {
-        if (manualStep == 3) {
+        if (manualStep == 4) {
             isFront = false
         }
         if (manualStep == vm.manuals.size) {
@@ -250,13 +249,13 @@ fun CharacterScreen(
                         },
                         onStoryRect = { rect ->
                             if (manualState == ManualState.START
-                                && manualStep == 3 && storyRect == null) {
+                                && manualStep == 4 && storyRect == null) {
                                 storyRect = rect
                             }
                         },
                         onVideoRect = { rect ->
                             if (manualState == ManualState.START
-                                && manualStep == 3 && videoRect == null) {
+                                && manualStep == 4 && videoRect == null) {
                                 videoRect = rect
                             }
                         },
@@ -331,7 +330,7 @@ fun CharacterScreen(
                 .fillMaxSize()
                 .zIndex(20f)
                 .background(
-                    if (manualStep == 1 || manualStep == 3)
+                    if (manualStep == 2 || manualStep == 4)
                         Color.Transparent
                     else
                         Color.Black.copy(alpha = 0.5f)
@@ -406,7 +405,7 @@ fun CharacterScreen(
             }
 
             // 동영상
-            if (manualStep >= 5) {
+            if (manualStep >= 6) {
                 videoRect?.let { rect ->
                     Box(
                         modifier = Modifier
@@ -425,8 +424,7 @@ fun CharacterScreen(
                             modifier = Modifier.fillMaxSize()
                         )
 
-                        if (manualStep >= 6) {
-
+                        if (manualStep >= 7) {
                             // 오버레이
                             Box(
                                 modifier = Modifier
@@ -454,7 +452,7 @@ fun CharacterScreen(
             }
 
             // 왼쪽 카톡 버튼
-            if (manualStep >= 6) {
+            if (manualStep >= 7) {
                 storyRect?.let { rect ->
                     Box(
                         modifier = Modifier
@@ -487,7 +485,7 @@ fun CharacterScreen(
 
             // 그외 강조 요소
             when (manualStep) {
-                2 -> { tabRect?.let { it ->
+                3 -> { tabRect?.let { it ->
                     // 탭버튼
                     CharacterTabButton(
                         modifier = Modifier
@@ -510,7 +508,7 @@ fun CharacterScreen(
                         alpha = 0.5f,
                     )
                 } }
-                4 -> { videoRect?.let { it ->
+                5 -> { videoRect?.let { it ->
                     // 잠금 해제
                     Box(
                         modifier = Modifier

@@ -17,19 +17,30 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shadow
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 
+/**
+ * 로고바
+ * : {윤곽선 + 텍스트} 박스
+ *
+ * - onLogoClick: 로고 클릭 시, 홈 화면(HomeScreen)으로 복구
+ *  (null이면 동작 X - 홈, 스플래시, 로그인 화면에서 null 보냄)
+ */
 @Composable
 fun LogoBar(
-    modifier: Modifier = Modifier,
-    logoText: String = "Storictor",
-    logoTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
+    logoText: String = "Storictor", // 로고 텍스트
+    logoTextStyle: TextStyle = MaterialTheme.typography.labelLarge, // 로고 크기
     verticalPadding: Dp = 4.dp,
     onLogoClick: (() -> Unit)? = null,
+    modifier: Modifier = Modifier
 ) {
     Box(
         modifier = modifier
@@ -49,7 +60,8 @@ fun LogoBar(
                     offset = Offset(4f, 4f),
                     blurRadius = 8f
                 )
-            )
+            ),
+            modifier = Modifier.clearAndSetSemantics { } // 장식용 - 대체 텍스트 제거
         )
 
         // 실제 텍스트
@@ -61,9 +73,13 @@ fun LogoBar(
             ),
             modifier = if (onLogoClick != null) {
                 Modifier.clickable(
-                    indication = null,
+                    indication = null,  // 클릭 효과 X
                     interactionSource = remember { MutableInteractionSource() }
                 ) { onLogoClick() }
+                    .clearAndSetSemantics {
+                        contentDescription = "홈 화면으로 이동" // 대체 텍스트
+                        role = Role.Button                    // 버튼으로 인식
+                    }
             } else Modifier
         )
     }

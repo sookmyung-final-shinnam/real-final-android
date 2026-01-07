@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -36,6 +37,7 @@ import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.creation.componenet.conversation.ConversationAnswerText
 import com.veryshinnam.myapp.feature.creation.model.AnswerData
 import kotlinx.coroutines.delay
+import kotlin.math.ceil
 
 @Composable
 fun ConversationAnswerContent(
@@ -44,10 +46,12 @@ fun ConversationAnswerContent(
     onFeedback: () -> Unit,
     modifier: Modifier,
     listenTextStyle: TextStyle = MaterialTheme.typography.titleLarge,
+    answerTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(R.color.main_orange)),
     spacerPadding: Dp = 10.dp,
     verticalPadding: Dp = 20.dp,
 ) {
     var progress by remember { mutableStateOf(0f) }
+    var countDown by remember { mutableStateOf(3) }
     var isFinal by remember { mutableStateOf(false) } // userText 고정 여부
 
     val duration = 3000L   // 녹음 대기 3초
@@ -58,6 +62,11 @@ fun ConversationAnswerContent(
         val steps = (duration / interval).toInt()
         repeat(steps) { i ->
             progress = (i + 1) / steps.toFloat()
+
+            // 카운트다운 계산
+            val remainingMillis = duration * (1f - progress)
+            countDown = ceil(remainingMillis / 1000f).toInt().coerceAtLeast(0)
+
             delay(interval)
         }
         onRecordStop() // 3초 후 녹음 중단
@@ -70,23 +79,23 @@ fun ConversationAnswerContent(
 
     Column(
         modifier = modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.spacedBy(verticalPadding),
+        verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
         // --- 다람쥐 이미지
         Image(
             painter = painterResource(R.drawable.img_llm_question),
-            contentDescription = "다람쥐 이미지",
-            modifier = Modifier.fillMaxHeight(0.7f),
+            contentDescription = null, // 장식용
+            modifier = Modifier.fillMaxHeight(0.6f),
             contentScale = ContentScale.Fit
         )
 
-        //  텍스트 + 진행바
+        // 텍스트 + 진행바
         Column(
             modifier = modifier
                 .weight(1f)
                 .padding(bottom = verticalPadding),
-            verticalArrangement = Arrangement.SpaceAround,
+            verticalArrangement = Arrangement.SpaceBetween,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
             Column {
@@ -105,30 +114,43 @@ fun ConversationAnswerContent(
                 ConversationAnswerText(
                     answerData = answerData,
                     isFinal = isFinal,
+                    answerTextStyle = answerTextStyle,
                     modifier = Modifier.fillMaxWidth()
                 )
             }
 
-            // 시간 3초 바
-            Box(
-                modifier = Modifier
-                    .fillMaxHeight(0.15f)
-                    .clip(CircleShape)
-                    .border(2.dp, colorResource(R.color.main_orange), CircleShape),
+            // 시간 3초 바 + 카운트다운
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = Arrangement.spacedBy(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // 배경
                 Box(
                     modifier = Modifier
-                        .fillMaxSize()
-                        .background(colorResource(R.color.lemon_yellow), RoundedCornerShape(50))
-                )
-                // 진행 부분
-                Box(
-                    modifier = Modifier
-                        .align(Alignment.CenterStart)
-                        .fillMaxHeight()
-                        .fillMaxWidth(progress.coerceIn(0f, 1f))
-                        .background(colorResource(R.color.main_orange), RoundedCornerShape(50))
+                        .fillMaxHeight(0.15f)
+                        .clip(CircleShape)
+                        .border(2.dp, colorResource(R.color.main_orange), CircleShape),
+                ) {
+                    // 배경
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .background(colorResource(R.color.lemon_yellow), RoundedCornerShape(50))
+                    )
+                    // 진행 부분
+                    Box(
+                        modifier = Modifier
+                            .align(Alignment.CenterStart)
+                            .fillMaxHeight()
+                            .fillMaxWidth(progress.coerceIn(0f, 1f))
+                            .background(colorResource(R.color.main_orange), RoundedCornerShape(50))
+                    )
+                }
+
+                // 카운트다운
+                Text(
+                    text = if (countDown != 0) "${countDown}초 남았습니다." else "",
+                    style = answerTextStyle,
                 )
             }
         }

@@ -203,9 +203,11 @@ fun SelectionScreen(
             // 상태바 만큼 여백 & 상단 로고
             Column {
                 Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar(onLogoClick = {
-                    if (!isManual) { onWarning() } // 경고창
-                })
+                LogoBar(
+                    onLogoClick = {
+                        if (!isManual) { onWarning() } // 경고창
+                    }
+                )
             }
         },
         bottomBar = {

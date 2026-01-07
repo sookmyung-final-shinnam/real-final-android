@@ -34,7 +34,7 @@ fun HomeNullCard(
         // 상단 물음표 이미지
         Image(
             painter = painterResource(id = R.drawable.ic_question),
-            contentDescription = "빈 카드",
+            contentDescription = null, // 장식용
             modifier = Modifier.fillMaxHeight(.6f),
             contentScale = ContentScale.Fit
         )

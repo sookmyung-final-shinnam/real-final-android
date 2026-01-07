@@ -204,7 +204,6 @@ class ConversationViewModel @Inject constructor(
                 messageId = state.questionData.messageId,
                 userAnswer = state.answerData.userAnswer
             )
-
 //            val res = dummyFeedback(
 //                step = state.loopStep,
 //                tryNum = state.feedbackData.tryNum + 1
@@ -225,9 +224,9 @@ class ConversationViewModel @Inject constructor(
     private suspend fun fetchEndStory(sessionId: Long) {
         try {
             repository.completeConversation(sessionId) // api 호출
-//            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
+            Log.d("ConversationEnding", "Complete API called with sessionId=$sessionId")
         } catch (e: Exception) {
-            Log.e("ConversationaAPIERROR", "Complete API ${e.message}")
+            Log.e("ConversationEnding", "Complete API Error: ${e.message}")
 
             _conversationUiState.value =
                 ConversationUiState.Error(e.message ?: "Complete error")
@@ -317,7 +316,7 @@ class ConversationViewModel @Inject constructor(
         return when (step) {
             1 -> NextStepResult(
                 messageId = 101L,
-                nextStory = "옛날옛날, " ,
+                nextStory = "옛날" ,
 //                        + "아주 넓은 사막 한 가운데에" +
 //                        "‘숙명’이라는 12살 소녀가 살고 있었어요." +
 //                        "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
@@ -348,12 +347,12 @@ class ConversationViewModel @Inject constructor(
             1 -> when (tryNum) {
                 1 -> FeedbackData(
                     isPositive = false,
-                    text = "원투쓰리포원투쓰리포원투쓰리포원투쓰리포원투쓰리포" ,
+                    text = "원투" ,
                     tryNum = tryNum
                 )
                 2 -> FeedbackData(
                     isPositive = true,
-                    text = "원투쓰리포원투쓰리포원투쓰리포원투쓰리포원투쓰리포",
+                    text = "쓰리포",
                     tryNum = tryNum
                 )
                 else -> FeedbackData(
@@ -375,14 +374,9 @@ class ConversationViewModel @Inject constructor(
                     text = "조",
                     tryNum = tryNum
                 )
-                2 -> FeedbackData(
-                    isPositive = false,
-                    text = "좋아요! 올바른 선택이에요.",
-                    tryNum = tryNum
-                )
                 else -> FeedbackData(
                     isPositive = true,
-                    text = "잘했습니다!",
+                    text = "아",
                     tryNum = tryNum
                 )
             }
@@ -407,9 +401,9 @@ class ConversationViewModel @Inject constructor(
         ManualScriptData(step = ConversationStep.START, nextStory = "동화를 만들 준비가 모두 끝났어요!\n지금까지 고른 내용으로\n제가 4번에 나누어 재미있는 이야기를 만들어 줄게요."),
         ManualScriptData(step = ConversationStep.START, nextStory = "\n제가 질문을 하나씩 할 거예요.\n천천히 생각하면서 함께 멋진 동화를 만들어 봐요!"),
         ManualScriptData(step = ConversationStep.STORY, nextStory = "갈색 곱슬머리의 짱신남은 숲 속에서 새로운 모험을 찾기 위해 친구들과 함께 떠날 준비를 하고 있었어요."),
-        ManualScriptData(step = ConversationStep.STORY, nextStory = "그때 신비한 요정 스토릭터는 짱신남에게 말했어요. \"어디 가는거니?\""),
+        ManualScriptData(step = ConversationStep.STORY, nextStory = "그때 신비한 요정 스토릭터는 짱신남에게 말했어요.\n\"어디 가는거니?\""),
         ManualScriptData(step = ConversationStep.QUESTION,  question = "짱신남은 요정 스토릭터에게 무슨 말을 했을까요?"),
-        ManualScriptData(step = ConversationStep.QUESTION, question = "생각이 떠올랐나요?\n제 아래에 있는 마이크 버튼을 눌러서 말해 주세요!"),
+        ManualScriptData(step = ConversationStep.QUESTION, question = "생각이 떠올랐나요?\n제 아래에 있는 마이크 버튼을 눌러\n3초 동안 말해 주세요!"),
         ManualScriptData(step = ConversationStep.ANSWER),
         ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(true, "맞아요! 정말 잘했어요.\n그렇게 대답해 주면 돼요!", 1)),
         ManualScriptData(step = ConversationStep.FEEDBACK, feedback = FeedbackData(false, "만약 동화 내용과 맞지 않는 답변이나 좋지 않은 말이 나오면,\n제가 다시 대답해 달라고 말할 거예요.", 2)),

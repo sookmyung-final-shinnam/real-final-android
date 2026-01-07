@@ -205,6 +205,7 @@ fun CollectionScreen(
                             itemCount = state.collectionDataList.size,
                             itemImage = painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
+                            isCollection = true,
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
                             animalDescription = "보관함 설명 토끼 이미지",
                             cardColor = colorResource(R.color.blue_gray),

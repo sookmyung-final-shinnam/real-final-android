@@ -2,23 +2,30 @@ package com.veryshinnam.myapp.feature.story.content
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.WindowInsets
-import androidx.compose.foundation.layout.asPaddingValues
+import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.systemBars
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.pager.rememberPagerState
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.story.model.PageData
 import com.veryshinnam.myapp.feature.story.model.StoryType
@@ -36,7 +43,8 @@ fun StoryReadingContent(
     onHome: () -> Unit,
     onPrologue: () -> Unit,
     onSpeakPage: (String) -> Unit,
-    onStopSpeaking: () -> Unit
+    onStopSpeaking: () -> Unit,
+    ttsTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(color = colorResource(R.color.main_orange), fontWeight = Bold)
 ) {
     val pagerState = rememberPagerState(
         initialPage = 0,
@@ -94,25 +102,39 @@ fun StoryReadingContent(
         if (pagerState.currentPage < pages.size) {
 
             // TTS 재생 버튼
-            Image(
-                painter = if (isTtsMode) { painterResource(R.drawable.img_speak_on) }
-                else { painterResource(R.drawable.img_speak_off) },
-                contentDescription = "읽어 주기 버튼",
+            Column(
                 modifier = Modifier
-                    .fillMaxHeight(0.24f)
-                    .padding(WindowInsets.systemBars.asPaddingValues())
-                    .align(Alignment.TopEnd)
-                    .clickable { onTtsModeChange() },
-                contentScale = ContentScale.Fit
-            )
+                    .fillMaxHeight(0.3f)
+                    .systemBarsPadding()
+                    .clickable { onTtsModeChange() }
+                    .align(Alignment.TopEnd),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Image(
+                    painter = if (isTtsMode) { painterResource(R.drawable.img_speak_on) }
+                            else { painterResource(R.drawable.img_speak_off) },
+                    contentDescription = "동화 읽어 주기",
+                    modifier = Modifier.weight(1f),
+                    contentScale = ContentScale.Fit
+                )
 
-            // 양옆 페이지 버튼
-//                StoryPageButtons(
-//                    pagerState = pagerState,
-//                    coroutineScope = coroutineScope,
-//                    pageCount = pages.size,
-//                    modifier = Modifier.align(Alignment.BottomCenter)
-//                )
+                Text(
+                    text = " 소리 재생 \n" + if (isTtsMode) "켜짐" else "꺼짐",
+                    textAlign = TextAlign.Center,
+                    style = ttsTextStyle.copy(
+                        lineHeight = ttsTextStyle.lineHeight * 1.2f
+                    ),
+                    modifier = Modifier.background(
+                        brush = Brush.horizontalGradient(
+                            colors = listOf(
+                                Color.Transparent,
+                                colorResource(R.color.background_yellow).copy(0.4f),
+                                Color.Transparent
+                            )
+                        )
+                    )
+                )
+            }
         }
     }
 }

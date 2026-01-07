@@ -125,6 +125,7 @@ class AttendanceViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 출석 체크 화면 사용 매뉴얼
     val manuals = listOf(
+        ManualData("이제 다시 화면을 세로로 돌려주세요!", ManualTarget.NONE),
         ManualData("이곳에서 하루에 한 번 출석 체크를 하고, 지금까지 출석한 날짜를 확인할 수 있어요.", ManualTarget.NONE),
         ManualData("출석 체크를 하면 도장이 하나씩 찍혀요.", ManualTarget.ITEM),
         ManualData("지금까지 모은 도장 수이고,\n도장 10개를 모으면 도토리 1개로 바꿀 수 있어요!", ManualTarget.ITEM),
