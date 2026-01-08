@@ -30,29 +30,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionAgeScroll
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
-import kotlinx.coroutines.launch
-
-// 공통 스크롤 로직
-internal suspend fun scrollToAgeInternal(
-    listState: LazyListState,
-    targetAge: Int,
-    range: IntRange
-) {
-    if (listState.layoutInfo.visibleItemsInfo.isEmpty()) return
-
-    val itemCount = range.count()
-    val base = Int.MAX_VALUE / 2
-    val targetIndex = base - (base % itemCount) + (targetAge - range.first)
-
-    val viewportHeight = listState.layoutInfo.viewportSize.height
-    val itemHeight = listState.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0
-    val centerOffset = (viewportHeight / 2) - (itemHeight / 2)
-
-    listState.animateScrollToItem(
-        index = targetIndex,
-        scrollOffset = -centerOffset
-    )
-}
+import com.veryshinnam.myapp.feature.creation.componenet.selection.scrollToAge
 
 @Composable
 fun SelectionAgeContent(
@@ -75,7 +53,7 @@ fun SelectionAgeContent(
 
     // 버튼 클릭 시 스크롤 실행
     LaunchedEffect(buttonClicked) {
-        scrollToAgeInternal(listState, age, range)
+        scrollToAge(listState, age, range)
     }
 
 
