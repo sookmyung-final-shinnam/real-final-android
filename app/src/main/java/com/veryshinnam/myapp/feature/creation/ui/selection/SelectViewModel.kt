@@ -25,9 +25,10 @@ class SelectViewModel @Inject constructor(
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
     // 나이 스크롤 상태
-    val ageListState: LazyListState = LazyListState(
-        firstVisibleItemIndex = Int.MAX_VALUE / 2 - (Int.MAX_VALUE / 2 % 100) + 5
+    private val _ageListState = LazyListState(
+        firstVisibleItemIndex = Int.MAX_VALUE / 2
     )
+    val ageListState: LazyListState = _ageListState
 
     // ManualManager 구독
     val manualState = manualManager.state
@@ -118,6 +119,18 @@ class SelectViewModel @Inject constructor(
         _selectUiState.update {
             it.copy(selectionData = it.selectionData.copy(age = value.coerceIn(1, 100)))
         }
+    }
+
+    // 나이 증가
+    fun increaseAge() {
+        val current = _selectUiState.value.selectionData.age
+        selectAge(if (current >= 100) 1 else current + 1)
+    }
+
+    // 나이 감소
+    fun decreaseAge() {
+        val current = _selectUiState.value.selectionData.age
+        selectAge(if (current <= 1) 100 else current - 1)
     }
 
     // 이름

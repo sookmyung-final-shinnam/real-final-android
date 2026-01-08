@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -341,6 +342,9 @@ fun SelectionScreen(
                         SelectionAgeContent(
                             age = uiState.selectionData.age,
                             listState = vm.ageListState,
+                            flingBehavior = rememberSnapFlingBehavior(vm.ageListState),
+                            onIncreaseAge = { vm.increaseAge() },
+                            onDecreaseAge = { vm.decreaseAge() },
                             onSelectAge = { vm.selectAge(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
