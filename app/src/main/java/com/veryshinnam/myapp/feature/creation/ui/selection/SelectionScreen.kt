@@ -158,14 +158,8 @@ fun SelectionScreen(
     LaunchedEffect(uiState.selectionData.name) {
         Log.d("SelectScreen", "현재 선택된 이름: ${uiState.selectionData.name}")
     }
-    LaunchedEffect(uiState.selectionData.eyeColor) {
-        Log.d("SelectScreen", "현재 선택된 눈색: ${uiState.selectionData.eyeColor}")
-    }
-    LaunchedEffect(uiState.selectionData.hairColor) {
-        Log.d("SelectScreen", "현재 선택된 머리색: ${uiState.selectionData.hairColor}")
-    }
     LaunchedEffect(uiState.selectionData.hairStyle) {
-        Log.d("SelectScreen", "현재 선택된 머리 스타일: ${uiState.selectionData.hairStyle}")
+        Log.d("SelectScreen", "현재 선택된 눈색: ${uiState.selectionData.eyeColor}\n현재 선택된 머리색: ${uiState.selectionData.hairColor}\n현재 선택된 머리 스타일: ${uiState.selectionData.hairStyle}")
     }
 
     // 세로 모드
@@ -376,11 +370,15 @@ fun SelectionScreen(
 
                     SelectionStep.FACE -> {
                         SelectionFaceContent(
-                            eyeColor = uiState.selectionData.eyeColor,
-                            hairColor = uiState.selectionData.hairColor,
+                            eyeColorIndex = uiState.eyeColorIndex,
+                            eyeColorPage = uiState.eyeColorPage,
+                            hairColorIndex = uiState.hairColorIndex,
+                            hairColorPage = uiState.hairColorPage,
                             hairStyle = uiState.selectionData.hairStyle,
-                            onSelectEyeColor = { vm.selectEyeColor(it) },
-                            onSelectHairColor = { vm.selectHairColor(it) },
+                            onSelectEyeColor = { value, index, page ->
+                                vm.selectEyeColor(value, index, page) },
+                            onSelectHairColor = { value, index, page ->
+                                vm.selectHairColor(value, index, page) },
                             onSelectHairStyle = { vm.selectHairStyle(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onSimpleWarning = { text ->  // 경고 문구

@@ -48,7 +48,7 @@ fun SelectionAgeScroll(
     onSelectAge: (Int) -> Unit, // 나이 변경
     modifier: Modifier = Modifier,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold, textAlign = TextAlign.Center),
-    ageTextStyle: TextStyle = MaterialTheme.typography.titleMedium.copy(color = colorResource(R.color.main_orange), fontWeight = Bold)
+    ageTextStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(color = colorResource(R.color.main_orange), fontWeight = Bold)
 ) {
     var didInitialSync by remember { mutableStateOf(false) } // 초기 진입, 재진입용
     val itemCount = range.count()
@@ -100,7 +100,7 @@ fun SelectionAgeScroll(
             state = listState,
             flingBehavior = flingBehavior,
             horizontalAlignment = Alignment.CenterHorizontally,
-            modifier = Modifier.fillMaxWidth(0.4f)
+            modifier = Modifier.fillMaxWidth(0.44f)
 //                .background(Color.Gray)
                 .zIndex(20f)
                 .background(Color.Transparent),
@@ -158,7 +158,7 @@ fun SelectionAgeScroll(
         // 3. 중앙 강조 박스
         Box(
             modifier = Modifier
-                .fillMaxWidth(0.4f)
+                .fillMaxWidth(0.44f)
                 .background(
                     brush = Brush.horizontalGradient(
                         colors = listOf(
@@ -185,7 +185,7 @@ fun SelectionAgeScroll(
             )
 
             Text(
-                "세",
+                "세 ",
                 modifier = Modifier.align(Alignment.CenterEnd),
                 style = ageTextStyle
             )

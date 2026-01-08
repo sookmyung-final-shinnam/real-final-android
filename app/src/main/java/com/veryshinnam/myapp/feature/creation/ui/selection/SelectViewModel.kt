@@ -141,15 +141,23 @@ class SelectViewModel @Inject constructor(
     }
 
     // 외형
-    fun selectEyeColor(value: String) {
+    fun selectEyeColor(value: String, index: Int, page: Int) {
         _selectUiState.update {
-            it.copy(selectionData = it.selectionData.copy(eyeColor = value))
+            it.copy(
+                selectionData = it.selectionData.copy(eyeColor = value),
+                eyeColorIndex = index,
+                eyeColorPage = page
+            )
         }
     }
 
-    fun selectHairColor(value: String) {
+    fun selectHairColor(value: String, index: Int, page: Int) {
         _selectUiState.update {
-            it.copy(selectionData = it.selectionData.copy(hairColor = value))
+            it.copy(
+                selectionData = it.selectionData.copy(hairColor = value),
+                hairColorIndex = index,
+                hairColorPage = page
+            )
         }
     }
 
