@@ -1,20 +1,26 @@
 package com.veryshinnam.myapp.feature.home.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -24,6 +30,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
@@ -37,10 +44,13 @@ import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
+import kotlinx.coroutines.launch
 import kotlin.math.abs
 
 @Composable
@@ -52,6 +62,7 @@ fun HomeFavoriteCarousel(
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
+    val spacer = 8.dp
     // 즐찾 캐릭터가 없는 경우
     if (characters.isEmpty()) {
         Box(
@@ -116,11 +127,10 @@ fun HomeFavoriteCarousel(
 
     // 즐찾 캐릭터 하나라도 있는 경우
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth().padding(top = spacer),
+        verticalArrangement = Arrangement.spacedBy(spacer),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-
         // 캐러셀
         LazyRow(
             state = listState,
@@ -171,25 +181,67 @@ fun HomeFavoriteCarousel(
         }
 
         // 현재 캐릭터 인덱스 표시
-        Spacer(modifier = Modifier.padding(top = 16.dp))
-        Text(
-            text = buildAnnotatedString {
-                // 현재 인덱스 부분 강조
-                withStyle(
-                    style = spanTextStyle.toSpanStyle().copy(
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.main_orange)
-                    )
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = buildAnnotatedString {
+                    // 현재 인덱스 부분 강조
+                    withStyle(
+                        style = spanTextStyle.toSpanStyle().copy(
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.main_orange)
+                        )
+                    ) {
+                        append("${currentIndex + 1}")
+                    }
+                    // 구분자 + 전체 개수 부분 → 기본 스타일
+                    append(" / $n")
+                },
+                style = textStyle.copy(
+                    color = colorResource(R.color.main_orange)
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.clearAndSetSemantics { } // 장식용
+            )
+
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                // ◀ 이전 버튼
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
-                    append("${currentIndex + 1}")
+                    CircleIconButton(
+                        icon = Icons.Rounded.ChevronLeft,
+                        desc = "이전",
+                        onClick = {
+
+                        },
+                        modifier = Modifier
+                    )
                 }
-                // 구분자 + 전체 개수 부분 → 기본 스타일
-                append(" / $n")
-            },
-            style = textStyle.copy(
-                color = colorResource(R.color.main_orange)
-            ),
-            modifier = Modifier.clearAndSetSemantics { } // 장식용
-        )
+
+                Spacer(Modifier.weight(1f))
+
+                // ▶ 다음 버튼
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    CircleIconButton(
+                        icon = Icons.Rounded.ChevronRight,
+                        desc = "다음",
+                        onClick = {
+                        },
+                        modifier = Modifier
+                    )
+                }
+            }
+        }
     }
 }
