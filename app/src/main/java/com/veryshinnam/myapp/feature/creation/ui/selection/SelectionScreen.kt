@@ -6,6 +6,7 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -157,14 +158,8 @@ fun SelectionScreen(
     LaunchedEffect(uiState.selectionData.name) {
         Log.d("SelectScreen", "현재 선택된 이름: ${uiState.selectionData.name}")
     }
-    LaunchedEffect(uiState.selectionData.eyeColor) {
-        Log.d("SelectScreen", "현재 선택된 눈색: ${uiState.selectionData.eyeColor}")
-    }
-    LaunchedEffect(uiState.selectionData.hairColor) {
-        Log.d("SelectScreen", "현재 선택된 머리색: ${uiState.selectionData.hairColor}")
-    }
     LaunchedEffect(uiState.selectionData.hairStyle) {
-        Log.d("SelectScreen", "현재 선택된 머리 스타일: ${uiState.selectionData.hairStyle}")
+        Log.d("SelectScreen", "현재 선택된 눈색: ${uiState.selectionData.eyeColor}\n현재 선택된 머리색: ${uiState.selectionData.hairColor}\n현재 선택된 머리 스타일: ${uiState.selectionData.hairStyle}")
     }
 
     // 세로 모드
@@ -341,6 +336,9 @@ fun SelectionScreen(
                         SelectionAgeContent(
                             age = uiState.selectionData.age,
                             listState = vm.ageListState,
+                            flingBehavior = rememberSnapFlingBehavior(vm.ageListState),
+                            onIncreaseAge = { vm.increaseAge() },
+                            onDecreaseAge = { vm.decreaseAge() },
                             onSelectAge = { vm.selectAge(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onNextClick = { vm.goToNextStep() },
@@ -372,11 +370,15 @@ fun SelectionScreen(
 
                     SelectionStep.FACE -> {
                         SelectionFaceContent(
-                            eyeColor = uiState.selectionData.eyeColor,
-                            hairColor = uiState.selectionData.hairColor,
+                            eyeColorIndex = uiState.eyeColorIndex,
+                            eyeColorPage = uiState.eyeColorPage,
+                            hairColorIndex = uiState.hairColorIndex,
+                            hairColorPage = uiState.hairColorPage,
                             hairStyle = uiState.selectionData.hairStyle,
-                            onSelectEyeColor = { vm.selectEyeColor(it) },
-                            onSelectHairColor = { vm.selectHairColor(it) },
+                            onSelectEyeColor = { value, index, page ->
+                                vm.selectEyeColor(value, index, page) },
+                            onSelectHairColor = { value, index, page ->
+                                vm.selectHairColor(value, index, page) },
                             onSelectHairStyle = { vm.selectHairStyle(it) },
                             onPrevClick = { vm.goToPrevStep() },
                             onSimpleWarning = { text ->  // 경고 문구

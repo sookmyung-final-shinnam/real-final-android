@@ -195,9 +195,10 @@ fun DashboardScreen(
                 // 조회 성공
                 is DashboardUiState.Success -> {
                     Column(
-                        modifier = Modifier
+                        modifier = Modifier.fillMaxSize()
                             // 매뉴얼일 때 스크롤 제한
-                            .verticalScroll(scrollState, enabled = !isManual)
+                            .verticalScroll(scrollState, enabled = !isManual),
+                        verticalArrangement = Arrangement.Top
                     ) {
                         // 섹션 0: 대시보드 상단
                         Box(
