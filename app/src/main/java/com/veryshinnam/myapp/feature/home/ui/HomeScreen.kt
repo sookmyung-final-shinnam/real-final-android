@@ -1,7 +1,6 @@
 package com.veryshinnam.myapp.feature.home.ui
 
 import android.content.pm.ActivityInfo
-import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
