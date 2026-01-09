@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo
 import android.util.Log
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Box
@@ -22,7 +21,6 @@ import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -48,6 +46,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.TargetButton
 import com.veryshinnam.myapp.common.component.TargetCustom
@@ -441,20 +440,16 @@ fun SelectionScreen(
                     }
                 )
         ) {
-            Text(
-                color = colorResource(R.color.main_orange),
-                text = "그만 들을래요.",
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .clickable {
-                        when (manualState) {
-                            ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual() }
-                            else -> {}
-                        }
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
                     }
-                    .padding(30.dp)
-                    .zIndex(3f)
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
 
             squirrelRect?.let { rect ->
@@ -481,7 +476,6 @@ fun SelectionScreen(
                     3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
                 }
             }
-
         }
     }
 }

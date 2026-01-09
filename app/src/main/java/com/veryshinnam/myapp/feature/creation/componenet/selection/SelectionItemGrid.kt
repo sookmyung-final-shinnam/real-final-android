@@ -8,8 +8,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -23,7 +22,6 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -67,7 +65,7 @@ fun SelectionItemGrid(
                             // 직접추가 값이 있으면 버튼 표시
                             Button(
                                 onClick = { onItemClick(customItem) },
-                                shape = RoundedCornerShape(48.dp),
+                                shape = CircleShape,
                                 colors = ButtonDefaults.buttonColors(
                                     containerColor = if (isSelected) colorResource(R.color.main_orange)
                                                      else colorResource(R.color.lemon_yellow),
@@ -90,7 +88,7 @@ fun SelectionItemGrid(
 
                         Button(
                             onClick = { onItemClick(item) },
-                            shape = RoundedCornerShape(48.dp),
+                            shape = CircleShape,
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = if (isSelected) colorResource(R.color.main_orange)
                                                  else colorResource(R.color.lemon_yellow),

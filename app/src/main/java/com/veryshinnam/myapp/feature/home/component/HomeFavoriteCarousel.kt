@@ -5,43 +5,79 @@ import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.lazy.LazyListState
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.rounded.ChevronLeft
+import androidx.compose.material.icons.rounded.ChevronRight
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.snapshotFlow
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.ScrollAxisRange
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.horizontalScrollAxisRange
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
-import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.withStyle
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlin.math.abs
+
+// 카드 이동 버튼 - 스크롤 애니메이션 효과
+suspend fun animateToCenter(
+    listState: LazyListState,
+    targetIndex: Int
+) {
+    snapshotFlow { listState.layoutInfo.visibleItemsInfo.isNotEmpty() }
+        .first { it }
+
+    listState.animateScrollToItem(targetIndex)
+
+    snapshotFlow { listState.layoutInfo }
+        .first { info ->
+            info.visibleItemsInfo.any { it.index == targetIndex }
+        }
+
+    val info = listState.layoutInfo
+    val viewportCenter = info.viewportSize.width / 2
+    val item = info.visibleItemsInfo.first { it.index == targetIndex }
+    val itemSize = item.size
+
+    val scrollOffset = -(viewportCenter - itemSize / 2)
+
+    listState.animateScrollToItem(
+        index = targetIndex,
+        scrollOffset = scrollOffset
+    )
+}
 
 @Composable
 fun HomeFavoriteCarousel(
@@ -49,10 +85,97 @@ fun HomeFavoriteCarousel(
     characters: List<FavoriteData>,
     lastSelectedId: Long?,
     onCharacterClick: (Long) -> Unit,
+    onCharacterChanged: (Long) -> Unit,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     spanTextStyle: TextStyle = MaterialTheme.typography.displaySmall
 ) {
-    // 즐찾 캐릭터가 없는 경우
+    val spacer = 8.dp
+    val scope = rememberCoroutineScope()
+    val listState = rememberLazyListState()
+
+    // 부족한 건 null로 채워서 카드 다섯 개 맞추기
+    val favorites: List<FavoriteData?> =
+        if (characters.size < 5) {
+            characters + List(5 - characters.size) { null }
+        } else { characters }
+
+    val n = favorites.size // 5개 제한
+
+    // 무한 스크롤 고려 시작 인덱스
+    val baseIndex = remember(n) {
+        val mid = Int.MAX_VALUE / 2
+        mid - (mid % n) // n의 배수로 둠
+    }
+
+    // 화면 센터 캐릭터 번호
+    val centerIndex by remember {
+        derivedStateOf {
+            val info = listState.layoutInfo
+            val visible = info.visibleItemsInfo
+            if (visible.isEmpty()) return@derivedStateOf 0
+
+            val viewportCenter = info.viewportStartOffset + info.viewportSize.width / 2
+
+            val centerItem = visible.minByOrNull { item ->
+                abs((item.offset + item.size / 2) - viewportCenter)
+            }
+
+            centerItem?.index?.mod(n) ?: 0
+        }
+    }
+
+    // -- 초기화 설정
+    // 초기 정렬 | lastSelectedId 변경 | 화면 회전 시 재정렬
+    LaunchedEffect(lastSelectedId, listState.layoutInfo.viewportSize) {
+
+        // 레이아웃 준비 대기
+        snapshotFlow {
+            val info = listState.layoutInfo
+            info.visibleItemsInfo.isNotEmpty() &&
+                    info.visibleItemsInfo.all { it.size > 0 }
+        }.first { it }
+
+        val target =
+            lastSelectedId?.let { id ->
+                val selected = characters.indexOfFirst { it.id == id }
+                if (selected >= 0) baseIndex + selected else baseIndex
+            } ?: baseIndex
+
+        // 먼저 target 근처로 점프
+        listState.scrollToItem(target)
+
+        // 한 프레임 대기
+        snapshotFlow { listState.layoutInfo }
+            .first { it.visibleItemsInfo.any { item -> item.index == target } }
+
+        // 정확한 중앙 정렬 계산
+        val info = listState.layoutInfo
+        val viewportCenter = info.viewportSize.width / 2
+
+        val item = info.visibleItemsInfo.firstOrNull { it.index == target }
+        if (item != null) {
+
+            // 아이템의 중앙이 뷰포트 중앙에 오도록 offset 계산
+            val itemSize = item.size
+            val scrollOffset = -(viewportCenter - itemSize / 2)
+
+            listState.scrollToItem(
+                index = target,
+                scrollOffset = scrollOffset
+            )
+        }
+    }
+
+    // 스크롤 중단 시 마지막 선택 캐릭터 업데이트
+    LaunchedEffect(listState.isScrollInProgress) {
+        if (!listState.isScrollInProgress) {
+            favorites[centerIndex]?.let { it ->
+                onCharacterChanged(it.id)
+            }
+        }
+    }
+
+    // --- 즐찾 캐릭터가 없는 경우
     if (characters.isEmpty()) {
         Box(
             modifier = modifier.fillMaxSize(),
@@ -64,7 +187,7 @@ fun HomeFavoriteCarousel(
                 modifier = Modifier
                     .semantics { }
                     .fillMaxWidth(0.6f)   // 가로는 60% 정도
-                    .aspectRatio(3f / 4f) // 비율 유지 (3:4)
+                    .aspectRatio(3f / 4f)   // 카드 비율 유지 (3:4)
                     .clearAndSetSemantics {
                         contentDescription = "즐겨찾기한 캐릭터 없음. 보관함에서 즐겨찾기 버튼으로 캐릭터를 추가하세요!"
                     }
@@ -75,86 +198,51 @@ fun HomeFavoriteCarousel(
         return
     }
 
-    // 부족한 건 null로 채워서 카드 다섯 개 맞추기
-    val favorites: List<FavoriteData?> =
-        if (characters.size < 5) {
-            characters + List(5 - characters.size) { null }
-        } else { characters }
-
-    val n = favorites.size
-    val loopCount = Int.MAX_VALUE  // 무한 스크롤
-
-    val baseIndex = (loopCount / 2) - ((loopCount / 2) % n) // 스크롤 상태 관리 (첫 인덱스에서 시작)
-    val listState = rememberLazyListState()
-
-    // 현재 중앙 아이템 인덱스 계산
-    val layoutInfo = listState.layoutInfo           // 현재 리스트 레이아웃 정보
-    val visibleItems = layoutInfo.visibleItemsInfo  // 현재 보이는 아이템들 정보
-    val screenCenter = layoutInfo.viewportStartOffset + layoutInfo.viewportSize.width / 2
-
-
-    // 보이는 아이템 중 화면 중앙에 가장 가까운 아이템 찾기
-    val centerItem = visibleItems.minByOrNull { item ->
-        abs((item.offset + item.size / 2) - screenCenter)
-    }
-
-    // 그 아이템의 index를 n(데이터 크기)로 나눈 값 → 실제 데이터 인덱스
-    val currentIndex = centerItem?.index?.rem(n)?.let { (it + n) % n } ?: 0
-
-    LaunchedEffect(lastSelectedId) {
-        if (lastSelectedId != null) {
-            val selectedIndex = characters.indexOfFirst { it.id == lastSelectedId }
-            if (selectedIndex >= 0) {
-                val targetIndex = baseIndex + selectedIndex
-                listState.scrollToItem(targetIndex)
-            }
-        } else {
-            // 아무 선택 없으면 기본 가운데(baseIndex)로
-            listState.scrollToItem(baseIndex)
-        }
-    }
-
-    // 즐찾 캐릭터 하나라도 있는 경우
+    // --- 즐찾 캐릭터 하나라도 있는 경우
     Column(
-        modifier = modifier.fillMaxWidth(),
-        verticalArrangement = Arrangement.Center,
+        modifier = modifier.fillMaxWidth().padding(top = spacer),
+        verticalArrangement = Arrangement.spacedBy(spacer),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
 
         // 캐러셀
         LazyRow(
             state = listState,
-            flingBehavior = rememberSnapFlingBehavior(listState), // 스크롤 시 중간 위치
+            flingBehavior = rememberSnapFlingBehavior(listState),
             modifier = Modifier.fillMaxWidth(),
-            contentPadding = PaddingValues(horizontal = 100.dp),
         ) {
-            items(loopCount) { index ->
-                // 무한 스크롤 효과: 실제 데이터는 index % n 으로 순환
+            items(Int.MAX_VALUE) { index ->     // 무한 스크롤
                 val character = favorites[index % n]
 
-                // 현재 아이템의 중심점 계산
-                val currentItem = visibleItems.find { it.index == index }
-                val itemCenter = currentItem?.let { it.offset + it.size / 2 } ?: 0
+                // 현재 아이템 정보
+                val itemInfo = listState.layoutInfo.visibleItemsInfo
+                    .firstOrNull { it.index == index }
 
-                // 화면 중앙과의 거리 계산
-                val distanceFromCenter = abs(screenCenter - itemCenter).toFloat()
-                val maxDistance = layoutInfo.viewportSize.width / 2f
+                // 뷰포트 중앙
+                val viewportCenter = listState.layoutInfo.viewportStartOffset +
+                listState.layoutInfo.viewportSize.width / 2
 
-                // 0 ~ 1 사이로 정규화 (가운데 = 0, 멀리 = 1)
-                val normalizedDistance = (distanceFromCenter / maxDistance).coerceAtMost(1f)
+                val distance = itemInfo?.let {
+                    val itemCenter = it.offset + it.size / 2
+                    abs(itemCenter - viewportCenter).toFloat()
+                } ?: Float.MAX_VALUE
 
-                val scale = 1f - (normalizedDistance * 0.4f) // 중앙에 가까울수록 크게
-                val alpha = 1f - (normalizedDistance * 0.5f) // 중앙에 가까울수록 선명
+                val maxDistance = (itemInfo?.size ?: 1) * 1.4f
 
-                val isCenter = normalizedDistance < 0.3f // 중앙 여부 플래그
+                val rawFraction = (distance / maxDistance).coerceIn(0f, 1f)
+                val fraction = rawFraction * rawFraction * rawFraction
+
+                val scale = 1.0f - fraction * 0.9f
+                val alpha = 1.4f - fraction * 1.3f
+                val isCenter = fraction < 0.25f
 
                 HomeFavoriteCard(
                     character = character,
-                    index = currentIndex + 1,
+                    index = (index % n) + 1,
                     modifier = Modifier
-                        .fillMaxHeight(0.8f)         // 세로 크기 기준
-                        .aspectRatio(3f / 4f)        // 가로:세로 = 3:4
-                        .graphicsLayer { // 중앙 강조 효과
+                        .fillMaxHeight(0.8f)    // 세로 크기 기준
+                        .aspectRatio(3f / 4f)     // 가로:세로 = 3:4
+                        .graphicsLayer {                // 중앙 강조 효과
                             scaleX = scale
                             scaleY = scale
                             this.alpha = alpha
@@ -165,31 +253,100 @@ fun HomeFavoriteCarousel(
                             shape = RoundedCornerShape(16.dp))
                         .clip(RoundedCornerShape(16.dp)),
                     isCenter = isCenter,
-                    onClick = { c -> c?.let { onCharacterClick(it.id) } }
+                    onClick = { c ->
+                        c?.let { onCharacterClick(it.id) }
+                    }
                 )
             }
         }
 
-        // 현재 캐릭터 인덱스 표시
-        Spacer(modifier = Modifier.padding(top = 16.dp))
-        Text(
-            text = buildAnnotatedString {
-                // 현재 인덱스 부분 강조
-                withStyle(
-                    style = spanTextStyle.toSpanStyle().copy(
-                        fontWeight = FontWeight.Bold,
-                        color = colorResource(R.color.main_orange)
-                    )
+        // -- 현재 캐릭터 인덱스 표시 및 카드 이동 버튼
+        Box(
+            modifier = Modifier.weight(1f),
+            contentAlignment = Alignment.Center
+        ) {
+            // 현재 캐릭터 인덱스
+            Text(
+                text = buildAnnotatedString {
+                    // 현재 인덱스 부분 강조
+                    withStyle(
+                        style = spanTextStyle.toSpanStyle().copy(
+                            fontWeight = FontWeight.Bold,
+                            color = colorResource(R.color.main_orange)
+                        )
+                    ) {
+                        append("${centerIndex + 1}")
+                    }
+                    // 구분자 + 전체 개수 부분 → 기본 스타일
+                    append(" / $n")
+                },
+                style = textStyle.copy(
+                    color = colorResource(R.color.main_orange)
+                ),
+                textAlign = TextAlign.Center,
+                modifier = Modifier.clearAndSetSemantics { } // 장식용
+            )
+
+            // 카드 이동 버튼
+            Row(
+                modifier = Modifier,
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.Center
+            ) {
+                // ◀ 이전 버튼
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterEnd
                 ) {
-                    append("${currentIndex + 1}")
+                    CircleIconButton(
+                        icon = Icons.Rounded.ChevronLeft,
+                        desc = "이전",
+                        onClick = {
+                            scope.launch {
+                                val info = listState.layoutInfo
+                                val viewportCenter =
+                                    info.viewportStartOffset + info.viewportSize.width / 2
+
+                                val centerItem = info.visibleItemsInfo.minByOrNull { item ->
+                                    abs((item.offset + item.size / 2) - viewportCenter)
+                                } ?: return@launch
+
+                                val target = centerItem.index - 1
+                                animateToCenter(listState, target)
+                            }
+                        },
+                        modifier = Modifier
+                    )
                 }
-                // 구분자 + 전체 개수 부분 → 기본 스타일
-                append(" / $n")
-            },
-            style = textStyle.copy(
-                color = colorResource(R.color.main_orange)
-            ),
-            modifier = Modifier.clearAndSetSemantics { } // 장식용
-        )
+
+                Spacer(Modifier.weight(1f))
+
+                // ▶ 다음 버튼
+                Box(
+                    modifier = Modifier.weight(1f),
+                    contentAlignment = Alignment.CenterStart
+                ) {
+                    CircleIconButton(
+                        icon = Icons.Rounded.ChevronRight,
+                        desc = "다음",
+                        onClick = {
+                            scope.launch {
+                                val info = listState.layoutInfo
+                                val viewportCenter =
+                                    info.viewportStartOffset + info.viewportSize.width / 2
+
+                                val centerItem = info.visibleItemsInfo.minByOrNull { item ->
+                                    abs((item.offset + item.size / 2) - viewportCenter)
+                                } ?: return@launch
+
+                                val target = centerItem.index + 1
+                                animateToCenter(listState, target)
+                            }
+                        },
+                        modifier = Modifier
+                    )
+                }
+            }
+        }
     }
 }

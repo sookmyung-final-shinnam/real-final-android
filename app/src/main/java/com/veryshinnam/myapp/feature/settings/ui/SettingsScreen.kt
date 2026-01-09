@@ -11,6 +11,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxHeight
@@ -22,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -46,10 +46,6 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.Role
-import androidx.compose.ui.semantics.clearAndSetSemantics
-import androidx.compose.ui.semantics.contentDescription
-import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
@@ -187,7 +183,8 @@ fun SettingsScreen(
                                 }
                             )
                         },
-                        text = "로그아웃"
+                        text = "로그아웃",
+                        contentPadding = PaddingValues(vertical = horizontalPadding)
                     )
 
                     // 회원 탈퇴 버튼
@@ -209,7 +206,8 @@ fun SettingsScreen(
                                 }
                             )
                         },
-                        text = "회원 탈퇴"
+                        text = "회원 탈퇴",
+                        contentPadding = PaddingValues(vertical = horizontalPadding)
                     )
 
 //                     앱 사용 매뉴얼 버튼
@@ -219,7 +217,8 @@ fun SettingsScreen(
                             vm.startManual()
                             onBack()
                         },
-                        text = "앱 사용 설명 다시 보기"
+                        text = "앱 사용 설명 다시 보기",
+                        contentPadding = PaddingValues(vertical = horizontalPadding)
                     )
 
                     // 문의하기
@@ -242,7 +241,8 @@ fun SettingsScreen(
                                 Toast.makeText(context, "메일을 보낼 수 있는 앱이 설치되어 있지 않습니다.", Toast.LENGTH_SHORT).show()
                             }
                         },
-                        text = "메일 보내기"
+                        text = "메일 보내기",
+                        contentPadding = PaddingValues(vertical = horizontalPadding)
                     )
                 }
             }

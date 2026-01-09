@@ -22,7 +22,6 @@ import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -50,6 +49,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.TargetImage
 import com.veryshinnam.myapp.common.component.TargetItem
 import com.veryshinnam.myapp.common.component.TargetMessage
@@ -346,20 +346,16 @@ fun AttendanceScreen(
                     }
                 )
         ) {
-            Text(
-                text = "그만 들을래요.",
-                color = colorResource(R.color.main_orange),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(30.dp)
-                    .clickable {
-                        when (manualState) {
-                            ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual() }
-                            else -> {}
-                        }
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
                     }
-                    .zIndex(11f)
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
 
             pigRect?.let { rect ->

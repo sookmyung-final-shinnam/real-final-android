@@ -8,7 +8,6 @@ import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -24,7 +23,6 @@ import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -50,6 +48,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.model.ManualState
@@ -426,21 +425,17 @@ fun ConversationScreen(
 
         // 매뉴얼일 때
         if (isManual) {
-            Text(
-                text = "그만 들을래요.",
-                color = colorResource(R.color.main_orange),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(30.dp)
-                    .clickable {
-                        when {
-                            manualStep == 6 -> { } // 사용자 답변: 클릭 무시
-                            isManualStart -> { vm.stopManual() }
-                            isManualStop -> { onStopManual() }
-                            else -> {}
-                        }
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when {
+                        isManualStart -> { vm.stopManual() }
+                        isManualStop -> { onStopManual() }
+                        else -> {}
                     }
-                    .zIndex(11f)
+                },
+                enabled = manualStep != 6, // 사용자 답변: 비활성
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
         }
     }

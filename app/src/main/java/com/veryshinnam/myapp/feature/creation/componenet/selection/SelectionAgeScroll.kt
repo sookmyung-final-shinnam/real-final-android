@@ -32,12 +32,32 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import com.veryshinnam.myapp.R
-import com.veryshinnam.myapp.feature.creation.content.selection.scrollToAgeInternal
 import kotlinx.coroutines.flow.distinctUntilChanged
 import kotlinx.coroutines.flow.filter
 import kotlinx.coroutines.flow.first
 import kotlin.math.abs
 
+// 공통 나이 스크롤 효과
+internal suspend fun scrollToAge(
+    listState: LazyListState,
+    targetAge: Int,
+    range: IntRange
+) {
+    if (listState.layoutInfo.visibleItemsInfo.isEmpty()) return
+
+    val itemCount = range.count()
+    val base = Int.MAX_VALUE / 2
+    val targetIndex = base - (base % itemCount) + (targetAge - range.first)
+
+    val viewportHeight = listState.layoutInfo.viewportSize.height
+    val itemHeight = listState.layoutInfo.visibleItemsInfo.firstOrNull()?.size ?: 0
+    val centerOffset = (viewportHeight / 2) - (itemHeight / 2)
+
+    listState.animateScrollToItem(
+        index = targetIndex,
+        scrollOffset = -centerOffset
+    )
+}
 
 @Composable
 fun SelectionAgeScroll(
@@ -71,7 +91,7 @@ fun SelectionAgeScroll(
         snapshotFlow { listState.layoutInfo.visibleItemsInfo.isNotEmpty() }
             .first { it }
 
-        scrollToAgeInternal(listState, age, range)
+        scrollToAge(listState, age, range)
         didInitialSync = true
     }
 
@@ -101,7 +121,6 @@ fun SelectionAgeScroll(
             flingBehavior = flingBehavior,
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(0.44f)
-//                .background(Color.Gray)
                 .zIndex(20f)
                 .background(Color.Transparent),
         ) {
