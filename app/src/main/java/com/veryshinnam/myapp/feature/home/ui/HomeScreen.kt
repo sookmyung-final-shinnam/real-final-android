@@ -217,11 +217,14 @@ fun HomeScreen(
                         Column(
                             modifier = Modifier
                                 .padding(horizontal = horizontalPadding)
+                                .semantics {
+                                    traversalIndex = 0f
+                                    isTraversalGroup = true
+                                }
                         ) {
                             // 다람쥐 이미지 + 도토리 수
                             Box(
-                                modifier = Modifier.fillMaxWidth()
-                                    .height(imageHeight)
+                                modifier = Modifier.fillMaxWidth().height(imageHeight)
                             ) {
                                 // 다람쥐 이미지
                                 Image(
@@ -270,6 +273,10 @@ fun HomeScreen(
                                             messageRect = it.boundsInRoot()
                                         }
                                     }
+                                    .semantics {
+                                        traversalIndex = 1f
+                                        isTraversalGroup = true
+                                    }
                                     .padding(all = messagePadding),
                                 contentAlignment = Alignment.TopStart
                             ) {
@@ -277,7 +284,8 @@ fun HomeScreen(
                                 Text(
                                     text = message,
                                     style = textStyle,
-                                    modifier = Modifier.clearAndSetSemantics {
+                                    modifier = Modifier.semantics {
+                                        traversalIndex = 0f
                                         contentDescription = "사용자 메시지, $message"
                                     }
                                 )
@@ -290,6 +298,7 @@ fun HomeScreen(
                                         .clickable(onClick = onSettingsClick)
                                         .align(Alignment.TopEnd)
                                         .semantics(true) {
+                                            traversalIndex = 1f
                                             contentDescription = "설정"      // 자식 묶어서 대체 텍스트 설정
                                             role = Role.Button              // 버튼으로 인식
                                         }
@@ -309,13 +318,16 @@ fun HomeScreen(
                                             .fillMaxHeight()
                                     )
                                 }
-
                             }
                         }
 
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
+                                .semantics {
+                                    traversalIndex = 1f
+                                    isTraversalGroup = true
+                                }
                                 .weight(1f, fill = true)
                         ) {
                             // 캐러셀 (남은 공간의 80%)

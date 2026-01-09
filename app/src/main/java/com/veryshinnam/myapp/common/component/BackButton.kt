@@ -23,6 +23,11 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.IntSize
@@ -42,6 +47,10 @@ fun BackButton(
     Box(modifier = modifier) {
         Row(
             modifier = Modifier
+                .semantics {
+                    contentDescription = "이전 화면으로 돌아가기"
+                    role = Role.Button
+                }
                 .zIndex(20f)
                 .clickable(onClick = onBackClick)
                 .padding(8.dp)
@@ -50,7 +59,7 @@ fun BackButton(
         ) {
             Icon(
                 imageVector = Icons.Rounded.ArrowBackIosNew,
-                contentDescription = "뒤로",
+                contentDescription = null,
                 tint = colorResource(R.color.main_orange)
             )
             Spacer(Modifier.width(4.dp))
@@ -59,7 +68,8 @@ fun BackButton(
                 style = textStyle.copy(
                     color = colorResource(id = R.color.main_orange),
                     fontWeight = SemiBold
-                )
+                ),
+                modifier = Modifier.clearAndSetSemantics {}
             )
         }
 
