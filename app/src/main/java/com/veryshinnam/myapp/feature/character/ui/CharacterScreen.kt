@@ -50,7 +50,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
-import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -59,6 +58,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ManualStopButton
@@ -267,12 +267,10 @@ fun CharacterScreen(
                             .zIndex(1f)
                     )
                         if (!isManual) {
-                            Text(
+                            InstructionText(
                                 text = "Tab 버튼을 눌러 보세요.\n카드가 뒤집히고 동화가 나와요!",
-                                style = MaterialTheme.typography.bodySmall.copy(fontWeight = SemiBold),
-                                color = colorResource(R.color.main_orange),
                                 textAlign = TextAlign.End,
-                                lineHeight =  MaterialTheme.typography.bodySmall.lineHeight * 1.2f,
+                                textStyle = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 6.dp).align(Alignment.End)
                             )
                         }

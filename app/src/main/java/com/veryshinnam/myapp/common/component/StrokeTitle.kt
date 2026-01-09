@@ -20,6 +20,7 @@ import androidx.compose.ui.unit.dp
 fun StrokeTitle(
     modifier: Modifier = Modifier,
     titleText: String,
+    textAlign: TextAlign = TextAlign.Center,
     titleTextStyle: TextStyle = MaterialTheme.typography.labelLarge,
     titleColor: Color,
     strokeColor: Color,
@@ -36,7 +37,7 @@ fun StrokeTitle(
         // 윤곽선
         Text(
             text = titleText,
-            textAlign = TextAlign.Center,
+            textAlign = textAlign,
             maxLines = maxLines,
             overflow = overflow,
             softWrap = softWrap,
@@ -50,7 +51,7 @@ fun StrokeTitle(
         // 실제 텍스트
         Text(
             text = titleText,
-            textAlign = TextAlign.Center,
+            textAlign = textAlign,
             maxLines = maxLines,
             overflow = overflow,
             softWrap = softWrap,

@@ -29,7 +29,6 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -49,7 +48,6 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -59,6 +57,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.CircleButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.core.orientation.OrientationManager
@@ -82,7 +81,7 @@ fun SettingsScreen(
     onLogoClick: () -> Unit,
     horizontalPadding: Dp = 16.dp,
     verticalPadding: Dp = 24.dp,
-    footerTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange), textAlign = Center),
+    footerTextStyle: TextStyle =  MaterialTheme.typography.bodySmall,
     vm: SettingsViewModel = hiltViewModel()
 ) {
     // 메일 관련 변수
@@ -259,12 +258,10 @@ fun SettingsScreen(
                 contentScale = ContentScale.Fit
             )
 
-            Text(
+            InstructionText(
                 text = "앱 사용 중 불편한 점을 발견하셨다면\n언제든지 저희에게 연락주세요!",
-                style = footerTextStyle,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = horizontalPadding / 2)
+                textStyle = footerTextStyle,
+                modifier = Modifier.fillMaxWidth().padding(bottom = horizontalPadding / 2)
             )
         }
     }
