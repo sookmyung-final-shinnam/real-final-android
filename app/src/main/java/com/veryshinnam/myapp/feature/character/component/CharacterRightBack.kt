@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -25,13 +28,12 @@ import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.StrokeTitle
 import com.veryshinnam.myapp.feature.character.model.StoriesData
-import com.veryshinnam.myapp.feature.character.model.VideoStatus
 import com.veryshinnam.myapp.feature.story.model.StoryType
 
 @Composable
 fun CharacterRightBack(
     modifier: Modifier,
-    stories: StoriesData,             // 동화 정보 (종이책 + 영상)
+    stories: StoriesData, // 동화 정보 (종이책 + 영상)
     onStoryClick: (Long, StoryType) -> Unit,
     onLockerClick: (Long) -> Unit,
     onMakingClick: () -> Unit,
@@ -39,12 +41,16 @@ fun CharacterRightBack(
     onStoryRect: (Rect) -> Unit,
     onVideoRect: (Rect) -> Unit,
     rotation: Float,
-    storyInfo: String = "동화 보러 가기",
-    videoInfo: String = "움직이는 동화 보러 가기",
+    storyInfo: String = "동화",
+    videoInfo: String = "움직이는 동화",
     titleTextStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
     infoTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = FontWeight.Bold),
 ) {
-    Column(modifier = modifier) {
+    Column(modifier = modifier
+        .semantics {
+            isTraversalGroup = true
+        }
+    ) {
         // --- 동화 제목
         StrokeTitle(
             titleText = stories.title,
@@ -55,6 +61,7 @@ fun CharacterRightBack(
             maxLines = 1,
             overflow = TextOverflow.Ellipsis,
             modifier = Modifier.fillMaxWidth()
+                .clearAndSetSemantics { }
         )
 
         Spacer(Modifier.height(8.dp))
@@ -74,6 +81,7 @@ fun CharacterRightBack(
             ) {
                 CharacterStoryButton(
                     storyId = stories.storyId,
+                    title = stories.title,
                     imageUrl = stories.imageUrl,
                     youTubeLink = stories.imageYLink,
                     infoText = storyInfo,
@@ -90,10 +98,10 @@ fun CharacterRightBack(
                 )
 
                 Text(
-                    text = storyInfo,
+                    text = "$storyInfo 보러 가기",
                     style = infoTextStyle,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clearAndSetSemantics { },
                     maxLines = 1
                 )
             }
@@ -107,6 +115,7 @@ fun CharacterRightBack(
             ) {
                 CharacterVideoButton(
                     storyId = stories.storyId,
+                    title = stories.title,
                     videoUrl = stories.videoUrl,
                     videoStatus = stories.videoStatus,
                     youTubeLink = stories.videoYLink,
@@ -126,10 +135,10 @@ fun CharacterRightBack(
                 )
 
                 Text(
-                    text = videoInfo,
+                    text = "$videoInfo 보러 가기",
                     style = infoTextStyle,
                     textAlign = TextAlign.Center,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().clearAndSetSemantics { },
                     maxLines = 1
                 )
             }

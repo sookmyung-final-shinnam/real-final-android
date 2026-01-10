@@ -12,11 +12,9 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
-import androidx.compose.ui.geometry.Rect
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -36,7 +34,9 @@ fun CharacterTabButton(
         modifier = modifier
             .fillMaxHeight(size)
             .aspectRatio(1f)
-            .alpha(alpha), // 버튼 전체 투명도
+            .alpha(alpha)
+            .clearAndSetSemantics { }
+        , // 버튼 전체 투명도
         shape = CircleShape,
         border = BorderStroke(2.dp, colorResource(R.color.blue_gray)),
         colors = ButtonDefaults.buttonColors(
@@ -47,7 +47,8 @@ fun CharacterTabButton(
     ) {
         Text(
             text = text,
-            style = textStyle
+            style = textStyle,
+            modifier = Modifier.clearAndSetSemantics { }
         )
     }
 }

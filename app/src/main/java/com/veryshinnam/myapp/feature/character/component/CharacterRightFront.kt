@@ -10,6 +10,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.heading
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -47,7 +50,10 @@ fun CharacterRightFront(
                     strokeWidth = 8f,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis,
-                    modifier = Modifier
+                    modifier = Modifier.semantics {
+                        contentDescription = "${character.name} 캐릭터 정보"
+                        heading()
+                    }
                 )
                 Text(
                     text = "${ if (character.gender == Gender.FEMALE) "여자" else "남자" } ${character.age}세",
@@ -81,8 +87,10 @@ fun CharacterRightFront(
                 // 생성일
                 Text(
                     text = character.birth,
-                    style = subTextStyle
-
+                    style = subTextStyle,
+                    modifier = Modifier.semantics {
+                        contentDescription = "${character.birth}에 생성됨"
+                    }
                 )
             }
         }

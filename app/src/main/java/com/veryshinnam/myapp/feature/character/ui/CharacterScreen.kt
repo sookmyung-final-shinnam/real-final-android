@@ -47,6 +47,9 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -159,6 +162,9 @@ fun CharacterScreen(
 
     Box(
         modifier = Modifier
+            .semantics {
+                isTraversalGroup = true
+            }
             .fillMaxSize()
             .background(colorResource(R.color.background_yellow)),
         contentAlignment = Alignment.Center
@@ -177,7 +183,10 @@ fun CharacterScreen(
             modifier = Modifier
                 .padding(WindowInsets.statusBars.asPaddingValues())
                 .zIndex(1f)
-                .align(Alignment.TopStart),
+                .align(Alignment.TopStart)
+                .semantics {
+                    traversalIndex = 1f
+                },
             onBackClick = onBack
         )
 
@@ -219,56 +228,56 @@ fun CharacterScreen(
 
                     // 오른쪽 캐릭터 정보 카드
                     Column {
-                    CharacterCardRight(
-                        character = state.characterData,
-                        isFront = isFront,
-                        onFlip = { newFront ->
-                            val prevFront = isFront // 이전 면
-                            isFront = newFront      // 업데이트된 면
+                        CharacterCardRight(
+                            character = state.characterData,
+                            isFront = isFront,
+                            onFlip = { newFront ->
+                                val prevFront = isFront // 이전 면
+                                isFront = newFront      // 업데이트된 면
 
-                            // 뒤 > 앞 때만 refresh
-                            if (!prevFront && newFront) {
-                                vm.refreshStories(state.characterData.id)
-                            }
-                        },
-                        onStoryClick = onStoryClick,
-                        onLockerClick = { storyId ->
-                            isWarning = true
-                            warnedStoryId = storyId },
-                        onMakingClick = { isVideoMaking = true },
-                        onKakaoClick = { storyYLink ->
-                            if (!storyYLink.isNullOrBlank()) {
-                                isLinkSharing = true
-                                youtubeLink = storyYLink
-                            } else {
-                                // 링크 없음 처리
-                                isLinkNotExisting = true
-                            }
-                        },
-                        onTabRect = { rect ->
-                            if (manualState == ManualState.START && tabRect == null) {
-                                tabRect = rect
-                            }
-                        },
-                        onStoryRect = { rect ->
-                            if (manualState == ManualState.START
-                                && manualStep == 4 && storyRect == null) {
-                                storyRect = rect
-                            }
-                        },
-                        onVideoRect = { rect ->
-                            if (manualState == ManualState.START
-                                && manualStep == 4 && videoRect == null) {
-                                videoRect = rect
-                            }
-                        },
-                        modifier = Modifier
-                            .aspectRatio(1.78f) // 카드 비율
-                            .zIndex(1f)
-                    )
+                                // 뒤 > 앞 때만 refresh
+                                if (!prevFront && newFront) {
+                                    vm.refreshStories(state.characterData.id)
+                                }
+                            },
+                            onStoryClick = onStoryClick,
+                            onLockerClick = { storyId ->
+                                isWarning = true
+                                warnedStoryId = storyId },
+                            onMakingClick = { isVideoMaking = true },
+                            onKakaoClick = { storyYLink ->
+                                if (!storyYLink.isNullOrBlank()) {
+                                    isLinkSharing = true
+                                    youtubeLink = storyYLink
+                                } else {
+                                    // 링크 없음 처리
+                                    isLinkNotExisting = true
+                                }
+                            },
+                            onTabRect = { rect ->
+                                if (manualState == ManualState.START && tabRect == null) {
+                                    tabRect = rect
+                                }
+                            },
+                            onStoryRect = { rect ->
+                                if (manualState == ManualState.START
+                                    && manualStep == 4 && storyRect == null) {
+                                    storyRect = rect
+                                }
+                            },
+                            onVideoRect = { rect ->
+                                if (manualState == ManualState.START
+                                    && manualStep == 4 && videoRect == null) {
+                                    videoRect = rect
+                                }
+                            },
+                            modifier = Modifier
+                                .aspectRatio(1.78f) // 카드 비율
+                                .zIndex(1f)
+                        )
                         if (!isManual) {
                             InstructionText(
-                                text = "Tab 버튼을 눌러 보세요.\n카드가 뒤집히고 동화가 나와요!",
+                                text = "카드를 눌러 보세요.\n카드가 뒤집히고 동화가 나와요!",
                                 textAlign = TextAlign.End,
                                 textStyle = MaterialTheme.typography.bodySmall,
                                 modifier = Modifier.padding(top = 6.dp).align(Alignment.End)
@@ -283,8 +292,8 @@ fun CharacterScreen(
     // 움직이는 동화 잠금 해제
     if (isWarning && warnedStoryId != null) {
         WarningConfirmSheet(
-            warningText = "동영상 동화의 잠금을 해제할까요?\n" +
-                    "아이템 1개가 소진돼요!",
+            warningText = "움직이는 동화의 잠금을 해제할까요?\n" +
+                    "도토리 1개가 소진돼요!",
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {

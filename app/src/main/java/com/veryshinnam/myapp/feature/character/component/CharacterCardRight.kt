@@ -3,19 +3,14 @@ package com.veryshinnam.myapp.feature.character.component
 import androidx.compose.animation.core.FastOutSlowInEasing
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
@@ -24,6 +19,10 @@ import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -67,10 +66,14 @@ fun CharacterCardRight(
                     rotationX = rotation // x축 기준
                     cameraDistance = cameraDistancePx
                 }
+                .semantics {
+                    stateDescription = "캐릭터 카드" + if (isFront) "앞면" else "뒷면. 동화 제목. ${character.stories.title}"
+                    role = Role.Button
+                }
                 .clickable {
                     onFlip(!isFront) // 앞 > 뒤 새로고침
-                } // 카드 전체 클릭시 뒤집
-            ,colors = CardDefaults.cardColors(
+                }, // 카드 전체 클릭시 뒤집
+            colors = CardDefaults.cardColors(
                 containerColor = colorResource(R.color.card_orange_90)
             )
         ) {
@@ -111,7 +114,9 @@ fun CharacterCardRight(
                     )
                 } else {
                     // 넘어가면 뒷면 표시 + 회전 다시 보정
-                    Box(Modifier.graphicsLayer { rotationX = 180f }) {
+                    Box(
+                        Modifier.graphicsLayer { rotationX = 180f }
+                    ) {
 
                         // 뒷면: 동화 정보
                         CharacterRightBack(
