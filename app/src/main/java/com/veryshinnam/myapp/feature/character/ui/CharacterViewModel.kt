@@ -119,13 +119,13 @@ class CharacterViewModel @Inject constructor(
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
         ManualData("화면을 가로로 돌려\n준비해 주세요!", ManualTarget.NONE),
-        ManualData("이곳에서 만들어진 캐릭터의 사진과 정보를 자세히 볼 수 있어요.", ManualTarget.NONE),
+        ManualData("캐릭터룸에서는 완성된 캐릭터의 사진과 정보를 자세히 볼 수 있어요.", ManualTarget.NONE),
         ManualData("저희가 만든 짱신남은 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
         ManualData("저기 Tab 버튼을 한번 눌러 보실래요?", ManualTarget.BUTTON),
-        ManualData("바로 카드 뒷 장에서 동화를 확인할 수 있고", ManualTarget.NONE),
+        ManualData("설명 카드가 뒤집히면서 만든 동화를 확인할 수 있고", ManualTarget.NONE),
         ManualData("도토리 1개를 사용하여 잠금을 해제하면", ManualTarget.NONE),
         ManualData("동화를 움직이는 형태로도 볼 수 있답니다.", ManualTarget.NONE),
-        ManualData("만든 동화를 친구들에게도 공유할 수 있다는 것도 잊지 마세요!", ManualTarget.IMAGE),
+        ManualData("카톡 버튼을 눌러 만든 동화를 친구들에게도 공유할 수 있답니다!", ManualTarget.IMAGE),
     )
 
     val manualDummy = CharacterData(
