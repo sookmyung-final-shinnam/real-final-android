@@ -27,6 +27,13 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -242,30 +249,43 @@ fun DashboardScreen(
                                 Row(
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .padding(top = spacer, start = horizontalPadding, end = horizontalPadding),
+                                        .padding(top = spacer, start = horizontalPadding, end = horizontalPadding)
+                                        .semantics{
+                                            isTraversalGroup = true
+                                        },
                                     horizontalArrangement = Arrangement.spacedBy(spacer)
                                 ) {
                                     // 왼쪽 테마
                                     DashBoardStaticsCard(
                                         title = "주제",
                                         chartStats = state.themeChart,
+                                        chartText = state.themeChartText,
                                         listStats = state.themeList,
                                         onHelpRect = {
                                             if (manualState == ManualState.START && tHelpRect == null) {
                                                 tHelpRect = it } },
                                         modifier = Modifier
                                             .weight(1f)
+                                            .semantics{
+                                                isTraversalGroup = true
+                                                traversalIndex = 0f
+                                            }
                                     )
 
                                     // 오른쪽 배경
                                     DashBoardStaticsCard(
                                         title = "배경",
                                         chartStats = state.backgroundChart,
+                                        chartText = state.backgroundChartText,
                                         listStats = state.backgroundList,
                                         onHelpRect = {
                                             if (manualState == ManualState.START && bHelpRect == null) {
                                                 bHelpRect = it }},
                                         modifier = Modifier.weight(1f)
+                                            .semantics{
+                                                isTraversalGroup = true
+                                                traversalIndex = 1f
+                                            }
                                     )
                                 }
 
@@ -289,6 +309,9 @@ fun DashboardScreen(
                                             Modifier.background(Color.Black.copy(alpha = 0.5f))
                                         else Modifier
                                     )
+                                    .semantics{
+                                        isTraversalGroup = true
+                                    }
                             ){
                                 // 이동 버튼
                                 Row(
@@ -296,7 +319,10 @@ fun DashboardScreen(
                                         .fillMaxWidth()
                                         .padding(horizontal = 2.dp)
                                         .matchParentSize()
-                                        .zIndex(10f),
+                                        .zIndex(10f)
+                                        .semantics{
+                                            traversalIndex = 0f
+                                        },
                                     horizontalArrangement = Arrangement.SpaceBetween,
                                     verticalAlignment = Alignment.CenterVertically
                                 ) {
@@ -305,7 +331,12 @@ fun DashboardScreen(
                                         icon = Icons.Rounded.ChevronLeft,
                                         desc = "이전\n동화 분석",
                                         onClick = { vm.prevStory() },
-                                        modifier = Modifier.height(88.dp),
+                                        modifier = Modifier.height(88.dp)
+                                            .semantics(true){
+                                                contentDescription = "이전 동화 분석"
+                                                role = Role.Button
+                                                stateDescription = "현재 전체 ${state.storyAnalysis.size}개 중 ${state.storyIndex +1}번째 분석."
+                                            },
                                         containerColor = colorResource(R.color.main_orange).copy(
                                             0.5f
                                         )
@@ -316,7 +347,12 @@ fun DashboardScreen(
                                         icon = Icons.Rounded.ChevronRight,
                                         desc = "다음\n동화 분석",
                                         onClick = { vm.nextStory() },
-                                        modifier = Modifier.height(88.dp),
+                                        modifier = Modifier.height(88.dp)
+                                            .semantics(true){
+                                                contentDescription = "다음 동화 분석"
+                                                role = Role.Button
+                                                stateDescription = "현재 전체 ${state.storyAnalysis.size}개 중 ${state.storyIndex +1}번째 분석."
+                                            },
                                         containerColor = colorResource(R.color.main_orange).copy(
                                             0.5f
                                         )
@@ -333,7 +369,10 @@ fun DashboardScreen(
                                     onHelpRect = {
                                         if (manualState == ManualState.START && sHelpRect == null) {
                                             sHelpRect = it }},
-                                    modifier = Modifier
+                                    modifier = Modifier.semantics{
+                                        traversalIndex = 1f
+                                        isTraversalGroup = true
+                                    },
                                 )
 
                                 // 매뉴얼일 때, 1, 2 강조

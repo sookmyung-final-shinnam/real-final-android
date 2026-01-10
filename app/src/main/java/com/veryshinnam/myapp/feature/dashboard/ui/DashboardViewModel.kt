@@ -3,11 +3,9 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.DashboardInit
-import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.common.model.ManualData
 import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.core.manual.ManualManager
-import com.veryshinnam.myapp.feature.collection.ui.CollectionUiState
 import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepository
 import com.veryshinnam.myapp.feature.dashboard.model.Attempt
 import com.veryshinnam.myapp.feature.dashboard.model.ChartStatData
@@ -62,6 +60,8 @@ class DashboardViewModel @Inject constructor(
                     stats = dashboard.themeStats,
                     initList = DashboardInit.THEMES,
                     customLabel = DashboardInit.CUSTOM)
+                val themeChartStats = toChartStats(themeChart)
+                val themeChartText = toChartText(themeChartStats)
 
                 // 배경용 차트 정보 변환
                 val backgroundChart = groupByCustom(
@@ -69,6 +69,8 @@ class DashboardViewModel @Inject constructor(
                     initList = DashboardInit.BACKGROUNDS,
                     customLabel = DashboardInit.CUSTOM
                 )
+                val backgroundChartStats = toChartStats(backgroundChart)
+                val backgroundChartText = toChartText(backgroundChartStats)
 
                 // 개별 스토리 분석
                 val storyAnalysis = toStoryAnalysisData(
@@ -80,9 +82,11 @@ class DashboardViewModel @Inject constructor(
                     username = dashboard.username,
                     maxTheme = dashboard.maxTheme,
                     maxBackground = dashboard.maxBackground,
-                    themeChart = toChartStats(themeChart),
+                    themeChart = themeChartStats,
+                    themeChartText = themeChartText,
                     themeList = dashboard.themeStats,
-                    backgroundChart = toChartStats(backgroundChart),
+                    backgroundChart = backgroundChartStats,
+                    backgroundChartText = backgroundChartText,
                     backgroundList = dashboard.backgroundStats,
 
                     storyAnalysis = storyAnalysis,
@@ -127,7 +131,7 @@ class DashboardViewModel @Inject constructor(
         return result
     }
 
-    // 차트 그리기 위한
+    // 차트 그리기 위한 비율 계산
     fun toChartStats(stats: List<StatData>): List<ChartStatData> {
         val total = stats.sumOf { it.count } // cnt 모두 합치기 (int)
             .toFloat()                       // int > float 변환
@@ -138,6 +142,19 @@ class DashboardViewModel @Inject constructor(
                 name = it.name,
                 ratio = it.count / total
             )
+        }
+    }
+
+    // 차트 그리기 위한 비율 텍스트로
+    fun toChartText(
+        chartStats: List<ChartStatData>
+    ): String {
+        return buildString {
+            chartStats.forEachIndexed { index, stat ->
+                val percent = (stat.ratio * 100).toInt()
+                append("${stat.name} ${percent}퍼센트")
+                if (index != chartStats.lastIndex) append(", ")
+            }
         }
     }
 
@@ -160,6 +177,14 @@ class DashboardViewModel @Inject constructor(
                     )
                 }
 
+            val emotionText = buildString {
+                chartStats.forEachIndexed { index, stat ->
+                    val percent = (stat.ratio * 100).toInt()
+                    append("${stat.name} ${percent}퍼센트")
+                    if (index != chartStats.lastIndex) append(", ")
+                }
+            }
+
             StoryAnalysisData(
                 storyId = language.storyId,
                 storyTitle = language.storyName,
@@ -169,10 +194,12 @@ class DashboardViewModel @Inject constructor(
                 avgAnswerLength = language.avgAnswerLength,
                 newWords = language.newWords,
                 emotions = chartStats,
+                emotionText = emotionText,
                 summary = emotionData?.summary.orEmpty()
             )
         }
     }
+
 
     // 다음 스토리 분석 이동
     fun nextStory() {
@@ -258,6 +285,7 @@ class DashboardViewModel @Inject constructor(
                 ChartStatData("놀람", 0.30f),
                 ChartStatData("평온", 0.15f),
             ),
+            emotionText = "",
             summary = ""
         ),
     )
@@ -271,8 +299,11 @@ class DashboardViewModel @Inject constructor(
             maxTheme = "",
             maxBackground = "",
             themeChart = dummyTCharts,
+            themeChartText = "",
             themeList = dummyTStats,
+
             backgroundChart = dummyBCharts,
+            backgroundChartText = "",
             backgroundList = dummyBStats,
 
             storyAnalysis = dummyStory,
