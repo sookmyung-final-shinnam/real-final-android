@@ -57,7 +57,7 @@ fun ConversationEndContent(
         Box(modifier = Modifier.fillMaxHeight(0.5f)){
             Image(
                 painter = painterResource(R.drawable.img_login),
-                contentDescription = "다람쥐 이미지",
+                contentDescription = null,
                 modifier = Modifier.fillMaxSize(),
                 contentScale = ContentScale.Fit
             )

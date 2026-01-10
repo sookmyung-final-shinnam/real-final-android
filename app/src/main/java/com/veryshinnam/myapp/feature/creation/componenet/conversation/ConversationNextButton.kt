@@ -14,6 +14,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -30,7 +34,11 @@ fun ConversationNextButton(
     Row (
         modifier = if (enabled) {
             modifier.clickable { onClick() }
-        } else { modifier },
+        } else { modifier }
+            .clearAndSetSemantics {
+                contentDescription = "다음 진행"
+                role = Role.Button
+            },
         horizontalArrangement = Arrangement.Center,
         verticalAlignment = Alignment.CenterVertically
     ) {

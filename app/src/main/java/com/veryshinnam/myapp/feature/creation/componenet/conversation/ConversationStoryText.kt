@@ -47,7 +47,7 @@ fun ConversationStoryText(
         // 다람쥐 이미지
         Image(
             painter = painterResource(R.drawable.img_squirrel_cut),
-            contentDescription = "설명하는 다람쥐 이미지",
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxWidth(0.4f)
                 .padding(start = imageStartPadding)

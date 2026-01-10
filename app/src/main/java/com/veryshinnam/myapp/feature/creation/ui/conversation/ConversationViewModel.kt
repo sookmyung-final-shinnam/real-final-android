@@ -304,10 +304,6 @@ class ConversationViewModel @Inject constructor(
         return StartResult(
             sessionId = 1L,
             nextStory = "더미",
-//            nextStory = "옛날옛날, 아주 넓은 사막 한 가운데에" +
-//                    "‘숙명’이라는 12살 소녀가 살고 있었어요." +
-//                    "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
-//                    "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
             currentStep = "STEP_01"
         )
     }
@@ -351,7 +347,7 @@ class ConversationViewModel @Inject constructor(
                     tryNum = tryNum
                 )
                 2 -> FeedbackData(
-                    isPositive = true,
+                    isPositive = false,
                     text = "쓰리포",
                     tryNum = tryNum
                 )
