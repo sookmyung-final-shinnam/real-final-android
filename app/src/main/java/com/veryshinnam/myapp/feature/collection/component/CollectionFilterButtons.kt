@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -15,6 +16,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -31,8 +38,9 @@ fun CollectionFilterButtons(
     // 성별 필터
     val filters = listOf(Gender.ALL, Gender.FEMALE, Gender.MALE)
 
-    Row (
-        modifier = modifier,
+    Row(
+        modifier = modifier
+            .wrapContentWidth(),
         horizontalArrangement = Arrangement.spacedBy(4.dp)
     ) {
         filters.forEach { filter ->
@@ -52,7 +60,12 @@ fun CollectionFilterButtons(
                         shape = CircleShape
                     )
                     .clickable { onFilterClick(filter) }
-                    .padding(horizontal = 20.dp, vertical = 12.dp),
+                    .padding(horizontal = 20.dp, vertical = 12.dp)
+                    .semantics(true) {
+                        contentDescription = "${filter.type} 성별"
+                        role = Role.RadioButton
+                        selected = isSelected
+                    },
                 contentAlignment = Alignment.Center
             ) {
                 Text(
@@ -60,7 +73,8 @@ fun CollectionFilterButtons(
                     style = textStyle.copy(
                         fontWeight = FontWeight.Bold,
                         color = textColor
-                    )
+                    ),
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         }

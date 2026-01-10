@@ -3,6 +3,7 @@ package com.veryshinnam.myapp.feature.collection.component
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,6 +19,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
@@ -28,10 +36,11 @@ import com.veryshinnam.myapp.common.model.ImageType
 
 @Composable
 fun CollectionCharacterItem(
-    cId: Long,       // 캐릭터 아이디
-    cName: String,   // 캐릭터 이름
-    cImage: ImageType, // 캐릭터 이미지
+    cId: Long,          // 캐릭터 아이디
+    cName: String,      // 캐릭터 이름
+    cImage: ImageType,  // 캐릭터 이미지
     isFavorite: Boolean, // 캐릭터 즐찾 여부
+    onItemClick: (Long) -> Unit,
     onFavoriteClick: (cId: Long) -> Unit,   // 클릭 시 외부 처리
     textStyle: TextStyle = MaterialTheme.typography.titleLarge,
     modifier: Modifier   // 부모가 넘겨준 크기
@@ -45,25 +54,39 @@ fun CollectionCharacterItem(
                 2.dp,
                 colorResource(id = R.color.blue_gray),
                 RoundedCornerShape(16.dp))
+            .semantics {
+               isTraversalGroup = true
+            }
     ) {
         // 캐릭터 이미지
-        when (cImage) {
-            is ImageType.Url -> {
-                AsyncImage(
-                    model = cImage.url,
-                    contentDescription = "캐릭터 이미지",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop,
-                )
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .clickable { onItemClick(cId) }
+                .semantics {
+                    traversalIndex = 0f
+                    contentDescription = cName + "캐릭터 자세히 보기"
+                    role = Role.Button
             }
+        ) {
+            when (cImage) {
+                is ImageType.Url -> {
+                    AsyncImage(
+                        model = cImage.url,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop,
+                    )
+                }
 
-            is ImageType.Resource -> {
-                Image(
-                    painter = painterResource(id = cImage.resId),
-                    contentDescription = "매뉴얼 캐릭터 이미지",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
+                is ImageType.Resource -> {
+                    Image(
+                        painter = painterResource(id = cImage.resId),
+                        contentDescription = "매뉴얼 캐릭터 이미지",
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
             }
         }
 
@@ -73,7 +96,11 @@ fun CollectionCharacterItem(
                 .fillMaxWidth(0.44f)
                 .aspectRatio(1f)
                 .align(Alignment.TopStart)
-                .padding(4.dp),
+                .padding(4.dp)
+                .semantics {
+                    traversalIndex = 1f
+                    contentDescription = "${cName}의 즐겨찾기"
+                },
             characterId = cId,
             isFavorite = isFavorite,
             onFavoriteClick = onFavoriteClick,
@@ -89,6 +116,7 @@ fun CollectionCharacterItem(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .padding(bottom = 4.dp) // 아래 패딩
+                .clearAndSetSemantics { }
         )
     }
 }

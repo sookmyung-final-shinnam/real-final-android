@@ -100,7 +100,7 @@ fun WarningSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
-                        contentDescription = "닫기",
+                        contentDescription = "시트 닫기",
                         tint = colorResource(R.color.main_orange_50),
                         modifier = Modifier.fillMaxSize()
                     )
@@ -115,7 +115,7 @@ fun WarningSheet(
                 ) {
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
-                        contentDescription = "경고 이미지",
+                        contentDescription = "경고",
                         modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )

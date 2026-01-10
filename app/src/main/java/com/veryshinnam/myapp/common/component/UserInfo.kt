@@ -24,6 +24,9 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
@@ -45,8 +48,8 @@ fun UserInfo(
     itemDescription: String = "",
     isCollection: Boolean = false,
     animalImage: Painter,
-    animalDescription: String,
     bottomPadding: Dp = 10.dp,
+    screenText: String,
     cardPadding: Dp = 16.dp,
     cardColor: Color,
     cardText: String,
@@ -69,7 +72,7 @@ fun UserInfo(
         ) {
             Image(
                 painter = animalImage,
-                contentDescription = animalDescription,
+                contentDescription = null,  // 장식용
                 modifier = Modifier
                     .fillMaxHeight()
                     .align(Alignment.BottomEnd)
@@ -107,7 +110,10 @@ fun UserInfo(
                     color = cardColor,
                     shape = RoundedCornerShape(16.dp))
                 .onGloballyPositioned { onMessageRect(it.boundsInRoot()) }
-                .padding(cardPadding),
+                .padding(cardPadding)
+                .semantics(true) {
+                    contentDescription =  screenText + cardText
+                },
             contentAlignment = Alignment.TopStart
         ) {
             // 강조 텍스트 처리
@@ -155,7 +161,8 @@ fun UserInfo(
                     lineBreak = LineBreak.Simple,
                     lineHeight = cardTextStyle.lineHeight * 1.2f
                 ),
-                softWrap = true
+                softWrap = true,
+                modifier = Modifier.clearAndSetSemantics { }
             )
         }
     }

@@ -210,8 +210,8 @@ fun AttendanceScreen(
                             itemCount = state.attendanceData.stamps,
                             itemImage =  painterResource(R.drawable.ic_stamp),
                             itemDescription = "모은 도장 수",
+                            screenText = "출석체크 설명:",
                             animalImage = painterResource(R.drawable.img_pig_cut),
-                            animalDescription = "출석체크 설명 돼지 이미지",
                             cardColor = colorResource(R.color.deep_pink),
                             cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
                                     "도장 10 개당 도토리 1 개라는 걸 잊지 마세요~!",

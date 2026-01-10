@@ -217,7 +217,7 @@ fun DashboardScreen(
                                         start = horizontalPadding, end = horizontalPadding),
                                 isItem = false, // 아이템 설명 존재
                                 animalImage = painterResource(R.drawable.img_fox_cut),
-                                animalDescription = "보관함 설명 여우 이미지",
+                                screenText = "대시보드 설명:",
                                 cardColor = greenColor,
                                 cardText =  if (isManual) manualMessage
                                     else if (isEmpty) "아직 ${state.username}의\n최대 관심사를 찾을 수 없어요!"

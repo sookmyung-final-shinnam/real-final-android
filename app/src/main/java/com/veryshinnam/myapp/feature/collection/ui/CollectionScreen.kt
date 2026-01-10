@@ -42,6 +42,8 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -199,14 +201,16 @@ fun CollectionScreen(
                     ) {
                         // 보관함 상단
                         UserInfo(
-                            modifier = Modifier,
+                            modifier = Modifier.semantics {
+                                isTraversalGroup = true
+                            },
                             isItem = true, // 아이템 설명 존재
                             itemCount = state.collectionDataList.size,
                             itemImage = painterResource(R.drawable.ic_character),
                             itemDescription = "보관함 캐릭터 수",
                             isCollection = true,
+                            screenText = "보관함 설명:",
                             animalImage = painterResource(R.drawable.img_rabbit_cut),
-                            animalDescription = "보관함 설명 토끼 이미지",
                             cardColor = colorResource(R.color.blue_gray),
                             cardText = "지금까지 만든 캐릭터들이에요.\n좋아하는 캐릭터 5명을 표시해 주세요. 그러면 홈 화면에서 바로 만나 볼 수 있어요!",
                             spanText = "캐릭터 5명",
@@ -233,7 +237,7 @@ fun CollectionScreen(
                         CollectionFilterButtons(
                             selectedFilter = state.selectedFilter,
                             onFilterClick = { filter -> vm.selectFilter(filter) },
-                            modifier = Modifier.fillMaxWidth()
+                            modifier = Modifier.align(Alignment.Start)
                         )
 
                         // 캐릭터 아이템 그리드 (3*3)
@@ -255,8 +259,8 @@ fun CollectionScreen(
                                         SimpleWarningText = text
                                     }
                                 },
-                                onItemClick = { item ->
-                                    onItemClick(item.id)
+                                onItemClick = { id ->
+                                    onItemClick(id)
                                 },
                                 cellPadding = spacerPadding / 2,
                                 modifier = Modifier.fillMaxSize(),
