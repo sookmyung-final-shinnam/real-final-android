@@ -304,7 +304,7 @@ fun HomeFavoriteCarousel(
 
                         contentDescription = character?.let {
                             "현재 선택된 캐릭터 카드, ${it.name}, 전체 ${n}개 중 ${centerIndex + 1}번째"
-                        } ?: "비어 있는 카드, 보관함에서 즐겨찾기 버튼으로 캐릭터를 추가할 수 있어요."
+                        } ?: "비어 있는 카드, 전체 ${n}개 중 ${centerIndex + 1}번째, 보관함에서 즐겨찾기 버튼으로 캐릭터를 추가할 수 있어요."
 
                         if (character != null) {
                             role = Role.Button
@@ -372,7 +372,8 @@ fun HomeFavoriteCarousel(
                             animateToCenter(listState, target)
                         }
                     },
-                    modifier = Modifier.fillMaxHeight().semantics(true) {
+                    modifier = Modifier.fillMaxHeight()
+                        .semantics(true) {
                         contentDescription = "이전 즐겨찾기 캐릭터"
                         role = Role.Button
                     }

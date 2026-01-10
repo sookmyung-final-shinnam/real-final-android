@@ -17,6 +17,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -76,7 +80,11 @@ fun StoryScreen(
             modifier = Modifier
                 .align(Alignment.TopStart)
                 .padding(WindowInsets.statusBars.asPaddingValues())
-                .zIndex(1f),
+                .zIndex(1f)
+                .clearAndSetSemantics {
+                    contentDescription = if (isPrologue) "이전 화면으로 돌아가기" else "프롤로그 화면으로 돌아가기"
+                    role = Role.Button
+                },
             onBackClick = { if (isPrologue) onBack() else vm.goToPrologue() }
         )
 

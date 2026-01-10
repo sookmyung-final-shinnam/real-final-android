@@ -17,6 +17,9 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -37,7 +40,10 @@ fun StoryEndingPage(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(colorResource(R.color.background_yellow)), // 배경 색상
+            .background(colorResource(R.color.background_yellow)) // 배경 색상
+            .semantics(true) {
+                contentDescription = "동화 끝 화면"
+            },
         horizontalAlignment = Alignment.CenterHorizontally,
         verticalArrangement = Arrangement.Center
     ) {
@@ -45,7 +51,8 @@ fun StoryEndingPage(
         // THE + 이미지 + END
         Row(
             verticalAlignment = Alignment.CenterVertically,
-            horizontalArrangement = Arrangement.spacedBy(spacePadding)
+            horizontalArrangement = Arrangement.spacedBy(spacePadding),
+            modifier = Modifier.clearAndSetSemantics { }
         ) {
             StrokeTitle(
                 modifier = Modifier,
@@ -60,7 +67,7 @@ fun StoryEndingPage(
 
             Image(
                 painter = painterResource(R.drawable.img_story_ending),
-                contentDescription = "마지막 페이지 이미지",
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(0.35f),
                 contentScale = ContentScale.Fit
@@ -100,10 +107,14 @@ fun StoryEndingPage(
                         color = colorResource(id = R.color.blue_gray),
                         shape = CircleShape
                     )
+                    .semantics(true) {
+                        contentDescription = "첫 페이지로 이동"
+                    }
             ) {
                 Text(
                     "첫 페이지로",
-                    style = buttonTextStyle
+                    style = buttonTextStyle,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
 
@@ -121,10 +132,14 @@ fun StoryEndingPage(
                         color = colorResource(id = R.color.blue_gray),
                         shape = CircleShape
                     )
+                    .semantics(true) {
+                        contentDescription = "홈 화면으로 이동"
+                    }
             ) {
                 Text(
                     "홈 화면으로",
-                    style = buttonTextStyle
+                    style = buttonTextStyle,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         }
