@@ -105,7 +105,7 @@ fun SelectionAgeContent(
                     },
                     modifier = Modifier.height(80.dp)
                             .semantics(true) {
-                            contentDescription = "나이 감소"
+                            contentDescription = "나이 증가"
                             role = Role.Button
                             stateDescription = "현재 나이: $age 세"
                         },
