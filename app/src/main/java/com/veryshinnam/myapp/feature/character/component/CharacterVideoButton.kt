@@ -122,7 +122,6 @@ fun CharacterVideoButton(
             Button(
                 onClick = { onKakaoClick(youTubeLink) },
                 modifier = Modifier
-//                        .align(Alignment.TopEnd)
                     .fillMaxHeight(kakaoSize)
                     .aspectRatio(1f)
                     .zIndex(1f),
