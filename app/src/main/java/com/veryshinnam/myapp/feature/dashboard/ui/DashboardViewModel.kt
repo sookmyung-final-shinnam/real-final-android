@@ -230,7 +230,7 @@ class DashboardViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 홈 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("와~ 이제 마지막 설명이에요!\n여기는 대시보드예요", ManualTarget.NONE),
+        ManualData("와~ 이제 마지막 설명이에요!\n여기는 대시보드예요.", ManualTarget.NONE),
         ManualData("여기에서는 좋아했던 테마와 배경이 기록되고,", ManualTarget.NONE),
         ManualData("동화를 만들며 도전한 횟수와 그때의 기분도 남아요.", ManualTarget.NONE),
         ManualData("이건 미리 보여주는 화면이에요.\n앞으로 새로 만드는 동화 이야기들이 이곳을 채울 거예요!", ManualTarget.NONE),
@@ -329,7 +329,6 @@ class DashboardViewModel @Inject constructor(
         manualManager.finish()
         _manualStep.value = 0 // step 초기화
     }
-
 
     fun stopManual() = manualManager.stop()
 

@@ -38,6 +38,9 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -191,255 +194,286 @@ fun SelectionScreen(
     }
 
     // ui 화면
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = {
-            // 상태바 만큼 여백 & 상단 로고
-            Column {
-                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar(
-                    onLogoClick = {
-                        if (!isManual) { onWarning() } // 경고창
-                    }
-                )
+    Box {
+        Scaffold(
+            containerColor = colorResource(id = R.color.background_yellow),
+            topBar = {
+                // 상태바 만큼 여백 & 상단 로고
+                Column {
+                    Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                    LogoBar(
+                        onLogoClick = {
+                            if (!isManual) { onWarning() } // 경고창
+                        }
+                    )
+                }
+            },
+            bottomBar = {
+                // 네비게이션바 만큼 여백
+                Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
             }
-        },
-        bottomBar = {
-            // 네비게이션바 만큼 여백
-            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.TopStart
-        ) {
-            // 뒤로 가기 버튼
-            BackButton(
-                onBackClick = { handleBack() },
-                modifier = Modifier.align(Alignment.TopStart)
-            )
-
-            Column(
-                Modifier
+        ) { innerPadding ->
+            Box(
+                modifier = Modifier
                     .fillMaxSize()
-                    .padding(horizontal = horizontalPadding),
+                    .padding(innerPadding),
+                contentAlignment = Alignment.TopStart
             ) {
-                Box{
-                    // 진행바
-                    StepProgressBar(
-                        steps = 6,
-                        currentStep = uiState.currentStep,
-                        modifier = Modifier
-                            .align(Alignment.CenterStart)
-                            .fillMaxWidth(0.7f)
-                            .fillMaxHeight(0.2f)
-                            .offset(x = 12.dp, y = (-20).dp)
-                            .onGloballyPositioned {
-                                if (manualState == ManualState.START  && progressRect == null) {
-                                    progressRect = it.boundsInRoot()
-                                }
-                            }
-                            .zIndex(1f)
-                    )
+                // 뒤로 가기 버튼
+                BackButton(
+                    onBackClick = { handleBack() },
+                    modifier = Modifier.align(Alignment.TopStart)
+                )
 
-                    UserInfo(
-                        modifier = Modifier.align(Alignment.TopStart),
-                        animalImage = painterResource(R.drawable.img_squirrel_cut),
-                        screenText = "단계 설명:",
-                        cardColor = colorResource(R.color.main_orange),
-                        cardText =  getInfoText(selectionStep, isInputMode),
-                        onAnimalRect = { rect ->
-                            if (manualState == ManualState.START && squirrelRect == null) {
-                                squirrelRect = rect
-                            }
-                        },
-                        onMessageRect = { rect ->
-                            if (manualState == ManualState.START && messageRect == null) {
-                                messageRect = rect
-                            }
-                        }
-                    )
-                }
-
-                // 단계별 Content 분기
-                when (selectionStep) {
-                    SelectionStep.THEME -> {
-                        SelectionThemeContent(
-                            themes = uiState.selectionData.themes,
-                            customTheme = uiState.selectionData.customTheme,
-                            isInputMode = isInputMode,
-                            onInputModeChange = { isInputMode = it },
-                            onCustomThemeInput = { vm.addCustomTheme(it) },
-                            onThemeSelect = { vm.selectTheme(it) },
-                            onNextClick = { vm.goToNextStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            onFirstBRect = { rect ->
-                                if (manualState == ManualState.START && firstBRect == null) {
-                                    firstBRect = rect
-                                }
-                            },
-                            onCustomBRect = { rect ->
-                                if (manualState == ManualState.START && customBRect == null) {
-                                    customBRect = rect
-                                }
-                            },
+                Column(
+                    Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = horizontalPadding),
+                ) {
+                    Box{
+                        // 진행바
+                        StepProgressBar(
+                            steps = 6,
+                            currentStep = uiState.currentStep,
                             modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
+                                .align(Alignment.CenterStart)
+                                .fillMaxWidth(0.7f)
+                                .fillMaxHeight(0.2f)
+                                .offset(x = 12.dp, y = (-20).dp)
+                                .onGloballyPositioned {
+                                    if (manualState == ManualState.START  && progressRect == null) {
+                                        progressRect = it.boundsInRoot()
+                                    }
+                                }
+                                .zIndex(1f)
+                        )
+
+                        UserInfo(
+                            modifier = Modifier.align(Alignment.TopStart),
+                            animalImage = painterResource(R.drawable.img_squirrel_cut),
+                            screenText = "단계 설명:",
+                            cardColor = colorResource(R.color.main_orange),
+                            cardText =  getInfoText(selectionStep, isInputMode),
+                            onAnimalRect = { rect ->
+                                if (manualState == ManualState.START && squirrelRect == null) {
+                                    squirrelRect = rect
+                                }
+                            },
+                            onMessageRect = { rect ->
+                                if (manualState == ManualState.START && messageRect == null) {
+                                    messageRect = rect
+                                }
+                            }
                         )
                     }
 
-                    SelectionStep.BACKGROUND -> {
-                        SelectionBackgroundContent(
-                            background = uiState.selectionData.background,
-                            customBackground = uiState.selectionData.customBackground,
-                            isInputMode = isInputMode,
-                            onInputModeChange = { isInputMode = it },
-                            onCustomBackgroundInput = { vm.addCustomBackground(it) },
-                            onBackgroundSelect = { vm.selectBackground(it) },
-                            onPrevClick = { vm.goToPrevStep() },
-                            onNextClick = { vm.goToNextStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
-                        )
-                    }
+                    // 단계별 Content 분기
+                    when (selectionStep) {
+                        SelectionStep.THEME -> {
+                            SelectionThemeContent(
+                                themes = uiState.selectionData.themes,
+                                customTheme = uiState.selectionData.customTheme,
+                                isInputMode = isInputMode,
+                                onInputModeChange = { isInputMode = it },
+                                onCustomThemeInput = { vm.addCustomTheme(it) },
+                                onThemeSelect = { vm.selectTheme(it) },
+                                onNextClick = { vm.goToNextStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                onFirstBRect = { rect ->
+                                    if (manualState == ManualState.START && firstBRect == null) {
+                                        firstBRect = rect
+                                    }
+                                },
+                                onCustomBRect = { rect ->
+                                    if (manualState == ManualState.START && customBRect == null) {
+                                        customBRect = rect
+                                    }
+                                },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
 
-                    SelectionStep.GENDER -> {
-                        SelectionGenderContent(
-                            gender = uiState.selectionData.gender,
-                            onSelectGender = { vm.selectGender(it) },
-                            onPrevClick = { vm.goToPrevStep() },
-                            onNextClick = { vm.goToNextStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
-                        )
-                    }
+                        SelectionStep.BACKGROUND -> {
+                            SelectionBackgroundContent(
+                                background = uiState.selectionData.background,
+                                customBackground = uiState.selectionData.customBackground,
+                                isInputMode = isInputMode,
+                                onInputModeChange = { isInputMode = it },
+                                onCustomBackgroundInput = { vm.addCustomBackground(it) },
+                                onBackgroundSelect = { vm.selectBackground(it) },
+                                onPrevClick = { vm.goToPrevStep() },
+                                onNextClick = { vm.goToNextStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
 
-                    SelectionStep.AGE -> {
-                        SelectionAgeContent(
-                            age = uiState.selectionData.age,
-                            listState = vm.ageListState,
-                            flingBehavior = rememberSnapFlingBehavior(vm.ageListState),
-                            onIncreaseAge = { vm.increaseAge() },
-                            onDecreaseAge = { vm.decreaseAge() },
-                            onSelectAge = { vm.selectAge(it) },
-                            onPrevClick = { vm.goToPrevStep() },
-                            onNextClick = { vm.goToNextStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
-                        )
-                    }
+                        SelectionStep.GENDER -> {
+                            SelectionGenderContent(
+                                gender = uiState.selectionData.gender,
+                                onSelectGender = { vm.selectGender(it) },
+                                onPrevClick = { vm.goToPrevStep() },
+                                onNextClick = { vm.goToNextStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
 
-                    SelectionStep.NAME -> {
-                        SelectionNameContent(
-                            name = uiState.selectionData.name,
-                            onNameChange = { vm.selectName(it) },
-                            onPrevClick = { vm.goToPrevStep() },
-                            onNextClick = { vm.goToNextStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
-                        )
-                    }
+                        SelectionStep.AGE -> {
+                            SelectionAgeContent(
+                                age = uiState.selectionData.age,
+                                listState = vm.ageListState,
+                                flingBehavior = rememberSnapFlingBehavior(vm.ageListState),
+                                onIncreaseAge = { vm.increaseAge() },
+                                onDecreaseAge = { vm.decreaseAge() },
+                                onSelectAge = { vm.selectAge(it) },
+                                onPrevClick = { vm.goToPrevStep() },
+                                onNextClick = { vm.goToNextStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
 
-                    SelectionStep.FACE -> {
-                        SelectionFaceContent(
-                            eyeColorIndex = uiState.eyeColorIndex,
-                            eyeColorPage = uiState.eyeColorPage,
-                            hairColorIndex = uiState.hairColorIndex,
-                            hairColorPage = uiState.hairColorPage,
-                            hairStyle = uiState.selectionData.hairStyle,
-                            onSelectEyeColor = { value, index, page ->
-                                vm.selectEyeColor(value, index, page) },
-                            onSelectHairColor = { value, index, page ->
-                                vm.selectHairColor(value, index, page) },
-                            onSelectHairStyle = { vm.selectHairStyle(it) },
-                            onPrevClick = { vm.goToPrevStep() },
-                            onSimpleWarning = { text ->  // 경고 문구
-                                simpleWarningText = text
-                                isSimpleWarning = true
-                            },
-                            onWarning = {  wText, cText -> // 이야기 시작 직전
-                                warningText = wText
-                                confirmText = cText
-                                confirmAction = { onFinish(uiState.selectionData) }
-                                isWarning = true
-                            },
-                            modifier = Modifier.fillMaxWidth()
-                                .padding(top = topPadding)
-                                .weight(1f)
-                        )
+                        SelectionStep.NAME -> {
+                            SelectionNameContent(
+                                name = uiState.selectionData.name,
+                                onNameChange = { vm.selectName(it) },
+                                onPrevClick = { vm.goToPrevStep() },
+                                onNextClick = { vm.goToNextStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
+
+                        SelectionStep.FACE -> {
+                            SelectionFaceContent(
+                                eyeColorIndex = uiState.eyeColorIndex,
+                                eyeColorPage = uiState.eyeColorPage,
+                                hairColorIndex = uiState.hairColorIndex,
+                                hairColorPage = uiState.hairColorPage,
+                                hairStyle = uiState.selectionData.hairStyle,
+                                onSelectEyeColor = { value, index, page ->
+                                    vm.selectEyeColor(value, index, page) },
+                                onSelectHairColor = { value, index, page ->
+                                    vm.selectHairColor(value, index, page) },
+                                onSelectHairStyle = { vm.selectHairStyle(it) },
+                                onPrevClick = { vm.goToPrevStep() },
+                                onSimpleWarning = { text ->  // 경고 문구
+                                    simpleWarningText = text
+                                    isSimpleWarning = true
+                                },
+                                onWarning = {  wText, cText -> // 이야기 시작 직전
+                                    warningText = wText
+                                    confirmText = cText
+                                    confirmAction = { onFinish(uiState.selectionData) }
+                                    isWarning = true
+                                },
+                                modifier = Modifier.fillMaxWidth()
+                                    .padding(top = topPadding)
+                                    .weight(1f)
+                            )
+                        }
                     }
                 }
             }
         }
-    }
 
-    if (isWarning) {
-        WarningConfirmSheet(
-            warningText  = warningText,
-            confirmText = confirmText,
-            onDismiss = { isWarning = false },
-            onConfirm = {
-                isWarning = false
-                confirmAction()
-            }
-        )
-    }
+        if (isWarning) {
+            WarningConfirmSheet(
+                warningText  = warningText,
+                confirmText = confirmText,
+                onDismiss = { isWarning = false },
+                onConfirm = {
+                    isWarning = false
+                    confirmAction()
+                }
+            )
+        }
 
-    if (isSimpleWarning) {
-        WarningSheet(
-            warningText = simpleWarningText,
-            onDismiss = { isSimpleWarning = false}
-        )
-    }
+        if (isSimpleWarning) {
+            WarningSheet(
+                warningText = simpleWarningText,
+                onDismiss = { isSimpleWarning = false}
+            )
+        }
 
-    // 매뉴얼 진행
-    if (isManual) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(2f)
-                .background(Color.Black.copy(alpha = 0.5f))
-                .then(
-                    when (manualState) {
-                        ManualState.START -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.nextManual() }
+        // 매뉴얼 진행
+        if (isManual) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2f)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .then(
+                        when (manualState) {
+                            ManualState.START -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { vm.nextManual() }
+                            }
+
+                            ManualState.STOP -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { onStopManual() }
+                            }
+
+                            else -> Modifier
                         }
-
-                        ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { onStopManual() }
-                        }
-
-                        else -> Modifier
+                    )
+                    .clearAndSetSemantics {
+                        contentDescription = "아무 곳을 터치하세요."
+                        stateDescription = manualMessage
                     }
-                )
-        ) {
+            ) {
+                squirrelRect?.let { rect ->
+                    TargetImage(
+                        rect,
+                        painterResource(R.drawable.img_squirrel_cut)
+                    )
+                }
+
+                messageRect?.let { rect ->
+                    TargetMessage(
+                        rect = rect,
+                        message = if (manualState == ManualState.START) manualMessage
+                        else "사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!",
+                        messageStyle = MaterialTheme.typography.titleSmall,
+                        messagePadding = 16.dp
+                    )
+                }
+
+                if (manualState == ManualState.START) {
+                    when (manualStep) {
+                        1 -> progressRect?.let { TargetProgressBar(it, 6) }
+                        2 -> firstBRect?.let { TargetButton(it, onButtonClick = {vm.nextManual()}) }
+                        3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
+                    }
+                }
+            }
+
             // 중단 버튼
             ManualStopButton(
                 onClick = {
@@ -451,32 +485,6 @@ fun SelectionScreen(
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
-
-            squirrelRect?.let { rect ->
-                TargetImage(
-                    rect,
-                    painterResource(R.drawable.img_squirrel_cut)
-                )
-            }
-
-            messageRect?.let { rect ->
-                TargetMessage(
-                    rect = rect,
-                    message = if (manualState == ManualState.START) manualMessage
-                        else "사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!",
-                    messageStyle = MaterialTheme.typography.titleSmall,
-                    messagePadding = 16.dp
-                )
-            }
-
-            if (manualState == ManualState.START) {
-                when (manualStep) {
-                    1 -> progressRect?.let { TargetProgressBar(it, 6) }
-                    2 -> firstBRect?.let { TargetButton(it, onButtonClick = {vm.nextManual()}) }
-                    3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
-                }
-            }
         }
     }
 }
-

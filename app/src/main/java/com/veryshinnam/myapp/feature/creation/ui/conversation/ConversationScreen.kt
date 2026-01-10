@@ -41,10 +41,10 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
-import androidx.compose.ui.platform.LocalView
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -76,7 +76,6 @@ fun ConversationScreen(
 ) {
     val density = LocalDensity.current
     val context = LocalContext.current
-    val view = LocalView.current
 
     val recordAudioPermission = Manifest.permission.RECORD_AUDIO
 
@@ -216,25 +215,6 @@ fun ConversationScreen(
     Box(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow))
-            .then(
-                when {
-                    // 사용자 답변: 대기
-                    manualStep == 6 -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { }
-                    }
-
-                    // 매뉴얼 진행 중
-                    isManualStart -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { onRecordClick() }
-                    }
-
-                    isManualStop -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { onStopManual() }
-                    }
-
-                    else -> Modifier
-                }
-            )
     ) {
         Column {
             // 1. 상태바 만큼 여백 & 상단 로고
@@ -445,6 +425,34 @@ fun ConversationScreen(
 
         // 매뉴얼일 때
         if (isManual) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .zIndex(10f)
+                .then(
+                    when {
+                        // 사용자 답변: 대기
+                        manualStep == 6 -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { }
+                        }
+
+                        // 매뉴얼 진행 중
+                        isManualStart -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { onRecordClick() }
+                        }
+
+                        isManualStop -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { onStopManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+                .clearAndSetSemantics {
+                    contentDescription = "아무 곳을 터치하세요."
+                    stateDescription = manualMessage
+                }
+            )
+
             // 중단 버튼
             ManualStopButton(
                 onClick = {

@@ -31,6 +31,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
@@ -421,7 +422,10 @@ fun HomeScreen(
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(Color.Black.copy(alpha = 0.5f))
-                .pointerInput(Unit) {},
+                .pointerInput(Unit) {}
+                .semantics {
+                    contentDescription = "신규 유저 보상 도토리 5개"
+                }
         )
 
         AttendanceReward(
@@ -433,7 +437,7 @@ fun HomeScreen(
             },
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f)
+                .zIndex(30f)
         )
     }
 
@@ -442,7 +446,7 @@ fun HomeScreen(
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .zIndex(2f)
+                .zIndex(20f)
                 .background(Color.Black.copy(alpha = 0.5f))
                 .then(
                     when (manualState) {
@@ -456,6 +460,10 @@ fun HomeScreen(
                         else -> Modifier
                     }
                 )
+                .clearAndSetSemantics {
+                    contentDescription = "아무 곳을 터치하세요."
+                    stateDescription = manualMessage.replace("{username}", username)
+                }
         ) {
             squirrelRect?.let { rect ->
                 TargetImage(
@@ -467,8 +475,9 @@ fun HomeScreen(
             messageRect?.let { rect ->
                 TargetMessage(
                     rect = rect,
-                    message = manualMessage.replace("{username}", username),
-                    messageStyle = MaterialTheme.typography.titleSmall
+                    message = if (manualState == ManualState.START || manualState == ManualState.FINISH) manualMessage.replace("{username}", username)
+                        else "사용 방법은 홈 화면의 설정에서 언제든 다시 볼 수 있어요!",
+                    messageStyle = MaterialTheme.typography.titleSmall,
                 )
             }
 
@@ -485,13 +494,15 @@ fun HomeScreen(
                         CircleButton(
                             modifier = Modifier.weight(7f),
                             onClick = { vm.startManual() },
-                            text = "좋아요!"
+                            text = "좋아요!",
+                            contentPadding = PaddingValues(vertical = horizontalPadding)
                         )
                         Spacer(modifier = Modifier.weight(1f))
                         CircleButton(
                             modifier = Modifier.weight(7f),
                             onClick = { vm.stopManual() },
-                            text = "괜찮아요."
+                            text = "괜찮아요.",
+                            contentPadding = PaddingValues(vertical = horizontalPadding)
                         )
                     }
                 }
@@ -500,10 +511,10 @@ fun HomeScreen(
             if (manualState == ManualState.START) {
                 when (manualStep) {
                     0 -> {}
-                    1 -> creationRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_creation)) }
-                    2 -> collectionRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_collection)) }
-                    3 -> dashboardRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_dashboard)) }
-                    4 -> attendanceRect?.let { TargetImage(it, painterResource(R.drawable.img_home_check)) }
+                    1, 2 -> creationRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_creation)) }
+                    3 -> collectionRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_collection)) }
+                    4, 5 -> dashboardRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_dashboard)) }
+                    6 -> attendanceRect?.let { TargetImage(it, painterResource(R.drawable.img_home_check)) }
                 }
             }
         }

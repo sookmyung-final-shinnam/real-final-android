@@ -38,8 +38,10 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -118,7 +120,7 @@ fun AttendanceScreen(
         itemRect = null
         calendarRect = null
     }
-    
+
     LaunchedEffect(manualStep) {
         if (manualStep == vm.manuals.size) {
             goToNextManual()
@@ -135,140 +137,275 @@ fun AttendanceScreen(
         onBack()
     }
 
-    Scaffold(
-        containerColor = colorResource(id = R.color.background_yellow),
-        topBar = {
-            // 상태바 만큼 여백 & 상단 로고
-            Column {
-                Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
-                LogoBar(onLogoClick = onLogoClick)
+    Box {
+        Scaffold(
+            containerColor = colorResource(id = R.color.background_yellow),
+            topBar = {
+                // 상태바 만큼 여백 & 상단 로고
+                Column {
+                    Spacer(modifier = Modifier.windowInsetsTopHeight(WindowInsets.statusBars))
+                    LogoBar(onLogoClick = onLogoClick)
+                }
+            },
+            bottomBar = {
+                // 네비게이션바 만큼 여백
+                Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
             }
-        },
-        bottomBar = {
-            // 네비게이션바 만큼 여백
-            Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
-        }
-    ) { innerPadding ->
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .padding(innerPadding),
-            contentAlignment = Alignment.Center
-        ) {
-            // 뒤로 가기 버튼
-            BackButton(
+        ) { innerPadding ->
+            Box(
                 modifier = Modifier
-                    .align(Alignment.TopStart)
-                    .zIndex(1f),
-                onBackClick = onBack
-            )
+                    .fillMaxSize()
+                    .padding(innerPadding),
+                contentAlignment = Alignment.Center
+            ) {
+                // 뒤로 가기 버튼
+                BackButton(
+                    modifier = Modifier
+                        .align(Alignment.TopStart)
+                        .zIndex(1f),
+                    onBackClick = onBack
+                )
 
-            when (val state = uiState) {
-                // 조회 로딩 중
-                is AttendanceUiState.Idle -> {
-                    CircularProgressIndicator(
-                        color = colorResource(id = R.color.main_orange), // 주황색
-                        trackColor = Color.Gray.copy(alpha = 0.5f),
-                        strokeWidth = 4.dp
-                    )
-                }
-
-                // 조회 오류
-                is AttendanceUiState.Error -> {
-                    LoadErrorView(
-                        message = state.message,
-                        onRetry = { }
-                    )
-                }
-
-                // 조회 성공
-                is AttendanceUiState.Success -> {
-                    Column(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(horizontal = horizontalPadding)
-                    ) {
-                        // 오늘 출첵 여부 확인
-                        LaunchedEffect(state.attendanceData.isTodayAttendance) {
-                            isTodayStamp = !state.attendanceData.isTodayAttendance
-                        }
-
-                        // 스탬프 수 확인
-                        LaunchedEffect(state.attendanceData.stamps, isTodayStamp) {
-                            if (!isTodayStamp && state.attendanceData.stamps == 10 && !isExchangeable) {
-                                vm.exchangeAttendance()
-                                isExchangeable = true
-                            }
-                        }
-
-                        val month = if (state.yearMonth == YearMonth.now()) "이번 달"
-                                    else "지난 ${state.yearMonth.monthValue}월"
-
-                        UserInfo(
-                            modifier = Modifier,
-                            isItem = true, // 아이템 설명 존재
-                            itemCount = state.attendanceData.stamps,
-                            itemImage =  painterResource(R.drawable.ic_stamp),
-                            itemDescription = "모은 도장 수",
-                            screenText = "출석체크 설명:",
-                            animalImage = painterResource(R.drawable.img_pig_cut),
-                            cardColor = colorResource(R.color.deep_pink),
-                            cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
-                                    "도장 10 개당 도토리 1 개라는 걸 잊지 마세요~!",
-                            spanText = "${state.attendanceData.attendanceCounts}번",
-                            spanColor = colorResource(R.color.light_pink),
-                            onItemRect = { rect ->
-                                if (manualState == ManualState.START && itemRect == null) {
-                                    itemRect = rect
-                                }
-                            },
-                            onAnimalRect = { rect ->
-                                if (manualState == ManualState.START  && pigRect == null) {
-                                    pigRect = rect
-                                }
-                            },
-                            onMessageRect = { rect ->
-                                if (manualState == ManualState.START && messageRect == null) {
-                                    messageRect = rect
-                                }
-                            }
+                when (val state = uiState) {
+                    // 조회 로딩 중
+                    is AttendanceUiState.Idle -> {
+                        CircularProgressIndicator(
+                            color = colorResource(id = R.color.main_orange), // 주황색
+                            trackColor = Color.Gray.copy(alpha = 0.5f),
+                            strokeWidth = 4.dp
                         )
+                    }
 
-                        Spacer(Modifier.height(spacerPadding))
+                    // 조회 오류
+                    is AttendanceUiState.Error -> {
+                        LoadErrorView(
+                            message = state.message,
+                            onRetry = { }
+                        )
+                    }
 
-                        // 출첵 달력
-                        Box(
+                    // 조회 성공
+                    is AttendanceUiState.Success -> {
+                        Column(
                             modifier = Modifier
-                                .weight(1f)
                                 .fillMaxSize()
-                                .zIndex(2f),
-                            contentAlignment = Alignment.Center
+                                .padding(horizontal = horizontalPadding)
                         ) {
-                            AttendanceCalender(
-                                attendances = state.attendanceData.attendanceDates,
-                                yearMonth = state.yearMonth,
-                                lastExchangeDate = state.attendanceData.lastExchangeDate,
-                                onPrevMonth = { vm.fetchPreviousMonth() },
-                                onNextMonth = { vm.fetchNextMonth() },
-                                modifier = Modifier.fillMaxSize()
-                                    .onGloballyPositioned { it ->
-                                        if (manualState == ManualState.START && calendarRect == null) {
-                                            calendarRect = it.boundsInRoot()
-                                        }
+                            // 오늘 출첵 여부 확인
+                            LaunchedEffect(state.attendanceData.isTodayAttendance) {
+                                isTodayStamp = !state.attendanceData.isTodayAttendance
+                            }
+
+                            // 스탬프 수 확인
+                            LaunchedEffect(state.attendanceData.stamps, isTodayStamp) {
+                                if (!isTodayStamp && state.attendanceData.stamps == 10 && !isExchangeable) {
+                                    vm.exchangeAttendance()
+                                    isExchangeable = true
+                                }
+                            }
+
+                            val month = if (state.yearMonth == YearMonth.now()) "이번 달"
+                            else "지난 ${state.yearMonth.monthValue}월"
+
+                            UserInfo(
+                                modifier = Modifier,
+                                isItem = true, // 아이템 설명 존재
+                                itemCount = state.attendanceData.stamps,
+                                itemImage =  painterResource(R.drawable.ic_stamp),
+                                itemDescription = "모은 도장 수",
+                                screenText = "출석체크 설명:",
+                                animalImage = painterResource(R.drawable.img_pig_cut),
+                                cardColor = colorResource(R.color.deep_pink),
+                                cardText = "${month}은 총 ${state.attendanceData.attendanceCounts}번 출석했어요!\n" +
+                                        "도장 10 개당 도토리 1 개라는 걸 잊지 마세요~!",
+                                spanText = "${state.attendanceData.attendanceCounts}번",
+                                spanColor = colorResource(R.color.light_pink),
+                                onItemRect = { rect ->
+                                    if (manualState == ManualState.START && itemRect == null) {
+                                        itemRect = rect
                                     }
+                                },
+                                onAnimalRect = { rect ->
+                                    if (manualState == ManualState.START  && pigRect == null) {
+                                        pigRect = rect
+                                    }
+                                },
+                                onMessageRect = { rect ->
+                                    if (manualState == ManualState.START && messageRect == null) {
+                                        messageRect = rect
+                                    }
+                                }
                             )
 
-                            if (isLoading) {
-                                CircularProgressIndicator(
-                                    color = colorResource(id = R.color.deep_pink),
-                                    trackColor = Color.Gray.copy(alpha = 0.5f),
-                                    strokeWidth = 4.dp
+                            Spacer(Modifier.height(spacerPadding))
+
+                            // 출첵 달력
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .fillMaxSize()
+                                    .zIndex(2f),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                AttendanceCalender(
+                                    attendances = state.attendanceData.attendanceDates,
+                                    yearMonth = state.yearMonth,
+                                    lastExchangeDate = state.attendanceData.lastExchangeDate,
+                                    onPrevMonth = { vm.fetchPreviousMonth() },
+                                    onNextMonth = { vm.fetchNextMonth() },
+                                    modifier = Modifier.fillMaxSize()
+                                        .onGloballyPositioned { it ->
+                                            if (manualState == ManualState.START && calendarRect == null) {
+                                                calendarRect = it.boundsInRoot()
+                                            }
+                                        }
+                                )
+
+                                if (isLoading) {
+                                    CircularProgressIndicator(
+                                        color = colorResource(id = R.color.deep_pink),
+                                        trackColor = Color.Gray.copy(alpha = 0.5f),
+                                        strokeWidth = 4.dp
+                                    )
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        if (isManual) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(2f)
+                    .background(Color.Black.copy(alpha = 0.5f))
+                    .then(
+                        when (manualState) {
+                            ManualState.START -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { vm.nextManual() }
+                            }
+
+                            ManualState.STOP -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { onStopManual() }
+                            }
+
+                            else -> Modifier
+                        }
+                    )
+                    .clearAndSetSemantics {
+                        contentDescription = "아무 곳을 터치하세요."
+                        stateDescription = manualMessage
+                    }
+            ) {
+                pigRect?.let { rect ->
+                    TargetImage(
+                        rect,
+                        painterResource(R.drawable.img_pig_cut)
+                    )
+                }
+
+                messageRect?.let { rect ->
+                    TargetMessage(
+                        rect = rect,
+                        message = manualMessage,
+                        messageStyle = MaterialTheme.typography.titleMedium,
+                        messagePadding = 16.dp,
+                        boxColor = colorResource(R.color.deep_pink),
+                    )
+                }
+
+                if (manualStep >= 3) {
+                    itemRect?.let {
+                        TargetItem(
+                            it, density,
+                            image = painterResource(R.drawable.ic_stamp),
+                            imageDescription = "도장 수",
+                            value = 5,
+                            boxColor = colorResource(R.color.deep_pink)
+                        )
+                    }
+                    if (manualStep >= 5) {
+                        calendarRect?.let { rect ->
+                            Box(
+                                modifier = Modifier
+                                    .absoluteOffset(
+                                        x = with(density) { rect.left.toDp() },
+                                        y = with(density) { rect.top.toDp() }
+                                    )
+                                    .size(
+                                        with(density) { rect.width.toDp() },
+                                        with(density) { rect.height.toDp() }
+                                    )
+                                    .zIndex(20f)
+                            ) {
+                                AttendanceCalender(
+                                    attendances = vm.manualAttendances,
+                                    yearMonth =YearMonth.from(vm.today),
+                                    lastExchangeDate = vm.manualDate,
+                                    onPrevMonth = {
+                                        when (manualState) {
+                                            ManualState.START -> { vm.nextManual() }
+                                            ManualState.STOP -> { onStopManual() }
+                                            else -> {}
+                                        }
+                                    },
+                                    onNextMonth = { },
+                                    isManual = true,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        }
+                    }
+                }
+                when (manualStep) {
+                    2 -> {
+                        calendarRect?.let { rect ->
+                            Box(
+                                modifier = Modifier
+                                    .absoluteOffset(
+                                        x = with(density) { rect.left.toDp() },
+                                        y = with(density) { rect.top.toDp() }
+                                    )
+                                    .size(
+                                        with(density) { rect.width.toDp() },
+                                        with(density) { rect.height.toDp() }
+                                    )
+                                    .zIndex(20f)
+                            ) {
+                                AttendanceCalender(
+                                    attendances = vm.manualAttendances,
+                                    yearMonth =YearMonth.from(vm.today),
+                                    lastExchangeDate = vm.manualDate,
+                                    onPrevMonth = {
+                                        when (manualState) {
+                                            ManualState.START -> { vm.nextManual() }
+                                            ManualState.STOP -> { onStopManual() }
+                                            else -> {}
+                                        }
+                                    },
+                                    onNextMonth = { },
+                                    isManual = true,
+                                    modifier = Modifier.fillMaxSize()
                                 )
                             }
                         }
                     }
                 }
             }
+
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
+                    }
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
         }
     }
 
@@ -308,7 +445,7 @@ fun AttendanceScreen(
                 .background(Color.Black.copy(alpha = 0.5f))
                 .pointerInput(Unit) { } // 터치 빼앗음
                 .semantics {
-                    contentDescription = "출석 체크 보상\n도토리 1개"
+                    contentDescription = "출석 체크 보상 도토리 1개"
                 }
         )
 
@@ -322,134 +459,5 @@ fun AttendanceScreen(
                 .fillMaxSize()
                 .zIndex(2f)
         )
-    }
-
-    if (isManual) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(2f)
-                .background(Color.Black.copy(alpha = 0.5f))
-                .then(
-                    when (manualState) {
-                        ManualState.START -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.nextManual() }
-                        }
-
-                        ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { onStopManual() }
-                        }
-
-                        else -> Modifier
-                    }
-                )
-        ) {
-            // 중단 버튼
-            ManualStopButton(
-                onClick = {
-                    when (manualState) {
-                        ManualState.START -> { vm.stopManual() }
-                        ManualState.STOP -> { onStopManual() }
-                        else -> {}
-                    }
-                },
-                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
-            )
-
-            pigRect?.let { rect ->
-                TargetImage(
-                    rect,
-                    painterResource(R.drawable.img_pig_cut)
-                )
-            }
-
-            messageRect?.let { rect ->
-                TargetMessage(
-                    rect = rect,
-                    message = manualMessage,
-                    messageStyle = MaterialTheme.typography.titleMedium,
-                    messagePadding = 16.dp,
-                    boxColor = colorResource(R.color.deep_pink),
-                )
-            }
-
-            if (manualStep >= 3) {
-                itemRect?.let {
-                    TargetItem(
-                        it, density,
-                        image = painterResource(R.drawable.ic_stamp),
-                        imageDescription = "도장 수",
-                        value = 5,
-                        boxColor = colorResource(R.color.deep_pink)
-                    )
-                }
-                if (manualStep >= 5) {
-                    calendarRect?.let { rect ->
-                        Box(
-                            modifier = Modifier
-                                .absoluteOffset(
-                                    x = with(density) { rect.left.toDp() },
-                                    y = with(density) { rect.top.toDp() }
-                                )
-                                .size(
-                                    with(density) { rect.width.toDp() },
-                                    with(density) { rect.height.toDp() }
-                                )
-                                .zIndex(20f)
-                        ) {
-                            AttendanceCalender(
-                                attendances = vm.manualAttendances,
-                                yearMonth =YearMonth.from(vm.today),
-                                lastExchangeDate = vm.manualDate,
-                                onPrevMonth = {
-                                    when (manualState) {
-                                        ManualState.START -> { vm.nextManual() }
-                                        ManualState.STOP -> { onStopManual() }
-                                        else -> {}
-                                    }
-                                },
-                                onNextMonth = { },
-                                isManual = true,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                }
-            }
-            when (manualStep) {
-                2 -> {
-                    calendarRect?.let { rect ->
-                        Box(
-                            modifier = Modifier
-                                .absoluteOffset(
-                                    x = with(density) { rect.left.toDp() },
-                                    y = with(density) { rect.top.toDp() }
-                                )
-                                .size(
-                                    with(density) { rect.width.toDp() },
-                                    with(density) { rect.height.toDp() }
-                                )
-                                .zIndex(20f)
-                        ) {
-                            AttendanceCalender(
-                                attendances = vm.manualAttendances,
-                                yearMonth =YearMonth.from(vm.today),
-                                lastExchangeDate = vm.manualDate,
-                                onPrevMonth = {
-                                    when (manualState) {
-                                        ManualState.START -> { vm.nextManual() }
-                                        ManualState.STOP -> { onStopManual() }
-                                        else -> {}
-                                    }
-                                },
-                                onNextMonth = { },
-                                isManual = true,
-                                modifier = Modifier.fillMaxSize()
-                            )
-                        }
-                    }
-                }
-            }
-        }
     }
 }

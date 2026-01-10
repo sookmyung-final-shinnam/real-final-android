@@ -28,6 +28,7 @@ import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.role
@@ -400,27 +401,70 @@ fun DashboardScreen(
                 }
             }
         }
-    }
 
-    // 매뉴얼 창 > 터치 가로챔
-    if (isManual) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .then(
-                    when (manualState) {
-                        ManualState.START -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.nextManual() }
+        // 매뉴얼 창 > 터치 가로챔
+        if (isManual) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .then(
+                        when (manualState) {
+                            ManualState.START -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { vm.nextManual() }
+                            }
+                            ManualState.STOP -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { onStopManual() }
+                            }
+                            else -> Modifier.pointerInput(Unit) {
+                            }
                         }
-                        ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { onStopManual() }
-                        }
-                        else -> Modifier.pointerInput(Unit) {
-                        }
+                    )
+                    .zIndex(10f)
+                    .clearAndSetSemantics {
+                        contentDescription = "아무 곳을 터치하세요."
+                        stateDescription = manualMessage
                     }
-                )
-                .zIndex(10f)
-        ) {
+            ) {
+                // 다시 그릴 매뉴얼 강조 요소
+                if (manualStep == 4) {
+                    tHelpRect?.let { rect ->
+                        DashboardHelpButton(
+                            onPress = { },
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { (rect.top + logoHeight).toDp()}
+                                )
+                                .zIndex(2f)
+                        )
+                    }
+
+                    bHelpRect?.let { rect ->
+                        DashboardHelpButton(
+                            onPress = { },
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { (rect.top + logoHeight).toDp()}
+                                )
+                                .zIndex(2f)
+                        )
+                    }
+
+                    sHelpRect?.let { rect ->
+                        DashboardHelpButton(
+                            onPress = { },
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { (rect.top + logoHeight).toDp()}
+                                )
+                                .zIndex(2f)
+                        )
+                    }
+                }
+            }
+
             // 중단 버튼
             ManualStopButton(
                 onClick = {
@@ -432,45 +476,6 @@ fun DashboardScreen(
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
-
-            // 다시 그릴 매뉴얼 강조 요소
-            if (manualStep == 4) {
-                tHelpRect?.let { rect ->
-                    DashboardHelpButton(
-                        onPress = { },
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { rect.left.toDp() },
-                                y = with(density) { (rect.top + logoHeight).toDp()}
-                            )
-                            .zIndex(2f)
-                    )
-                }
-
-                bHelpRect?.let { rect ->
-                    DashboardHelpButton(
-                        onPress = { },
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { rect.left.toDp() },
-                                y = with(density) { (rect.top + logoHeight).toDp()}
-                            )
-                            .zIndex(2f)
-                    )
-                }
-
-                sHelpRect?.let { rect ->
-                    DashboardHelpButton(
-                        onPress = { },
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { rect.left.toDp() },
-                                y = with(density) { (rect.top + logoHeight).toDp()}
-                            )
-                            .zIndex(2f)
-                    )
-                }
-            }
         }
     }
 }
