@@ -50,7 +50,7 @@ fun CollectionCharacterGrid(
 
     Box {
         LazyVerticalGrid(
-            modifier = Modifier
+            modifier = modifier
                 .semantics {
                     traversalIndex = 1f
                 },

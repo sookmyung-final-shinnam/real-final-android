@@ -106,6 +106,8 @@ fun CharacterScreen(
 
     var warnedStoryId by remember { mutableStateOf<Long?>(null) }
     var isWarning by remember { mutableStateOf(false) }
+    var isSimpleWarning by remember { mutableStateOf(false) } // 단순 경고창
+    var SimpleWarningText by remember { mutableStateOf("") }
 
     var isVideoMaking by remember { mutableStateOf(false) }
     var isLinkNotExisting by remember { mutableStateOf(false) }
@@ -115,6 +117,7 @@ fun CharacterScreen(
 
     // ui 변수
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
+
 
     // 매뉴얼 변수
     val isManual = manualState != ManualState.NONE
@@ -222,7 +225,12 @@ fun CharacterScreen(
                     // 왼쪽 캐릭터 이미지 카드
                     CharacterCardLeft(
                         character = state.characterData,
-                        onFavoriteClick = { id -> vm.updateFavorite(id) },
+                        onFavoriteClick = { id ->
+                            vm.updateFavorite(id) { text ->
+                                isSimpleWarning = true
+                                SimpleWarningText = text
+                            }
+                        },
                         modifier = Modifier
                             .aspectRatio(0.8f) // 카드 비율
                             .offset(x = xMoving)       // 오른쪽 이동
@@ -554,6 +562,13 @@ fun CharacterScreen(
             onCopy = {
                 clipboardManager.setText(AnnotatedString(youtubeLink!!))
             }
+        )
+    }
+
+    if (isSimpleWarning) {
+        WarningSheet(
+            warningText = SimpleWarningText,
+            onDismiss = { isSimpleWarning = false }
         )
     }
 }

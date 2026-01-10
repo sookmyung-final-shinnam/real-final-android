@@ -58,7 +58,7 @@ class CharacterViewModel @Inject constructor(
     }
 
     // 캐릭터 즐겨찾기 업데이트
-    fun updateFavorite(id: Long) {
+    fun updateFavorite(id: Long, onError: (String) -> Unit = {}) {
         val currentState = _uiState.value
         if (currentState is CharacterUiState.Success) {
             val character = currentState.characterData
@@ -79,6 +79,8 @@ class CharacterViewModel @Inject constructor(
                     } catch (e: Exception) {
                         // 실패 시 상태 복구
                         _uiState.value = currentState
+                        // e 종류에 따라 문구
+                        onError("좋아하는 캐릭터는 5명까지만 등록할 수 있어요!")
                     }
                 }
             }
