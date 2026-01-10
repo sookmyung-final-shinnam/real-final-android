@@ -19,6 +19,8 @@ import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
+import com.veryshinnam.myapp.feature.creation.model.SelectionInputError
+import com.veryshinnam.myapp.feature.creation.model.validateSelectionInput
 
 
 // 캐릭터 생성 > 선택 진입점
@@ -50,11 +52,29 @@ fun SelectionThemeContent(
                 value = customInput,
                 onValueChange = { customInput = it },
                 onConfirm = { input ->
+                    val error = validateSelectionInput(input)
+
                     when {
-                        input.isBlank() -> onSimpleWarning("아직 주제를 입력하지 않았어요!")
-                        input in initThemes -> onSimpleWarning("이미 존재하는 주제예요!")
+                        error == SelectionInputError.EMPTY ->
+                            onSimpleWarning("아직 주제를 입력하지 않았어요!")
+
+                        error == SelectionInputError.LENGTH ->
+                            onSimpleWarning("주제는 1~15자로 입력해 주세요")
+
+                        error == SelectionInputError.EXIST_JAMO ->
+                            onSimpleWarning("자음 또는 모음만 입력할 수 없어요")
+
+                        error == SelectionInputError.NUMBER_NOT_ALLOWED ->
+                            onSimpleWarning("숫자는 사용할 수 없어요")
+
+                        error == SelectionInputError.SPECIAL_CHAR ->
+                            onSimpleWarning("특수문자는 사용할 수 없어요")
+
+                        input.trim() in initThemes ->
+                            onSimpleWarning("이미 존재하는 주제예요!")
+
                         else -> {
-                            onCustomThemeInput(input)
+                            onCustomThemeInput(input.trim())
                             customInput = ""
                             onInputModeChange(false)
                         }
