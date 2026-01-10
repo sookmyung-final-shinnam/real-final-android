@@ -22,6 +22,7 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
@@ -51,7 +52,7 @@ fun AttendanceReward(
 
         Image(
             painter = painter,
-            contentDescription = "보상 이미지",
+            contentDescription = null, // 장식용
             modifier = Modifier
                 .fillMaxWidth()
                 .graphicsLayer(1.8f, 1.8f),
@@ -61,7 +62,7 @@ fun AttendanceReward(
         Spacer(Modifier.height(spacePadding * 6))
 
         StrokeTitle(
-            modifier = Modifier,
+            modifier = Modifier.clearAndSetSemantics { },
             titleText = text,
             titleColor = Color.White,
             strokeColor = colorResource(R.color.clear_blue),

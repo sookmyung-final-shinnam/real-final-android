@@ -3,9 +3,7 @@ package com.veryshinnam.myapp.feature.attendance.ui
 import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -40,6 +38,8 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -279,11 +279,10 @@ fun AttendanceScreen(
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(
-                    enabled = true,
-                    indication = null, // 터치 효과 제거
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { }
+                .pointerInput(Unit) { } // 터치 빼앗음
+                .semantics {
+                    contentDescription = "오늘의 출석 체크 완료"
+                }
         )
 
         AttendanceReward(
@@ -307,11 +306,10 @@ fun AttendanceScreen(
                 .fillMaxSize()
                 .zIndex(2f)
                 .background(Color.Black.copy(alpha = 0.5f))
-                .clickable(
-                    enabled = true,
-                    indication = null, // 터치 효과 제거
-                    interactionSource = remember { MutableInteractionSource() }
-                ) { }
+                .pointerInput(Unit) { } // 터치 빼앗음
+                .semantics {
+                    contentDescription = "출석 체크 보상\n도토리 1개"
+                }
         )
 
         AttendanceReward(
