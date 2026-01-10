@@ -4,7 +4,6 @@ import android.content.pm.ActivityInfo
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.layout.Arrangement
@@ -39,6 +38,7 @@ import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.common.component.EmptyView
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.LogoBar
+import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.UserInfo
 import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
@@ -195,9 +195,10 @@ fun DashboardScreen(
                 // 조회 성공
                 is DashboardUiState.Success -> {
                     Column(
-                        modifier = Modifier
+                        modifier = Modifier.fillMaxSize()
                             // 매뉴얼일 때 스크롤 제한
-                            .verticalScroll(scrollState, enabled = !isManual)
+                            .verticalScroll(scrollState, enabled = !isManual),
+                        verticalArrangement = Arrangement.Top
                     ) {
                         // 섹션 0: 대시보드 상단
                         Box(
@@ -381,21 +382,16 @@ fun DashboardScreen(
                 )
                 .zIndex(10f)
         ) {
-            // 매뉴얼일 때
-            Text(
-                text = "그만 들을래요.",
-                color = colorResource(R.color.main_orange),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(30.dp)
-                    .clickable {
-                        when (manualState) {
-                            ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual() }
-                            else -> {}
-                        }
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
                     }
-                    .zIndex(11f)
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
 
             // 다시 그릴 매뉴얼 강조 요소

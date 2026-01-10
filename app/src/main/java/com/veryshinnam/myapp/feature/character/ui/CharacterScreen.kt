@@ -7,7 +7,6 @@ import androidx.activity.compose.BackHandler
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.gestures.detectTapGestures
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -51,6 +50,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -58,8 +58,10 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
+import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.ShareSheet
 import com.veryshinnam.myapp.common.component.VideoPlayer
 import com.veryshinnam.myapp.common.component.WarningConfirmSheet
@@ -216,6 +218,7 @@ fun CharacterScreen(
                     )
 
                     // 오른쪽 캐릭터 정보 카드
+                    Column {
                     CharacterCardRight(
                         character = state.characterData,
                         isFront = isFront,
@@ -263,6 +266,15 @@ fun CharacterScreen(
                             .aspectRatio(1.78f) // 카드 비율
                             .zIndex(1f)
                     )
+                        if (!isManual) {
+                            InstructionText(
+                                text = "Tab 버튼을 눌러 보세요.\n카드가 뒤집히고 동화가 나와요!",
+                                textAlign = TextAlign.End,
+                                textStyle = MaterialTheme.typography.bodySmall,
+                                modifier = Modifier.padding(top = 6.dp).align(Alignment.End)
+                            )
+                        }
+                    }
                 }
             }
         }
@@ -349,20 +361,16 @@ fun CharacterScreen(
                     }
                 )
         ) {
-            Text(
-                text = "그만 들을래요.",
-                color = colorResource(R.color.main_orange),
-                modifier = Modifier
-                    .align(Alignment.TopEnd)
-                    .padding(30.dp)
-                    .clickable {
-                        when (manualState) {
-                            ManualState.START -> { vm.stopManual() }
-                            ManualState.STOP -> { onStopManual() }
-                            else -> {}
-                        }
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
                     }
-                    .zIndex(11f)
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
             )
 
             Column(

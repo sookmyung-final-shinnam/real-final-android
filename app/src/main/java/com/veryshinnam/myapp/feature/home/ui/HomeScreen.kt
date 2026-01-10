@@ -114,7 +114,7 @@ fun HomeScreen(
         )
     }
 
-    // HomeScreen 진입 시 한번만  실행
+    // HomeScreen 진입 시 한번만 실행
     LaunchedEffect(Unit) {
         vm.checkAdminStatus()   // 관리자 여부 확인
         vm.reload()             // 홈 데이터 다시 불러오기
@@ -207,6 +207,7 @@ fun HomeScreen(
                 is HomeUiState.Success -> {
                     val (username, points, favorites) = state.homeData
                     val message = "반가워요, ${username}!\n${state.randomMessage}"
+
                     Column(
                         modifier = Modifier.fillMaxSize()
                             .semantics {
@@ -327,7 +328,13 @@ fun HomeScreen(
                                     .weight(8f),
                                 characters = favorites,
                                 lastSelectedId = state.lastSelectedCharacter,
-                                onCharacterClick = onCharacterClick
+                                onCharacterClick = { id ->
+                                    vm.updateLastSelected(id)
+                                    onCharacterClick(id)
+                                },
+                                onCharacterChanged = { id ->
+                                    vm.updateLastSelected(id)
+                                }
                             )
 
                             // 바텀 버튼 (남은 공간의 20%)

@@ -19,11 +19,13 @@ import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBott
 
 @Composable
 fun SelectionFaceContent(
-    eyeColor: String,
-    hairColor: String,
+    eyeColorIndex: Int,
+    eyeColorPage: Int,
+    hairColorIndex: Int,
+    hairColorPage: Int,
     hairStyle: String,
-    onSelectEyeColor: (String) -> Unit,
-    onSelectHairColor: (String) -> Unit,
+    onSelectEyeColor: (String, Int, Int) -> Unit,
+    onSelectHairColor: (String, Int, Int) -> Unit,
     onSelectHairStyle: (String) -> Unit,
     onPrevClick: () -> Unit,
     onSimpleWarning: (String) -> Unit,    // 경고 콜백
@@ -49,8 +51,8 @@ fun SelectionFaceContent(
     )
     val styles = listOf("단발 머리", "긴 머리", "곱슬 머리", "대머리")
 
-    // 유효성 체크 (모두 선택)
-    val isValid = eyeColor.isNotEmpty() && hairColor.isNotEmpty() && hairStyle.isNotEmpty()
+    // 유효성 체크
+    val isValid = hairStyle.isNotEmpty()
 
     Column(modifier = modifier) {
 
@@ -67,8 +69,9 @@ fun SelectionFaceContent(
             SelectionPaletteGrid(
                 title = "눈동자 색",
                 colors = colors,
-                selectedColorName = eyeColor,
-                onSelect = { onSelectEyeColor(it) },
+                selectedIndex = eyeColorIndex,
+                selectedPage = eyeColorPage,
+                onSelect = onSelectEyeColor,
                 modifier = Modifier.weight(0.4f)
             )
 
@@ -76,8 +79,9 @@ fun SelectionFaceContent(
             SelectionPaletteGrid(
                 title = "머리카락 색",
                 colors = colors,
-                selectedColorName = hairColor,
-                onSelect = { onSelectHairColor(it) },
+                selectedIndex = hairColorIndex,
+                selectedPage =hairColorPage,
+                onSelect = onSelectHairColor,
                 modifier = Modifier.weight(0.4f)
             )
 
@@ -87,7 +91,7 @@ fun SelectionFaceContent(
                 title = "머리 모양",
                 styles = styles,
                 selected = hairStyle,
-                onSelect = { onSelectHairStyle(it)},
+                onSelect = onSelectHairStyle,
                 modifier = Modifier.weight(0.3f)
             )
         }
