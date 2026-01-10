@@ -535,8 +535,11 @@ fun CharacterScreen(
     // 동화 유튜브 링크 없음
     if (isLinkNotExisting) {
         WarningSheet(
-            warningText = "아직 카카오톡 링크를 만들고 있는 중이에요.\n조금만 더 기다려주세요!\n\n" +
-                    "혹시 오래 기다렸는데도 링크가 안 뜨면,\n저희에게 알려주세요!",
+            warningText = "아직 유튜브 링크가 준비되지 않았어요.\n" +
+                    "조금만 기다려 주세요!\n\n" +
+                    "모든 아이들에게 안전한지 확인한 뒤,\n심사를 거쳐 유튜브에 공개돼요." +
+                    "\n(발생한 수익은 스토릭터를 계속 운영하기 위해 사용돼요.)",
+            wtStyle = MaterialTheme.typography.bodySmall,
             onDismiss = { isLinkNotExisting = false },
         )
     }
@@ -565,6 +568,7 @@ fun CharacterScreen(
         )
     }
 
+    // 즐찾 오류
     if (isSimpleWarning) {
         WarningSheet(
             warningText = SimpleWarningText,

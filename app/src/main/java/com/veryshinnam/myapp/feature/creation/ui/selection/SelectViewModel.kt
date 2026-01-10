@@ -26,7 +26,7 @@ class SelectViewModel @Inject constructor(
 
     // 나이 스크롤 상태
     private val _ageListState = LazyListState(
-        firstVisibleItemIndex = (Int.MAX_VALUE / 2) - (Int.MAX_VALUE / 2) % 100 + 10
+        firstVisibleItemIndex = (Int.MAX_VALUE / 2) - (Int.MAX_VALUE / 2) % 100 + 9
     )
     val ageListState: LazyListState = _ageListState
 

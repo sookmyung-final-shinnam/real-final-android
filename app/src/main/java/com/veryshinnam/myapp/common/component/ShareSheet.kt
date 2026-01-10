@@ -32,6 +32,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -84,7 +86,7 @@ fun ShareSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
-                        contentDescription = "닫기",
+                        contentDescription = "시트 닫기",
                         tint = colorResource(R.color.main_orange_50),
                         modifier = Modifier.fillMaxSize()
                     )
@@ -101,7 +103,7 @@ fun ShareSheet(
                     // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
-                        contentDescription = "공유 안내 이미지",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxWidth(0.1f),
                         contentScale = ContentScale.Fit
                     )
@@ -125,7 +127,10 @@ fun ShareSheet(
                             // 길이 알아서 자르기
                             text = urlText,
                             style = urlTextStyle,
-                            modifier = Modifier.wrapContentWidth(),
+                            modifier = Modifier.wrapContentWidth()
+                                .semantics {
+                                    contentDescription = "동화 유튜브 링크"
+                                },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
@@ -141,6 +146,9 @@ fun ShareSheet(
                             Text(
                                 text = "복사",
                                 style = urlTextStyle.copy(color = Color.Black),
+                                modifier = Modifier.semantics {
+                                    contentDescription = "링크 복사"
+                                }
                             )
                         }
                     }

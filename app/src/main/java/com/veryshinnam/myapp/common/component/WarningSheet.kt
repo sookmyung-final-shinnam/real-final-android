@@ -28,6 +28,7 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +42,7 @@ import com.veryshinnam.myapp.R
 @Composable
 fun WarningSheet(
     warningText: String,
+    wtStyle: TextStyle = MaterialTheme.typography.bodyMedium,
     verticalPadding: Dp = 16.dp,
     horizontalPadding: Dp = 20.dp,
     dismissible: Boolean = true,
@@ -59,7 +61,7 @@ fun WarningSheet(
             lineHeight = 1.2.em
         )
     } else {
-        MaterialTheme.typography.bodyLarge.copy(
+        wtStyle.copy(
             color = Color.White,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center,

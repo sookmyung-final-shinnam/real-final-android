@@ -356,7 +356,7 @@ fun HomeScreen(
                                     onDashboardClick = onDashboardClick,
                                     onCreationClick = {
                                         if (points > 0) onCreationClick()
-                                        else vm.showWarning("포인트가 부족해요.\n출석을 통해 포인트를 모아 볼까요?")
+                                        else vm.showWarning("도토리가 부족해요.\n출석을 통해 도토리를 모아 볼까요?")
                                     },
                                     onCollectionClick = onCollectionClick,
                                     onDashboardRect = { rect ->
