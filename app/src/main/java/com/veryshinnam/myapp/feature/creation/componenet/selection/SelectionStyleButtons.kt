@@ -17,6 +17,10 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -60,6 +64,10 @@ fun SelectionStyleButtons(
                                        else Color.Black ),
                     contentPadding = PaddingValues(0.dp),
                     modifier = Modifier.weight(1f).fillMaxHeight()
+                        .semantics(true) {
+                            role = Role.RadioButton
+                            stateDescription = if (isSelected) "선택됨" else "선택 안 됨"
+                        }
                 ) {
                     Text(
                         text = style,

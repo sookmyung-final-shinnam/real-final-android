@@ -26,7 +26,7 @@ class SelectViewModel @Inject constructor(
 
     // 나이 스크롤 상태
     private val _ageListState = LazyListState(
-        firstVisibleItemIndex = Int.MAX_VALUE / 2
+        firstVisibleItemIndex = (Int.MAX_VALUE / 2) - (Int.MAX_VALUE / 2) % 100 + 10
     )
     val ageListState: LazyListState = _ageListState
 
@@ -207,10 +207,10 @@ class SelectViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("이곳에서 동화와 캐릭터를 만들 수 있어요.", ManualTarget.NONE),
+        ManualData("먼저, 스토릭터의 메인인 동화와 캐릭터 만들기부터 같이 해볼게요.", ManualTarget.NONE),
         ManualData("동화의 주제·배경부터 캐릭터의 성별·나이·이름·외형까지 고를 수 있어요!", ManualTarget.PROGRESSBAR),
-        ManualData("함께 떠나는 여정 이야기를 만들어 보고 싶어서 이 주제를 골라볼게요!", ManualTarget.BUTTON),
-        ManualData("만약 주제를 직접 선택하고 싶다면 아래 키보드를 눌러 입력해도 돼요!", ManualTarget.CUSTOM),
+        ManualData("함께 떠나는 여행 이야기를 만들어 보고 싶어서 '모험'을 골라볼게요!", ManualTarget.BUTTON),
+        ManualData("만약 주제를 직접 선택하고 싶다면 직접 추가하기 버튼을 눌러주세요!", ManualTarget.CUSTOM),
     )
 
     fun startManual() {

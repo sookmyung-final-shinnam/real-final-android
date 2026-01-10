@@ -18,6 +18,8 @@ import com.veryshinnam.myapp.common.model.DashboardInit
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionCustomInput
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionItemGrid
 import com.veryshinnam.myapp.feature.creation.componenet.selection.SelectionBottomButtons
+import com.veryshinnam.myapp.feature.creation.model.SelectionInputError
+import com.veryshinnam.myapp.feature.creation.model.validateSelectionInput
 
 @Composable
 fun SelectionBackgroundContent (
@@ -46,11 +48,29 @@ fun SelectionBackgroundContent (
                 value = customInput,
                 onValueChange = { customInput = it },
                 onConfirm = { input ->
+                    val error = validateSelectionInput(input)
+
                     when {
-                        input.isBlank() -> onSimpleWarning("아직 배경을 입력하지 않았어요!")
-                        input in initBackgrounds -> onSimpleWarning("이미 존재하는 배경이에요!")
+                        error == SelectionInputError.EMPTY ->
+                            onSimpleWarning("아직 배경을 입력하지 않았어요!")
+
+                        error == SelectionInputError.LENGTH ->
+                            onSimpleWarning("배경은 1~15자로 입력해 주세요!")
+
+                        error == SelectionInputError.EXIST_JAMO ->
+                            onSimpleWarning("자음 또는 모음만 입력할 수 없어요!")
+
+                        error == SelectionInputError.NUMBER_NOT_ALLOWED ->
+                            onSimpleWarning("숫자는 사용할 수 없어요!")
+
+                        error == SelectionInputError.SPECIAL_CHAR ->
+                            onSimpleWarning("한글만 입력 가능해요!")
+
+                        input.trim() in initBackgrounds ->
+                            onSimpleWarning("이미 존재하는 배경이에요!")
+
                         else -> {
-                            onCustomBackgroundInput(input)
+                            onCustomBackgroundInput(input.trim())
                             customInput = ""
                             onInputModeChange(false)
                         }

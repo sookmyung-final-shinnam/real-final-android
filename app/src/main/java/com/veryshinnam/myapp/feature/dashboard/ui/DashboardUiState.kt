@@ -13,8 +13,10 @@ sealed interface DashboardUiState {
         val maxBackground: String,  // 최대 관심 배경
 
         val themeChart: List<ChartStatData>,        // 테마용 차트 비율 재계산
+        val themeChartText: String,                 // 테마용 차트 비율 대체 텍스트 용
         val themeList: List<StatData>,              // 모든 테마 리스트
         val backgroundChart: List<ChartStatData>,   // 배경용 차트 비율 재계산
+        val backgroundChartText: String,            // 배경용 차트 비율 대체 텍스트 용
         val backgroundList: List<StatData>,         // 모든 배경 리스트
 
         val storyAnalysis: List<StoryAnalysisData>, // 개별 스토리 분석 리스트 (시도 + 감정)

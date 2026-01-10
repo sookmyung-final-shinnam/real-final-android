@@ -4,13 +4,11 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
@@ -23,8 +21,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.input.ImeAction
@@ -56,7 +56,8 @@ fun SelectionNameInput(
             // 제목
             Text(
                 text = "이름",
-                style = titleTextStyle
+                style = titleTextStyle,
+                modifier = Modifier.clearAndSetSemantics { }
             )
 
             // 입력 박스
@@ -112,7 +113,16 @@ fun SelectionNameInput(
                         else -> "" // NONE일 때는 공백
                     },
                     color = Color.Red,
-                    style = filedTextStyle
+                    style = filedTextStyle,
+                    modifier = Modifier
+                        .semantics {
+                            contentDescription = when (error) {
+                                NameError.LENGTH -> "이름을 2자에서 10자 사이로 입력해 주세요."
+                                NameError.EXIST_JAMO -> "한글 자음/모음은 사용할 수 없습니다."
+                                NameError.SPECIAL_CHAR -> "특수문자는 사용할 수 없습니다."
+                                else -> ""
+                            }
+                        }
                 )
             }
         }

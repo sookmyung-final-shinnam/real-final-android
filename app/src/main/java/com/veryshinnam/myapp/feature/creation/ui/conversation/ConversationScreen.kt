@@ -1,8 +1,10 @@
 package com.veryshinnam.myapp.feature.creation.ui.conversation
 
 import android.Manifest
+import android.content.Context
 import android.content.pm.ActivityInfo
 import android.content.pm.PackageManager
+import android.view.accessibility.AccessibilityManager
 import android.widget.Toast
 import androidx.activity.compose.BackHandler
 import androidx.activity.compose.rememberLauncherForActivityResult
@@ -40,6 +42,10 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -69,8 +75,8 @@ fun ConversationScreen(
     vm: ConversationViewModel
 ) {
     val density = LocalDensity.current
-
     val context = LocalContext.current
+
     val recordAudioPermission = Manifest.permission.RECORD_AUDIO
 
     val launcher = rememberLauncherForActivityResult(
@@ -80,6 +86,13 @@ fun ConversationScreen(
             Toast.makeText(context, "마이크 권한이 필요합니다.", Toast.LENGTH_SHORT).show()
         }
     }
+
+    // talkback 확인
+    val accessibilityManager = remember {
+            context.getSystemService(Context.ACCESSIBILITY_SERVICE)
+                    as AccessibilityManager
+        }
+    val isTalkBack = accessibilityManager.isTouchExplorationEnabled
 
     // 상태 구독
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
@@ -202,25 +215,6 @@ fun ConversationScreen(
     Box(
         modifier = Modifier.fillMaxSize()
             .background(colorResource(R.color.background_yellow))
-            .then(
-                when {
-                    // 사용자 답변: 대기
-                    manualStep == 6 -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { }
-                    }
-
-                    // 매뉴얼 진행 중
-                    isManualStart -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { onRecordClick() }
-                    }
-
-                    isManualStop -> Modifier.pointerInput(Unit) {
-                        detectTapGestures { onStopManual() }
-                    }
-
-                    else -> Modifier
-                }
-            )
     ) {
         Column {
             // 1. 상태바 만큼 여백 & 상단 로고
@@ -278,8 +272,8 @@ fun ConversationScreen(
                     // 조회 성공
                     is ConversationUiState.Success -> {
                         LaunchedEffect(state.conversationStep) {
-                            if (!isManual) {
-                                vm.startTts()
+                            if (!isManual && !isTalkBack) {
+                                vm.startTts() // isTalkBack 사용자는 자동 tts 재생 X
                             }
                         }
 
@@ -335,6 +329,7 @@ fun ConversationScreen(
                                         ConversationStep.START -> { // 대화 시작 (다음 이야기)
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
+                                                step = ConversationStep.START,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = onReplayClick,
                                                 onNextClick = onNextClick,
@@ -346,6 +341,7 @@ fun ConversationScreen(
                                         ConversationStep.STORY -> { // 다음 이야기
                                             ConversationStoryContent(
                                                 nextStory = if (isManual) manualMessage else state.nextStory,
+                                                step = ConversationStep.STORY,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = onReplayClick,
                                                 onNextClick = onNextClick,
@@ -375,7 +371,10 @@ fun ConversationScreen(
                                                 answerData = state.answerData,
                                                 onRecordStop = { vm.stopStt() },
                                                 onFeedback = onNextClick,
-                                                modifier = Modifier
+                                                modifier = Modifier.clearAndSetSemantics {
+                                                    traversalIndex = 0f
+                                                    contentDescription = "대답해 주세요!"
+                                                }
                                             )
                                         }
 
@@ -391,6 +390,7 @@ fun ConversationScreen(
                                                         else -> { vm.goFromFeedback() }
                                                     }
                                                 }, // Answer 또는 Next Story(또는 종료)
+                                                loopStep = state.loopStep,
                                                 nextEnabled = !isTtsSpeaking,
                                                 modifier = Modifier
                                             )
@@ -425,6 +425,34 @@ fun ConversationScreen(
 
         // 매뉴얼일 때
         if (isManual) {
+            Box(modifier = Modifier
+                .fillMaxSize()
+                .zIndex(10f)
+                .then(
+                    when {
+                        // 사용자 답변: 대기
+                        manualStep == 6 -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { }
+                        }
+
+                        // 매뉴얼 진행 중
+                        isManualStart -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { onRecordClick() }
+                        }
+
+                        isManualStop -> Modifier.pointerInput(Unit) {
+                            detectTapGestures { onStopManual() }
+                        }
+
+                        else -> Modifier
+                    }
+                )
+                .clearAndSetSemantics {
+                    contentDescription = "아무 곳을 터치하세요."
+                    stateDescription = manualMessage
+                }
+            )
+
             // 중단 버튼
             ManualStopButton(
                 onClick = {

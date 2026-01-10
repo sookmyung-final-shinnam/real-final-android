@@ -38,12 +38,19 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.layout.positionInParent
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -98,7 +105,7 @@ fun DashboardStoryCard(
         아이의 이야기 말하기와 감정 표현을 살펴볼 수 있어요.
 
         • 언어 분석
-        동화는 ‘기-승-전-결’ 네 단계로 만들어져요.
+        동화는 '기-승-전-결' 네 단계로 만들어져요.
         각 단계에서 아이가 몇 번씩 시도했는지를 살펴보며,
         어떤 부분을 어려워하고, 어떤 부분을 잘하는지 알 수 있어요.
         또, 아이가 자주 사용하는 단어와 말하는 습관도 함께 볼 수 있어요.
@@ -189,13 +196,16 @@ fun DashboardStoryCard(
                                 onHelpRect(rect)
                             }
                         }
+                        .semantics(true) {
+                            contentDescription = tHelpText
+                        }
                 )
             }
 
             // 이미지
             Image(
                 painter = painterResource(R.drawable.img_book),
-                contentDescription = "책 이미지",
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(imageWidth)
                     .graphicsLayer {
@@ -245,6 +255,9 @@ fun DashboardStoryCard(
                     overflow = TextOverflow.Ellipsis,
                     style = summaryTextStyle.copy(fontWeight = Bold),
                     modifier = Modifier.align(Alignment.CenterHorizontally)
+                        .semantics {
+                            contentDescription = "전체 ${total}개 중 ${index}번째 분석, 동화 제목: ${story.storyTitle}"
+                        }
                 )
                 Spacer(Modifier.height(spacer))
 
@@ -253,6 +266,9 @@ fun DashboardStoryCard(
                     modifier = Modifier.align(Alignment.End)
                         .clickable {
                             onStoryClick(story.storyId)
+                        }
+                        .semantics {
+                            role = Role.Button
                         },
                     style = linkTextStyle
                 )
@@ -286,6 +302,9 @@ fun DashboardStoryCard(
                                     attemptPressed = pressed
                                 },
                                 modifier = Modifier.align(Alignment.TopEnd)
+                                    .semantics(true) {
+                                        contentDescription = aHelpText
+                                    }
                             )
 
                             // 평균 값
@@ -312,24 +331,43 @@ fun DashboardStoryCard(
 
                         // -- 2. 새 단어 분석
                         Spacer(Modifier.height(verticalPadding*2))
-                        Box(modifier = Modifier.fillMaxWidth()) {
-                            // 원형 도움말
-                            DashboardHelpButton(
-                                onPress = {pressed ->
-                                    wordPressed = pressed
-                                },
-                                modifier = Modifier.align(Alignment.TopEnd)
-                            )
-
-                            Column {
-                                Text("• 평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
-                                Text("• 획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
-                                Text(
-                                    text = if (isMore) "닫기" else "자세히 보기",
-                                    style = linkTextStyle,
-                                    modifier = Modifier.clickable { isMore = !isMore }
+                        Column {
+                            Box(modifier = Modifier
+                                .fillMaxWidth()
+                                .semantics {
+                                    isTraversalGroup = true
+                                }
+                            ) {
+                                // 원형 도움말
+                                DashboardHelpButton(
+                                    onPress = {pressed ->
+                                        wordPressed = pressed
+                                    },
+                                    modifier = Modifier.align(Alignment.TopEnd)
+                                        .semantics(true) {
+                                            traversalIndex = 1f
+                                            contentDescription = wHelpText
+                                        }
                                 )
+
+                                Column(
+                                    Modifier.semantics(true) {
+                                        traversalIndex = 0f
+                                    }
+                                ) {
+                                    Text("• 평균 답변 길이: ${story.avgAnswerLength}자", style = subTitleTextStyle)
+                                    Text("• 획득한 새 단어 개수: ${story.newWords.size}개", style = subTitleTextStyle)
+                                }
                             }
+                            Text(
+                                text = if (isMore) "닫기" else "자세히 보기",
+                                style = linkTextStyle,
+                                modifier = Modifier.clickable { isMore = !isMore }
+                                    .semantics {
+                                        role = Role.Button
+                                        stateDescription = if (isMore) "자세히 보기 창 열림. 획득한 새 단어를 확인해 보세요." else "자세히 보기 창 닫힘"
+                                    }
+                            )
                         }
                         Spacer(Modifier.height(spacer))
 
@@ -443,6 +481,9 @@ fun DashboardStoryCard(
                                         .align(Alignment.End)
                                         .onGloballyPositioned { coords ->
                                             emotionTop = coords.positionInParent().y }
+                                        .semantics(true) {
+                                            contentDescription = "정서 분석 비율 설명: $eHelpText"
+                                        }
                                 )
 
                                 Box {
@@ -452,79 +493,87 @@ fun DashboardStoryCard(
                                         horizontalAlignment = Alignment.CenterHorizontally
                                     ) {
                                         // 막대 바
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth(),
-                                            verticalAlignment = Alignment.Bottom
+                                        Column(
+                                            modifier = Modifier.semantics(true) {
+                                                contentDescription = "해당 동화의 정서 분석 비율: ${story.emotionText}"
+                                            }
                                         ) {
-                                            story.emotions.forEachIndexed { index, item ->
-                                                val barColor = colors[index]
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth(),
+                                                verticalAlignment = Alignment.Bottom
+                                            ) {
+                                                story.emotions.forEachIndexed { index, item ->
+                                                    val barColor = colors[index]
 
-                                                BoxWithConstraints(
-                                                    modifier = Modifier
-                                                        .weight(1f)
-                                                        .height(barHeight)
-                                                ) {
-                                                    val height = maxHeight * item.ratio // item별 막대 높이
+                                                    BoxWithConstraints(
+                                                        modifier = Modifier
+                                                            .weight(1f)
+                                                            .height(barHeight)
+                                                    ) {
+                                                        val height = maxHeight * item.ratio // item별 막대 높이
 
-                                                    // 퍼센트
-                                                    if (item.ratio > 0) {
-                                                        Text(
-                                                            text = "${(item.ratio * 100).toInt()}%",
-                                                            style = linkTextStyle.copy(color = barColor, textDecoration = None),
-                                                            softWrap = false,
+                                                        // 퍼센트
+                                                        if (item.ratio > 0) {
+                                                            Text(
+                                                                text = "${(item.ratio * 100).toInt()}%",
+                                                                style = linkTextStyle.copy(color = barColor, textDecoration = None),
+                                                                softWrap = false,
+                                                                modifier = Modifier
+                                                                    .align(Alignment.BottomCenter)
+                                                                    .offset(y = -(height + spacer))
+                                                                    .clearAndSetSemantics { },
+                                                                textAlign = TextAlign.Center
+                                                            )
+                                                        }
+
+                                                        // 막대 그래프
+                                                        Box(
                                                             modifier = Modifier
                                                                 .align(Alignment.BottomCenter)
-                                                                .offset(y = -(height + spacer)),
-                                                            textAlign = TextAlign.Center
+                                                                .fillMaxWidth(0.6f)
+                                                                .height(height)
+                                                                .background(
+                                                                    color = barColor ,
+                                                                    shape = RoundedCornerShape(
+                                                                        topStart = 4.dp,
+                                                                        topEnd = 4.dp
+                                                                    )
+                                                                )
                                                         )
                                                     }
-
-                                                    // 막대 그래프
-                                                    Box(
-                                                        modifier = Modifier
-                                                            .align(Alignment.BottomCenter)
-                                                            .fillMaxWidth(0.6f)
-                                                            .height(height)
-                                                            .background(
-                                                                color = barColor ,
-                                                                shape = RoundedCornerShape(
-                                                                    topStart = 4.dp,
-                                                                    topEnd = 4.dp
-                                                                )
-                                                            )
-                                                    )
                                                 }
                                             }
-                                        }
 
-                                        // x축 선
-                                        Box(
-                                            modifier = Modifier
-                                                .fillMaxWidth()
-                                                .height(2.dp)
-                                                .background(borderColor)
-                                        )
+                                            // x축 선
+                                            Box(
+                                                modifier = Modifier
+                                                    .fillMaxWidth()
+                                                    .height(2.dp)
+                                                    .background(borderColor)
+                                            )
 
-                                        // x축
-                                        Row(
-                                            modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
-                                            verticalAlignment = Alignment.Bottom,
-                                        ) {
-                                            story.emotions.forEachIndexed { index, item ->
-                                                val barColor = colors[index]
+                                            // x축
+                                            Row(
+                                                modifier = Modifier.fillMaxWidth().padding(top = 8.dp),
+                                                verticalAlignment = Alignment.Bottom,
+                                            ) {
+                                                story.emotions.forEachIndexed { index, item ->
+                                                    val barColor = colors[index]
 
-                                                StrokeTitle(
-                                                    titleText = item.name,
-                                                    titleColor = Color.White,
-                                                    strokeColor = barColor,
-                                                    titleTextStyle = linkTextStyle.copy(textDecoration = None),
-                                                    strokeWidth = 10f,
-                                                    softWrap = false,
-                                                    modifier = Modifier
-                                                        .graphicsLayer { rotationZ = -30f }
-                                                        .weight(1f)
-                                                        .align(Alignment.CenterVertically)
-                                                )
+                                                    StrokeTitle(
+                                                        titleText = item.name,
+                                                        titleColor = Color.White,
+                                                        strokeColor = barColor,
+                                                        titleTextStyle = linkTextStyle.copy(textDecoration = None),
+                                                        strokeWidth = 10f,
+                                                        softWrap = false,
+                                                        modifier = Modifier
+                                                            .graphicsLayer { rotationZ = -30f }
+                                                            .weight(1f)
+                                                            .align(Alignment.CenterVertically)
+                                                            .clearAndSetSemantics { }
+                                                    )
+                                                }
                                             }
                                         }
 
@@ -536,14 +585,21 @@ fun DashboardStoryCard(
                                                 .height(textHeight),
                                             contentAlignment = Alignment.Center
                                         ) {
-                                            Text(story.summary + "\n\n" + story.createdAt,
+                                            Text(
+                                                text = story.summary + "\n\n" + story.createdAt,
                                                 style = subTitleTextStyle.copy(
                                                     fontWeight = SemiBold
-                                                ), textAlign = TextAlign.Center)
+                                                ), textAlign = TextAlign.Center,
+                                                modifier = Modifier.semantics(true) {
+                                                    contentDescription = "해당 동화의 정서 분석 요약: ${story.summary}"
+                                                }
+                                            )
                                         }
 
                                         // 인덱스
-                                        Row(verticalAlignment = Alignment.CenterVertically) {
+                                        Row(verticalAlignment = Alignment.CenterVertically,
+                                            modifier = Modifier.clearAndSetSemantics { }
+                                        ) {
                                             Text(
                                                 "$index"
                                                 , style = summaryTextStyle.copy(color = borderColor)
@@ -552,9 +608,7 @@ fun DashboardStoryCard(
                                                 " / $total",
                                                 color = borderColor
                                             )
-
                                         }
-
                                     }
                                 }
                             }

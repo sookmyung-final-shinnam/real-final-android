@@ -47,8 +47,11 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.TextStyle
@@ -75,7 +78,6 @@ import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
-
 
 @Composable
 fun CharacterScreen(
@@ -287,6 +289,215 @@ fun CharacterScreen(
                 }
             }
         }
+
+        if (manualState != ManualState.NONE) {
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .zIndex(20f)
+                    .background(
+                        if (manualStep == 2 || manualStep == 4)
+                            Color.Transparent
+                        else
+                            Color.Black.copy(alpha = 0.5f)
+                    )
+                    .then(
+                        when (manualState) {
+                            ManualState.START -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { vm.nextManual() }
+                            }
+
+                            ManualState.STOP -> Modifier.pointerInput(Unit) {
+                                detectTapGestures { onStopManual() }
+                            }
+
+                            else -> Modifier
+                        }
+                    )
+                    .clearAndSetSemantics {
+                        contentDescription = "아무 곳을 터치하세요."
+                        stateDescription = manualMessage
+                    }
+            ) {
+                Column(
+                    modifier = Modifier
+                        .align(Alignment.BottomStart)
+                        .padding(20.dp),
+                    verticalArrangement = Arrangement.Bottom
+                ) {
+                    // 토끼 이미지
+                    Image(
+                        painter = painterResource(R.drawable.img_home_squirrel),
+                        contentDescription = "다람쥐 이미지",
+                        modifier = Modifier
+                            .fillMaxHeight(0.22f)
+                            .padding(start = 26.dp),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    // 메시지 박스
+                    Box(
+                        modifier = Modifier
+                            .fillMaxWidth(0.5f)
+                            .background(Color.White, shape = RoundedCornerShape(16.dp))
+                            .border(
+                                4.dp,
+                                colorResource(R.color.blue_gray),
+                                RoundedCornerShape(16.dp)
+                            )
+                            .padding(16.dp)
+                            .zIndex(50f),
+                        contentAlignment = Alignment.CenterStart
+                    ) {
+                        Text(
+                            text = manualMessage.replace("", "\u200B"),
+                            style = manualTextStyle.copy(
+                                lineHeight = manualTextStyle.fontSize * 1.2f
+                            ),
+                        )
+                    }
+                }
+
+                // 동영상
+                if (manualStep >= 6) {
+                    videoRect?.let { rect ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { rect.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { rect.width.toDp() },
+                                    with(density) { rect.height.toDp() }
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                        ) {
+                            VideoPlayer(
+                                videoUrl = "android.resource://${context.packageName}/${R.raw.dummy_page}",
+                                modifier = Modifier.fillMaxSize()
+                            )
+
+                            if (manualStep >= 7) {
+                                // 오버레이
+                                Box(
+                                    modifier = Modifier
+                                        .matchParentSize()
+                                        .background(Color.Black.copy(alpha = 0.5f))
+                                )
+
+                                // 오른쪽 카톡 버튼
+                                Image(
+                                    painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                                    contentDescription = "카카오 이미지",
+                                    modifier = Modifier
+                                        .align(Alignment.TopEnd)
+                                        .size(
+                                            with(density) { rect.width.toDp() * 0.35f },
+                                            with(density) { rect.height.toDp() * 0.35f }
+                                        )
+                                        .clip(RoundedCornerShape(12.dp))
+                                        .zIndex(1f),
+                                    contentScale = ContentScale.Fit
+                                )
+                            }
+                        }
+                    }
+                }
+
+                // 왼쪽 카톡 버튼
+                if (manualStep >= 7) {
+                    storyRect?.let { rect ->
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { rect.left.toDp() },
+                                    y = with(density) { rect.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { rect.width.toDp() },
+                                    with(density) { rect.height.toDp() }
+                                )
+                                .clip(RoundedCornerShape(16.dp))
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.img_kakao), // 새 이미지
+                                contentDescription = "카카오 이미지",
+                                modifier = Modifier
+                                    .align(Alignment.TopEnd)
+                                    .size(
+                                        with(density) { rect.width.toDp() * 0.35f },
+                                        with(density) { rect.height.toDp() * 0.35f }
+                                    )
+                                    .clip(RoundedCornerShape(12.dp))
+                                    .zIndex(1f),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    }
+                }
+
+                // 그외 강조 요소
+                when (manualStep) {
+                    3 -> { tabRect?.let { it ->
+                        // 탭버튼
+                        CharacterTabButton(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { it.left.toDp() },
+                                    y = with(density) { it.top.toDp() }
+                                )
+                                .size(
+                                    with(density) { it.width.toDp() },
+                                    with(density) { it.height.toDp() }
+                                )
+                                .zIndex(10f),
+                            onClick = {
+                                when (manualState) {
+                                    ManualState.START -> { vm.nextManual() }
+                                    ManualState.STOP -> { onStopManual() }
+                                    else -> {}
+                                }
+                            },
+                            alpha = 0.5f,
+                        )
+                    } }
+                    5 -> { videoRect?.let { it ->
+                        // 잠금 해제
+                        Box(
+                            modifier = Modifier
+                                .absoluteOffset(
+                                    x = with(density) { it.left.toDp() },
+                                    y = with(density) { it.top.toDp() })
+                                .size(
+                                    with(density) { it.width.toDp() },
+                                    with(density) { it.height.toDp() }
+                                )
+                                .clip(RoundedCornerShape(16.dp))   // 여기에 clip
+                        ) {
+                            Image(
+                                painter = painterResource(R.drawable.img_locker),
+                                contentDescription = "잠금 이미지",
+                                modifier = Modifier.fillMaxSize(),
+                                contentScale = ContentScale.Fit
+                            )
+                        }
+                    } }
+                }
+            }
+
+            // 중단 버튼
+            ManualStopButton(
+                onClick = {
+                    when (manualState) {
+                        ManualState.START -> { vm.stopManual() }
+                        ManualState.STOP -> { onStopManual() }
+                        else -> {}
+                    }
+                },
+                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+        }
     }
 
     // 움직이는 동화 잠금 해제
@@ -297,8 +508,9 @@ fun CharacterScreen(
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {
-                vm.fetchVideoStory(warnedStoryId!!)
+                vm.fetchVideoStory(id, warnedStoryId!!)
                 isWarning = false
+                warnedStoryId = null
             }
         )
     }
@@ -343,210 +555,5 @@ fun CharacterScreen(
                 clipboardManager.setText(AnnotatedString(youtubeLink!!))
             }
         )
-    }
-
-    if (manualState != ManualState.NONE) {
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .zIndex(20f)
-                .background(
-                    if (manualStep == 2 || manualStep == 4)
-                        Color.Transparent
-                    else
-                        Color.Black.copy(alpha = 0.5f)
-                )
-                .then(
-                    when (manualState) {
-                        ManualState.START -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { vm.nextManual() }
-                        }
-
-                        ManualState.STOP -> Modifier.pointerInput(Unit) {
-                            detectTapGestures { onStopManual() }
-                        }
-
-                        else -> Modifier
-                    }
-                )
-        ) {
-            // 중단 버튼
-            ManualStopButton(
-                onClick = {
-                    when (manualState) {
-                        ManualState.START -> { vm.stopManual() }
-                        ManualState.STOP -> { onStopManual() }
-                        else -> {}
-                    }
-                },
-                modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
-            )
-
-            Column(
-                modifier = Modifier
-                    .align(Alignment.BottomStart)
-                    .padding(20.dp),
-                verticalArrangement = Arrangement.Bottom
-            ) {
-                // 토끼 이미지
-                Image(
-                    painter = painterResource(R.drawable.img_home_squirrel),
-                    contentDescription = "다람쥐 이미지",
-                    modifier = Modifier
-                        .fillMaxHeight(0.22f)
-                        .padding(start = 26.dp),
-                    contentScale = ContentScale.Fit
-                )
-
-                // 메시지 박스
-                Box(
-                    modifier = Modifier
-                        .fillMaxWidth(0.5f)
-                        .background(Color.White, shape = RoundedCornerShape(16.dp))
-                        .border(
-                            4.dp,
-                            colorResource(R.color.blue_gray),
-                            RoundedCornerShape(16.dp)
-                        )
-                        .padding(16.dp)
-                        .zIndex(50f),
-                    contentAlignment = Alignment.CenterStart
-                ) {
-                    Text(
-                        text = manualMessage.replace("", "\u200B"),
-                        style = manualTextStyle.copy(
-                            lineHeight = manualTextStyle.fontSize * 1.2f
-                        ),
-                    )
-                }
-            }
-
-            // 동영상
-            if (manualStep >= 6) {
-                videoRect?.let { rect ->
-                    Box(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { rect.left.toDp() },
-                                y = with(density) { rect.top.toDp() }
-                            )
-                            .size(
-                                with(density) { rect.width.toDp() },
-                                with(density) { rect.height.toDp() }
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                    ) {
-                        VideoPlayer(
-                            videoUrl = "android.resource://${context.packageName}/${R.raw.dummy_page}",
-                            modifier = Modifier.fillMaxSize()
-                        )
-
-                        if (manualStep >= 7) {
-                            // 오버레이
-                            Box(
-                                modifier = Modifier
-                                    .matchParentSize()
-                                    .background(Color.Black.copy(alpha = 0.5f))
-                            )
-
-                            // 오른쪽 카톡 버튼
-                            Image(
-                                painter = painterResource(R.drawable.img_kakao), // 새 이미지
-                                contentDescription = "카카오 이미지",
-                                modifier = Modifier
-                                    .align(Alignment.TopEnd)
-                                    .size(
-                                        with(density) { rect.width.toDp() * 0.35f },
-                                        with(density) { rect.height.toDp() * 0.35f }
-                                    )
-                                    .clip(RoundedCornerShape(12.dp))
-                                    .zIndex(1f),
-                                contentScale = ContentScale.Fit
-                            )
-                        }
-                    }
-                }
-            }
-
-            // 왼쪽 카톡 버튼
-            if (manualStep >= 7) {
-                storyRect?.let { rect ->
-                    Box(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { rect.left.toDp() },
-                                y = with(density) { rect.top.toDp() }
-                            )
-                            .size(
-                                with(density) { rect.width.toDp() },
-                                with(density) { rect.height.toDp() }
-                            )
-                            .clip(RoundedCornerShape(16.dp))
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.img_kakao), // 새 이미지
-                            contentDescription = "카카오 이미지",
-                            modifier = Modifier
-                                .align(Alignment.TopEnd)
-                                .size(
-                                    with(density) { rect.width.toDp() * 0.35f },
-                                    with(density) { rect.height.toDp() * 0.35f }
-                                )
-                                .clip(RoundedCornerShape(12.dp))
-                                .zIndex(1f),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-                }
-            }
-
-            // 그외 강조 요소
-            when (manualStep) {
-                3 -> { tabRect?.let { it ->
-                    // 탭버튼
-                    CharacterTabButton(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { it.left.toDp() },
-                                y = with(density) { it.top.toDp() }
-                            )
-                            .size(
-                                with(density) { it.width.toDp() },
-                                with(density) { it.height.toDp() }
-                            )
-                            .zIndex(10f),
-                        onClick = {
-                            when (manualState) {
-                                ManualState.START -> { vm.nextManual() }
-                                ManualState.STOP -> { onStopManual() }
-                                else -> {}
-                            }
-                        },
-                        alpha = 0.5f,
-                    )
-                } }
-                5 -> { videoRect?.let { it ->
-                    // 잠금 해제
-                    Box(
-                        modifier = Modifier
-                            .absoluteOffset(
-                                x = with(density) { it.left.toDp() },
-                                y = with(density) { it.top.toDp() })
-                            .size(
-                                with(density) { it.width.toDp() },
-                                with(density) { it.height.toDp() }
-                            )
-                            .clip(RoundedCornerShape(16.dp))   // 여기에 clip
-                    ) {
-                        Image(
-                            painter = painterResource(R.drawable.img_locker),
-                            contentDescription = "잠금 이미지",
-                            modifier = Modifier.fillMaxSize(),
-                            contentScale = ContentScale.Fit
-                        )
-                    }
-                } }
-            }
-        }
     }
 }

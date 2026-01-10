@@ -20,14 +20,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -71,19 +69,23 @@ fun DashboardParentCard(
                     spacer = imageWidth,
                     modifier = Modifier.fillMaxWidth()
                 )
+
                 // 원형 도움말
                 DashboardHelpButton(
                     onPress = {pressed ->
                         helpPressed = pressed
                     },
                     modifier = Modifier.align(Alignment.CenterEnd).padding(end = spacer*2)
+                        .semantics(true) {
+                            contentDescription = helpText
+                        }
                 )
             }
 
             // 이미지
             Image(
                 painter = painterResource(R.drawable.img_fox_full),
-                contentDescription = "설명하는 여우 이미지",
+                contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth(imageWidth)
                     .graphicsLayer {
@@ -114,7 +116,10 @@ fun DashboardParentCard(
                 // 텍스트
             Text(
                 text = advice,
-                style = adviceTextStyle
+                style = adviceTextStyle,
+                modifier = Modifier.semantics {
+                    contentDescription = "조언 내용: $advice"
+                }
             )
 
                 if (helpPressed) {

@@ -6,6 +6,10 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
 
@@ -18,7 +22,12 @@ fun ManualStopButton(
     val text = "그만 들을래요."
 
     CircleButton(
-        modifier = modifier.statusBarsPadding().padding(top = 8.dp, end = 16.dp),
+        modifier = modifier.statusBarsPadding()
+            .clearAndSetSemantics {
+                contentDescription = "앱 사용 설명 그만 듣기"
+                role = Role.Button
+            }
+            .padding(top = 8.dp, end = 16.dp),
         onClick = onClick,
         enabled = enabled,
         text = text,

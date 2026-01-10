@@ -9,5 +9,6 @@ data class StoryAnalysisData(
     val avgAnswerLength: Int,
     val newWords: List<String>,
     val emotions: List<ChartStatData>,
+    val emotionText: String, // 대체 텍스스용
     val summary: String
 )

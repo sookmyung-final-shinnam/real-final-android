@@ -7,8 +7,6 @@ import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -48,8 +46,6 @@ fun TargetMessage(
                 with(density) { rect.width.toDp() },
                 with(density) { rect.height.toDp() }
             )
-//            .width(with(density) { rect.width.toDp() })
-//            .wrapContentHeight()
             .background(Color.White, shape = RoundedCornerShape(messageCorner))
             .border(
                 messageBorder,

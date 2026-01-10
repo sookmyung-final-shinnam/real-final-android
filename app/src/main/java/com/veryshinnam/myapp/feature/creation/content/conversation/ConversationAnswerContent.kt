@@ -29,6 +29,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -76,7 +77,7 @@ fun ConversationAnswerContent(
         delay(1000L) // 1초 후 피드백으로
         onFeedback()
     }
-
+    
     Column(
         modifier = modifier.fillMaxSize(),
         verticalArrangement = Arrangement.Center,
@@ -115,7 +116,7 @@ fun ConversationAnswerContent(
                     answerData = answerData,
                     isFinal = isFinal,
                     answerTextStyle = answerTextStyle,
-                    modifier = Modifier.fillMaxWidth()
+                    modifier = Modifier.fillMaxWidth().clearAndSetSemantics { }
                 )
             }
 
@@ -151,6 +152,7 @@ fun ConversationAnswerContent(
                 Text(
                     text = if (countDown != 0) "${countDown}초 남았습니다." else "",
                     style = answerTextStyle,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         }

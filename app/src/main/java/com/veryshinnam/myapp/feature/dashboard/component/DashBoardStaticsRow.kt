@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -30,7 +33,10 @@ fun DashBoardStaticsRow(
     subTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = Bold),
 ) {
     Row(
-        verticalAlignment = Alignment.CenterVertically
+        verticalAlignment = Alignment.CenterVertically,
+        modifier = Modifier.semantics(true) {
+            contentDescription = "$name ${count}회"
+        }
     ) {
         // 색상 원
         Box(
@@ -45,7 +51,7 @@ fun DashBoardStaticsRow(
         Text(
             text = name,
             style = nameTextStyle,
-            modifier = Modifier.weight(1f)
+            modifier = Modifier.weight(1f).clearAndSetSemantics { }
         )
 
         // 횟수
@@ -57,6 +63,7 @@ fun DashBoardStaticsRow(
             strokeWidth = 12f,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
+                .clearAndSetSemantics { }
         )
     }
 }

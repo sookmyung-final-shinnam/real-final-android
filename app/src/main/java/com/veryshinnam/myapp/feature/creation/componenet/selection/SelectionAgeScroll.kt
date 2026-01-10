@@ -26,6 +26,11 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.lerp
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -122,7 +127,7 @@ fun SelectionAgeScroll(
             horizontalAlignment = Alignment.CenterHorizontally,
             modifier = Modifier.fillMaxWidth(0.44f)
                 .zIndex(20f)
-                .background(Color.Transparent),
+                .background(Color.Transparent)
         ) {
             items(Int.MAX_VALUE) { index ->
                 val age = range.first + (index % itemCount)
@@ -170,6 +175,7 @@ fun SelectionAgeScroll(
                             scaleY = scale
                             this.alpha = alpha
                         }
+                        .clearAndSetSemantics { }
                 )
             }
         }

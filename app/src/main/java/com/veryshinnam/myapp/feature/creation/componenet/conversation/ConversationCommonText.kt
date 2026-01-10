@@ -22,6 +22,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -50,7 +52,10 @@ fun ConversationCommonText(
         Card(
             modifier = Modifier
                 .fillMaxWidth()
-                .align(Alignment.TopCenter),
+                .align(Alignment.TopCenter)
+                .clearAndSetSemantics {
+                    contentDescription = "질문. $text"
+                },
             colors = CardDefaults.cardColors(containerColor = Color.White),
             shape = RoundedCornerShape(32.dp),
             border = BorderStroke(4.dp, colorResource(R.color.main_orange)),
@@ -80,7 +85,7 @@ fun ConversationCommonText(
         // 다람쥐 이미지
         Image(
             painter = painter,
-            contentDescription = "다람쥐 이미지",
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight()
                 .scale(1.4f)

@@ -106,7 +106,6 @@ fun CharacterRightBack(
                 )
             }
 
-
             // 움직이는 동화
             Column(
                 modifier = Modifier.weight(1f),

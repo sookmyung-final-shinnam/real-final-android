@@ -33,9 +33,10 @@ import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.boundsInRoot
-import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -52,7 +53,8 @@ import kotlin.math.sin
 fun DashBoardStaticsCard(
     title: String,
     onHelpRect: (Rect) -> Unit = {},
-    chartStats: List<ChartStatData>, // 비육
+    chartStats: List<ChartStatData>, // 비율
+    chartText: String,
     listStats: List<StatData>,       // 횟수
     modifier: Modifier,
     spacer: Dp = 12.dp,
@@ -143,6 +145,9 @@ fun DashBoardStaticsCard(
                                 onHelpRect(rect)
                             }
                         }
+                        .semantics(true) {
+                            contentDescription = helpText
+                        }
                 )
             }
 
@@ -164,7 +169,10 @@ fun DashBoardStaticsCard(
                     verticalArrangement = Arrangement.spacedBy(spacer*2),
                 ) {
                     BoxWithConstraints(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth()
+                            .semantics(true) {
+                                contentDescription = "$title 선택 비율: $chartText"
+                            },
                         contentAlignment = Alignment.Center
                     ) {
                         Canvas(
