@@ -28,6 +28,10 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.onSizeChanged
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -89,6 +93,9 @@ fun StoryInfoFade(
             ) {
                 Column(
                     modifier = Modifier
+                        .semantics {
+                            isTraversalGroup = true
+                        }
                         .verticalScroll(scrollState)
                         .align(Alignment.TopStart)
                         .padding(top = 60.dp, start = 16.dp, end = 16.dp)
@@ -97,19 +104,31 @@ fun StoryInfoFade(
                         text = story.title,
                         style = titleTextStyle.copy(
                             lineHeight = titleTextStyle.lineHeight * 1.2f
-                        )
+                        ),
+                        modifier = Modifier.semantics {
+                            traversalIndex = 0f
+                            contentDescription = "동화 제목: ${story.title}"
+                        }
                     )
                     Spacer(modifier = Modifier.height(spacerPadding))
                     Text( // 태그
-                        text = story.tags,
+                        text = story.hashtags,
                         style = tagTextStyle.copy(
                             lineHeight = titleTextStyle.lineHeight * 1.1f
-                        )
+                        ),
+                        modifier = Modifier.semantics {
+                            traversalIndex = 0f
+                            contentDescription = "동화 해시태그: ${story.tags}"
+                        }
                     )
                     Spacer(modifier = Modifier.height(spacerPadding * 2))
                     Text( // 줄거리
                         text = story.description.replace("", "\u200B"),
-                        style = descTextStyle
+                        style = descTextStyle,
+                        modifier = Modifier.semantics {
+                            traversalIndex = 0f
+                            contentDescription = "동화 줄거리: ${story.description}"
+                        }
                     )
                 }
 

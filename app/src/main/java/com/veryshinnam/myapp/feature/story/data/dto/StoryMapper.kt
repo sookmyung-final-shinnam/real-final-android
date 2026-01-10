@@ -10,7 +10,8 @@ fun StoryResult.toStoryData(storyType: StoryType): StoryData =
     StoryData(
         id = storyId,
         title = title.orEmpty(),
-        tags = createHashtags(storyThemes, storyBackgrounds),
+        hashtags = createHashtags(storyThemes, storyBackgrounds),
+        tags = createTags(storyThemes, storyBackgrounds),
         description = description.orEmpty(),
         thumbnail = when (storyType) {
             StoryType.IMAGE -> storyContent.imageUrl.orEmpty()
@@ -31,4 +32,9 @@ fun StoryResult.toPageData(storyType: StoryType): PageData =
 private fun createHashtags(themes: List<String>?, backgrounds: List<String>?): String {
     return (themes.orEmpty() + backgrounds.orEmpty())
         .joinToString(" ") { "#$it" }
+}
+
+private fun createTags(themes: List<String>?, backgrounds: List<String>?): String {
+    return (themes.orEmpty() + backgrounds.orEmpty())
+        .joinToString(", ") { it }
 }
