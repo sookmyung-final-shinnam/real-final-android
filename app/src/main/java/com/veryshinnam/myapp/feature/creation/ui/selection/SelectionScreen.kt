@@ -247,7 +247,7 @@ fun SelectionScreen(
                     UserInfo(
                         modifier = Modifier.align(Alignment.TopStart),
                         animalImage = painterResource(R.drawable.img_squirrel_cut),
-                        screenText = "설명:",
+                        screenText = "단계 설명:",
                         cardColor = colorResource(R.color.main_orange),
                         cardText =  getInfoText(selectionStep, isInputMode),
                         onAnimalRect = { rect ->

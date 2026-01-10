@@ -5,6 +5,7 @@ import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Canvas
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.size
@@ -18,6 +19,9 @@ import androidx.compose.ui.graphics.nativeCanvas
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import com.veryshinnam.myapp.R
 
 @Composable
@@ -84,15 +88,24 @@ fun StepProgressBar(
         // 진행 단계 이미지
         val centerY = maxHeight / 2
         val travelX = edgePadding + interval * (steps - 1) * animatedProgress
+
         Image(
             painter = painterResource(R.drawable.img_story_ending),
-            contentDescription = "현재 진행 단계",
+            contentDescription = null,
             modifier = Modifier
                 .offset(
                     x = travelX - (imageSize / 2),
                     y = centerY - (imageSize / 2) // 원 중앙과 겹치도록
                 )
                 .size(imageSize)
+                .clearAndSetSemantics {
+                    contentDescription =
+                    if (currentStep == steps) {
+                        "현재 진행 단계. 전체 $steps 단계 중 마지막 단계"
+                    } else {
+                        "현재 진행 단계. 전체 $steps 단계 중 $currentStep 단계"
+                    }
+                }
         )
     }
 }

@@ -7,15 +7,9 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -25,6 +19,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -34,7 +34,7 @@ import com.veryshinnam.myapp.R
 @Composable
 fun SelectionPaletteButton(
     color: Color,
-    label: String,
+    labelT: String,
     selected: Boolean,
     onClick: () -> Unit,
     spacer: Dp = 2.dp,  // 원 테두리, 원-텍스트 간격
@@ -42,7 +42,13 @@ fun SelectionPaletteButton(
     modifier: Modifier
 ) {
     Column(
-        modifier = modifier.clickable{ onClick() },
+        modifier = modifier
+            .semantics(mergeDescendants = true) {
+                role = Role.RadioButton
+                contentDescription = labelT
+                stateDescription = if (selected) "선택됨" else "선택 안 됨"
+            }
+            .clickable { onClick() },
         verticalArrangement = Arrangement.spacedBy(spacer),
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
@@ -53,6 +59,7 @@ fun SelectionPaletteButton(
                 border = BorderStroke(spacer, colorResource(R.color.main_orange)),
                 colors = ButtonDefaults.buttonColors(containerColor = color),
                 modifier = Modifier.aspectRatio(1f)
+                    .clearAndSetSemantics { }
             ) {}
 
             if (selected) {
@@ -65,6 +72,6 @@ fun SelectionPaletteButton(
             }
         }
 
-        Text(label, style = labelTextStyle)
+        Text(labelT, style = labelTextStyle, modifier = Modifier.clearAndSetSemantics { })
     }
 }

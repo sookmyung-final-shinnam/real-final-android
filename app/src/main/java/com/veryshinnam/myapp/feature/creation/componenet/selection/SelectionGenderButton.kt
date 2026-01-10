@@ -19,6 +19,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.selected
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.dp
@@ -42,6 +48,15 @@ fun SelectionGenderButton(
         shape = CircleShape,
         border =  BorderStroke(2.dp, colorResource(R.color.main_orange)),
         modifier = modifier.aspectRatio(1f) // 1:1 원형
+            .semantics(true) {
+                contentDescription = when (gender) {
+                    Gender.FEMALE -> "여자"
+                    Gender.MALE ->  "남자"
+                    else -> ""
+                }
+                role = Role.RadioButton
+                selected = isSelected
+            }
     ) {
         Column(
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -52,29 +67,30 @@ fun SelectionGenderButton(
             if (gender == Gender.FEMALE) {
                 Icon(
                     imageVector = Icons.Filled.Female,
-                    contentDescription = "여자 버튼",
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(0.4f),
                     tint = selectColor
                 )
                 Text(
                     text = "여자",
                     style = textStyle,
-                    color = selectColor
+                    color = selectColor,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             } else {
                 Icon(
                     imageVector = Icons.Filled.Male,
-                    contentDescription = "Male",
+                    contentDescription = null,
                     modifier = Modifier.fillMaxSize(0.4f),
                     tint = selectColor
                 )
                 Text(
                     text = "남자",
                     style = textStyle,
-                    color = selectColor
+                    color = selectColor,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         }
-
     }
 }

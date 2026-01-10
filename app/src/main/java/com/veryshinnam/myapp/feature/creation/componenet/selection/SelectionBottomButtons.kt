@@ -33,6 +33,11 @@ import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
@@ -63,19 +68,24 @@ fun SelectionBottomButtons(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(onClick = { onLeftClick() }),
+                    .clickable(onClick = { onLeftClick() })
+                    .semantics(true) {
+                        contentDescription = "이전 단계로 가기"
+                        role = Role.Button
+                    },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowBack,
-                    contentDescription = "이전",
+                    contentDescription = null,
                     tint = colorResource(R.color.main_orange)
                 )
                 Spacer(Modifier.width(4.dp))
                 Text(
                     "이전",
-                    style = textStyle
+                    style = textStyle,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
             }
         } else {
@@ -97,7 +107,13 @@ fun SelectionBottomButtons(
             Button(
                 onClick = { if (isCenter) onCenterClick() },
                 enabled = isCenter,
-                modifier = Modifier.fillMaxHeight().aspectRatio(1f),
+                modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+                    .semantics(true) {
+                        if (isCenter) {
+                            contentDescription = "직접 추가"
+                            role = Role.Button
+                        }
+                    },
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
                     containerColor = containerColor,
@@ -118,14 +134,14 @@ fun SelectionBottomButtons(
                 ) {
                     Image(
                         painter = painterResource(id = R.drawable.ic_keyboard),
-                        contentDescription = if (isCenter) "직접 추가 이미지" else null, // 접근성 내용 제거
+                        contentDescription = null, // 접근성 내용 제거
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
                             .fillMaxHeight(0.7f)
                             .padding(16.dp),
                         alpha = if (isCenter) 1.0f else 0.0f
                     )
-                    Text(text = "직접 추가하기", style = centerTextStyle)
+                    Text(text = "직접 추가하기", style = centerTextStyle, modifier = Modifier.clearAndSetSemantics { })
                 }
             }
         }
@@ -135,19 +151,24 @@ fun SelectionBottomButtons(
             Row(
                 modifier = Modifier
                     .weight(1f)
-                    .clickable(onClick = { onRightClick() }),
+                    .clickable(onClick = { onRightClick() })
+                    .semantics(true) {
+                        contentDescription = "다음 단계로 가기"
+                        role = Role.Button
+                    },
                 horizontalArrangement = Arrangement.Center,
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
                     "다음",
-                    style = textStyle
+                    style = textStyle,
+                    modifier = Modifier.clearAndSetSemantics { }
                 )
 
                 Spacer(Modifier.width(4.dp))
                 Icon(
                     Icons.AutoMirrored.Filled.ArrowForward,
-                    contentDescription = "다음",
+                    contentDescription = null,
                     tint = colorResource(R.color.main_orange)
                 )
             }
