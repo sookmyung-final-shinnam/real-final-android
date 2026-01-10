@@ -78,6 +78,7 @@ import com.veryshinnam.myapp.feature.character.component.CharacterCardLeft
 import com.veryshinnam.myapp.feature.character.component.CharacterCardRight
 import com.veryshinnam.myapp.feature.character.component.CharacterTabButton
 import com.veryshinnam.myapp.feature.story.model.StoryType
+import kotlinx.coroutines.delay
 
 
 @Composable
@@ -116,6 +117,7 @@ fun CharacterScreen(
 
     // ui 변수
     var isFront by rememberSaveable { mutableStateOf(true) } // 카드 앞뒷면 구분
+    var triggerRefresh by remember { mutableStateOf(0) }
 
     // 매뉴얼 변수
     val isManual = manualState != ManualState.NONE
@@ -135,6 +137,22 @@ fun CharacterScreen(
     LaunchedEffect(id) {
         if (manualState == ManualState.NONE) {
             vm.fetchCharacter(id) // 실제 데이터
+        }
+    }
+
+    // 움직이는 동화 잠금 해제 > 새로고침 강제
+    LaunchedEffect(triggerRefresh) {
+        if (triggerRefresh > 0) {
+            if (isFront) {
+                // 앞면이면 뒤로만 뒤집기
+                isFront = false
+            } else {
+                // 뒷면이면 앞으로 갔다가 뒤로
+                isFront = true
+               vm.reload(id)
+                delay(600)
+                isFront = false
+            }
         }
     }
 
@@ -509,8 +527,9 @@ fun CharacterScreen(
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {
-                vm.fetchVideoStory(warnedStoryId!!)
+                vm.fetchVideoStory(id, warnedStoryId!!)
                 isWarning = false
+                warnedStoryId = null
             }
         )
     }

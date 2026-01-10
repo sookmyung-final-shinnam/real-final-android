@@ -27,6 +27,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -41,13 +43,6 @@ fun ConversationEndContent(
     textStyle: TextStyle = MaterialTheme.typography.titleSmall.copy(fontWeight = Bold, textAlign = TextAlign.Center),
     verticalPadding: Dp = 24.dp,
 ) {
-
-    // 3초 뒤 자동 홈으로
-    LaunchedEffect(Unit) {
-        delay(3000L)
-        onHomeClick()
-    }
-
     // ui
     Column(
         modifier = Modifier.fillMaxSize(),
@@ -84,9 +79,13 @@ fun ConversationEndContent(
                 ) {
                     // 질문 텍스트
                     Text(
-                        text = "다 끝났어!\n\n이제 동화가 생성 중이야.\n" +
-                                "5분 뒤에 보관함에서 보자!",
-                        style = textStyle
+                        text = "다 끝났어요!\n\n" +
+                                "이제 제가 동화를 재미있게 만들어 드릴게요.\n" +
+                                "잠시 뒤에 보관함에서 만나요!",
+                        style = textStyle.copy(
+                            lineHeight = textStyle.lineHeight * 1.2f
+                        )
+
                     )
                 }
             }
@@ -102,7 +101,10 @@ fun ConversationEndContent(
             ) {
                 Text(
                     text = "홈으로",
-                    modifier = Modifier.padding(8.dp),
+                    modifier = Modifier.padding(8.dp)
+                        .semantics {
+                            contentDescription = "홈 화면으로 이동"
+                        },
                     style =textStyle.copy(
                         color = Color.White,
                         fontSize = textStyle.fontSize * 1.4f

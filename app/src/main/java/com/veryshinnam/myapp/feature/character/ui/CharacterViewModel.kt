@@ -86,10 +86,11 @@ class CharacterViewModel @Inject constructor(
     }
 
     // 동화 영상 해제
-    fun fetchVideoStory(sId: Long) {
+    fun fetchVideoStory(cId:Long, sId: Long) {
         viewModelScope.launch {
             try {
                 repository.generateVideo(sId)
+                refreshStories(cId)
             } catch (e: Exception) {
                 _uiState.value = CharacterUiState.Error(
                     "동화 영상 해제 실패: ${e.message}"
