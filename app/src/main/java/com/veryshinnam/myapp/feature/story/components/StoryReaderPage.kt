@@ -24,6 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -41,6 +48,7 @@ import kotlinx.coroutines.launch
 @Composable
 fun StoryReaderPage(
     page: PageData,
+    pageNum: Int,
     storyType: StoryType,
     pagerState: PagerState,
     coroutineScope: CoroutineScope,
@@ -50,23 +58,33 @@ fun StoryReaderPage(
     onEndingPage: () -> Unit
 ) {
     Box(Modifier.fillMaxSize()) {
-        when (storyType) {
-            // 페이지 이미지
-            StoryType.IMAGE -> {
-                AsyncImage(
-                    model = page.url,
-                    contentDescription = "페이지 이미지",
-                    modifier = Modifier.fillMaxSize(),
-                    contentScale = ContentScale.Crop
-                )
-            }
+        Box(
+            modifier = Modifier
+                .semantics(true) {
+                    contentDescription = when (pageNum) {
+                        3 -> "마지막 페이지"
+                        else -> "${pageNum + 1} 페이지"
+                    }
+                }
+        ) {
+            when (storyType) {
+                // 페이지 이미지
+                StoryType.IMAGE -> {
+                    AsyncImage(
+                        model = page.url,
+                        contentDescription = null,
+                        modifier = Modifier.fillMaxSize(),
+                        contentScale = ContentScale.Crop
+                    )
+                }
 
-            // 페이지 영상
-            StoryType.VIDEO -> {
-                VideoPlayer(
-                    videoUrl = page.url,
-                    modifier = Modifier.fillMaxSize()
-                )
+                // 페이지 영상
+                StoryType.VIDEO -> {
+                    VideoPlayer(
+                        videoUrl = page.url,
+                        modifier = Modifier.fillMaxSize().clearAndSetSemantics { }
+                    )
+                }
             }
         }
 
@@ -80,7 +98,10 @@ fun StoryReaderPage(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(WindowInsets.navigationBars.asPaddingValues()),
+                    .padding(WindowInsets.navigationBars.asPaddingValues())
+                    .semantics {
+                        isTraversalGroup = true
+                    },
                 verticalAlignment = Alignment.CenterVertically,
                 horizontalArrangement = Arrangement.spacedBy(horizontalPadding/2)
             ) {
@@ -96,6 +117,11 @@ fun StoryReaderPage(
                         }
                     },
                     modifier = Modifier.fillMaxHeight(0.24f)
+                        .semantics {
+                            traversalIndex = 1f
+                            contentDescription = "이전 페이지 이동"
+                            role = Role.Button
+                        }
                 )
 
                 // 줄거리 내용
@@ -108,7 +134,10 @@ fun StoryReaderPage(
                         .border(
                             width = 2.dp,
                             color = colorResource(R.color.main_orange),
-                            shape = RoundedCornerShape(16.dp)),
+                            shape = RoundedCornerShape(16.dp))
+                        .semantics {
+                            traversalIndex = 0f
+                        },
                     contentAlignment = Alignment.Center
                 ) {
                     Text(
@@ -133,6 +162,11 @@ fun StoryReaderPage(
                         }
                     },
                     modifier = Modifier.fillMaxHeight(0.24f)
+                        .semantics {
+                            traversalIndex = 2f
+                            contentDescription = "다음 페이지 이동"
+                            role = Role.Button
+                        }
                 )
             }
         }

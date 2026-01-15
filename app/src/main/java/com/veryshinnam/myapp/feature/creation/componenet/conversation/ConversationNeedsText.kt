@@ -71,7 +71,8 @@ fun ConversationNeedsText(
                 ) {
                     Text(
                         text = "시도 횟수: $tryNum",
-                        style = tryTextStyle
+                        style = tryTextStyle,
+                        modifier = Modifier
                     )
                 }
             }
@@ -90,7 +91,7 @@ fun ConversationNeedsText(
                 ) {
                     Image(
                         painter = painter,
-                        contentDescription = "다람쥐 이미지",
+                        contentDescription = null,
                         modifier = Modifier
                             .fillMaxSize()
                             .align(Alignment.BottomStart)
@@ -126,7 +127,7 @@ fun ConversationNeedsText(
         // 다람쥐 이미지
         Image(
             painter = painter,
-            contentDescription = "다람쥐 이미지",
+            contentDescription = null,
             modifier = Modifier
                 .fillMaxHeight(0.3f)
                 .offset(x=(-8).dp, y=40.dp)

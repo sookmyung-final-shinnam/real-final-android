@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
@@ -26,12 +27,17 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 
+// 인터넷 연결 에러 뷰
 @Composable
 fun LoginErrorContent(
     modifier: Modifier,
@@ -40,10 +46,7 @@ fun LoginErrorContent(
     Box(
         modifier = modifier.fillMaxSize().padding(start = 20.dp, end = 20.dp, bottom = 20.dp)
     ) {
-        LogoBar(
-            modifier = Modifier.statusBarsPadding(),
-            onLogoClick = onBack
-        )
+        LogoBar(modifier = Modifier.statusBarsPadding().clearAndSetSemantics { })
 
         Column(
             modifier = Modifier
@@ -83,7 +86,7 @@ fun LoginErrorContent(
 
         Image(
             painter = painterResource(R.drawable.img_llm_feedback_negative),
-            contentDescription = "네트워크 실패 이미지",
+            contentDescription = null,
             modifier = Modifier
                 .navigationBarsPadding()
                 .padding(bottom = 24.dp, end = 24.dp)

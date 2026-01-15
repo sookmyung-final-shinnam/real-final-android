@@ -97,12 +97,13 @@ class StoryViewModel @Inject constructor(
     // 더미
     fun dummyPrologue(): StoryData =
      StoryData(
-            id = 16L,
-            title = "사막의 빛과 우정",
-            tags = "#모험, #판타지, #숲",
-            description = "옛날 옛적, 작은 마을에 사는 아이가 신비한 숲으로 모험을 떠나는 이야기입니다.",
-            thumbnail = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/16/page_4.png"
-        )
+         id = 16L,
+         title = "사막의 빛과 우정",
+         hashtags =  "#모험 #판타지 #숲",
+         tags =  "모험 판타지 숲",
+         description = "옛날 옛적, 작은 마을에 사는 아이가 신비한 숲으로 모험을 떠나는 이야기입니다.",
+         thumbnail = "https://jangshinnam-s3.s3.ap-northeast-2.amazonaws.com/stories/16/page_4.png"
+     )
 
     val dummyPages = listOf(
         PageData(

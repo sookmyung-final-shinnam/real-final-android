@@ -19,6 +19,11 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
@@ -46,15 +51,20 @@ fun ConversationReplayButton(
             verticalAlignment = Alignment.CenterVertically,
             modifier = Modifier
                 .height(IntrinsicSize.Min)
+                .semantics(true) {
+                    contentDescription = "다시 듣기"
+                    role = Role.Button
+                }
         ) {
             Text(
                 text = "다시 듣기",
-                style = buttonTextStyle
+                style = buttonTextStyle,
+                modifier = Modifier.clearAndSetSemantics { }
             )
 
             Icon(
                 imageVector = Icons.Rounded.Replay,
-                contentDescription = "다시듣기 아이콘",
+                contentDescription = null,
                 tint = colorResource(id = R.color.main_orange),
                 modifier = Modifier
                     .padding(start = 2.dp)

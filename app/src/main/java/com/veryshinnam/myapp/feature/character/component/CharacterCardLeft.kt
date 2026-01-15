@@ -36,7 +36,7 @@ fun CharacterCardLeft(
                 is ImageType.Url -> {
                     AsyncImage(
                         model = character.image.url,
-                        contentDescription = "캐릭터 이미지",
+                        contentDescription = "${character.name} 캐릭터",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop,
                     )
@@ -45,7 +45,7 @@ fun CharacterCardLeft(
                 is ImageType.Resource -> {
                     Image(
                         painter = painterResource(id = character.image.resId),
-                        contentDescription = "매뉴얼 캐릭터 이미지",
+                        contentDescription = "매뉴얼 캐릭터",
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Crop
                     )
@@ -64,17 +64,6 @@ fun CharacterCardLeft(
                 onFavoriteClick = onFavoriteClick,
 
             )
-//            // 즐찾 이미지
-//            Image(
-//                painter = painterResource(id = iconRes),
-//                contentDescription = "즐겨찾기 아이콘",
-//                modifier = Modifier
-//                    .fillMaxWidth(0.3f)
-//                    .aspectRatio(1f)
-//                    .padding(16.dp)
-//                    .clickable { onFavoriteClick(character.id) },
-//                contentScale = ContentScale.Fit
-//            )
         }
     }
 }

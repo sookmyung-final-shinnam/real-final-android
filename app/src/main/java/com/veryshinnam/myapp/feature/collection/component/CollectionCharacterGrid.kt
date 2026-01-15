@@ -1,7 +1,6 @@
 package com.veryshinnam.myapp.feature.collection.component
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.aspectRatio
@@ -24,6 +23,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.boundsInRoot
 import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
@@ -33,26 +34,28 @@ import com.veryshinnam.myapp.feature.collection.model.CollectionData
 fun CollectionCharacterGrid(
     data: List<CollectionData>,
     onFavoriteClick: (Long) -> Unit,
-    onItemClick: (CollectionData) -> Unit,
+    onItemClick: (Long) -> Unit,
     cellPadding: Dp = 6.dp,
     modifier: Modifier,
     onCharacterRect: (Rect) -> Unit,
     listState: LazyGridState = rememberLazyGridState()
 ) {
 
-    // 스크롤이 맨 위가 아닌지 체크
-    // 스크롤 시작 시 페이드 효과 시작
+    // 스크롤이 맨 위가 아닌지 체크 > 스크롤 시작 시 페이드 효과 시작
     val isTop by remember {
         derivedStateOf {
             listState.firstVisibleItemIndex == 0 && listState.firstVisibleItemScrollOffset == 0
         }
     }
 
-    Box(modifier = modifier) {
+    Box {
         LazyVerticalGrid(
+            modifier = modifier
+                .semantics {
+                    traversalIndex = 1f
+                },
             columns = GridCells.Fixed(3),
             state = listState,
-            modifier = modifier,
             verticalArrangement = Arrangement.spacedBy(cellPadding),
             horizontalArrangement = Arrangement.spacedBy(cellPadding),
             content = {
@@ -63,6 +66,7 @@ fun CollectionCharacterGrid(
                         cImage = item.image,
                         isFavorite = item.isFavorite,
                         onFavoriteClick = onFavoriteClick,
+                        onItemClick = onItemClick,
                         modifier = Modifier
                             .fillMaxWidth()
                             .aspectRatio(3f / 4f)
@@ -73,7 +77,6 @@ fun CollectionCharacterGrid(
                                     }
                                 } else Modifier
                             )
-                            .clickable { onItemClick(item) }
                     )
                 }
             }

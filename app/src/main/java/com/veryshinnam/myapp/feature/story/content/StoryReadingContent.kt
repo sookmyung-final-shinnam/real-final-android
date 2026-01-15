@@ -23,6 +23,12 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.style.TextAlign
@@ -77,6 +83,7 @@ fun StoryReadingContent(
             if (page < pages.size) {
                 StoryReaderPage(
                     page = pages[page],
+                    pageNum = page,
                     storyType = storyType,
                     pagerState = pagerState,
                     coroutineScope = coroutineScope,
@@ -107,13 +114,18 @@ fun StoryReadingContent(
                     .fillMaxHeight(0.3f)
                     .systemBarsPadding()
                     .clickable { onTtsModeChange() }
-                    .align(Alignment.TopEnd),
+                    .align(Alignment.TopEnd)
+                    .semantics(true) {
+                        contentDescription = "동화 읽어주기"
+                        stateDescription = if (isTtsMode) "소리 재생 켜짐" else "소리 재생 꺼짐"
+                        role = Role.Button
+                    },
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Image(
                     painter = if (isTtsMode) { painterResource(R.drawable.img_speak_on) }
                             else { painterResource(R.drawable.img_speak_off) },
-                    contentDescription = "동화 읽어 주기",
+                    contentDescription = null,
                     modifier = Modifier.weight(1f),
                     contentScale = ContentScale.Fit
                 )
@@ -124,15 +136,15 @@ fun StoryReadingContent(
                     style = ttsTextStyle.copy(
                         lineHeight = ttsTextStyle.lineHeight * 1.2f
                     ),
-                    modifier = Modifier.background(
-                        brush = Brush.horizontalGradient(
-                            colors = listOf(
-                                Color.Transparent,
-                                colorResource(R.color.background_yellow).copy(0.4f),
-                                Color.Transparent
-                            )
-                        )
-                    )
+                    modifier = Modifier
+                        .background(
+                            brush = Brush.horizontalGradient(
+                                colors = listOf(
+                                    Color.Transparent,
+                                    colorResource(R.color.background_yellow).copy(0.4f),
+                                    Color.Transparent
+                                )))
+                        .clearAndSetSemantics { }
                 )
             }
         }

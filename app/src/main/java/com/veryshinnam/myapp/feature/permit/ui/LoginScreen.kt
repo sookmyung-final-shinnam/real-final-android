@@ -134,7 +134,7 @@ fun LoginScreen(
                 ) {
                     Image(
                         painter = painterResource(R.drawable.img_login),
-                        contentDescription = "로그인 이미지",
+                        contentDescription = null, // 장식용
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
@@ -149,7 +149,7 @@ fun LoginScreen(
                 ) {
                     Image(
                         painter = painterResource(R.drawable.img_kakao_login),
-                        contentDescription = "카카오 로그인",
+                        contentDescription = "카카오 로그인. 인터넷 연결이 필요합니다.",
                         modifier = Modifier.fillMaxSize()
                             .clickable{
                                 if (canAccessNetwork(context)) {

@@ -12,6 +12,11 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.stateDescription
 import com.veryshinnam.myapp.R
 
 @Composable
@@ -21,7 +26,14 @@ fun FavoriteButton(
     isFavorite: Boolean,    // 즐겨 찾기 여부
     onFavoriteClick: (cId: Long) -> Unit,   // 클릭 시 외부 처리
 ) {
-    Box( modifier = modifier ) {
+    Box(
+        modifier = modifier
+            .clearAndSetSemantics {
+                role = Role.Button
+                contentDescription = "즐겨찾기"
+                stateDescription = if (isFavorite) "즐겨찾기 켜짐" else "즐겨찾기 꺼짐"
+            }
+    ) {
         // 보더
         Icon(
             imageVector = Icons.Rounded.StarBorder,
@@ -40,7 +52,7 @@ fun FavoriteButton(
         ) {
             Icon(
                 imageVector = Icons.Rounded.Star,
-                contentDescription = "즐겨찾기 아이콘",
+                contentDescription = null,
                 tint = if (isFavorite) colorResource(id = R.color.main_orange) else Color.White,
                 modifier = Modifier
                     .fillMaxSize(0.92f)

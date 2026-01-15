@@ -3,7 +3,6 @@ package com.veryshinnam.myapp.feature.story.components
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -15,7 +14,6 @@ import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,6 +21,9 @@ import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -47,7 +48,7 @@ fun StoryReadButton(
         // 토끼 이미지
         Image(
             painter = painterResource(R.drawable.img_rabbit_full),
-            contentDescription = "토끼 이미지",
+            contentDescription = null,
             modifier = Modifier
                 .zIndex(1f)
                 .fillMaxHeight()
@@ -73,10 +74,14 @@ fun StoryReadButton(
                     color = colorResource(id = R.color.blue_gray),
                     shape = CircleShape
                 )
+                .semantics(true) {
+                    contentDescription = "동화 보러 가기"
+                }
         ) {
             Text(
                 text = text,
-                style = textextStyle
+                style = textextStyle,
+                modifier = Modifier.clearAndSetSemantics { }
             )
         }
     }

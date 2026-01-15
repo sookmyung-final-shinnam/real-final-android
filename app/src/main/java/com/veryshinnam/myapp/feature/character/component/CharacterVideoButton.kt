@@ -1,26 +1,22 @@
 package com.veryshinnam.myapp.feature.character.component
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
-import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.TextStyle
-import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.zIndex
@@ -32,6 +28,7 @@ import com.veryshinnam.myapp.feature.story.model.StoryType
 @Composable
 fun CharacterVideoButton(
     storyId: Long,          // 동화 아이디
+    title: String,
     videoUrl: String? = null,  // 영상 표지
     videoStatus: VideoStatus,
     youTubeLink: String?,    // 유튜브 링크
@@ -62,7 +59,17 @@ fun CharacterVideoButton(
                     }
                 }
             },
-            modifier = Modifier.aspectRatio(1f),
+            modifier = Modifier.aspectRatio(1f)
+                .semantics{
+                    contentDescription = when (videoStatus) {
+                        VideoStatus.NONE -> "$title $infoText 잠금 해제"
+                        VideoStatus.MAKING -> "$title $infoText 동화 제작 중"
+                        VideoStatus.COMPLETED -> {
+                            if (videoUrl.isNullOrBlank()) "$title $infoText 제작 중"
+                            else "$title $infoText 보러 가기"
+                        }
+                    }
+                },
             shape = RoundedCornerShape(storyRadius),
             contentPadding = PaddingValues(0.dp) // 패딩 제거
         ) {
@@ -73,7 +80,7 @@ fun CharacterVideoButton(
                 VideoStatus.NONE -> {
                     Image(
                         painter = painterResource(R.drawable.img_locker),
-                        contentDescription = "$infoText 잠금",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
@@ -83,7 +90,7 @@ fun CharacterVideoButton(
                 VideoStatus.MAKING -> {
                     Image(
                         painter = painterResource(R.drawable.img_unlocker),
-                        contentDescription = "$infoText 제작 중",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxSize(),
                         contentScale = ContentScale.Fit
                     )
@@ -95,7 +102,7 @@ fun CharacterVideoButton(
                     if (videoUrl.isNullOrBlank()) {
                         Image(
                             painter = painterResource(R.drawable.img_unlocker),
-                            contentDescription = "$infoText 제작 중",
+                            contentDescription = null,
                             modifier = Modifier.fillMaxSize(),
                             contentScale = ContentScale.Fit
                         )
@@ -115,7 +122,6 @@ fun CharacterVideoButton(
             Button(
                 onClick = { onKakaoClick(youTubeLink) },
                 modifier = Modifier
-//                        .align(Alignment.TopEnd)
                     .fillMaxHeight(kakaoSize)
                     .aspectRatio(1f)
                     .zIndex(1f),
@@ -127,7 +133,7 @@ fun CharacterVideoButton(
             ) {
                 Image(
                     painter = painterResource(R.drawable.img_kakao),
-                    contentDescription = "카카오 버튼",
+                    contentDescription = "움직이는 동화 카카오톡 공유",
                     contentScale = ContentScale.Fit
                 )
             }

@@ -20,6 +20,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -43,13 +46,18 @@ fun DashboardAttemptRow(
     val iconCount = count.coerceIn(1, 3) // 시도 횟수 1 ~ 3 제한
 
     Row(
-        modifier = modifier.fillMaxWidth().padding(horizontal = horizontalPadding),
+        modifier = modifier.fillMaxWidth().padding(horizontal = horizontalPadding)
+            .semantics(true) {
+                contentDescription = "$title 단계 시도 횟수 ${count}회"
+            },
         horizontalArrangement = Arrangement.SpaceBetween,
         verticalAlignment = Alignment.CenterVertically
     ) {
 
         // 기, 승, 전, 결 라벨
-        Text(text = title, style = titleTextStyle)
+        Text(text = title, style = titleTextStyle,
+            modifier = Modifier.clearAndSetSemantics { }
+        )
 
         Spacer(Modifier.width(spacer))
 
@@ -103,6 +111,7 @@ fun DashboardAttemptRow(
             strokeWidth = 12f,
             modifier = Modifier
                 .align(Alignment.CenterVertically)
+                .clearAndSetSemantics { }
         )
     }
 }

@@ -86,7 +86,6 @@ fun WarningConfirmSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-//                .fillMaxHeight(.35f)
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
@@ -101,7 +100,7 @@ fun WarningConfirmSheet(
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
-                        contentDescription = "닫기",
+                        contentDescription = "시트 닫기",
                         tint = colorResource(R.color.main_orange_50),
                         modifier = Modifier.fillMaxSize()
                     )
@@ -118,7 +117,7 @@ fun WarningConfirmSheet(
                     // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
-                        contentDescription = "경고 이미지",
+                        contentDescription = "경고",
                         modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )

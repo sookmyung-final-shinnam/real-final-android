@@ -31,6 +31,12 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.Dp
@@ -87,7 +93,10 @@ fun AttendanceCalender(
             Text(
                 text = "${yearMonth.year}",
                 color = colorResource(R.color.deep_pink),
-                style = textStyle
+                style = textStyle,
+                modifier = Modifier.semantics {
+                    contentDescription = "${yearMonth.year}년"
+                }
             )
 
             // 월 (이동 버튼)
@@ -99,10 +108,15 @@ fun AttendanceCalender(
             ) {
                 Image(
                     painter = painterResource(id = R.drawable.img_calendar_left),
-                    contentDescription = "이전 달",
+                    contentDescription = null,
                     modifier = Modifier
                         .size(buttonSize)
                         .clickable { onPrevMonth() }
+                        .semantics {
+                            contentDescription = "이전 달 이동"
+                            role = Role.Button
+                            stateDescription = "현재 ${yearMonth.monthValue}월"
+                        }
                 )
 
                 Text(
@@ -112,12 +126,19 @@ fun AttendanceCalender(
 
                 Image(
                     painter = painterResource(id = R.drawable.img_calendar_right),
-                    contentDescription = "다음 달",
+                    contentDescription = null,
                     modifier = Modifier
                         .size(buttonSize)
                         .let {
                             if (isNextEnabled) it.clickable { onNextMonth() }
                             else it.alpha(0.3f) // 비활성화
+                        }
+                        .semantics {
+                            if (isNextEnabled) {
+                                contentDescription = "다음 달 이동"
+                                role = Role.Button
+                                stateDescription = "현재 ${yearMonth.monthValue}월"
+                            }
                         }
                 )
             }
@@ -182,12 +203,24 @@ fun AttendanceCalender(
                             val attendance = date in attendances // 출석한 날짜
 
                             Column(
-                                modifier = Modifier.size(cellWidth, cellHeight),
+                                modifier = Modifier.size(cellWidth, cellHeight)
+                                    .semantics(true) {
+                                        if (index == 0) {
+                                            contentDescription =
+                                                "날짜 시작. ${yearMonth.monthValue}월 1일, " +
+                                                        if (attendance) "출석함" else "출석 안 함"
+                                        } else {
+                                            contentDescription =
+                                                "${yearMonth.monthValue}월 ${index + 1}일, " +
+                                                        if (attendance) "출석함" else "출석 안 함"
+                                        }
+                                    },
                                 horizontalAlignment = Alignment.CenterHorizontally
                             ) {
                                 Text( // 날짜
                                     text = "${index + 1}",
                                     style = dateTextStyle,
+                                    modifier = Modifier.clearAndSetSemantics { }
                                 )
 
                                 if (attendance) { // 도장
@@ -196,7 +229,7 @@ fun AttendanceCalender(
                                     Image(
                                         painter = if (!isManual && isToday) painterResource(R.drawable.img_stamp_shining_on)
                                             else painterResource(R.drawable.img_stamp_shining_off),
-                                        contentDescription = if (isToday) "오늘 출석 도장" else "출석 도장",
+                                        contentDescription = null,
                                         modifier = Modifier
                                             .fillMaxSize()
                                             .padding(bottom = calendarPadding)

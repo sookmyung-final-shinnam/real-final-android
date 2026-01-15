@@ -26,6 +26,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
+import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -96,7 +100,7 @@ fun SelectionPaletteGrid(
 
                             SelectionPaletteButton(
                                 color = colorResource(resId),
-                                label = label,
+                                labelT = label,
                                 selected = actualIndex == selectedIndex,
                                 onClick = {
                                     onSelect(
@@ -143,6 +147,10 @@ fun SelectionPaletteGrid(
                         .fillMaxHeight(0.6f)
                         .graphicsLayer {
                             translationX = -12.dp.toPx()
+                        }
+                        .semantics(true) {
+                            contentDescription = "$title 이전 색상 이동"
+                            role = Role.Button
                         },
                     containerColor = colorResource(R.color.main_orange).copy(0.5f)
                 )
@@ -181,6 +189,10 @@ fun SelectionPaletteGrid(
                         .fillMaxHeight(0.6f)
                         .graphicsLayer {
                             translationX = 12.dp.toPx()
+                        }
+                        .semantics(true) {
+                            contentDescription = "$title 다음 색상 이동"
+                            role = Role.Button
                         },
                     containerColor = colorResource(R.color.main_orange).copy(0.5f)
                 )

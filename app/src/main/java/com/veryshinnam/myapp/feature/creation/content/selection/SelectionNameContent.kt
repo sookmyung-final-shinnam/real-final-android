@@ -53,7 +53,6 @@ fun SelectionNameContent(
 
     // 닉네임 유효성 검사
     val error = validateKoreanName(inputName)
-//    val isValid = error == NameError.NONE && inputName.isNotBlank()
 
     Column(
         modifier = modifier,

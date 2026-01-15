@@ -14,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
@@ -69,7 +70,8 @@ fun DashboardHelpButton(
         ) {
             Text(
                 "?",
-                style = helpTextStyle
+                style = helpTextStyle,
+                modifier = Modifier.clearAndSetSemantics { }
             )
         }
     }
