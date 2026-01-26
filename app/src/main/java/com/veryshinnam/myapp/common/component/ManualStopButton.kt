@@ -36,8 +36,8 @@ fun ManualStopButton(
         contentPadding = PaddingValues(0.dp),
         colors = ButtonDefaults.buttonColors(
             containerColor = Color.Transparent,
-            disabledContainerColor = Color.Transparent,
             contentColor = Color.White,
+            disabledContainerColor = Color.Transparent,
             disabledContentColor = Color.White.copy(alpha = 0.6f)
         ),
         modifier = modifier
@@ -65,7 +65,6 @@ fun ManualStopButton(
                 ),
                 shape = CircleShape
             )
-            .clip(CircleShape)
             .border(
                 width = 2.dp,
                 color = if (enabled) colorResource(id = R.color.main_orange)
