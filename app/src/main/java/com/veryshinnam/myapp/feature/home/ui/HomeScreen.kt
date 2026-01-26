@@ -344,7 +344,7 @@ fun HomeScreen(
                                         .semantics {
                                             traversalIndex = 0f
                                         }
-                                        .weight(8f),
+                                        .weight(78f),
                                     characters = favorites,
                                     lastSelectedId = state.lastSelectedCharacter,
                                     onCharacterClick = { id ->
@@ -356,7 +356,7 @@ fun HomeScreen(
                                     }
                                 )
 
-                                // 바텀 버튼 (남은 공간의 20%)
+                                // 바텀 버튼 (남은 공간의 22%)
                                 HomeBottomButtons(
                                     onDashboardClick = onDashboardClick,
                                     onCreationClick = {
@@ -381,7 +381,7 @@ fun HomeScreen(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .weight(2f)
+                                        .weight(22f)
                                         .padding(vertical = 8.dp)
                                         .semantics {
                                             traversalIndex = 1f
@@ -395,7 +395,7 @@ fun HomeScreen(
                             painter = painterResource(R.drawable.img_home_check),
                             contentDescription = null, // 이미지 설명 제거
                             modifier = Modifier
-                                .fillMaxHeight(0.08f)
+                                .fillMaxHeight(0.094f)
                                 .padding(horizontal = 16.dp)
                                 .align(Alignment.TopEnd)
                                 .onGloballyPositioned {
