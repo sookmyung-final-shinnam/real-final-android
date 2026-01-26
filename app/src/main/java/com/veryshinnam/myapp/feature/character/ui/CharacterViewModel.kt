@@ -87,15 +87,14 @@ class CharacterViewModel @Inject constructor(
     }
 
     // 동화 영상 해제
-    fun fetchVideoStory(cId:Long, sId: Long) {
+    fun fetchVideoStory(cId:Long, sId: Long, onError: (String) -> Unit = {}) {
         viewModelScope.launch {
             try {
                 repository.generateVideo(sId)
                 refreshStories(cId)
-            } catch (e: Exception) {
-                _uiState.value = CharacterUiState.Error(
-                    "동화 영상 해제 실패: ${e.message}"
-                )
+            } catch (_: Exception) {
+                // 실패 시 상태 복구
+                onError("도토리가 부족해요.\n출석을 통해 도토리를 모아 볼까요?")
             }
         }
     }

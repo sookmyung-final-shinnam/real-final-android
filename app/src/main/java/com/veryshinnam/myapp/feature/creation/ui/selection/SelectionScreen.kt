@@ -423,7 +423,7 @@ fun SelectionScreen(
         if (isSimpleWarning) {
             WarningSheet(
                 warningText = simpleWarningText,
-                onDismiss = { isSimpleWarning = false}
+                onDismiss = { isSimpleWarning = false }
             )
         }
 

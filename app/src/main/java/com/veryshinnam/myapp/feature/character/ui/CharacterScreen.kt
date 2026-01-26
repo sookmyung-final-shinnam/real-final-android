@@ -532,7 +532,10 @@ fun CharacterScreen(
             confirmText = "해제하기",
             onDismiss = { isWarning = false },
             onConfirm = {
-                vm.fetchVideoStory(id, warnedStoryId!!)
+                vm.fetchVideoStory(id, warnedStoryId!!) { text ->
+                    isSimpleWarning = true
+                    SimpleWarningText = text
+                }
                 isWarning = false
                 warnedStoryId = null
             }
