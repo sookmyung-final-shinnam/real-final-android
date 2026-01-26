@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.absoluteOffset
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBars
@@ -50,6 +51,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.TargetImage
@@ -79,8 +81,9 @@ fun AttendanceScreen(
     val uiState by vm.attendanceUiState.collectAsStateWithLifecycle()
     val isLoading by vm.isLoading.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
 
     // ui 변수
     var isTodayStamp by remember { mutableStateOf(false) }
@@ -121,8 +124,9 @@ fun AttendanceScreen(
         calendarRect = null
     }
 
-    LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) {
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == vm.manuals.size) {
+            vm.nextManualStep()
             goToNextManual()
         }
     }
@@ -284,7 +288,7 @@ fun AttendanceScreen(
                     .then(
                         when (manualState) {
                             ManualState.START -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.nextManual() }
+                                detectTapGestures { vm.nextManualIndex() }
                             }
 
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
@@ -295,7 +299,9 @@ fun AttendanceScreen(
                         }
                     )
                     .clearAndSetSemantics {
-                        contentDescription = "아무 곳을 터치하세요."
+                        contentDescription = "\n아무 곳을 터치하세요. 현재 출석체크 화면 매뉴얼 진행" +
+                                if (manualState != ManualState.STOP) "중. 전체 49 단계 중 $manualStep 단계."
+                                else "중단."
                         stateDescription = manualMessage
                     }
             ) {
@@ -316,7 +322,7 @@ fun AttendanceScreen(
                     )
                 }
 
-                if (manualStep >= 3) {
+                if (manualIndex >= 3) {
                     itemRect?.let {
                         TargetItem(
                             it, density,
@@ -326,7 +332,7 @@ fun AttendanceScreen(
                             boxColor = colorResource(R.color.deep_pink)
                         )
                     }
-                    if (manualStep >= 5) {
+                    if (manualIndex >= 5) {
                         calendarRect?.let { rect ->
                             Box(
                                 modifier = Modifier
@@ -346,7 +352,7 @@ fun AttendanceScreen(
                                     lastExchangeDate = vm.manualDate,
                                     onPrevMonth = {
                                         when (manualState) {
-                                            ManualState.START -> { vm.nextManual() }
+                                            ManualState.START -> { vm.nextManualIndex() }
                                             ManualState.STOP -> { onStopManual() }
                                             else -> {}
                                         }
@@ -359,7 +365,7 @@ fun AttendanceScreen(
                         }
                     }
                 }
-                when (manualStep) {
+                when (manualIndex) {
                     2 -> {
                         calendarRect?.let { rect ->
                             Box(
@@ -380,7 +386,7 @@ fun AttendanceScreen(
                                     lastExchangeDate = vm.manualDate,
                                     onPrevMonth = {
                                         when (manualState) {
-                                            ManualState.START -> { vm.nextManual() }
+                                            ManualState.START -> { vm.nextManualIndex() }
                                             ManualState.STOP -> { onStopManual() }
                                             else -> {}
                                         }
@@ -405,6 +411,17 @@ fun AttendanceScreen(
                     }
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+
+            // 전역 매뉴얼 진행 단계
+            InstructionText(
+                text = "- $manualStep / 49 -",
+                textStyle = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.navigationBarsPadding()
+                    .zIndex(50f)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 2.dp)
+                    .clearAndSetSemantics { }
             )
         }
     }

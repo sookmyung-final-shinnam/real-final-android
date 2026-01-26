@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
@@ -49,6 +50,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.BackButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.ManualStopButton
 import com.veryshinnam.myapp.common.component.StepProgressBar
 import com.veryshinnam.myapp.common.component.TargetButton
@@ -100,8 +102,9 @@ fun SelectionScreen(
     }
 
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
 
     // 매뉴얼 > 강조할 좌표
     val isManual = manualState != ManualState.NONE
@@ -172,13 +175,14 @@ fun SelectionScreen(
     }
 
     LaunchedEffect(manualState) {
-        if (manualState == ManualState.START && manualStep == 0) {
+        if (manualState == ManualState.START && manualIndex == 0) {
             vm.startManual()
         }
     }
 
-    LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) {
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == vm.manuals.size) {
+            vm.nextManualStep() // 전역 단계 증가
             goToNextManual()
         }
     }
@@ -433,7 +437,7 @@ fun SelectionScreen(
                     .then(
                         when (manualState) {
                             ManualState.START -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.nextManual() }
+                                detectTapGestures { vm.nextManualIndex() }
                             }
 
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
@@ -444,7 +448,9 @@ fun SelectionScreen(
                         }
                     )
                     .clearAndSetSemantics {
-                        contentDescription = "아무 곳을 터치하세요."
+                        contentDescription = "\n아무 곳을 터치하세요. 현재 동화와 캐릭터 선택 화면 매뉴얼 진행" +
+                                if (manualState != ManualState.STOP) "중. 전체 49 단계 중 $manualStep 단계."
+                                else "중단."
                         stateDescription = manualMessage
                     }
             ) {
@@ -466,10 +472,11 @@ fun SelectionScreen(
                 }
 
                 if (manualState == ManualState.START) {
-                    when (manualStep) {
+
+                    when (manualIndex) {
                         1 -> progressRect?.let { TargetProgressBar(it, 6) }
-                        2 -> firstBRect?.let { TargetButton(it, onButtonClick = {vm.nextManual()}) }
-                        3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManual()})  }
+                        2 -> firstBRect?.let { TargetButton(it, onButtonClick = {vm.nextManualIndex()}) }
+                        3 -> customBRect?.let { TargetCustom(it, onCustomClick = {vm.nextManualIndex()})  }
                     }
                 }
             }
@@ -484,6 +491,17 @@ fun SelectionScreen(
                     }
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+
+            // 전역 매뉴얼 진행 단계
+            InstructionText(
+                text = "- $manualStep / 49 -",
+                textStyle = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.navigationBarsPadding()
+                    .zIndex(50f)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 2.dp)
+                    .clearAndSetSemantics { }
             )
         }
     }

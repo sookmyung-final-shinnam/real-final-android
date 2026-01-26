@@ -19,6 +19,7 @@ import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
@@ -97,8 +98,9 @@ fun CharacterScreen(
     // 상태 구독
     val uiState by vm.uiState.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
 
     // 공유 및 클립보드
     val context = LocalContext.current
@@ -146,11 +148,12 @@ fun CharacterScreen(
         }
     }
 
-    LaunchedEffect(manualStep) {
-        if (manualStep == 4) {
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == 4) {
             isFront = false
         }
-        if (manualStep == vm.manuals.size) {
+        if (manualIndex == vm.manuals.size) {
+            vm.nextManualStep()
             goToNextManual()
         }
     }
@@ -271,13 +274,13 @@ fun CharacterScreen(
                             },
                             onStoryRect = { rect ->
                                 if (manualState == ManualState.START
-                                    && manualStep == 4 && storyRect == null) {
+                                    && manualIndex == 4 && storyRect == null) {
                                     storyRect = rect
                                 }
                             },
                             onVideoRect = { rect ->
                                 if (manualState == ManualState.START
-                                    && manualStep == 4 && videoRect == null) {
+                                    && manualIndex == 4 && videoRect == null) {
                                     videoRect = rect
                                 }
                             },
@@ -304,7 +307,7 @@ fun CharacterScreen(
                     .fillMaxSize()
                     .zIndex(20f)
                     .background(
-                        if (manualStep == 2 || manualStep == 4)
+                        if (manualIndex == 2 || manualIndex == 4)
                             Color.Transparent
                         else
                             Color.Black.copy(alpha = 0.5f)
@@ -312,7 +315,7 @@ fun CharacterScreen(
                     .then(
                         when (manualState) {
                             ManualState.START -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.nextManual() }
+                                detectTapGestures { vm.nextManualIndex() }
                             }
 
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
@@ -323,7 +326,9 @@ fun CharacterScreen(
                         }
                     )
                     .clearAndSetSemantics {
-                        contentDescription = "아무 곳을 터치하세요."
+                        contentDescription = "\n아무 곳을 터치하세요. 현재 캐릭터 상세 보기 화면 매뉴얼 진행" +
+                                if (manualState != ManualState.STOP) "중. 전체 49 단계 중 $manualStep 단계"
+                                else "중단."
                         stateDescription = manualMessage
                     }
             ) {
@@ -367,7 +372,7 @@ fun CharacterScreen(
                 }
 
                 // 동영상
-                if (manualStep >= 6) {
+                if (manualIndex >= 6) {
                     videoRect?.let { rect ->
                         Box(
                             modifier = Modifier
@@ -386,7 +391,7 @@ fun CharacterScreen(
                                 modifier = Modifier.fillMaxSize()
                             )
 
-                            if (manualStep >= 7) {
+                            if (manualIndex >= 7) {
                                 // 오버레이
                                 Box(
                                     modifier = Modifier
@@ -414,7 +419,7 @@ fun CharacterScreen(
                 }
 
                 // 왼쪽 카톡 버튼
-                if (manualStep >= 7) {
+                if (manualIndex >= 7) {
                     storyRect?.let { rect ->
                         Box(
                             modifier = Modifier
@@ -446,7 +451,7 @@ fun CharacterScreen(
                 }
 
                 // 그외 강조 요소
-                when (manualStep) {
+                when (manualIndex) {
                     3 -> { tabRect?.let { it ->
                         // 탭버튼
                         CharacterTabButton(
@@ -462,7 +467,7 @@ fun CharacterScreen(
                                 .zIndex(10f),
                             onClick = {
                                 when (manualState) {
-                                    ManualState.START -> { vm.nextManual() }
+                                    ManualState.START -> { vm.nextManualIndex() }
                                     ManualState.STOP -> { onStopManual() }
                                     else -> {}
                                 }
@@ -504,6 +509,17 @@ fun CharacterScreen(
                     }
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+
+            // 전역 매뉴얼 진행 단계
+            InstructionText(
+                text = "- $manualStep / 49 -",
+                textStyle = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.navigationBarsPadding()
+                    .zIndex(50f)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 6.dp)
+                    .clearAndSetSemantics { }
             )
         }
     }

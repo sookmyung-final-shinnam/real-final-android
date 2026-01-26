@@ -16,6 +16,7 @@
 
     <!-- 앱컬러 -->
     <color name="brand_orange">#DE5200</color>
+    <color name="dark_orange">#C97A00</color>
     <color name="main_orange">#F3A600</color>
     <color name="main_orange_shade">#7A570A</color>
     <color name="main_orange_50">#F9D280</color>

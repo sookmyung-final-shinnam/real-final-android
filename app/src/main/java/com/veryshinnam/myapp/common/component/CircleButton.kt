@@ -19,6 +19,7 @@ fun CircleButton(
     onClick: () -> Unit,
     text: String,
     enabled: Boolean = true,
+    containerColor: Color = colorResource(R.color.main_orange),
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     contentPadding: PaddingValues = ButtonDefaults.ContentPadding,
     modifier: Modifier = Modifier
@@ -27,7 +28,7 @@ fun CircleButton(
         onClick = onClick,
         enabled = enabled,
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(R.color.main_orange),
+            containerColor = containerColor,
             contentColor = Color.White
         ),
         shape = CircleShape,
