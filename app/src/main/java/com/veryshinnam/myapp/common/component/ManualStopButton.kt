@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.common.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBarsPadding
@@ -53,7 +54,7 @@ fun ManualStopButton(
                     colors = if (enabled) {
                         listOf(
                             colorResource(R.color.main_orange),
-                            colorResource(R.color.dark_orange)
+                            colorResource(R.color.dark_orange),
                         )
                     } else {
                         listOf(
@@ -65,6 +66,12 @@ fun ManualStopButton(
                 shape = CircleShape
             )
             .clip(CircleShape)
+            .border(
+                width = 2.dp,
+                color = if (enabled) colorResource(id = R.color.main_orange)
+                        else colorResource(id = R.color.main_orange).copy(0.3f),
+                shape = CircleShape
+            )
     ) {
         Text(
             text = text,
