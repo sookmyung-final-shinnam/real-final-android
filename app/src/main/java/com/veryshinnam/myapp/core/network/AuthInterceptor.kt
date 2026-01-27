@@ -1,8 +1,8 @@
 package com.veryshinnam.myapp.core.network
 
 import android.util.Log
-import com.veryshinnam.myapp.core.session.ReviewToken
 import com.veryshinnam.myapp.core.session.SessionManager
+import kotlinx.coroutines.runBlocking
 import okhttp3.Interceptor
 import okhttp3.Response
 import javax.inject.Inject
@@ -32,13 +32,18 @@ class AuthInterceptor @Inject constructor(
         Log.d("AuthInterceptor", "ResponseCode=${response.code} for ${request.url}")
 
         if (response.code == 401) {
-            if (sessionManager.isReviewPeriod()) {
-                // 리뷰 기간 > 401 무시
-                Log.w("AuthInterceptor", "401 ignored (review period)")
-            } else {
-                // 리뷰 기간 종료
-                sessionManager.clearTokenOnce()  // 리뷰 토큰 가지고 있을때 > 토큰 비우기 (스플래시로)
-                sessionManager.setRequireLogin() // 전역 401 감지
+            runBlocking {
+                val isUsingReview = sessionManager.isUsingReviewToken()
+
+                if (isUsingReview) {
+                    // 리뷰 토큰이 401 받음 -> 기록
+                    sessionManager.markReviewTokenRejected()
+                    Log.d("AuthInterceptor", "Review token got 401 - marked as rejected")
+                }
+
+                // 리뷰든 일반이든 무조건 전부 삭제
+                sessionManager.clearToken()
+                Log.d("AuthInterceptor", "401 detected - all tokens cleared")
             }
         }
 

@@ -30,7 +30,6 @@ class CollectionViewModel @Inject constructor(
     private val _isEmpty = MutableStateFlow(false)
     val isEmpty: StateFlow<Boolean> = _isEmpty
 
-
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
@@ -78,30 +77,24 @@ class CollectionViewModel @Inject constructor(
         if (currentState is CollectionUiState.Success) {
             val character = currentState.collectionDataList.find { it.id == id }
             if (character != null) {
-                val favoritesCount = currentState.collectionDataList.count { it.isFavorite }
-                val newFavoriteState = !character.isFavorite
-
-                if (newFavoriteState && favoritesCount >= 5) {
-                    onError("좋아하는 캐릭터는 5명까지 등록할 수 있어요!")
-                    return
-                }
 
                 // ui 먼저 반영
+                val newFavoriteState = !character.isFavorite
                 val updatedList = currentState.collectionDataList.map { item ->
                     if (item.id == id) item.copy(isFavorite = newFavoriteState)
                     else item
                 }
-                val updatedState = currentState.copy(collectionDataList = updatedList)
-                _uiState.value = updatedState
+                _uiState.value = currentState.copy(collectionDataList = updatedList)
 
                 // 서버 반영
                 viewModelScope.launch {
                     try { // api 호출
                         if (newFavoriteState) { characterRepository.addFavorite(id) }
                         else { characterRepository.removeFavorite(id) }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // 실패 시 원복
                         _uiState.value = currentState
+                        onError("좋아하는 캐릭터는 5명까지 등록할 수 있어요!")
                     }
                 }
             }

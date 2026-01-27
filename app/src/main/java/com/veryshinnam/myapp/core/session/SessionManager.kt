@@ -8,9 +8,13 @@ import androidx.datastore.preferences.core.Preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
+import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_ACCESS_TOKEN
+import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_EXPIRE_AT
+import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import org.threeten.bp.LocalDateTime
 import org.threeten.bp.format.DateTimeFormatter
@@ -26,6 +30,9 @@ class SessionManager @Inject constructor(
     private val refreshToken = stringPreferencesKey("refresh_token")
     private val expiredAt = stringPreferencesKey("expired_at")
     private val isNewUser = booleanPreferencesKey("is_new_user") // 일회성
+    private val isUsingReviewToken = booleanPreferencesKey("is_using_review_token") // 리뷰 토큰 사용 중
+    private val reviewTokenRejected = booleanPreferencesKey("review_token_rejected") // 리뷰 토큰 401 받음
+
 
     // 로그인 필요 여부
     private val _requireLogin = MutableStateFlow(false)
@@ -37,9 +44,30 @@ class SessionManager @Inject constructor(
             pref[accessToken] = access
             pref[refreshToken] = refresh
             pref[expiredAt] = expired
+            pref[isUsingReviewToken] = false // 일반 토큰
+            // 새 로그인 시 리뷰 토큰 거부 플래그 제거
+            pref.remove(reviewTokenRejected)
         }
         _requireLogin.value = false
         Log.d("Session", "saveToken access=$access refresh=$refresh expiredAt=$expiredAt")
+    }
+
+
+    // 리뷰 토큰 강제 설정
+    suspend fun forceReviewToken() {
+        dataStore.edit { pref ->
+            pref.remove(refreshToken) // 리뷰 토큰은 refresh 없음
+            pref[accessToken] = REVIEW_ACCESS_TOKEN
+            pref[expiredAt] = REVIEW_EXPIRE_AT
+            pref[isUsingReviewToken] = true // 리뷰 토큰 사용
+        }
+        _requireLogin.value = false
+        Log.d("Session", "forceReviewToken set")
+    }
+
+    // 리뷰 토큰 사용 중인지 확인
+    suspend fun isUsingReviewToken(): Boolean {
+        return dataStore.data.first()[isUsingReviewToken] ?: false
     }
 
     // 액세스 토큰 조회 (비동기)
@@ -48,6 +76,7 @@ class SessionManager @Inject constructor(
     // 액세스 토큰 조회 (동기, Interceptor용)
     fun getTokenBlocking(): String? = runBlocking { getToken() }
 
+    fun getTokenFlow(): Flow<String?> = dataStore.data.map { it[accessToken] }
 
     // 액세스 토큰 만료 여부
     suspend fun isTokenExpired(): Boolean {
@@ -62,12 +91,18 @@ class SessionManager @Inject constructor(
 
     // 토큰 삭제 (비동기)
     suspend fun clearToken() {
-        dataStore.edit { it.clear() } // DataStore 비우기
-        _requireLogin.value = true
-    }
 
-    // 로그인 필요
-    fun setRequireLogin() {
+        dataStore.edit { pref ->
+            // 1. 플래그 백업
+            val wasRejected = pref[reviewTokenRejected] == true
+            // 2. 전부 삭제
+            pref.clear()
+            // 3. 플래그만 복구
+            if (wasRejected) {
+                pref[reviewTokenRejected] = true
+            }
+        }
+
         _requireLogin.value = true
     }
 
@@ -97,25 +132,31 @@ class SessionManager @Inject constructor(
     // 리뷰 기간 확인
     fun isReviewPeriod(): Boolean {
         val now = LocalDateTime.now()
-        val reviewExpireAt = LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
+        val reviewExpireAt = LocalDateTime.parse(REVIEW_EXPIRE_AT)
         return now.isBefore(reviewExpireAt)
     }
 
-    // 리뷰 종료 후 토큰 비우기 (일회성)
-    fun clearTokenOnce(): Boolean {
-        return runBlocking {
-            val pref = dataStore.data.first()
-            val isReviewToken = pref[accessToken] == ReviewToken.REVIEW_ACCESS_TOKEN
-
-            // 리뷰 종료 + 리뷰 토큰 가질 때만
-            if (!isReviewPeriod() && isReviewToken) {
-                dataStore.edit {
-                    it.clear() // 토큰 제거
-                }
-                true // 비웠으면 true
-            } else {
-                false // 비울 필요 없음
+    // 401 감지
+    // 리뷰 토큰 401 받음
+    suspend fun markReviewTokenRejected() {
+        if (isUsingReviewToken()) {
+            dataStore.edit { pref ->
+                pref[reviewTokenRejected] = true
+                Log.d("Session", "Review token rejected - marked")
             }
+        }
+    }
+
+    // 리뷰 토큰이 401 받았는지 확인
+    suspend fun isReviewTokenRejected(): Boolean {
+        return dataStore.data.first()[reviewTokenRejected] ?: false
+    }
+
+    // 리뷰 관련 상태 정리 (리뷰 기간 종료 시)
+    suspend fun clearReviewState() {
+        dataStore.edit { pref ->
+            pref.remove(reviewTokenRejected)
+            Log.d("Session", "Review state cleared")
         }
     }
 }

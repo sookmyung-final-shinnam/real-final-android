@@ -30,7 +30,6 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.isTraversalGroup
-import androidx.compose.ui.semantics.liveRegion
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.semantics.stateDescription
@@ -441,7 +440,7 @@ fun HomeScreen(
                         when (manualState) {
                             ManualState.START, ManualState.FINISH -> {
                                 contentDescription =
-                                    "아무 곳을 터치하세요. 현재 홈 화면 매뉴얼 진행 중. 전체 49단계 중 $displayStep 단계입니다."
+                                    "아무 곳을 터치하세요. 현재 홈 화면 매뉴얼 진행 중. 전체 49단계 중 $displayStep 단계."
                                 stateDescription =
                                     manualMessage.replace("{username}", username)
                             }

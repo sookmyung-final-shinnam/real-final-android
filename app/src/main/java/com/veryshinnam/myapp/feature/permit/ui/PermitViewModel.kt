@@ -2,8 +2,6 @@ package com.veryshinnam.myapp.feature.permit.ui
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_ACCESS_TOKEN
-import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_EXPIRE_AT
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.permit.data.repository.PermitRepository
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -25,25 +23,47 @@ class PermitViewModel @Inject constructor(
         viewModelScope.launch {
             _permitUiState.value = PermitUiState.Loading
 
-            // 심사 기간용
-            if (sessionManager.isReviewPeriod()) {
-                sessionManager.saveToken(
-                    access = REVIEW_ACCESS_TOKEN,
-                    refresh = "",
-                    expired = REVIEW_EXPIRE_AT
-                )
-                _permitUiState.value = PermitUiState.Success
-                return@launch
-            }
-
             try {
-                val token = sessionManager.getToken() // 액세스 토큰 조회
-                val isExpired = sessionManager.isTokenExpired() // 토큰 만료 확인
+                val token = sessionManager.getToken()
+                val isExpired = sessionManager.isTokenExpired()
+                val isReviewPeriod = sessionManager.isReviewPeriod()
+                val isUsingReview = sessionManager.isUsingReviewToken()
+                val reviewTokenRejected = sessionManager.isReviewTokenRejected()
+
+                // 리뷰 토큰이 401 받았으면 다시 설정 안 함
+                if (reviewTokenRejected) {
+                    sessionManager.clearToken() // 혹시 모를 토큰 제거
+                    _permitUiState.value = PermitUiState.Error("리뷰 토큰 만료 - 재로그인 필요")
+                    return@launch
+                }
+
+                // 1. 리뷰 기간 & 리뷰 토큰 401 전까지 강제 로그인
+                if (isReviewPeriod) {
+                    sessionManager.forceReviewToken()
+                    _permitUiState.value = PermitUiState.Success
+                    return@launch
+                }
+
+                // 2. 리뷰 기간 아닌데 리뷰 토큰 가진 경우 로그아웃
+                if (!isReviewPeriod && isUsingReview) {
+                    sessionManager.clearToken()
+                    sessionManager.clearReviewState() // 리뷰 상태 정리
+                    _permitUiState.value = PermitUiState.Error("리뷰 기간 종료 - 재로그인 필요")
+                    return@launch
+                }
+
+
+                // 3. 일반 토큰 검증
                 if (token != null && !isExpired) {
                     _permitUiState.value = PermitUiState.Success
                 } else {
-                    _permitUiState.value = PermitUiState.Error("토큰 만료") // 로그인 필요
+                    // 토큰 없거나 만료됨
+                    if (token != null) {
+                        sessionManager.clearToken() // 만료된 토큰 제거
+                    }
+                    _permitUiState.value = PermitUiState.Error("토큰 만료 또는 없음")
                 }
+
             } catch (e: Exception) {
                 _permitUiState.value = PermitUiState.Error("토큰 확인 실패: ${e.message}")
             }
@@ -88,5 +108,14 @@ class PermitViewModel @Inject constructor(
     // 상태 초기화
     fun resetState() {
         _permitUiState.value = PermitUiState.Idle
+    }
+
+    // 리뷰 기간 종료 시 상태 정리
+    fun clearReviewStateIfNeeded() {
+        viewModelScope.launch {
+            if (!sessionManager.isReviewPeriod()) {
+                sessionManager.clearReviewState()
+            }
+        }
     }
 }
