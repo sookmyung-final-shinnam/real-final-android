@@ -51,10 +51,11 @@ class ConversationViewModel @Inject constructor(
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
+    val manualStep = manualManager.step
 
     // 매뉴얼 진행 단계 상태
-    private val _manualStep = MutableStateFlow(0)
-    val manualStep = _manualStep.asStateFlow()
+    private val _manualIndex = MutableStateFlow(0)
+    val manualIndex = _manualIndex.asStateFlow()
 
     init {
         // ViewModel 생성 > 기본 Loading
@@ -303,7 +304,7 @@ class ConversationViewModel @Inject constructor(
     fun dummyStart():StartResult {
         return StartResult(
             sessionId = 1L,
-            nextStory = "더미",
+            nextStory = "더미,",
             currentStep = "STEP_01"
         )
     }
@@ -312,13 +313,8 @@ class ConversationViewModel @Inject constructor(
         return when (step) {
             1 -> NextStepResult(
                 messageId = 101L,
-                nextStory = "옛날" ,
-//                        + "아주 넓은 사막 한 가운데에" +
-//                        "‘숙명’이라는 12살 소녀가 살고 있었어요." +
-//                        "숙명이는 모래바람이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였이 불어도 웃음을 잃지 않는 밝은 아이였지요." +
-//                        "어느 날, 숙명이는 모래 언덕 너머에서 반짝이는 빛을 발견했어요.",
-                llmQuestion = "숙"
-//                        llmQuestion = "숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명숙명이는 빛을 보고 어떻게 했을까?숙명"
+                nextStory ="더미",
+                llmQuestion = "더미"
             )
             2 -> NextStepResult(
                 messageId = 102L,
@@ -343,7 +339,7 @@ class ConversationViewModel @Inject constructor(
             1 -> when (tryNum) {
                 1 -> FeedbackData(
                     isPositive = false,
-                    text = "원투" ,
+                    text = "더미",
                     tryNum = tryNum
                 )
                 2 -> FeedbackData(
@@ -434,24 +430,26 @@ class ConversationViewModel @Inject constructor(
 
     // Nav에서 분기 처리에 사용
     fun startManual() {
-        _manualStep.value = 0
+        _manualIndex.value = 0
         updateManual(0)
     }
 
-    fun nextManual() {
-        val current = _manualStep.value
+    fun nextManualIndex() {
+        val current = _manualIndex.value
 
         if (current < manuals.lastIndex) {
             val next = current + 1
-
-            _manualStep.value = next
+            _manualIndex.value = next
             updateManual(next)
+            nextManualStep()    // 전역 단계 증가
         } else if (current == manuals.lastIndex) {
-            _manualStep.value = manuals.size
+            _manualIndex.value = manuals.size
         }
     }
 
     fun stopManual() = manualManager.stop()
 
     fun clearManual() = manualManager.clear()
+
+    fun nextManualStep() = manualManager.nextStep()
 }

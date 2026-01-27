@@ -1,10 +1,12 @@
 package com.veryshinnam.myapp.feature.home.ui
 
+import android.util.Log
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
+import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_ACCESS_TOKEN
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
@@ -12,10 +14,12 @@ import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.filter
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import retrofit2.HttpException
 import javax.inject.Inject
-
 
 @HiltViewModel
 class HomeViewModel @Inject constructor(
@@ -48,14 +52,14 @@ class HomeViewModel @Inject constructor(
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
+    val manualStep = manualManager.step
 
     // 매뉴얼 진행 단계 상태
-    private val _manualStep = MutableStateFlow(0)
-    val manualStep = _manualStep.asStateFlow()
+    private val _manualIndex = MutableStateFlow(0)
+    val manualIndex = _manualIndex.asStateFlow()
 
     // vm 초기화
     init {
-        fetchHome()
         checkNewUser()
     }
 
@@ -78,6 +82,13 @@ class HomeViewModel @Inject constructor(
 
     fun checkAdminStatus() {
         viewModelScope.launch {
+            // 리뷰  리뷰 토큰 들어올 때까지 대기
+            if (sessionManager.isUsingReviewToken()) {
+                sessionManager.getTokenFlow()
+                    .filter { it == REVIEW_ACCESS_TOKEN }
+                    .first()
+            }
+
             try {
                 val response = adminRepository.checkIsAdmin()
                 if (response.isSuccess) {
@@ -85,7 +96,7 @@ class HomeViewModel @Inject constructor(
                 } else {
                     _isAdmin.value = false
                 }
-            } catch (e: Exception) {
+            } catch (_: Exception) {
                 _isAdmin.value = false
             }
         }
@@ -106,33 +117,17 @@ class HomeViewModel @Inject constructor(
 
 
     // --- api 호출 관련 ---
-    // 홈 화면 불러오기
-    private fun fetchHome() {
-        _homeUiState.value = HomeUiState.Loading
-
-        viewModelScope.launch {
-            try {
-                val homeData = repository.getHome() // api 호출
-                val randomMessage = HomeRandomMessages.getRandomMessage()
-
-                _homeUiState.value = HomeUiState.Success(
-                    homeData = homeData,
-                    randomMessage = randomMessage
-                )
-
-                _username.value = homeData.username
-                // 에러 케이스 테스트 용도
-//             _homeUiState.value = HomeUiState.Error("홈 정보를 불러오지 못했어요.")
-            } catch (e: Exception) {
-                _homeUiState.value = HomeUiState.Error("홈 화면 불러오기 실패: ${e.message}")
-            }
-        }
-    }
-
     // 홈 화면 다시 조회
     fun reload() {
         val currentLast = (homeUiState.value as? HomeUiState.Success)?.lastSelectedCharacter
         viewModelScope.launch {
+            // 리뷰 토큰 사용 중일 때만 대기
+            if (sessionManager.isUsingReviewToken()) {
+                sessionManager.getTokenFlow()
+                    .filter { it == REVIEW_ACCESS_TOKEN }
+                    .first()
+            }
+
             try {
                 val data = repository.getHome()
                 val randomMessage = HomeRandomMessages.getRandomMessage()
@@ -142,7 +137,16 @@ class HomeViewModel @Inject constructor(
                     lastSelectedCharacter = currentLast, // 마지막 선택 캐릭터 유지
                     randomMessage = randomMessage
                 )
+            } catch (e: HttpException) {
+                Log.e("HOME_API", "HttpException code=${e.code()}, message=${e.message()}")
+
+                when (e.code()) {
+                    401 -> return@launch  // AuthInterceptor가 처리
+                    else -> _homeUiState.value = HomeUiState.Error( "일시적인 오류가 발생했어요.\n앱을 종료한 뒤 다시 실행해 주세요.")
+                }
             } catch (e: Exception) {
+                Log.e("HOME_API", "Exception type=${e::class.java.name}, message=${e.message}", e)
+
                 _homeUiState.value = HomeUiState.Error(e.message ?: "에러")
             }
         }
@@ -171,17 +175,17 @@ class HomeViewModel @Inject constructor(
     // 시작 문구
     val firstManuals = listOf(
         "반가워요 {username}!\n스토릭터에 온 걸 환영해요.",
-        "캐릭터와 동화 생성 버튼을 누르면, ",
-        "{username}만의 캐릭터와 동화를 만들 수 있고",
+        "가운데 동화와 캐릭터 생성 버튼을 누르면,",
+        "{username}만의 동화와 캐릭터를 만들 수 있고",
         "만든 캐릭터와 동화는 보관함 버튼을 누르면 확인할 수 있어요!",
-        "가장 왼쪽의 대시보드 버튼을 누르면, ",
+        "가장 왼쪽의 대시보드 버튼을 누르면,",
         "동화를 만들며 알게 된 {username}만의 특징이 보이고",
         "출석 체크 버튼을 누르면 포인트인 도토리를 모을 수 있어요!"
     )
 
     // 마지막 문구
     val lastManuals = listOf(
-        "스토릭터에 대한 설명은 홈 화면의 환경설정에서 다시 볼 수 있어요.",
+        "지금까지 긴 설명을 따라오느라 수고했어요!", // 인덱스 채우기용
         "혹시 놓친 설명이 있었나요?",
         "걱정마요! 홈 화면의 '설정' 버튼을 누르면,",
         "'앱 사용 설명 다시 보기'로 다시 볼 수 있어요.",
@@ -193,30 +197,32 @@ class HomeViewModel @Inject constructor(
     fun startManual() = manualManager.start()
 
     fun loadFirstManual() {
-        _manualStep.value = 0
+        _manualIndex.value = 0
         manualManager.update(firstManuals[0])
     }
 
-    fun nextManual() {
-        val current = _manualStep.value
+    fun nextManualIndex() {
+        val current = _manualIndex.value
 
         when (manualManager.state.value) {
 
             ManualState.START -> {
                 if (current < firstManuals.lastIndex) {
-                    val next = current + 1
-                    _manualStep.value = next
+                    val next = current + 1  // 다음 매뉴얼
+                    _manualIndex.value = next
                     manualManager.update(firstManuals[next])
+                    nextManualStep() // 전역 매뉴얼 단계 증가
                 } else {
-                    _manualStep.value = firstManuals.size   // 다음 스크린
+                    _manualIndex.value = firstManuals.size   // 다음 스크린 이동 유도
                 }
             }
 
             ManualState.FINISH -> {
                 if (current < lastManuals.lastIndex) {
-                    val next = current + 1
-                    _manualStep.value = next
+                    val next = current + 1  // 다음 매뉴얼
+                    _manualIndex.value = next
                     manualManager.update(lastManuals[next])
+                    nextManualStep() // 전역 단계 증가
                 } else {
                     clearManual()   // 매뉴얼 종료
                 }
@@ -229,4 +235,10 @@ class HomeViewModel @Inject constructor(
     fun stopManual() = manualManager.stop()
 
     fun clearManual() = manualManager.clear()
+
+    fun nextManualStep() = manualManager.nextStep()
+
+    fun getFinishStep(): Int {
+        return 45 + _manualIndex.value
+    }
 }

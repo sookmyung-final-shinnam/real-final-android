@@ -152,7 +152,9 @@ fun ConversationAnswerContent(
                 Text(
                     text = if (countDown != 0) "${countDown}초 남았습니다." else "",
                     style = answerTextStyle,
-                    modifier = Modifier.clearAndSetSemantics { }
+                    modifier = Modifier
+                        .padding(bottom = spacerPadding)
+                        .clearAndSetSemantics { }
                 )
             }
         }

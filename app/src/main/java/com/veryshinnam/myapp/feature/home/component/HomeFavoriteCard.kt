@@ -1,11 +1,15 @@
 package com.veryshinnam.myapp.feature.home.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -13,6 +17,7 @@ import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.feature.home.model.FavoriteData
@@ -26,8 +31,20 @@ fun HomeFavoriteCard(
     onClick: (FavoriteData?) -> Unit
 ) {
     Card(
-        colors = CardDefaults.cardColors(colorResource(R.color.main_orange)),
-        modifier = modifier.then(
+        colors = CardDefaults.cardColors(
+            Color.Transparent
+        ),
+        modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        colorResource(R.color.main_orange),
+                        colorResource(R.color.dark_orange)
+                    )
+                ),
+                shape = RoundedCornerShape(16.dp)
+            )
+            .then(
             if (isCenter && character != null) {
                 Modifier.clickable { onClick(character) }
             } else Modifier

@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.dashboard.component
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -16,11 +17,14 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
+import com.veryshinnam.myapp.R
 
 @Composable
 fun DashboardCardTitle(
@@ -35,7 +39,19 @@ fun DashboardCardTitle(
     Row(
         modifier = modifier
             .fillMaxWidth()
-            .background(borderColor, shape = RoundedCornerShape(cardCorner)),
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = listOf(
+                        borderColor,
+                        colorResource(R.color.dark_green_soft))
+                ),
+                shape = RoundedCornerShape(cardCorner)
+            )
+            .border(
+                width = 2.dp,
+                color = borderColor,
+                shape = RoundedCornerShape(cardCorner)
+            ),
         horizontalArrangement = Arrangement.Start
     ) {
         Spacer(Modifier.fillMaxWidth(spacer - 0.03f))

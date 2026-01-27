@@ -3,8 +3,6 @@ package com.veryshinnam.myapp.feature.creation.ui.selection
 import androidx.compose.foundation.lazy.LazyListState
 import androidx.lifecycle.ViewModel
 import com.veryshinnam.myapp.common.model.Gender
-import com.veryshinnam.myapp.common.model.ManualData
-import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.creation.model.SelectionData
 import com.veryshinnam.myapp.feature.creation.model.SelectionStep
@@ -24,7 +22,7 @@ class SelectViewModel @Inject constructor(
     private val _selectUiState = MutableStateFlow(SelectUiState(selectionData = SelectionData()))
     val selectUiState: StateFlow<SelectUiState> = _selectUiState
 
-    // 나이 스크롤 상태
+    // 나이 스크롤 상태 > 초기 9세
     private val _ageListState = LazyListState(
         firstVisibleItemIndex = (Int.MAX_VALUE / 2) - (Int.MAX_VALUE / 2) % 100 + 9
     )
@@ -33,10 +31,11 @@ class SelectViewModel @Inject constructor(
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
+    val manualStep = manualManager.step
 
     // 매뉴얼 진행 단계 상태
-    private val _manualStep = MutableStateFlow(0)
-    val manualStep = _manualStep.asStateFlow()
+    private val _manualIndex = MutableStateFlow(0)
+    val manualIndex = _manualIndex.asStateFlow()
 
     // --- ui 이벤트 관련 ---
     // 테마 선택/해제
@@ -207,30 +206,33 @@ class SelectViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("먼저, 스토릭터의 메인인 동화와 캐릭터 만들기부터 같이 해볼게요.", ManualTarget.NONE),
-        ManualData("동화의 주제·배경부터 캐릭터의 성별·나이·이름·외형까지 고를 수 있어요!", ManualTarget.PROGRESSBAR),
-        ManualData("함께 떠나는 여행 이야기를 만들어 보고 싶어서 '모험'을 골라볼게요!", ManualTarget.BUTTON),
-        ManualData("만약 주제를 직접 선택하고 싶다면 직접 추가하기 버튼을 눌러주세요!", ManualTarget.CUSTOM),
+        "먼저, 스토릭터의 메인인 동화와 캐릭터 만들기부터 같이 해볼게요.",
+        "동화의 주제·배경부터 캐릭터의 성별·나이·이름·외형까지 고를 수 있어요!",
+        "함께 떠나는 여행 이야기를 만들어 보고 싶어서 '모험'을 골라볼게요!",
+        "만약 주제를 직접 선택하고 싶다면 직접 추가하기 버튼을 눌러주세요!",
     )
 
     fun startManual() {
-        _manualStep.value = 0
-        manualManager.update(manuals[0].message)
+        _manualIndex.value = 0
+        manualManager.update(manuals[0])
     }
 
-    fun nextManual() {
-        val current = _manualStep.value
+    fun nextManualIndex() {
+        val current = _manualIndex.value
 
         if (current < manuals.lastIndex) {
             val next = current + 1
-            _manualStep.value = next
-            manualManager.update(manuals[next].message)
+            _manualIndex.value = next
+            manualManager.update(manuals[next])
+            nextManualStep()    // 전역 단계 증가
         } else if (current == manuals.lastIndex) {
-            _manualStep.value = manuals.size
+            _manualIndex.value = manuals.size
         }
     }
 
     fun stopManual() = manualManager.stop()
 
     fun clearManual() = manualManager.clear()
+
+    fun nextManualStep() = manualManager.nextStep()
 }

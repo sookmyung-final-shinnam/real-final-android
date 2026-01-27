@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
-import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -18,6 +19,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
@@ -34,18 +37,44 @@ fun ConversationReplayButton(
     isTtsSpeaking: Boolean,               // 현재 TTS 재생 중 여부
     onReplayClick: () -> Unit,
     modifier: Modifier = Modifier,
-    buttonTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(color = colorResource(R.color.main_orange), fontWeight = SemiBold)
+    buttonTextStyle: TextStyle = MaterialTheme.typography.bodyLarge.copy(fontWeight = SemiBold)
 ) {
+    val isEnable = !isTtsSpeaking // TTS 재생 중이지 않을 때 활성화
+
     Button(
         onClick = { onReplayClick() },
-        enabled = !isTtsSpeaking, // speaking 중이면 비활성화
+        enabled = isEnable,
         colors = ButtonDefaults.buttonColors(
-            containerColor = colorResource(R.color.lemon_yellow)
+            containerColor = Color.Transparent,
+            contentColor = colorResource(R.color.main_orange),
+            disabledContainerColor = Color.Transparent,
+            disabledContentColor = colorResource(R.color.main_orange).copy(0.5f)
         ),
         contentPadding = PaddingValues(horizontal = 10.dp, vertical = 4.dp),
         shape = CircleShape,
-        border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
         modifier = modifier
+            .background(
+                brush = Brush.verticalGradient(
+                    colors = if (isEnable) {
+                        listOf(
+                            colorResource(id = R.color.lemon_yellow),
+                            colorResource(id = R.color.lemon_yellow),
+                            colorResource(R.color.background_yellow)
+                        )
+                    } else {
+                        listOf(
+                            colorResource(id = R.color.lemon_yellow).copy(alpha = 0.5f),
+                            colorResource(id = R.color.lemon_yellow).copy(alpha = 0.5f),
+                        )
+                    }
+                ),
+                shape = CircleShape
+            )
+            .border(
+                2.dp,
+                if (isEnable) colorResource(R.color.main_orange) else colorResource(R.color.main_orange).copy(0.5f),
+                shape = CircleShape
+            )
     ) {
         Row(
             verticalAlignment = Alignment.CenterVertically,
@@ -65,7 +94,7 @@ fun ConversationReplayButton(
             Icon(
                 imageVector = Icons.Rounded.Replay,
                 contentDescription = null,
-                tint = colorResource(id = R.color.main_orange),
+                tint = if (isEnable) colorResource(id = R.color.main_orange) else colorResource(id = R.color.main_orange).copy(0.5f),
                 modifier = Modifier
                     .padding(start = 2.dp)
                     .fillMaxHeight()

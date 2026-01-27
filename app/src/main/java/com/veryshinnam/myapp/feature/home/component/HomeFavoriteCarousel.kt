@@ -1,5 +1,6 @@
 package com.veryshinnam.myapp.feature.home.component
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.focusable
 import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
@@ -38,7 +39,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.FocusRequester
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.boundsInWindow
 import androidx.compose.ui.layout.onGloballyPositioned
@@ -205,11 +209,26 @@ fun HomeFavoriteCarousel(
         ) {
             Card(
                 shape = RoundedCornerShape(12.dp),
-                colors = CardDefaults.cardColors(colorResource(R.color.main_orange)),
+                colors = CardDefaults.cardColors(
+                    Color.Transparent
+                ),
                 modifier = Modifier
-                    .semantics { }
                     .fillMaxWidth(0.6f)   // 가로는 60% 정도
                     .aspectRatio(3f / 4f)   // 카드 비율 유지 (3:4)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(R.color.main_orange),
+                                colorResource(R.color.dark_orange)
+                            )
+                        ),
+                        shape = RoundedCornerShape(12.dp)
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = colorResource(id = R.color.main_orange),
+                        shape = RoundedCornerShape(12.dp)
+                    )
                     .clearAndSetSemantics {
                         contentDescription = "즐겨찾기한 캐릭터 없음. 보관함에서 즐겨찾기 버튼으로 캐릭터를 추가하세요!"
                     }

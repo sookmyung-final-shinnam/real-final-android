@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.creation.componenet.selection
 
 import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -15,6 +16,7 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
@@ -52,18 +54,35 @@ fun SelectionStyleButtons(
         ) {
             styles.forEach { style ->
                 val isSelected = style == selected
+                val backgroundColor = Brush.verticalGradient(
+                    colors = if (isSelected) {
+                        listOf(
+                            colorResource(id = R.color.main_orange),
+                            colorResource(id = R.color.dark_orange)
+                        )
+                    } else {
+                        listOf(
+                            colorResource(id = R.color.lemon_yellow),
+                            colorResource(id = R.color.lemon_yellow),
+                            Color.LightGray.copy(alpha = 0.3f)
+                        )
+                    }
+                )
+                val textColor = if (isSelected) Color.White else Color.Black
 
                 Button(
                     onClick = { onSelect(style) },
                     shape = CircleShape,
                     border = BorderStroke(2.dp, colorResource(R.color.main_orange)),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = if (isSelected) colorResource(R.color.main_orange)
-                                         else colorResource(R.color.lemon_yellow),
-                        contentColor = if (isSelected) Color.White
-                                       else Color.Black ),
+                        containerColor = Color.Transparent,
+                        contentColor = textColor
+                    ),
                     contentPadding = PaddingValues(0.dp),
-                    modifier = Modifier.weight(1f).fillMaxHeight()
+                    modifier = Modifier
+                        .weight(1f)
+                        .fillMaxHeight()
+                        .background(brush = backgroundColor, shape = CircleShape)
                         .semantics(true) {
                             role = Role.RadioButton
                             stateDescription = if (isSelected) "선택됨" else "선택 안 됨"

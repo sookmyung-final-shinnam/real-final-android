@@ -14,6 +14,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
@@ -47,16 +48,28 @@ fun CollectionFilterButtons(
             val isSelected = filter == selectedFilter
 
             // 버튼 및 텍스트 색상
-            val backgroundColor =
-                if (isSelected) colorResource(id = R.color.blue_sky) else Color.White
+            val backgroundColor = Brush.verticalGradient(
+                colors = if (isSelected) {
+                    listOf(
+                        colorResource(id = R.color.blue_sky),
+                        colorResource(id = R.color.blue_gray)
+                    )
+                } else {
+                    listOf(
+                        Color.White,
+                        Color.White,
+                        colorResource(id = R.color.light_gray)
+                    )
+                }
+            )
             val textColor = if (isSelected) Color.White else Color.Black
 
             Box(
                 modifier = Modifier
                     .background(backgroundColor, CircleShape)
                     .border(
-                        width = 4.dp,
-                        color = colorResource(id = R.color.blue_gray),
+                        width = 2.dp,
+                        color = colorResource(id = R.color.blue_sky),
                         shape = CircleShape
                     )
                     .clickable { onFilterClick(filter) }

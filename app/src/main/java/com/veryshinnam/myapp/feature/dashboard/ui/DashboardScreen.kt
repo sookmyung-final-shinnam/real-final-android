@@ -44,6 +44,7 @@ import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.BackButton
 import com.veryshinnam.myapp.common.component.CircleIconButton
 import com.veryshinnam.myapp.common.component.EmptyView
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.ManualStopButton
@@ -75,8 +76,9 @@ fun DashboardScreen(
     val uiState by vm.uiState.collectAsStateWithLifecycle() // 화면 전체 ui
     val isEmpty by vm.isEmpty.collectAsStateWithLifecycle()
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
 
     // -- ui 변수
     val scrollState = rememberScrollState() // 대시보드 스크롤
@@ -116,8 +118,11 @@ fun DashboardScreen(
         }
     }
 
-    LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) { onFinishManual() }
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == vm.manuals.size) {
+            vm.nextManualStep()
+            onFinishManual()
+        }
     }
 
     // -- 백핸들러 설정
@@ -242,7 +247,7 @@ fun DashboardScreen(
                                     .fillMaxWidth()
                                     .then(
                                         // 매뉴얼일 때, 1, 2, 3 강조
-                                        if (isManual && 0 < manualStep && manualStep < 4)
+                                        if (isManual && 0 < manualIndex && manualIndex < 4)
                                             Modifier.background(Color.Black.copy(alpha = 0.5f))
                                         else Modifier
                                     )
@@ -291,7 +296,7 @@ fun DashboardScreen(
                                 }
 
                                 // 매뉴얼일 때, 0, 3이상만 어두운 배경
-                                if (isManual && (manualStep == 0 || manualStep >= 4)) {
+                                if (isManual && (manualIndex == 0 || manualIndex >= 4)) {
                                     Box(
                                         modifier = Modifier
                                             .matchParentSize()
@@ -306,7 +311,7 @@ fun DashboardScreen(
                                 modifier = Modifier.fillMaxWidth()
                                     .then(
                                         // 매뉴얼일 때, 1, 2, 3 강조
-                                        if (isManual && 0 < manualStep && manualStep < 4)
+                                        if (isManual && 0 < manualIndex && manualIndex < 4)
                                             Modifier.background(Color.Black.copy(alpha = 0.5f))
                                         else Modifier
                                     )
@@ -377,7 +382,7 @@ fun DashboardScreen(
                                 )
 
                                 // 매뉴얼일 때, 1, 2 강조
-                                if (isManual && (manualStep == 0 || manualStep >= 4)) {
+                                if (isManual && (manualIndex == 0 || manualIndex >= 4)) {
                                     Box(
                                         modifier = Modifier
                                             .matchParentSize()
@@ -410,7 +415,7 @@ fun DashboardScreen(
                     .then(
                         when (manualState) {
                             ManualState.START -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.nextManual() }
+                                detectTapGestures { vm.nextManualIndex() }
                             }
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
                                 detectTapGestures { onStopManual() }
@@ -421,12 +426,14 @@ fun DashboardScreen(
                     )
                     .zIndex(10f)
                     .clearAndSetSemantics {
-                        contentDescription = "아무 곳을 터치하세요."
+                        contentDescription = "\n아무 곳을 터치하세요. 현재 대시보드 화면 매뉴얼 진행" +
+                                if (manualState != ManualState.STOP) "중. 전체 49 단계 중 $manualStep 단계."
+                                else "중단."
                         stateDescription = manualMessage
                     }
             ) {
                 // 다시 그릴 매뉴얼 강조 요소
-                if (manualStep == 4) {
+                if (manualIndex == 4) {
                     tHelpRect?.let { rect ->
                         DashboardHelpButton(
                             onPress = { },
@@ -475,6 +482,17 @@ fun DashboardScreen(
                     }
                 },
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+
+            // 전역 매뉴얼 진행 단계
+            InstructionText(
+                text = "- $manualStep / 49 -",
+                textStyle = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.navigationBarsPadding()
+                    .zIndex(50f)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 2.dp)
+                    .clearAndSetSemantics { }
             )
         }
     }

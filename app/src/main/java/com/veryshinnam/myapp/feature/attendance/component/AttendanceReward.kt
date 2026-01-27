@@ -1,6 +1,8 @@
 package com.veryshinnam.myapp.feature.attendance.component
 
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -17,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.graphics.painter.Painter
@@ -80,10 +83,25 @@ fun AttendanceReward(
             onClick = onReceiveClick,
             shape = CircleShape,
             colors = ButtonDefaults.buttonColors(
-                containerColor = colorResource(R.color.clear_blue),
+                containerColor = Color.Transparent,
                 contentColor = Color.White
             ),
-            modifier = Modifier.fillMaxWidth(0.6f)
+            modifier = Modifier
+                .fillMaxWidth(0.6f)
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            colorResource(R.color.clear_blue),
+                            colorResource(R.color.clear_blue),
+                            colorResource(R.color.dark_blue))
+                    ),
+                    shape = CircleShape
+                )
+                .border(
+                    width = 2.dp,
+                    color = colorResource(R.color.clear_blue),
+                    shape = CircleShape
+                )
         ) {
             Text(
                 text = buttonText,

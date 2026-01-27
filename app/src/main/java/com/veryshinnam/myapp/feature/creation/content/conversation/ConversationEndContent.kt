@@ -2,6 +2,8 @@ package com.veryshinnam.myapp.feature.creation.content.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -20,9 +22,9 @@ import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -35,7 +37,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import kotlinx.coroutines.delay
 
 @Composable
 fun ConversationEndContent(
@@ -80,7 +81,7 @@ fun ConversationEndContent(
                     // 질문 텍스트
                     Text(
                         text = "다 끝났어요!\n\n" +
-                                "이제 제가 동화를 재미있게 만들어 드릴게요.\n" +
+                                "이제 제가 동화를\n재미있게 만들어 드릴게요.\n" +
                                 "잠시 뒤에 보관함에서 만나요!",
                         style = textStyle.copy(
                             lineHeight = textStyle.lineHeight * 1.2f
@@ -89,15 +90,33 @@ fun ConversationEndContent(
                     )
                 }
             }
+
             Spacer(Modifier.height(verticalPadding))
+           
             // 홈 버튼
             Button(
-                modifier = Modifier.fillMaxWidth(0.7f),
                 onClick = { onHomeClick() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.main_orange)
+                    containerColor = Color.Transparent,
+                    contentColor = Color.White
                 ),
                 shape = CircleShape,
+                modifier = Modifier
+                    .fillMaxWidth(0.7f)
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(R.color.main_orange),
+                                colorResource(R.color.dark_orange)
+                            )
+                        ),
+                        shape = CircleShape
+                    )
+                    .border(
+                        width = 2.dp,
+                        color = colorResource(R.color.main_orange),
+                        shape = CircleShape
+                    )
             ) {
                 Text(
                     text = "홈으로",
@@ -105,8 +124,7 @@ fun ConversationEndContent(
                         .semantics {
                             contentDescription = "홈 화면으로 이동"
                         },
-                    style =textStyle.copy(
-                        color = Color.White,
+                    style = textStyle.copy(
                         fontSize = textStyle.fontSize * 1.4f
                     )
                 )

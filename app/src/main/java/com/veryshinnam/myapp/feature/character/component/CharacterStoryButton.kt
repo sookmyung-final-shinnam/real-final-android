@@ -14,6 +14,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
@@ -48,6 +49,9 @@ fun CharacterStoryButton(
                 onStoryClick(storyId, StoryType.IMAGE) }, // IMAGE는 항상 이동
             modifier = Modifier.aspectRatio(1f),
             shape = RoundedCornerShape(storyRadius),
+            colors = ButtonDefaults.buttonColors(
+                containerColor = colorResource(R.color.main_orange)
+            ),
             contentPadding = PaddingValues(0.dp) // 패딩 제거
         ) {
             when (imageUrl) {

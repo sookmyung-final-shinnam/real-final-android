@@ -10,6 +10,7 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import androidx.lifecycle.lifecycleScope
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import com.veryshinnam.myapp.common.theme.MyTheme
@@ -18,11 +19,12 @@ import com.veryshinnam.myapp.core.navigation.graphs.creationNavGraph
 import com.veryshinnam.myapp.core.navigation.graphs.mainNavGraph
 import com.veryshinnam.myapp.core.navigation.graphs.permitNavGraph
 import com.veryshinnam.myapp.core.orientation.OrientationManager
-import com.veryshinnam.myapp.core.session.ReviewToken
 import com.veryshinnam.myapp.core.session.SessionManager
 import com.veryshinnam.myapp.core.speech.tts.TtsManager
 import dagger.hilt.android.AndroidEntryPoint
-import org.threeten.bp.LocalDateTime
+import kotlinx.coroutines.delay
+import kotlinx.coroutines.isActive
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @AndroidEntryPoint
@@ -48,6 +50,22 @@ class MainActivity : ComponentActivity() {
             requestedOrientation = orientation
         }
 
+        // 리뷰 기간 종료 감지 (백그라운드 체크)
+        lifecycleScope.launch {
+            while (isActive) {
+                delay(60_000L) // 1분마다 체크
+
+                val isReviewPeriod = sessionManager.isReviewPeriod()
+                val isUsingReview = sessionManager.isUsingReviewToken()
+
+                // 리뷰 기간 끝났는데 리뷰 토큰 쓰는 중 -> 로그아웃
+                if (!isReviewPeriod && isUsingReview) {
+                    sessionManager.clearToken()
+                    sessionManager.clearReviewState()
+                }
+            }
+        }
+
         setContent {
             MyTheme {
                 val navController = rememberNavController()
@@ -56,10 +74,7 @@ class MainActivity : ComponentActivity() {
                 val requireLogin by sessionManager.requireLogin.collectAsStateWithLifecycle()
 
                 LaunchedEffect(requireLogin) {
-                    val now = LocalDateTime.now()
-                    val reviewExpireAt = LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
-
-                    if (requireLogin && now.isAfter(reviewExpireAt)) {
+                    if (requireLogin) {
                         navController.navigate(NavGraphs.PERMIT) {
                             popUpTo(0) { inclusive = true }
                         }
@@ -83,8 +98,13 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+    }
+
     override fun onStop() {
         super.onStop()
+
         ttsManager.stop()
     }
 }
