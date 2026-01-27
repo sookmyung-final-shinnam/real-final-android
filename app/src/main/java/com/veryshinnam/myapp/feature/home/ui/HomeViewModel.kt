@@ -132,6 +132,7 @@ class HomeViewModel @Inject constructor(
                 val data = repository.getHome()
                 val randomMessage = HomeRandomMessages.getRandomMessage()
 
+                _username.value = data.username
                 _homeUiState.value = HomeUiState.Success(
                     homeData = data,
                     lastSelectedCharacter = currentLast, // 마지막 선택 캐릭터 유지
