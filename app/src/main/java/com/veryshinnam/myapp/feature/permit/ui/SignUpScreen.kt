@@ -22,6 +22,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -42,6 +43,7 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.semantics.Role
@@ -473,17 +475,35 @@ fun SignUpScreen(
                     onClick = { if (checked) vm.signup(tempCode) },
                     enabled = checked,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.main_orange),
+                        containerColor = Color.Transparent,
                         contentColor = Color.White,
-                        disabledContainerColor = colorResource(R.color.lemon_yellow),
-                        disabledContentColor = Color.White
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = Color.White.copy(alpha = 0.6f)
                     ),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = if (checked) {
+                                    listOf(
+                                        colorResource(R.color.main_orange),
+                                        colorResource(R.color.dark_orange),
+                                    )
+                                } else {
+                                    listOf(
+                                        colorResource(R.color.main_orange).copy(alpha = 0.3f),
+                                        colorResource(R.color.dark_orange).copy(alpha = 0.3f)
+                                    )
+                                }
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                        )
                         .border(
                             width = 2.dp,
-                            color = colorResource(R.color.main_orange),
+                            color =
+                                if (checked) colorResource(id = R.color.main_orange)
+                                else colorResource(id = R.color.main_orange).copy(0.3f),
                             shape = RoundedCornerShape(16.dp)
                         )
                 ) {
