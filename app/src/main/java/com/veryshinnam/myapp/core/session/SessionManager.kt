@@ -25,7 +25,7 @@ class SessionManager @Inject constructor(
     private val accessToken = stringPreferencesKey("access_token")
     private val refreshToken = stringPreferencesKey("refresh_token")
     private val expiredAt = stringPreferencesKey("expired_at")
-    private val isNewUser = booleanPreferencesKey("is_new_user")
+    private val isNewUser = booleanPreferencesKey("is_new_user") // 일회성
 
     // 로그인 필요 여부
     private val _requireLogin = MutableStateFlow(false)
@@ -51,7 +51,6 @@ class SessionManager @Inject constructor(
 
     // 액세스 토큰 만료 여부
     suspend fun isTokenExpired(): Boolean {
-
         val expiredAtStr = dataStore.data.first()[expiredAt] ?: return true // 없으면 토큰 만료
 
         val expiredAtSub = expiredAtStr.substring(0, 19) // 마이크로초 무시
@@ -67,9 +66,8 @@ class SessionManager @Inject constructor(
         _requireLogin.value = true
     }
 
-    // 토큰 삭제 (동기, Interceptor용)
-    fun clearTokenBlocking() {
-        runBlocking { dataStore.edit { it.clear() } } // DataStore 비우기
+    // 로그인 필요
+    fun setRequireLogin() {
         _requireLogin.value = true
     }
 
@@ -94,5 +92,30 @@ class SessionManager @Inject constructor(
     // 신규 유저 플래그 삭제
     suspend fun removeNewUser() {
         dataStore.edit { pref -> pref.remove(isNewUser) }
+    }
+
+    // 리뷰 기간 확인
+    fun isReviewPeriod(): Boolean {
+        val now = LocalDateTime.now()
+        val reviewExpireAt = LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
+        return now.isBefore(reviewExpireAt)
+    }
+
+    // 리뷰 종료 후 토큰 비우기 (일회성)
+    fun clearTokenOnce(): Boolean {
+        return runBlocking {
+            val pref = dataStore.data.first()
+            val isReviewToken = pref[accessToken] == ReviewToken.REVIEW_ACCESS_TOKEN
+
+            // 리뷰 종료 + 리뷰 토큰 가질 때만
+            if (!isReviewPeriod() && isReviewToken) {
+                dataStore.edit {
+                    it.clear() // 토큰 제거
+                }
+                true // 비웠으면 true
+            } else {
+                false // 비울 필요 없음
+            }
+        }
     }
 }

@@ -31,14 +31,17 @@ class AuthInterceptor @Inject constructor(
         val response = chain.proceed(requestWithAuth)
         Log.d("AuthInterceptor", "ResponseCode=${response.code} for ${request.url}")
 
-        if (response.code != 401) return response
-
-        if (token == ReviewToken.REVIEW_ACCESS_TOKEN) {
-            Log.w("AuthInterceptor", "401 ignored (review token)")
-            return response
+        if (response.code == 401) {
+            if (sessionManager.isReviewPeriod()) {
+                // 리뷰 기간 > 401 무시
+                Log.w("AuthInterceptor", "401 ignored (review period)")
+            } else {
+                // 리뷰 기간 종료
+                sessionManager.clearTokenOnce()  // 리뷰 토큰 가지고 있을때 > 토큰 비우기 (스플래시로)
+                sessionManager.setRequireLogin() // 전역 401 감지
+            }
         }
 
-        sessionManager.clearTokenBlocking()
         return response
     }
 }

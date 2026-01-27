@@ -438,9 +438,24 @@ fun HomeScreen(
                         }
                     )
                     .clearAndSetSemantics {
-                        if (manualState != ManualState.REQUEST) {
-                            contentDescription = "\n아무 곳을 터치하세요. 현재 홈 화면 매뉴얼 진행 중. 전체 49 단계 중 $displayStep 단계."
-                            stateDescription = manualMessage.replace("{username}", username)
+                        when (manualState) {
+                            ManualState.START, ManualState.FINISH -> {
+                                contentDescription =
+                                    "아무 곳을 터치하세요. 현재 홈 화면 매뉴얼 진행 중. 전체 49단계 중 $displayStep 단계입니다."
+                                stateDescription =
+                                    manualMessage.replace("{username}", username)
+                            }
+
+                            ManualState.REQUEST -> {
+                                stateDescription = manualMessage
+                            }
+
+                            ManualState.STOP -> {
+                                contentDescription = "아무 곳을 터치하세요."
+                                stateDescription = manualMessage
+                            }
+
+                            else -> {}
                         }
                     }
             ) {
@@ -460,7 +475,7 @@ fun HomeScreen(
                     )
                 }
 
-                if (manualState != ManualState.REQUEST) {
+                if (manualState == ManualState.START || manualState == ManualState.FINISH) {
                     // 전역 매뉴얼 진행 단계
                     InstructionText(
                         text = "- $displayStep / 49 -",

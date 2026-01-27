@@ -56,10 +56,7 @@ class MainActivity : ComponentActivity() {
                 val requireLogin by sessionManager.requireLogin.collectAsStateWithLifecycle()
 
                 LaunchedEffect(requireLogin) {
-                    val now = LocalDateTime.now()
-                    val reviewExpireAt = LocalDateTime.parse(ReviewToken.REVIEW_EXPIRE_AT)
-
-                    if (requireLogin && now.isAfter(reviewExpireAt)) {
+                    if (requireLogin) {
                         navController.navigate(NavGraphs.PERMIT) {
                             popUpTo(0) { inclusive = true }
                         }
@@ -83,8 +80,15 @@ class MainActivity : ComponentActivity() {
         }
     }
 
+    override fun onStart() {
+        super.onStart()
+
+        sessionManager.clearTokenOnce()
+    }
+
     override fun onStop() {
         super.onStop()
+
         ttsManager.stop()
     }
 }
