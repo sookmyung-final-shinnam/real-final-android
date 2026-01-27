@@ -1,6 +1,5 @@
 package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.IntrinsicSize
@@ -32,7 +31,6 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.unit.dp
 import com.veryshinnam.myapp.R
-import kotlin.contracts.contract
 
 @Composable
 fun ConversationReplayButton(
