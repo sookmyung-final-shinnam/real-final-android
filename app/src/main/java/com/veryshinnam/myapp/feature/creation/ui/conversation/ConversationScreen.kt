@@ -333,7 +333,7 @@ fun ConversationScreen(
                                     when (state.conversationStep) {
                                         ConversationStep.START -> { // 대화 시작 (다음 이야기)
                                             ConversationStoryContent(
-                                                nextStory = if (isManual) manualMessage else state.nextStory,
+                                                nextStory = if (isManual) manualMessage else state.story,
                                                 step = ConversationStep.START,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = onReplayClick,
@@ -345,7 +345,7 @@ fun ConversationScreen(
 
                                         ConversationStep.STORY -> { // 다음 이야기
                                             ConversationStoryContent(
-                                                nextStory = if (isManual) manualMessage else state.nextStory,
+                                                nextStory = if (isManual) manualMessage else state.story,
                                                 step = ConversationStep.STORY,
                                                 isTtsSpeaking = isTtsSpeaking,
                                                 onReplayClick = onReplayClick,
