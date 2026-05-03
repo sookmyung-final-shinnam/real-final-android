@@ -25,6 +25,7 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -43,6 +44,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import androidx.navigation.NavController
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.component.CircleButton
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.TargetImage
 import com.veryshinnam.myapp.common.component.TargetMessage
 import com.veryshinnam.myapp.common.component.LogoBar
@@ -91,8 +93,9 @@ fun HomeScreen(
     val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
     val warningState by vm.warningState.collectAsStateWithLifecycle() // 단순 경고
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
     val username by vm.username.collectAsStateWithLifecycle()
 
     // -- ui 변수
@@ -130,8 +133,9 @@ fun HomeScreen(
     }
 
     // 다음 매뉴얼로 이동
-    LaunchedEffect(manualStep) {
-        if (manualStep == vm.firstManuals.size) {
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == vm.firstManuals.size) {
+            vm.nextManualStep()
             onCreationClick()
         }
     }
@@ -339,7 +343,7 @@ fun HomeScreen(
                                         .semantics {
                                             traversalIndex = 0f
                                         }
-                                        .weight(8f),
+                                        .weight(78f),
                                     characters = favorites,
                                     lastSelectedId = state.lastSelectedCharacter,
                                     onCharacterClick = { id ->
@@ -351,7 +355,7 @@ fun HomeScreen(
                                     }
                                 )
 
-                                // 바텀 버튼 (남은 공간의 20%)
+                                // 바텀 버튼 (남은 공간의 22%)
                                 HomeBottomButtons(
                                     onDashboardClick = onDashboardClick,
                                     onCreationClick = {
@@ -376,7 +380,7 @@ fun HomeScreen(
                                     },
                                     modifier = Modifier
                                         .fillMaxWidth()
-                                        .weight(2f)
+                                        .weight(22f)
                                         .padding(vertical = 8.dp)
                                         .semantics {
                                             traversalIndex = 1f
@@ -390,7 +394,7 @@ fun HomeScreen(
                             painter = painterResource(R.drawable.img_home_check),
                             contentDescription = null, // 이미지 설명 제거
                             modifier = Modifier
-                                .fillMaxHeight(0.08f)
+                                .fillMaxHeight(0.094f)
                                 .padding(horizontal = 16.dp)
                                 .align(Alignment.TopEnd)
                                 .onGloballyPositioned {
@@ -411,6 +415,10 @@ fun HomeScreen(
 
         // 매뉴얼 진행
         if (isManual) {
+            val displayStep =
+                if (manualState == ManualState.FINISH) vm.getFinishStep()
+                else manualStep
+
             Box(
                 modifier = Modifier
                     .fillMaxSize()
@@ -420,7 +428,7 @@ fun HomeScreen(
                         when (manualState) {
                             ManualState.REQUEST -> Modifier.pointerInput(Unit) {}
                             ManualState.START, ManualState.FINISH -> Modifier.pointerInput(Unit) {
-                                detectTapGestures { vm.nextManual() }
+                                detectTapGestures { vm.nextManualIndex() }
                             }
                             ManualState.STOP -> Modifier.pointerInput(Unit) {
                                 detectTapGestures { vm.clearManual() }
@@ -429,8 +437,25 @@ fun HomeScreen(
                         }
                     )
                     .clearAndSetSemantics {
-                        if (manualState != ManualState.REQUEST) contentDescription = "아무 곳을 터치하세요."
-                        stateDescription = manualMessage.replace("{username}", username)
+                        when (manualState) {
+                            ManualState.START, ManualState.FINISH -> {
+                                contentDescription =
+                                    "아무 곳을 터치하세요. 현재 홈 화면 매뉴얼 진행 중. 전체 49단계 중 $displayStep 단계."
+                                stateDescription =
+                                    manualMessage.replace("{username}", username)
+                            }
+
+                            ManualState.REQUEST -> {
+                                stateDescription = manualMessage
+                            }
+
+                            ManualState.STOP -> {
+                                contentDescription = "아무 곳을 터치하세요."
+                                stateDescription = manualMessage
+                            }
+
+                            else -> {}
+                        }
                     }
             ) {
                 squirrelRect?.let { rect ->
@@ -449,9 +474,21 @@ fun HomeScreen(
                     )
                 }
 
+                if (manualState == ManualState.START || manualState == ManualState.FINISH) {
+                    // 전역 매뉴얼 진행 단계
+                    InstructionText(
+                        text = "- $displayStep / 49 -",
+                        textStyle = MaterialTheme.typography.titleMedium,
+                        modifier = Modifier.navigationBarsPadding()
+                            .zIndex(50f)
+                            .align(Alignment.BottomCenter)
+                            .padding(bottom = 2.dp)
+                            .clearAndSetSemantics { }
+                    )
+                }
+
                 if (manualState == ManualState.START) {
-                    when (manualStep) {
-                        0 -> {}
+                    when (manualIndex) {
                         1, 2 -> creationRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_creation)) }
                         3 -> collectionRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_collection)) }
                         4, 5 -> dashboardRect?.let { TargetImage(it, painterResource(R.drawable.img_bottom_dashboard)) }

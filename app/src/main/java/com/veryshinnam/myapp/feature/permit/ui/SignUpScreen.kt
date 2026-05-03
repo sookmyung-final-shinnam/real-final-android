@@ -22,10 +22,11 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Check
+import androidx.compose.material.icons.rounded.CheckCircle
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.HorizontalDivider
@@ -42,11 +43,15 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
+import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.stateDescription
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
@@ -127,15 +132,16 @@ fun SignUpScreen(
 
                 // 부설명
                 Text(
-                    text = """
-                    스토릭터는 2025년 현대오토에버 배리어프리 앱 개발 공모전의 지원을 받아 개발 중이며, 서비스는 무료로 제공됩니다.
-                """.trimIndent().replace("", "\u200B"),
-                    style = descTextStyle.copy(color = colorResource(R.color.main_orange)),
+                    text = """스토릭터는 2025년 현대오토에버 배리어프리 앱 개발 공모전의 지원을 받아 개발 중이며, 서비스는 무료로 제공됩니다."""
+                        .trimIndent().replace("", "\u200B"),
+                    style = descTextStyle,
                     modifier = Modifier
                         .semantics {
                             contentDescription = "스토릭터는 2025년 현대오토에버 배리어프리 앱 개발 공모전의 지원을 받아 개발 중이며, 서비스는 무료로 제공됩니다."
                         }
                 )
+
+                Spacer(Modifier.height(verticalPadding))
 
                 // 이용약관
                 Column(modifier = Modifier
@@ -433,22 +439,33 @@ fun SignUpScreen(
 
                 // 모두 동의
                 Row(
-                    verticalAlignment = Alignment.CenterVertically,
+                    verticalAlignment = Alignment.Top,
                     horizontalArrangement = Arrangement.Start,
                     modifier = Modifier.clickable { checked = !checked }
+                        .padding(horizontal = verticalPadding*2)
+                        .semantics {
+                            role = Role.Checkbox
+                            contentDescription = "위 약관을 모두 확인하였으며, 이에 동의합니다."
+                            stateDescription = if (checked) "동의됨" else "동의되지 않음"
+                        }
                 ) {
                     Icon(
-                        imageVector = Icons.Default.Check,
+                        imageVector = Icons.Rounded.CheckCircle,
                         contentDescription = "동의 버튼",
-                        tint = if (checked) colorResource(R.color.main_orange) else Color.Gray,
+                        tint = if (checked) colorResource(R.color.main_orange) else colorResource(R.color.light_gray),
                         modifier = Modifier.size(24.dp)
+                            .clearAndSetSemantics { }
                     )
 
                     Spacer(modifier = Modifier.width(6.dp))
 
                     Text(
-                        text = "위 약관을 모두 확인하였으며, 이에 동의합니다.",
-                        style = subTextStyle.copy(fontWeight = Bold),
+                        text = "위 약관을 모두 확인하였으며, 이에 동의합니다.".replace("", "\u200B"),
+                        style = subTextStyle.copy(
+                            color = if (checked) Color.Black else Color.LightGray,
+                            fontWeight = Bold
+                        ),
+                        modifier = Modifier.clearAndSetSemantics { }
                     )
                 }
 
@@ -458,17 +475,35 @@ fun SignUpScreen(
                     onClick = { if (checked) vm.signup(tempCode) },
                     enabled = checked,
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = colorResource(R.color.main_orange),
+                        containerColor = Color.Transparent,
                         contentColor = Color.White,
-                        disabledContainerColor = colorResource(R.color.lemon_yellow),
-                        disabledContentColor = Color.White
+                        disabledContainerColor = Color.Transparent,
+                        disabledContentColor = Color.White.copy(alpha = 0.6f)
                     ),
                     shape = RoundedCornerShape(16.dp),
                     modifier = Modifier
                         .fillMaxWidth()
+                        .background(
+                            brush = Brush.verticalGradient(
+                                colors = if (checked) {
+                                    listOf(
+                                        colorResource(R.color.main_orange),
+                                        colorResource(R.color.dark_orange),
+                                    )
+                                } else {
+                                    listOf(
+                                        colorResource(R.color.main_orange).copy(alpha = 0.3f),
+                                        colorResource(R.color.dark_orange).copy(alpha = 0.3f)
+                                    )
+                                }
+                            ),
+                            shape = RoundedCornerShape(16.dp),
+                        )
                         .border(
                             width = 2.dp,
-                            color = colorResource(R.color.main_orange),
+                            color =
+                                if (checked) colorResource(id = R.color.main_orange)
+                                else colorResource(id = R.color.main_orange).copy(0.3f),
                             shape = RoundedCornerShape(16.dp)
                         )
                 ) {

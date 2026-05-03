@@ -2,15 +2,20 @@ package com.veryshinnam.myapp.feature.creation.componenet.conversation
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.offset
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.wrapContentWidth
+import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.MaterialTheme
@@ -19,6 +24,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.alpha
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
@@ -49,6 +55,8 @@ fun ConversationNeedsText(
         lineHeight = MaterialTheme.typography.titleLarge.lineHeight * 1.2f
     ),
 ) {
+    val scrollState = rememberScrollState()
+
     Box(modifier = modifier) {
         Column(
             modifier = Modifier.fillMaxWidth()
@@ -101,25 +109,64 @@ fun ConversationNeedsText(
                     )
 
                     // 피드백 텍스트
-                    StrokeTitle(
-                        titleText = feedback,
-                        titleColor = Color.Black,
-                        strokeColor = Color.White,
-                        titleTextStyle = textStyle,
-                        strokeWidth = 8f,
-                        modifier = Modifier
-                            .padding(horizontal = horizontalPadding)
-                            .align(Alignment.Center)
-                    )
+                    Column(
+                        modifier = Modifier.fillMaxSize()
+                    ) {
+                        // 남은 공간 차지 하면서 가운데 오도록
+                        Box(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .weight(1f)
+                                .padding(horizontal = horizontalPadding)
+                        ) {
+                            Box(
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .verticalScroll(scrollState)
+                            ) {
+                                StrokeTitle(
+                                    titleText = feedback,
+                                    titleColor = Color.Black,
+                                    strokeColor = Color.White,
+                                    titleTextStyle = textStyle,
+                                    strokeWidth = 8f,
+                                    modifier = Modifier
+                                        .padding(horizontal = horizontalPadding)
+                                        .align(Alignment.Center)
+                                )
+                            }
 
-                    // 다시듣기
-                    ConversationReplayButton(
-                        isTtsSpeaking = isTtsSpeaking,
-                        onReplayClick = onReplayClick,
-                        modifier = Modifier
-                            .padding(end = verticalPadding)
-                            .align(Alignment.BottomEnd)
-                    )
+                            // 스크롤 가능 여부 효과
+                            if (scrollState.canScrollForward) {
+                                Box(
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(48.dp)
+                                        .align(Alignment.BottomCenter)
+                                        .background(
+                                            Brush.verticalGradient(
+                                                colors = listOf(
+                                                    Color.Transparent,
+                                                    Color.Gray.copy(alpha = 0.3f)
+                                                )
+                                            ),
+                                            shape = RoundedCornerShape(6.dp)
+                                        )
+                                )
+                            }
+                        }
+
+                        Spacer(Modifier.height(6.dp))
+
+                        // 다시듣기 맨 오른쪽에 위치
+                        ConversationReplayButton(
+                            isTtsSpeaking = isTtsSpeaking,
+                            onReplayClick = onReplayClick,
+                            modifier = Modifier
+                                .padding(end = verticalPadding)
+                                .align(Alignment.End)
+                        )
+                    }
                 }
             }
         }

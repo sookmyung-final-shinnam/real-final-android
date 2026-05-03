@@ -5,9 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -25,11 +27,17 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -90,18 +98,23 @@ fun WarningConfirmSheet(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { isTraversalGroup = true },
+            ) {
                 // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(iconSize)
                         .align(Alignment.TopEnd)
                         .aspectRatio(1f)
+                        .semantics { traversalIndex = 1f }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
                         contentDescription = "시트 닫기",
-                        tint = colorResource(R.color.main_orange_50),
+                        tint = Color.White,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -110,14 +123,15 @@ fun WarningConfirmSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = verticalPadding),
+                        .padding(top = verticalPadding)
+                        .semantics { traversalIndex = 0f },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
                 ) {
                     // 이미지
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
-                        contentDescription = "경고",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )
@@ -134,11 +148,16 @@ fun WarningConfirmSheet(
                             // 경고 문구
                             withStyle(
                                 style = warningTextStyle.toSpanStyle()
-                            ) { append("$warningText\n") }
+                            ) { append(warningText) }
                         },
                         style = warningTextStyle,
                         modifier = Modifier.fillMaxWidth()
+                            .clearAndSetSemantics {
+                                contentDescription = "경고. $warningText"
+                            }
                     )
+
+                    Spacer(Modifier.height(4.dp))
 
                     // --- 확인 버튼
                     Button(
@@ -148,7 +167,13 @@ fun WarningConfirmSheet(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
                         shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth()
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .shadow(
+                                elevation = 6.dp,
+                                shape = RoundedCornerShape(16.dp),
+                                clip = false
+                            )
                     ) {
                         Text(
                             text = confirmText,

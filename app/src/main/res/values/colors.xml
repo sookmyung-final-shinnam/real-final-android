@@ -15,7 +15,8 @@
     <color name="palette_black">#000000</color>
 
     <!-- 앱컬러 -->
-    <color name="brand_orange">#F04400</color>
+    <color name="brand_orange">#DE5200</color>
+    <color name="dark_orange">#C97A00</color>
     <color name="main_orange">#F3A600</color>
     <color name="main_orange_shade">#7A570A</color>
     <color name="main_orange_50">#F9D280</color>
@@ -30,6 +31,7 @@
     <color name="blue_sky">#96C4E7</color>
 
     <!-- 앱컬러(대시보드) -->
+    <color name="dark_green_soft">#6F9E3F</color>
     <color name="deep_green">#99CB53</color>
     <color name="light_green">#AFD37D</color>
     <color name="light_gray">#E0E0E0</color>
@@ -52,6 +54,7 @@
     <color name="deep_pink">#FEA17F</color>
     <color name="light_pink">#FCBFA9</color>
     <color name="clear_blue">#1AB3ED</color>
+    <color name="dark_blue">#0B6FAE</color>
 
     <!-- 카카오 -->
     <color name="kakao_yellow">#FEE500</color>

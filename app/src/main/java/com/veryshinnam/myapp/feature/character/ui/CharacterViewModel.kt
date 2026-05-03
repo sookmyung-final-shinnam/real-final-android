@@ -5,8 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.R
 import com.veryshinnam.myapp.common.model.Gender
 import com.veryshinnam.myapp.common.model.ImageType
-import com.veryshinnam.myapp.common.model.ManualData
-import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.character.data.repository.CharacterRepository
 import com.veryshinnam.myapp.feature.character.model.CharacterData
@@ -31,10 +29,11 @@ class CharacterViewModel @Inject constructor(
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
+    val manualStep = manualManager.step
 
     // 매뉴얼 진행 단계 상태
-    private val _manualStep = MutableStateFlow(0)
-    val manualStep = _manualStep.asStateFlow()
+    private val _manualIndex = MutableStateFlow(0)
+    val manualIndex = _manualIndex.asStateFlow()
 
     // 캐릭터 상세 불러오기
     fun fetchCharacter(id: Long) {
@@ -76,7 +75,7 @@ class CharacterViewModel @Inject constructor(
                         } else {
                             repository.removeFavorite(id)
                         }
-                    } catch (e: Exception) {
+                    } catch (_: Exception) {
                         // 실패 시 상태 복구
                         _uiState.value = currentState
                         // e 종류에 따라 문구
@@ -88,15 +87,14 @@ class CharacterViewModel @Inject constructor(
     }
 
     // 동화 영상 해제
-    fun fetchVideoStory(cId:Long, sId: Long) {
+    fun fetchVideoStory(cId:Long, sId: Long, onError: (String) -> Unit = {}) {
         viewModelScope.launch {
             try {
                 repository.generateVideo(sId)
                 refreshStories(cId)
-            } catch (e: Exception) {
-                _uiState.value = CharacterUiState.Error(
-                    "동화 영상 해제 실패: ${e.message}"
-                )
+            } catch (_: Exception) {
+                // 실패 시 상태 복구
+                onError("도토리가 부족해요.\n출석을 통해 도토리를 모아 볼까요?")
             }
         }
     }
@@ -114,21 +112,21 @@ class CharacterViewModel @Inject constructor(
                     )
                     _uiState.value = currentState.copy(characterData = updatedCharacter)
                 }
-            } catch (e: Exception) { }
+            } catch (_: Exception) { }
         }
     }
 
     // --- 매뉴얼 관련 ---
     // 생성 전 선택 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("화면을 가로로 돌려\n준비해 주세요!", ManualTarget.NONE),
-        ManualData("캐릭터룸에서는 완성된 캐릭터의 사진과 정보를 자세히 볼 수 있어요.", ManualTarget.NONE),
-        ManualData("저희가 만든 짱신남은 용감하고 호기심이 많은 성격을 가진 친구네요!", ManualTarget.NONE),
-        ManualData("저기 Tab 버튼을 한번 눌러 보실래요?", ManualTarget.BUTTON),
-        ManualData("설명 카드가 뒤집히면서 만든 동화를 확인할 수 있고", ManualTarget.NONE),
-        ManualData("도토리 1개를 사용하여 잠금을 해제하면", ManualTarget.NONE),
-        ManualData("동화를 움직이는 형태로도 볼 수 있답니다.", ManualTarget.NONE),
-        ManualData("카톡 버튼을 눌러 만든 동화를 친구들에게도 공유할 수 있답니다!", ManualTarget.IMAGE),
+        "화면을 가로로 돌려\n준비해 주세요!",
+        "캐릭터룸에서는 완성된 캐릭터의 사진과 정보를 자세히 볼 수 있어요.",
+        "저희가 만든 짱신남은 용감하고 호기심이 많은 성격을 가진 친구네요!",
+        "저기 Tab 버튼을 한번 눌러 보실래요?",
+        "설명 카드가 뒤집히면서 만든 동화를 확인할 수 있고",
+        "도토리 1개를 사용하여 잠금을 해제하면",
+        "동화를 움직이는 형태로도 볼 수 있답니다.",
+        "카톡 버튼을 눌러 만든 동화를 친구들에게도 공유할 수 있답니다!",
     )
 
     val manualDummy = CharacterData(
@@ -152,8 +150,8 @@ class CharacterViewModel @Inject constructor(
     )
 
     fun startManual() {
-        _manualStep.value = 0
-        manualManager.update(manuals[0].message)
+        _manualIndex.value = 0
+        manualManager.update(manuals[0])
 
         // 스크린에서 매뉴얼 UI로 전환
         _uiState.value = CharacterUiState.Success(
@@ -161,19 +159,22 @@ class CharacterViewModel @Inject constructor(
         )
     }
 
-    fun nextManual() {
-        val current = _manualStep.value
+    fun nextManualIndex() {
+        val current = _manualIndex.value
 
         if (current < manuals.lastIndex) {
             val next = current + 1
-            _manualStep.value = next
-            manualManager.update(manuals[next].message)
+            _manualIndex.value = next
+            manualManager.update(manuals[next])
+            nextManualStep()
         } else if (current == manuals.lastIndex) {
-            _manualStep.value = manuals.size
+            _manualIndex.value = manuals.size
         }
     }
 
     fun stopManual() = manualManager.stop()
 
     fun clearManual() = manualManager.clear()
+
+    fun nextManualStep() = manualManager.nextStep()
 }

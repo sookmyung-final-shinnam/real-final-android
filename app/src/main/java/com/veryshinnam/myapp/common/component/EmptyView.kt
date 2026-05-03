@@ -1,12 +1,17 @@
 package com.veryshinnam.myapp.common.component
 
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.MaterialTheme
@@ -14,6 +19,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.text.TextStyle
@@ -28,7 +34,6 @@ import com.veryshinnam.myapp.R
 fun EmptyView(
     emptyText: String,
     buttonText: String,
-    buttonColor: Color = colorResource(R.color.main_orange),
     onButtonClick: () -> Unit,
     emptyTextStyle: TextStyle = MaterialTheme.typography.titleSmall,
     spacerPadding: Dp = 10.dp,
@@ -39,13 +44,10 @@ fun EmptyView(
         verticalArrangement = Arrangement.Center,
         horizontalAlignment = Alignment.CenterHorizontally
     ) {
-        Text(
+        InstructionText(
             text = emptyText,
-            style = emptyTextStyle.copy(
-                color = buttonColor,
-                fontWeight = SemiBold,
-                textAlign = Center
-            )
+            textStyle = emptyTextStyle,
+            modifier = Modifier
         )
 
         Spacer(Modifier.height(spacerPadding * 2))
@@ -53,10 +55,25 @@ fun EmptyView(
         Button(
             onClick = onButtonClick,
             colors = ButtonDefaults.buttonColors(
-                containerColor = buttonColor,
+                containerColor = Color.Transparent,
                 contentColor = Color.White
             ),
             shape = CircleShape,
+            modifier = Modifier
+                .background(
+                    brush = Brush.verticalGradient(
+                        colors = listOf(
+                            colorResource(R.color.main_orange),
+                            colorResource(R.color.dark_orange),
+                        )
+                    ),
+                    shape = CircleShape
+                )
+                .border(
+                    width = 2.dp,
+                    color =colorResource(id = R.color.main_orange),
+                    shape = CircleShape
+                )
         ) {
             Text(
                 text = buttonText,
@@ -64,7 +81,8 @@ fun EmptyView(
                     fontSize = emptyTextStyle.fontSize * 1.2f,
                     fontWeight = Bold
                 ),
-                modifier = Modifier.padding(vertical = spacerPadding / 2)
+                modifier = Modifier
+                    .padding(horizontal = spacerPadding, vertical = spacerPadding / 2)
             )
         }
     }

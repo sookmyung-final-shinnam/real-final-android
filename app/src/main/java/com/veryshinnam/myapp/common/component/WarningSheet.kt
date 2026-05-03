@@ -28,6 +28,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.semantics.clearAndSetSemantics
+import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
+import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.buildAnnotatedString
 import androidx.compose.ui.text.font.FontWeight
@@ -93,17 +98,22 @@ fun WarningSheet(
             verticalArrangement = Arrangement.Center,
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                .fillMaxWidth()
+                .semantics { isTraversalGroup = true },
+            ) {
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(iconSize)
                         .align(Alignment.TopEnd)
                         .aspectRatio(1f)
+                        .semantics { traversalIndex = 1f }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
                         contentDescription = "시트 닫기",
-                        tint = colorResource(R.color.main_orange_50),
+                        tint = Color.White,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -111,13 +121,16 @@ fun WarningSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(vertical = verticalPadding),
+                        .padding(vertical = verticalPadding)
+                        .semantics {
+                            traversalIndex = 0f
+                        },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding/2)
                 ) {
                     Image(
                         painter = painterResource(R.drawable.img_speak_on),
-                        contentDescription = "경고",
+                        contentDescription = null,
                         modifier = Modifier.fillMaxWidth(imageSize),
                         contentScale = ContentScale.Fit
                     )
@@ -137,6 +150,9 @@ fun WarningSheet(
                         },
                         style = warningTextStyle,
                         modifier = Modifier.fillMaxWidth(0.8f)
+                            .clearAndSetSemantics {
+                                contentDescription = "경고. $warningText"
+                            }
                     )
                 }
             }

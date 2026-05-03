@@ -9,9 +9,9 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Cancel
@@ -28,12 +28,15 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.semantics.contentDescription
+import androidx.compose.ui.semantics.isTraversalGroup
 import androidx.compose.ui.semantics.semantics
+import androidx.compose.ui.semantics.traversalIndex
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
@@ -76,18 +79,23 @@ fun ShareSheet(
                 .padding(vertical = verticalPadding, horizontal = horizontalPadding),
             horizontalAlignment = Alignment.CenterHorizontally,
         ) {
-            Box(modifier = Modifier.fillMaxWidth()) {
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .semantics { isTraversalGroup = true },
+            ) {
                 // --- 닫기 버튼
                 IconButton(
                     onClick = { onDismiss() },
                     modifier = Modifier.fillMaxWidth(.06f)
                         .align(Alignment.TopEnd)
                         .aspectRatio(1f)
+                        .semantics { traversalIndex = 1f }
                 ) {
                     Icon(
                         imageVector = Icons.Outlined.Cancel,
                         contentDescription = "시트 닫기",
-                        tint = colorResource(R.color.main_orange_50),
+                        tint = Color.White,
                         modifier = Modifier.fillMaxSize()
                     )
                 }
@@ -96,7 +104,10 @@ fun ShareSheet(
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .padding(top = verticalPadding),
+                        .padding(top = verticalPadding)
+                        .semantics {
+                            isTraversalGroup = true
+                            traversalIndex = 0f },
                     horizontalAlignment = Alignment.CenterHorizontally,
                     verticalArrangement = Arrangement.spacedBy(verticalPadding / 2)
                 ) {
@@ -127,31 +138,39 @@ fun ShareSheet(
                             // 길이 알아서 자르기
                             text = urlText,
                             style = urlTextStyle,
-                            modifier = Modifier.wrapContentWidth()
-                                .semantics {
-                                    contentDescription = "동화 유튜브 링크"
-                                },
+                            modifier = Modifier
+                                .weight(1f)
+                                .semantics { contentDescription = "동화 유튜브 링크. $urlText" },
                             maxLines = 1,
                             overflow = TextOverflow.Ellipsis
                         )
 
-                        Spacer(Modifier.width(20.dp))
+                        Spacer(Modifier.width(10.dp))
 
                         // 복사 버튼
                         Button(
                             onClick = { onCopy() },
-                            colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = colorResource(R.color.main_orange_50)
+                            ),
                             shape = RoundedCornerShape(16.dp),
+                            modifier = Modifier.shadow(
+                                elevation = 6.dp,
+                                shape = RoundedCornerShape(16.dp),
+                                clip = false
+                            )
                         ) {
                             Text(
                                 text = "복사",
                                 style = urlTextStyle.copy(color = Color.Black),
                                 modifier = Modifier.semantics {
-                                    contentDescription = "링크 복사"
+                                    contentDescription = "유튜브 링크 복사"
                                 }
                             )
                         }
                     }
+
+                    Spacer(Modifier.height(4.dp))
 
                     // --- 공유하기 버튼
                     Button(
@@ -161,7 +180,13 @@ fun ShareSheet(
                         },
                         colors = ButtonDefaults.buttonColors(containerColor = colorResource(R.color.main_orange_50)),
                         shape = RoundedCornerShape(16.dp),
-                        modifier = Modifier.fillMaxWidth(0.8f)
+                        modifier = Modifier
+                            .fillMaxWidth(0.8f)
+                            .shadow(
+                                elevation = 6.dp,
+                                shape = RoundedCornerShape(16.dp),
+                                clip = false
+                            )
                     ) {
                         Text(
                             text = confirmText,

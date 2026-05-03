@@ -13,6 +13,8 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.shadow
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.colorResource
@@ -96,15 +98,23 @@ fun StoryEndingPage(
             Button(
                 onClick = onRestart,
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.blue_sky),
+                    containerColor = Color.Transparent,
                     contentColor = Color.Black
                 ),
                 shape = CircleShape,
                 contentPadding = PaddingValues(horizontal = buttonHorizontal, vertical = buttonVertical),
                 modifier = Modifier
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(id = R.color.blue_sky),
+                                colorResource(R.color.dark_blue))
+                        ),
+                        shape = CircleShape
+                    )
                     .border(
-                        width = 4.dp,
-                        color = colorResource(id = R.color.blue_gray),
+                        width = 2.dp,
+                        color = colorResource(id = R.color.blue_sky),
                         shape = CircleShape
                     )
                     .semantics(true) {
@@ -121,15 +131,23 @@ fun StoryEndingPage(
             Button(
                 onClick = { onHome() },
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = colorResource(R.color.blue_sky),
+                    containerColor = Color.Transparent,
                     contentColor = Color.Black
                 ),
                 shape = CircleShape,
                 contentPadding = PaddingValues(horizontal = buttonHorizontal, vertical = buttonVertical),
                 modifier = Modifier
+                    .background(
+                        brush = Brush.verticalGradient(
+                            colors = listOf(
+                                colorResource(id = R.color.blue_sky),
+                                colorResource(R.color.dark_blue))
+                        ),
+                        shape = CircleShape
+                    )
                     .border(
-                        width = 4.dp,
-                        color = colorResource(id = R.color.blue_gray),
+                        width = 2.dp,
+                        color = colorResource(id = R.color.blue_sky),
                         shape = CircleShape
                     )
                     .semantics(true) {

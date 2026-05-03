@@ -3,8 +3,6 @@ package com.veryshinnam.myapp.feature.dashboard.ui
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.veryshinnam.myapp.common.model.DashboardInit
-import com.veryshinnam.myapp.common.model.ManualData
-import com.veryshinnam.myapp.common.model.ManualTarget
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.feature.dashboard.data.repository.DashboardRepository
 import com.veryshinnam.myapp.feature.dashboard.model.Attempt
@@ -42,10 +40,11 @@ class DashboardViewModel @Inject constructor(
     // ManualManager 구독
     val manualState = manualManager.state
     val manualMessage = manualManager.message
+    val manualStep = manualManager.step
 
     // 매뉴얼 진행 단계 상태
-    private val _manualStep = MutableStateFlow(0)
-    val manualStep = _manualStep.asStateFlow()
+    private val _manualIndex = MutableStateFlow(0)
+    val manualIndex = _manualIndex.asStateFlow()
 
     fun fetchDashboard() {
         viewModelScope.launch {
@@ -230,11 +229,11 @@ class DashboardViewModel @Inject constructor(
     // --- 매뉴얼 관련 ---
     // 홈 화면 사용 매뉴얼
     val manuals = listOf(
-        ManualData("와~ 이제 마지막 설명이에요!\n여기는 대시보드예요.", ManualTarget.NONE),
-        ManualData("여기에서는 좋아했던 테마와 배경이 기록되고,", ManualTarget.NONE),
-        ManualData("동화를 만들며 도전한 횟수와 그때의 기분도 남아요.", ManualTarget.NONE),
-        ManualData("이건 미리 보여주는 화면이에요.\n앞으로 새로 만드는 동화 이야기들이 이곳을 채울 거예요!", ManualTarget.NONE),
-        ManualData("이 버튼들을 누르면 더 자세한 설명을 볼 수 있으니,\n궁금할 때 언제든 눌러보세요~", ManualTarget.NONE),
+       "와~ 이제 마지막 설명이에요!\n여기는 대시보드예요.",
+        "여기에서는 좋아했던 테마와 배경이 기록되고,",
+        "동화를 만들며 도전한 횟수와 그때의 기분도 남아요.",
+        "이건 미리 보여주는 화면이에요.\n앞으로 새로 만드는 동화 이야기들이 이곳을 채울 거예요!",
+        "이 버튼들을 누르면 더 자세한 설명을 볼 수 있으니,\n궁금할 때 언제든 눌러보세요~"
     )
 
     // 매뉴얼용 더미 더미테이터
@@ -291,8 +290,8 @@ class DashboardViewModel @Inject constructor(
     )
 
     fun startManual() {
-        _manualStep.value = 0
-        manualManager.update(manuals[0].message)
+        _manualIndex.value = 0
+        manualManager.update(manuals[0])
 
         _uiState.value = DashboardUiState.Success(
             username = "더미",
@@ -313,24 +312,27 @@ class DashboardViewModel @Inject constructor(
         )
     }
 
-    fun nextManual() {
-        val current = _manualStep.value
+    fun nextManualIndex() {
+        val current = _manualIndex.value
 
         if (current < manuals.lastIndex) {
             val next = current + 1
-            _manualStep.value = next
-            manualManager.update(manuals[next].message)
+            _manualIndex.value = next
+            manualManager.update(manuals[next])
+            nextManualStep()    // 전역 단계 증가
         } else if (current == manuals.lastIndex) {
-            _manualStep.value = manuals.size
+            _manualIndex.value = manuals.size
         }
     }
 
     fun finishManual() {
         manualManager.finish()
-        _manualStep.value = 0 // step 초기화
+        _manualIndex.value = 0 // index 초기화
     }
 
     fun stopManual() = manualManager.stop()
 
     fun clearManual() = manualManager.clear()
+
+    fun nextManualStep() = manualManager.nextStep()
 }

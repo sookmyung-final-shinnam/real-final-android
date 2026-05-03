@@ -13,6 +13,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
@@ -50,7 +53,19 @@ fun SplashScreen(
         )
     }
 
+    var videoFinished by remember { mutableStateOf(false) }
+    LaunchedEffect(videoFinished, state) {
+        if (!videoFinished) return@LaunchedEffect
+
+        when (state) {
+            is PermitUiState.Success -> onHome()
+            is PermitUiState.Error -> onLogin()
+            else -> Unit
+        }
+    }
+
     LaunchedEffect(Unit) {
+        vm.clearReviewStateIfNeeded() // 리뷰 기간 종료 시 상태 정리
         vm.checkAccessToken()
     }
 
@@ -75,17 +90,7 @@ fun SplashScreen(
             isRepeated = false,
             resizeMode = AspectRatioFrameLayout.RESIZE_MODE_FIT, // 원본 비율 유지
             onVideoEnd = {
-                // 상태가 결정된 후 이동
-                when (state) {
-                    is PermitUiState.Success,
-                    is PermitUiState.Loading -> {
-                        onHome()
-                    }
-                    is PermitUiState.Error -> {
-                        onLogin()
-                    }
-                    else -> {}
-                }
+                videoFinished = true
             }
         )
 

@@ -20,11 +20,13 @@ import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.navigationBars
+import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.statusBars
 import androidx.compose.foundation.layout.windowInsetsBottomHeight
 import androidx.compose.foundation.layout.windowInsetsTopHeight
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.SideEffect
@@ -52,6 +54,7 @@ import androidx.compose.ui.zIndex
 import androidx.core.content.ContextCompat
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.veryshinnam.myapp.R
+import com.veryshinnam.myapp.common.component.InstructionText
 import com.veryshinnam.myapp.common.component.LogoBar
 import com.veryshinnam.myapp.common.component.LoadErrorView
 import com.veryshinnam.myapp.common.component.ManualStopButton
@@ -98,8 +101,9 @@ fun ConversationScreen(
     val uiState by vm.conversationUiState.collectAsStateWithLifecycle() // 대화 화면 상태 관리
     val isTtsSpeaking by vm.isTtsSpeaking.collectAsStateWithLifecycle() // tts 재생 상태 관리
     val manualState by vm.manualState.collectAsStateWithLifecycle()
-    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()
+    val manualStep by vm.manualStep.collectAsStateWithLifecycle()
+    val manualIndex by vm.manualIndex.collectAsStateWithLifecycle()
 
     //  매뉴얼
     val isManual = manualState != ManualState.NONE
@@ -112,7 +116,7 @@ fun ConversationScreen(
     var isWarning by remember { mutableStateOf(false) }   // 경고창
     val onReplayClick: () -> Unit = {
         when {
-            isManualStart -> { vm.nextManual() }
+            isManualStart -> { vm.nextManualIndex() }
             isManualStop -> { onStopManual() }
             else -> { vm.startTts() }
         }
@@ -120,7 +124,7 @@ fun ConversationScreen(
 
     val onNextClick: () -> Unit = {
         when {
-            isManualStart -> { vm.nextManual() }
+            isManualStart -> { vm.nextManualIndex() }
             isManualStop -> { onStopManual() }
             else -> { vm.goToNextStep() }
         }
@@ -137,13 +141,13 @@ fun ConversationScreen(
         when {
             isManualStop -> { onStopManual() }
 
-            manualStep == 5 -> {
+            manualIndex == 5 -> {
                 // manualStep 5 전용
-                if (granted) vm.nextManual()
+                if (granted) vm.nextManualIndex()
                 else launcher.launch(recordAudioPermission)
             }
 
-            isManualStart -> { vm.nextManual() }
+            isManualStart -> { vm.nextManualIndex() }
 
             else -> {
                 if (granted) vm.goToNextStep()
@@ -159,8 +163,9 @@ fun ConversationScreen(
         )
     }
 
-    LaunchedEffect(manualStep) {
-        if (manualStep == vm.manuals.size) {
+    LaunchedEffect(manualIndex) {
+        if (manualIndex == vm.manuals.size) {
+            vm.nextManualStep() // 전역 단계 증가
             goToNextManual()
         }
     }
@@ -235,7 +240,7 @@ fun ConversationScreen(
                     )
                 }
 
-                if (isManual && (manualStep == 0 || manualStep == 1 || manualStep == 5)) {
+                if (isManual && (manualIndex == 0 || manualIndex == 1 || manualIndex == 5)) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -299,7 +304,7 @@ fun ConversationScreen(
                                         )
                                 )
 
-                                if (isManual && (manualStep == 0 || manualStep == 1 || manualStep == 5)) {
+                                if (isManual && (manualIndex == 0 || manualIndex == 1 || manualIndex == 5)) {
                                     Box(
                                         modifier = Modifier
                                             .matchParentSize()
@@ -315,7 +320,7 @@ fun ConversationScreen(
                                     .weight(1f)
                                     .then(
                                         // 매뉴얼일 때, 5 강조
-                                        if (isManual && manualStep == 0 || manualStep == 1 || manualStep == 5)
+                                        if (isManual && manualIndex == 0 || manualIndex == 1 || manualIndex == 5)
                                             Modifier.background(Color.Black.copy(alpha = 0.5f))
                                         else Modifier
                                     )
@@ -385,7 +390,7 @@ fun ConversationScreen(
                                                 onReplayClick = onReplayClick,
                                                 onButtonClick = {
                                                     when {
-                                                        isManualStart -> { vm.nextManual() }
+                                                        isManualStart -> { vm.nextManualIndex() }
                                                         isManualStop -> { onStopManual() }
                                                         else -> { vm.goFromFeedback() }
                                                     }
@@ -412,7 +417,7 @@ fun ConversationScreen(
             // 3. 네비게이션바 만큼 여백
             Box(modifier = Modifier.fillMaxWidth()) {
                 Spacer(modifier = Modifier.windowInsetsBottomHeight(WindowInsets.navigationBars))
-                if (isManual && (manualStep == 0 || manualStep == 1 || manualStep == 5)) {
+                if (isManual && (manualIndex == 0 || manualIndex == 1 || manualIndex == 5)) {
                     Box(
                         modifier = Modifier
                             .matchParentSize()
@@ -431,7 +436,7 @@ fun ConversationScreen(
                 .then(
                     when {
                         // 사용자 답변: 대기
-                        manualStep == 6 -> Modifier.pointerInput(Unit) {
+                        manualIndex == 6 -> Modifier.pointerInput(Unit) {
                             detectTapGestures { }
                         }
 
@@ -448,8 +453,10 @@ fun ConversationScreen(
                     }
                 )
                 .clearAndSetSemantics {
-                    contentDescription = "아무 곳을 터치하세요."
                     stateDescription = manualMessage
+                    contentDescription = "\n아무 곳을 터치하세요. 현재 동화 생성 화면 매뉴얼 진행" +
+                            if (manualState != ManualState.STOP) "중. 전체 49 단계 중 $manualStep 단계."
+                            else "중단."
                 }
             )
 
@@ -462,8 +469,19 @@ fun ConversationScreen(
                         else -> {}
                     }
                 },
-                enabled = manualStep != 6, // 사용자 답변: 비활성
+                enabled = manualIndex != 6, // 사용자 답변: 비활성
                 modifier = Modifier.zIndex(20f).align(Alignment.TopEnd)
+            )
+
+            // 전역 매뉴얼 진행 단계
+            InstructionText(
+                text = "- $manualStep / 49 -",
+                textStyle = MaterialTheme.typography.titleMedium,
+                modifier = Modifier.navigationBarsPadding()
+                    .zIndex(50f)
+                    .align(Alignment.BottomCenter)
+                    .padding(bottom = 2.dp)
+                    .clearAndSetSemantics { }
             )
         }
     }

@@ -2,6 +2,7 @@ package com.veryshinnam.myapp.feature.creation.componenet.selection
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -27,6 +28,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.geometry.Rect
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.layout.boundsInRoot
@@ -39,6 +41,7 @@ import androidx.compose.ui.semantics.contentDescription
 import androidx.compose.ui.semantics.role
 import androidx.compose.ui.semantics.semantics
 import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.FontWeight.Companion.Bold
 import androidx.compose.ui.text.font.FontWeight.Companion.SemiBold
 import androidx.compose.ui.text.style.TextAlign.Companion.Center
 import androidx.compose.ui.unit.dp
@@ -56,7 +59,7 @@ fun SelectionBottomButtons(
     onCustomBRect: (Rect) -> Unit = {},
     modifier: Modifier,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(color = colorResource(R.color.main_orange), fontWeight = SemiBold),
-    centerTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = SemiBold, textAlign = Center)
+    centerTextStyle: TextStyle = MaterialTheme.typography.bodySmall.copy(fontWeight = Bold, textAlign = Center)
 ) {
     // --- 이전 버튼 + 직접 추가 버튼 + 다음 버튼
     Row(
@@ -93,8 +96,21 @@ fun SelectionBottomButtons(
         }
 
         // 직접 추가 버튼
-        val containerColor = if (isCenter) colorResource(R.color.lemon_yellow) else Color.Transparent
-        val contentColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
+        val backgroundColor = Brush.verticalGradient(
+            colors = if (isCenter) {
+                listOf(
+                    colorResource(id = R.color.lemon_yellow),
+                    colorResource(id = R.color.lemon_yellow),
+                    Color.LightGray.copy(alpha = 0.3f)
+                )
+            } else {
+                listOf(
+                    Color.Transparent,
+                    Color.Transparent
+                )
+            }
+        )
+        val contentColor = if (isCenter) Color.Black else Color.Transparent
         val borderColor = if (isCenter) colorResource(R.color.main_orange) else Color.Transparent
 
         Box(
@@ -107,7 +123,10 @@ fun SelectionBottomButtons(
             Button(
                 onClick = { if (isCenter) onCenterClick() },
                 enabled = isCenter,
-                modifier = Modifier.fillMaxHeight().aspectRatio(1f)
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .aspectRatio(1f)
+                    .background(brush = backgroundColor, shape = RoundedCornerShape(20.dp))
                     .semantics(true) {
                         if (isCenter) {
                             contentDescription = "직접 추가"
@@ -116,9 +135,9 @@ fun SelectionBottomButtons(
                     },
                 shape = RoundedCornerShape(20.dp),
                 colors = ButtonDefaults.buttonColors(
-                    containerColor = containerColor,
+                    containerColor = Color.Transparent,
                     contentColor = contentColor,
-                    disabledContainerColor = containerColor,
+                    disabledContainerColor = Color.Transparent,
                     disabledContentColor = contentColor
                 ),
                 border = BorderStroke(
@@ -129,7 +148,7 @@ fun SelectionBottomButtons(
             ) {
                 Column(
                     modifier = Modifier.fillMaxSize(),
-                    verticalArrangement = Arrangement.Center,
+                    verticalArrangement = Arrangement.SpaceEvenly,
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
                     Image(
@@ -137,11 +156,17 @@ fun SelectionBottomButtons(
                         contentDescription = null, // 접근성 내용 제거
                         contentScale = ContentScale.Fit,
                         modifier = Modifier
-                            .fillMaxHeight(0.7f)
-                            .padding(16.dp),
+                            .weight(1f)
+                            .padding(horizontal = 16.dp),
                         alpha = if (isCenter) 1.0f else 0.0f
                     )
-                    Text(text = "직접 추가하기", style = centerTextStyle, modifier = Modifier.clearAndSetSemantics { })
+                    Text(
+                        text = "직접\n추가하기",
+                        style = centerTextStyle,
+                        modifier = Modifier
+                            .padding(bottom = 2.dp)
+                            .clearAndSetSemantics { }
+                    )
                 }
             }
         }
