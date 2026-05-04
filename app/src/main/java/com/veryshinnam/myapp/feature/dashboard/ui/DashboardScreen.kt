@@ -234,8 +234,8 @@ fun DashboardScreen(
                                 cardColor = greenColor,
                                 cardText =  if (isManual) manualMessage
                                     else if (isEmpty) "아직 ${state.username}의\n최대 관심사를 찾을 수 없어요!"
-                                    else "${state.username}의 최대 관심사예요! \n{${state.maxTheme}}, {${state.maxBackground}}",
-                                spanText = "최대 관심사",
+                                    else "${state.username}의 최대 관심사예요! \n#${state.maxTheme} #${state.maxBackground}",
+                                spanText = "#${state.maxTheme} #${state.maxBackground}",
                                 spanColor = greenColor
                             )
                         }
