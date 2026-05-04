@@ -128,9 +128,11 @@ fun SettingsScreen(
 
     // 설정 화면 UI
     when {
-        isPrivacy -> SettingsPrivacyContent()
-        else ->
-            Scaffold(
+        isPrivacy -> {
+            SettingsPrivacyContent() // 개인정보처리 방침 화면
+        }
+        else -> {
+            Scaffold( // 환경설정 화면
                 containerColor = colorResource(id = R.color.background_yellow),
                 topBar = {
                     // 상태바 만큼 여백 & 상단 로고
@@ -289,6 +291,7 @@ fun SettingsScreen(
                     )
                 }
             }
+        }
     }
 
     // 확인 버튼이 있는 경고창

@@ -3,12 +3,9 @@ package com.veryshinnam.myapp.feature.settings.content
 import android.view.ViewGroup
 import android.webkit.WebSettings
 import android.webkit.WebView
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.viewinterop.AndroidView
 import com.veryshinnam.myapp.core.network.BaseUrls
 
@@ -41,7 +38,5 @@ fun SettingsPrivacyContent(
         },
         modifier = modifier
             .fillMaxSize()
-            .background(color = Color.White)
-            .systemBarsPadding()
     )
 }
