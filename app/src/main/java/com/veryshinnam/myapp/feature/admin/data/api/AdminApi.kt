@@ -7,7 +7,7 @@ import retrofit2.http.POST
 import retrofit2.http.Path
 import retrofit2.http.Query
 
-interface AdminStoryApi {
+interface AdminApi {
 
     // 링크가 누락된 이미지/동영상 동화 모두 조회
     @GET("/api/admin/stories/incomplete")
@@ -30,5 +30,4 @@ interface AdminStoryApi {
     // 관리자 여부 확인 - 홈에서 분기
     @GET("/api/user/is-admin")
     suspend fun checkIsAdmin(): BaseResponse<Boolean>
-
 }

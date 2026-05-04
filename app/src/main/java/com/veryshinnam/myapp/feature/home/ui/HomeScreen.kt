@@ -25,7 +25,6 @@ import androidx.compose.ui.layout.onGloballyPositioned
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.semantics.LiveRegionMode
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.semantics.clearAndSetSemantics
 import androidx.compose.ui.semantics.contentDescription
@@ -55,7 +54,6 @@ import com.veryshinnam.myapp.common.component.UserItem
 import com.veryshinnam.myapp.common.component.WarningSheet
 import com.veryshinnam.myapp.common.model.ManualState
 import com.veryshinnam.myapp.core.orientation.OrientationManager
-import com.veryshinnam.myapp.feature.admin.ui.AdminStoryScreen
 import com.veryshinnam.myapp.feature.attendance.component.AttendanceReward
 
 /**
@@ -120,7 +118,6 @@ fun HomeScreen(
 
     // HomeScreen 진입 시 한번만 실행
     LaunchedEffect(Unit) {
-        vm.checkAdminStatus()   // 관리자 여부 확인
         vm.reload()             // 홈 데이터 다시 불러오기
         vm.changeMessage()      // 랜덤 메시지도 갱신
     }
@@ -138,26 +135,6 @@ fun HomeScreen(
             vm.nextManualStep()
             onCreationClick()
         }
-    }
-
-    // -- 관리자 화면 관련
-    if (isAdmin == true) {
-        AdminStoryScreen(navController = navController)
-        return
-    }
-    if (isAdmin == null) {
-        // 관리자 여부 로딩 중일 때 로딩 표시
-        Box(
-            modifier = Modifier.fillMaxSize(),
-            contentAlignment = Alignment.Center
-        ) {
-            CircularProgressIndicator(
-                color = colorResource(id = R.color.main_orange),
-                trackColor = Color.Gray.copy(alpha = 0.5f),
-                strokeWidth = 4.dp
-            )
-        }
-        return
     }
 
     // -- 백핸들러 설정

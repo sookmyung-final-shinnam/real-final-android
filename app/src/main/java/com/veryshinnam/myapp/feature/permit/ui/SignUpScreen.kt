@@ -88,7 +88,7 @@ fun SignUpScreen(
 
     // 로그인 결과 감지
     LaunchedEffect(state) {
-        if (state is PermitUiState.Success) {
+        if (state is PermitUiState.User) {
             onHome()
         }
     }

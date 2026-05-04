@@ -8,7 +8,6 @@ import com.veryshinnam.myapp.common.model.WarningState
 import com.veryshinnam.myapp.core.manual.ManualManager
 import com.veryshinnam.myapp.core.session.ReviewToken.REVIEW_ACCESS_TOKEN
 import com.veryshinnam.myapp.core.session.SessionManager
-import com.veryshinnam.myapp.feature.admin.data.repository.AdminStoryRepository
 import com.veryshinnam.myapp.feature.home.data.repository.HomeRepository
 import com.veryshinnam.myapp.feature.home.model.HomeRandomMessages
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,7 +23,6 @@ import javax.inject.Inject
 @HiltViewModel
 class HomeViewModel @Inject constructor(
     private val repository: HomeRepository,
-    private val adminRepository: AdminStoryRepository,
     private val sessionManager: SessionManager,
     private val manualManager: ManualManager
 ) : ViewModel() {
@@ -77,28 +75,6 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch {
             sessionManager.removeNewUser()
             _isNewUser.value = false
-        }
-    }
-
-    fun checkAdminStatus() {
-        viewModelScope.launch {
-            // 리뷰  리뷰 토큰 들어올 때까지 대기
-            if (sessionManager.isUsingReviewToken()) {
-                sessionManager.getTokenFlow()
-                    .filter { it == REVIEW_ACCESS_TOKEN }
-                    .first()
-            }
-
-            try {
-                val response = adminRepository.checkIsAdmin()
-                if (response.isSuccess) {
-                    _isAdmin.value = response.result
-                } else {
-                    _isAdmin.value = false
-                }
-            } catch (_: Exception) {
-                _isAdmin.value = false
-            }
         }
     }
 
