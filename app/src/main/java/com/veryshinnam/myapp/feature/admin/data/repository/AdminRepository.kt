@@ -1,6 +1,7 @@
 package com.veryshinnam.myapp.feature.admin.data.repository
 
 import com.veryshinnam.myapp.feature.admin.model.AdminStory
+import com.veryshinnam.myapp.feature.admin.model.FailedStory
 
 interface AdminRepository {
 
@@ -15,4 +16,7 @@ interface AdminRepository {
 
     // 관리자 여부 확인 - 스플래시에서 분기
     suspend fun checkIsAdmin(): Boolean
+
+    // 재생성 배치 실패한 동화 보기
+    suspend fun getFailedStories(): List<FailedStory>
 }

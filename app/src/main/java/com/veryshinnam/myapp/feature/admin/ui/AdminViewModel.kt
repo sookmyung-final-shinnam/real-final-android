@@ -64,6 +64,17 @@ class AdminViewModel @Inject constructor(
         }
     }
 
+    fun getFailedStories() {
+        viewModelScope.launch {
+            try {
+                val result = repository.getFailedStories()
+                Log.d(TAG, "API Response (getFailedStories): $result")
+            } catch (e: Exception) {
+                Log.e(TAG, "API Response Error (getFailedStories)", e)
+            }
+        }
+    }
+
     fun clearToast() {
         _toastMessage.value = null
     }
