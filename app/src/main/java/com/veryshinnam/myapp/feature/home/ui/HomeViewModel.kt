@@ -152,6 +152,7 @@ class HomeViewModel @Inject constructor(
     // 시작 문구
     val firstManuals = listOf(
         "반가워요 {username}!\n스토릭터에 온 걸 환영해요.",
+        "스토릭터는 AI 다람쥐와 함께 대화하며 이야기를 만들어가는 앱이에요.",
         "가운데 동화와 캐릭터 생성 버튼을 누르면,",
         "{username}만의 동화와 캐릭터를 만들 수 있고",
         "만든 캐릭터와 동화는 보관함 버튼을 누르면 확인할 수 있어요!",
@@ -216,6 +217,6 @@ class HomeViewModel @Inject constructor(
     fun nextManualStep() = manualManager.nextStep()
 
     fun getFinishStep(): Int {
-        return 45 + _manualIndex.value
+        return 46 + _manualIndex.value
     }
 }

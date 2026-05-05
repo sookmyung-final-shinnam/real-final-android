@@ -277,7 +277,7 @@ fun SettingsScreen(
                         modifier = Modifier
                             .fillMaxHeight()
                             .weight(1f) // 남은 공간 차지
-                            .offset(y = (-40).dp)
+                            .offset(y = (-20).dp)
                             .align(Alignment.CenterHorizontally), // 가로 정렬
                         contentScale = ContentScale.Fit
                     )
