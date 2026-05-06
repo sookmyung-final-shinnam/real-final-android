@@ -131,7 +131,7 @@ fun StoryReadingContent(
                 )
 
                 Text(
-                    text = " 소리 재생 \n" + if (isTtsMode) "켜짐" else "꺼짐",
+                    text = " 소리 " + if (isTtsMode) "켜짐" else "꺼짐",
                     textAlign = TextAlign.Center,
                     style = ttsTextStyle.copy(
                         lineHeight = ttsTextStyle.lineHeight * 1.2f
