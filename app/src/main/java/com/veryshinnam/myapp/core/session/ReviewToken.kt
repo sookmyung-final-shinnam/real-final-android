@@ -5,5 +5,5 @@ object ReviewToken {
     const val REVIEW_ACCESS_TOKEN =
         "eyJhbGciOiJIUzI1NiJ9.eyJlbWFpbCI6Inl1XzAyMTZAbmF2ZXIuY29tIiwiaWF0IjoxNzc4MDQ2MDE0LCJleHAiOjE3ODA2MzgwMTR9.1gsHpCZGToGu2WrL2S1-tXdH_z9dmioEDFHqTndua3M"
 
-    const val REVIEW_EXPIRE_AT = "2026-05-07T00:00:00"
+    const val REVIEW_EXPIRE_AT = "2026-05-08T00:00:00"
 }
