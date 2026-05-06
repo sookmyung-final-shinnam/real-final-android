@@ -30,7 +30,6 @@ fun NavGraphBuilder.mainNavGraph(
         // 홈 화면
         composable(MainRoutes.HOME) {
             HomeScreen(
-                navController = navController,
                 onSettingsClick = { navController.navigate(MainRoutes.SETTINGS) },
                 onAttendanceClick = { navController.navigate(MainRoutes.ATTENDANCE) },
                 onDashboardClick = { navController.navigate(MainRoutes.DASHBOARD) },

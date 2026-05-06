@@ -119,7 +119,7 @@ fun StoryReaderPage(
         Box(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = horizontalPadding/2, start = horizontalPadding/2)
+                .padding(bottom = 20.dp, start = horizontalPadding/2)
                 .align(Alignment.BottomCenter)
         ) {
             Row(

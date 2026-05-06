@@ -83,13 +83,11 @@ fun HomeScreen(
     bottomPadding: Dp = 10.dp,
     textStyle: TextStyle = MaterialTheme.typography.titleLarge.copy(fontWeight = Bold),
     settingsTextStyle: TextStyle =  MaterialTheme.typography.labelSmall.copy(color = colorResource(id = R.color.main_orange)),
-    vm: HomeViewModel =  hiltViewModel(),
-    navController: NavController
+    vm: HomeViewModel =  hiltViewModel()
 ) {
     // 상태 구독
     val uiState by vm.homeUiState.collectAsStateWithLifecycle() // 화면 전체 ui
     val isNewUser by vm.isNewUser.collectAsStateWithLifecycle() // 신규 유저 여부
-    val isAdmin by vm.isAdmin.collectAsStateWithLifecycle()     // 관리자 여부
     val warningState by vm.warningState.collectAsStateWithLifecycle() // 단순 경고
     val manualState by vm.manualState.collectAsStateWithLifecycle()
     val manualMessage by vm.manualMessage.collectAsStateWithLifecycle()

@@ -150,7 +150,7 @@ fun StoryInfoFade(
                 Text(
                     text = aiNoticeText,
                     style = tagTextStyle.copy(
-                        lineHeight = titleTextStyle.lineHeight * 1.1f
+                        lineHeight = titleTextStyle.lineHeight * 1.08f
                     ),
                     modifier = Modifier.clearAndSetSemantics { }
                 )
